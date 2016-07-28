@@ -1,0 +1,7 @@
+<!-- -*- mode: XML -*- -->
+
+<launch>
+    <node name="dynamixel_workbench_test" pkg="dynamixel_workbench_monitor" type="dynamixel_workbench_monitor_node" required="true" output="screen">
+        <rosparam file="$(find dynamixel_workbench_monitor)/param/dynamixel.yaml" command="load"/>
+    </node>
+</launch>
