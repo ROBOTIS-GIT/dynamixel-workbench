@@ -68,12 +68,16 @@ class DynamixelWorkbenchMonitor
  public:
   DynamixelWorkbenchMonitor();
   ~DynamixelWorkbenchMonitor();
+  void dynamixelMonitorLoop(void);
   void closeDynamixel(void);
 
  private:
   bool initDynamixelController(void);
   bool shutdownDynamixelWorkbenchMonitor(void);
+  void writeDynamixelRegister(uint8_t id, uint16_t addr, uint16_t length, int32_t value);
+  void readDynamixelRegister(uint8_t id, uint16_t addr, uint16_t length);
   bool setTorque(uint8_t id, bool onoff);
+  bool readPosition(uint8_t id, int32_t &position, int32_t &realtime_tick);
 };
 }
 

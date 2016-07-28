@@ -83,6 +83,88 @@ bool DynamixelWorkbenchMonitor::shutdownDynamixelWorkbenchMonitor()
   return true;
 }
 
+void DynamixelWorkbenchMonitor::writeDynamixelRegister(uint8_t id, uint16_t addr, uint16_t length, int32_t value)
+{
+  uint8_t dxl_error = 0;
+  int dxl_comm_result = COMM_TX_FAIL;
+
+  if (length == 1)
+  {
+    dxl_comm_result = packetHandler_->write1ByteTxRx(portHandler_, id, addr, (int8_t)value, &dxl_error);
+  }
+  else if (length == 2)
+  {
+    dxl_comm_result = packetHandler_->write1ByteTxRx(portHandler_, id, addr, (int16_t)value, &dxl_error);
+  }
+  else if (length == 4)
+  {
+    dxl_comm_result = packetHandler_->write1ByteTxRx(portHandler_, id, addr, (int32_t)value, &dxl_error);
+  }
+
+  if (dxl_comm_result == COMM_SUCCESS)
+  {
+    if (dxl_error != 0)
+    {
+      packetHandler_->printRxPacketError(dxl_error);
+    }
+  }
+  else
+  {
+    packetHandler_->printTxRxResult(dxl_comm_result);
+    ROS_ERROR("[ID] %u, Fail to write!", id);
+  }
+
+}
+
+void DynamixelWorkbenchMonitor::readDynamixelRegister(uint8_t id, uint16_t addr, uint16_t length)
+{
+  uint8_t dxl_error = 0;
+  int dxl_comm_result = COMM_RX_FAIL;
+
+  int8_t value_8_bit = 0;
+  int16_t value_16_bit = 0;
+  int32_t value_32_bit = 0;
+
+  if (length == 1)
+  {
+    dxl_comm_result = packetHandler_->read1ByteTxRx(portHandler_, id, addr, (uint8_t*)&value_8_bit, &dxl_error);
+  }
+  else if (length == 2)
+  {
+    dxl_comm_result = packetHandler_->read2ByteTxRx(portHandler_, id, addr, (uint16_t*)&value_16_bit, &dxl_error);
+  }
+  else if (length == 4)
+  {
+    dxl_comm_result = packetHandler_->read4ByteTxRx(portHandler_, id, addr, (uint32_t*)&value_32_bit, &dxl_error);
+  }
+
+  if (dxl_comm_result == COMM_SUCCESS)
+  {
+    if (dxl_error != 0)
+    {
+      packetHandler_->printRxPacketError(dxl_error);
+    }
+
+    if (length == 1)
+    {
+      ROS_INFO("[ID] %u, [Present Value] %d", id, value_8_bit);
+    }
+    else if (length == 2)
+    {
+      ROS_INFO("[ID] %u, [Present Value] %d", id, value_16_bit);
+    }
+    else if (length == 4)
+    {
+      ROS_INFO("[ID] %u, [Present Value] %d", id, value_32_bit);
+    }
+  }
+  else
+  {
+    packetHandler_->printTxRxResult(dxl_comm_result);
+    ROS_ERROR("[ID] %u, Fail to read!", id);
+  }
+}
+
 bool DynamixelWorkbenchMonitor::setTorque(uint8_t id, bool onoff)
 {
   uint8_t dxl_error = 0;
@@ -99,6 +181,55 @@ bool DynamixelWorkbenchMonitor::setTorque(uint8_t id, bool onoff)
   }
 }
 
+bool DynamixelWorkbenchMonitor::readPosition(uint8_t id, int32_t &position, int32_t &realtime_tick)
+{
+  uint8_t dxl_error = 0;
+  int dxl_comm_result = COMM_RX_FAIL;
+  int32_t dxl_present_position = 0;
+  int16_t dxl_realtime_tick = 0;
+
+  dxl_comm_result = packetHandler_->read4ByteTxRx(portHandler_, id, ADDR_XM_PRESENT_POSITION, (uint32_t*)&dxl_present_position, &dxl_error);
+
+  if (dxl_comm_result != COMM_SUCCESS)
+  {
+    packetHandler_->printTxRxResult(dxl_comm_result);
+    return false;
+  }
+  else if (dxl_error != 0)
+  {
+    packetHandler_->printRxPacketError(dxl_error);
+    return false;
+  }
+
+  dxl_comm_result = packetHandler_->read2ByteTxRx(portHandler_, id, ADDR_XM_REALTIRM_TICK, (uint16_t*)&dxl_realtime_tick, &dxl_error);
+
+  if (dxl_comm_result != COMM_SUCCESS)
+  {
+    packetHandler_->printTxRxResult(dxl_comm_result);
+    return false;
+  }
+  else if (dxl_error != 0)
+  {
+    packetHandler_->printRxPacketError(dxl_error);
+    return false;
+  }
+
+  position = dxl_present_position;
+  realtime_tick = dxl_realtime_tick;
+
+  return true;
+}
+
+void DynamixelWorkbenchMonitor::dynamixelMonitorLoop(void)
+{
+  dynamixel_workbench_msgs::DynamixelResponse response;
+
+  //readDynamixelRegister(dxl_id_, ADDR_XM_PRESENT_VELOCITY, 4);
+
+  readPosition(dxl_id_, response.position, response.realtime_tick);
+  dxl_position_pub_.publish(response);
+}
+
 int main(int argc, char **argv)
 {
   // Init ROS node
@@ -108,6 +239,8 @@ int main(int argc, char **argv)
 
   while (ros::ok())
   {
+    dwm.dynamixelMonitorLoop();
+
     ros::spinOnce();
     loop_rate.sleep();
   }
