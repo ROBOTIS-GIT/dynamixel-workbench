@@ -13,11 +13,13 @@
 #include <dynamixel_workbench_msgs/DynamixelResponse.h>
 
 #include "dynamixel_sdk.h"  // Uses Dynamixel SDK Library
+#include "dynamixel_workbench_monitor/MonitorCommand.h"
 
 // Control table address (Dynamixel XM series)
 #define ADDR_XM_GET_ID              7
-#define ADDR_XM_OPERATION_MODE      11
+#define ADDR_XM_OPERATIING_MODE     11
 #define ADDR_XM_TORQUE_ENABLE       64
+#define ADDR_XM_PROFILE_VELOCITY    112
 #define ADDR_XM_GOAL_VELOCITY       104
 #define ADDR_XM_GOAL_POSITION       116
 #define ADDR_XM_REALTIME_TICK       120
@@ -59,6 +61,8 @@ class DynamixelWorkbenchMonitor
   // ROS NodeHandle
   ros::NodeHandle nh_;
   ros::NodeHandle nh_priv_;
+  // ROS Service server
+  ros::ServiceServer dynamixel_workbench_monitor_server_;
   // ROS Parameters
   bool is_debug_;
   // ROS Topic Publisher
@@ -84,14 +88,20 @@ class DynamixelWorkbenchMonitor
   bool writeDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, int32_t value);
   bool readDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, uint32_t *value);
   bool setTorque(uint8_t id, bool onoff);
+  // Read various state of Dynamixel
+  bool readOperatingMode(uint8_t id, int8_t *operating_mode);
+  bool readTorque(uint8_t id, int8_t *torque);
   bool readPresentPosition(uint8_t id, int32_t *position);
-  bool readRealtimeTick(uint8_t id, int32_t *realtime_tick);
+  bool readRealtimeTick(uint8_t id, int16_t *realtime_tick);
   bool readGoalPosition(uint8_t id, int32_t *goal_position);
   bool readPresentVelocity(uint8_t id, int32_t *velocity);
   bool readGoalVelocity(uint8_t id, int32_t *velocity);
-  bool readPresentVoltage(uint8_t id, int32_t *voltage);
-  bool readPresentTemperature(uint8_t id, int32_t *temperature);
-  bool readIsMoving(uint8_t id, bool *is_moving);
+  bool readPresentVoltage(uint8_t id, int16_t *voltage);
+  bool readPresentTemperature(uint8_t id, int8_t *temperature);
+  bool readIsMoving(uint8_t id, int8_t *is_moving);
+  // ROS Service Server
+  bool dynamixelCommandServer(dynamixel_workbench_monitor::MonitorCommand::Request &req,
+                              dynamixel_workbench_monitor::MonitorCommand::Response &res);
 };
 }
 

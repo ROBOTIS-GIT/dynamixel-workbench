@@ -1,0 +1,5 @@
+string cmd
+uint32 dxl_id
+uint32 pos_value
+uint32 vel_value
+---

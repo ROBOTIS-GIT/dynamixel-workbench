@@ -18,7 +18,12 @@ DynamixelWorkbenchMonitor::DynamixelWorkbenchMonitor()
 
   // Init target name
   ROS_ASSERT(initDynamixelController());
-  dxl_position_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelResponse>("/dxl_motor_position",10);
+
+  // Init ROS publish
+  dxl_position_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelResponse>("/dxl_motor_state",10);
+
+  // Init ROS Service server
+  dynamixel_workbench_monitor_server_ = nh_.advertiseService("dynamixel_workbench_monitor_remote", &DynamixelWorkbenchMonitor::dynamixelCommandServer, this);
 
   // Initialize PortHandler instance
   // Set the port path
@@ -56,9 +61,9 @@ DynamixelWorkbenchMonitor::DynamixelWorkbenchMonitor()
   dxl_id_ = scanDynamixelId(portHandler_, packetHandler_);
 
   // Enable Dynamixel Torque
-  //setTorque(dxl_id_, true);
+  setTorque(dxl_id_, true);
 
-  ROS_INFO("Press ESC to exit dynamixel workbench");
+  ROS_INFO("Press ESC to exit dynamixel workbench monitor node");
 }
 
 DynamixelWorkbenchMonitor::~DynamixelWorkbenchMonitor()
@@ -122,12 +127,13 @@ int DynamixelWorkbenchMonitor::kbhit()
 
 bool DynamixelWorkbenchMonitor::initDynamixelController()
 {
-  ROS_INFO("dynamixel_controller_node : Init OK!");
+  ROS_INFO("dynamixel_workbench_monitor_node : Init OK!");
   return true;
 }
 
 bool DynamixelWorkbenchMonitor::shutdownDynamixelWorkbenchMonitor()
 {
+  portHandler_->closePort();
   return true;
 }
 
@@ -164,8 +170,6 @@ uint8_t DynamixelWorkbenchMonitor::scanDynamixelId(dynamixel::PortHandler *portH
   {
     ROS_INFO("");
     ROS_ERROR("...Failed to find dynamixel!");
-
-    shutdownDynamixelWorkbenchMonitor();
     closeDynamixel();
   }
 }
@@ -181,11 +185,11 @@ bool DynamixelWorkbenchMonitor::writeDynamixelRegister(uint8_t id, uint16_t addr
   }
   else if (length == 2)
   {
-    dxl_comm_result = packetHandler_->write1ByteTxRx(portHandler_, id, addr, (int16_t)value, &dxl_error);
+    dxl_comm_result = packetHandler_->write2ByteTxRx(portHandler_, id, addr, (int16_t)value, &dxl_error);
   }
   else if (length == 4)
   {
-    dxl_comm_result = packetHandler_->write1ByteTxRx(portHandler_, id, addr, (int32_t)value, &dxl_error);
+    dxl_comm_result = packetHandler_->write4ByteTxRx(portHandler_, id, addr, (int32_t)value, &dxl_error);
   }
 
   if (dxl_comm_result == COMM_SUCCESS)
@@ -279,12 +283,50 @@ bool DynamixelWorkbenchMonitor::setTorque(uint8_t id, bool onoff)
   }
 }
 
+bool DynamixelWorkbenchMonitor::readOperatingMode(uint8_t id, int8_t *operating_mode)
+{
+  bool read_operating_mode_error = false;
+  int8_t dxl_operating_mode = 0;
+
+  read_operating_mode_error = readDynamixelRegister(id, ADDR_XM_OPERATIING_MODE, 1, (uint32_t*)&dxl_operating_mode);
+
+  if (read_operating_mode_error == false)
+  {
+    ROS_ERROR("[ID] %u, Fail to read dxl operating mode!", id);
+    return false;
+  }
+  else
+  {
+    *operating_mode = dxl_operating_mode;
+    return true;
+  }
+}
+
+bool DynamixelWorkbenchMonitor::readTorque(uint8_t id, int8_t *torque)
+{
+  bool read_torque_error = false;
+  int8_t dxl_torque = false;
+
+  read_torque_error = readDynamixelRegister(id, ADDR_XM_TORQUE_ENABLE, 1, (uint32_t*)&dxl_torque);
+
+  if (read_torque_error == false)
+  {
+    ROS_ERROR("[ID] %u, Fail to read dxl torque!", id);
+    return false;
+  }
+  else
+  {
+    *torque = dxl_torque;
+    return true;
+  }
+}
+
 bool DynamixelWorkbenchMonitor::readPresentPosition(uint8_t id, int32_t *position)
 {
   bool read_position_error = false;
-  uint32_t dxl_present_position = 0;
+  int32_t dxl_present_position = 0;
 
-  read_position_error = readDynamixelRegister(id, ADDR_XM_PRESENT_POSITION, 4, &dxl_present_position);
+  read_position_error = readDynamixelRegister(id, ADDR_XM_PRESENT_POSITION, 4, (uint32_t*)&dxl_present_position);
 
   if (read_position_error == false)
   {
@@ -301,9 +343,9 @@ bool DynamixelWorkbenchMonitor::readPresentPosition(uint8_t id, int32_t *positio
 bool DynamixelWorkbenchMonitor::readGoalPosition(uint8_t id, int32_t *goal_position)
 {
   bool read_goal_position_error = false;
-  uint32_t dxl_goal_position = 0;
+  int32_t dxl_goal_position = 0;
 
-  read_goal_position_error = readDynamixelRegister(id, ADDR_XM_GOAL_POSITION, 4, &dxl_goal_position);
+  read_goal_position_error = readDynamixelRegister(id, ADDR_XM_GOAL_POSITION, 4, (uint32_t*)&dxl_goal_position);
 
   if (read_goal_position_error == false)
   {
@@ -317,12 +359,12 @@ bool DynamixelWorkbenchMonitor::readGoalPosition(uint8_t id, int32_t *goal_posit
   }
 }
 
-bool DynamixelWorkbenchMonitor::readRealtimeTick(uint8_t id, int32_t *realtime_tick)
+bool DynamixelWorkbenchMonitor::readRealtimeTick(uint8_t id, int16_t *realtime_tick)
 {
   bool read_realtime_tick_error = false;
-  uint32_t dxl_realtime_tick = 0;
+  int16_t dxl_realtime_tick = 0;
 
-  read_realtime_tick_error = readDynamixelRegister(id, ADDR_XM_REALTIME_TICK, 2, &dxl_realtime_tick);
+  read_realtime_tick_error = readDynamixelRegister(id, ADDR_XM_REALTIME_TICK, 2, (uint32_t*)&dxl_realtime_tick);
 
   if (read_realtime_tick_error == false)
   {
@@ -339,9 +381,9 @@ bool DynamixelWorkbenchMonitor::readRealtimeTick(uint8_t id, int32_t *realtime_t
 bool DynamixelWorkbenchMonitor::readPresentVelocity(uint8_t id, int32_t *velocity)
 {
   bool read_present_velocity_error = false;
-  uint32_t dxl_present_velocity = 0;
+  int32_t dxl_present_velocity = 0;
 
-  read_present_velocity_error = readDynamixelRegister(id, ADDR_XM_PRESENT_VELOCITY, 4, &dxl_present_velocity);
+  read_present_velocity_error = readDynamixelRegister(id, ADDR_XM_PRESENT_VELOCITY, 4, (uint32_t*)&dxl_present_velocity);
 
   if (read_present_velocity_error == false)
   {
@@ -358,9 +400,9 @@ bool DynamixelWorkbenchMonitor::readPresentVelocity(uint8_t id, int32_t *velocit
 bool DynamixelWorkbenchMonitor::readGoalVelocity(uint8_t id, int32_t *velocity)
 {
   bool read_goal_velocity_error = false;
-  uint32_t dxl_goal_velocity = 0;
+  int32_t dxl_goal_velocity = 0;
 
-  read_goal_velocity_error = readDynamixelRegister(id, ADDR_XM_GOAL_VELOCITY, 4, &dxl_goal_velocity);
+  read_goal_velocity_error = readDynamixelRegister(id, ADDR_XM_GOAL_VELOCITY, 4, (uint32_t*)&dxl_goal_velocity);
 
   if (read_goal_velocity_error == false)
   {
@@ -374,12 +416,12 @@ bool DynamixelWorkbenchMonitor::readGoalVelocity(uint8_t id, int32_t *velocity)
   }
 }
 
-bool DynamixelWorkbenchMonitor::readPresentVoltage(uint8_t id, int32_t *voltage)
+bool DynamixelWorkbenchMonitor::readPresentVoltage(uint8_t id, int16_t *voltage)
 {
   bool read_present_voltage_error = false;
-  uint32_t dxl_present_voltage = 0.0;
+  int16_t dxl_present_voltage = 0.0;
 
-  read_present_voltage_error = readDynamixelRegister(id, ADDR_XM_PRESENT_VOLTAGE, 2, &dxl_present_voltage);
+  read_present_voltage_error = readDynamixelRegister(id, ADDR_XM_PRESENT_VOLTAGE, 2, (uint32_t*)&dxl_present_voltage);
 
   if (read_present_voltage_error == false)
   {
@@ -393,12 +435,12 @@ bool DynamixelWorkbenchMonitor::readPresentVoltage(uint8_t id, int32_t *voltage)
   }
 }
 
-bool DynamixelWorkbenchMonitor::readPresentTemperature(uint8_t id, int32_t *temperature)
+bool DynamixelWorkbenchMonitor::readPresentTemperature(uint8_t id, int8_t *temperature)
 {
   bool read_present_temperature = false;
-  uint32_t dxl_present_temperature = 0;
+  int8_t dxl_present_temperature = 0;
 
-  read_present_temperature = readDynamixelRegister(id, ADDR_XM_PRESENT_TEMPERATURE, 1, &dxl_present_temperature);
+  read_present_temperature = readDynamixelRegister(id, ADDR_XM_PRESENT_TEMPERATURE, 1, (uint32_t*)&dxl_present_temperature);
 
   if (read_present_temperature == false)
   {
@@ -412,12 +454,12 @@ bool DynamixelWorkbenchMonitor::readPresentTemperature(uint8_t id, int32_t *temp
   }
 }
 
-bool DynamixelWorkbenchMonitor::readIsMoving(uint8_t id, bool *is_moving)
+bool DynamixelWorkbenchMonitor::readIsMoving(uint8_t id, int8_t *is_moving)
 {
   bool read_moving = false;
-  uint32_t dxl_moving = 0;
+  int8_t dxl_moving = 0;
 
-  read_moving = readDynamixelRegister(id, ADDR_XM_MOVING, 1, &dxl_moving);
+  read_moving = readDynamixelRegister(id, ADDR_XM_MOVING, 1, (uint32_t*)&dxl_moving);
 
   if (read_moving == false)
   {
@@ -431,32 +473,48 @@ bool DynamixelWorkbenchMonitor::readIsMoving(uint8_t id, bool *is_moving)
   }
 }
 
+bool DynamixelWorkbenchMonitor::dynamixelCommandServer(dynamixel_workbench_monitor::MonitorCommand::Request &req,
+                                                       dynamixel_workbench_monitor::MonitorCommand::Response &res)
+{
+  if (strcmp(req.cmd.c_str(), "pos") == 0)
+  {
+    ROS_INFO("request: x=%ld, y=%ld",(long int)req.dxl_id, (long int)req.pos_value);
+    writeDynamixelRegister(req.dxl_id, ADDR_XM_GOAL_POSITION, 4, req.pos_value);
+  }
+  else if (strcmp(req.cmd.c_str(), "vel") == 0)
+  {
+    ROS_INFO("request: x=%ld, y=%ld",(long int)req.dxl_id, (long int)req.vel_value);
+    writeDynamixelRegister(req.dxl_id, ADDR_XM_PROFILE_VELOCITY, 4, req.vel_value);
+  }
+  return true;
+}
+
 void DynamixelWorkbenchMonitor::dynamixelMonitorLoop(void)
 {
+  if (kbhit())
+  {
+    char c = getch();
+    if (c == ESC_ASCII_VALUE)
+    {
+      closeDynamixel();
+    }
+  }
+
   dynamixel_workbench_msgs::DynamixelResponse response;
 
-  //readDynamixelRegister(dxl_id_, ADDR_XM_PRESENT_VELOCITY, 4);
-
-  readRealtimeTick(dxl_id_, &response.realtime_tick);
+  readRealtimeTick(dxl_id_, &response.timestamps);
   response.id = dxl_id_;
+  readOperatingMode(dxl_id_, &response.operating_mode);
+  readTorque(dxl_id_, &response.torque);
   readGoalPosition(dxl_id_, &response.goal_position);
   readPresentPosition(dxl_id_, &response.present_position);
   readGoalVelocity(dxl_id_, &response.goal_velocity);
   readPresentVelocity(dxl_id_, &response.present_velocity);
   readPresentVoltage(dxl_id_, &response.voltage);
-  readPresentVoltage(dxl_id_, &response.temperature);
+  readPresentTemperature(dxl_id_, &response.temperature);
+  readIsMoving(dxl_id_, &response.is_moving);
 
   dxl_position_pub_.publish(response);
-
-  if (kbhit())
-  {
-    char c = getch();
-    if (c == 0x1b)
-    {
-     shutdownDynamixelWorkbenchMonitor();
-     closeDynamixel();
-    }
-  }
 }
 
 int main(int argc, char **argv)
@@ -469,7 +527,6 @@ int main(int argc, char **argv)
   while (ros::ok())
   {
     dwm.dynamixelMonitorLoop();
-
     ros::spinOnce();
     loop_rate.sleep();
   }
