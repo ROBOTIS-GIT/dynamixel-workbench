@@ -15,13 +15,17 @@
 #include "dynamixel_sdk.h"  // Uses Dynamixel SDK Library
 
 // Control table address (Dynamixel XM series)
+#define ADDR_XM_GET_ID              7
 #define ADDR_XM_OPERATION_MODE      11
 #define ADDR_XM_TORQUE_ENABLE       64
 #define ADDR_XM_GOAL_VELOCITY       104
 #define ADDR_XM_GOAL_POSITION       116
-#define ADDR_XM_REALTIRM_TICK       120
+#define ADDR_XM_REALTIME_TICK       120
 #define ADDR_XM_PRESENT_VELOCITY    128
 #define ADDR_XM_PRESENT_POSITION    132
+#define ADDR_XM_PRESENT_VOLTAGE     144
+#define ADDR_XM_PRESENT_TEMPERATURE 146
+#define ADDR_XM_MOVING              122
 
 // Protocol version
 #define PROTOCOL_VERSION            2.0
@@ -72,14 +76,23 @@ class DynamixelWorkbenchMonitor
   void closeDynamixel(void);
 
  private:
+  int getch(void);
+  int kbhit(void);
   bool initDynamixelController(void);
   bool shutdownDynamixelWorkbenchMonitor(void);
-  void writeDynamixelRegister(uint8_t id, uint16_t addr, uint16_t length, int32_t value);
-  void readDynamixelRegister(uint8_t id, uint16_t addr, uint16_t length);
+  uint8_t scanDynamixelId(dynamixel::PortHandler *portHandler, dynamixel::PacketHandler *packetHandler);
+  bool writeDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, int32_t value);
+  bool readDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, uint32_t *value);
   bool setTorque(uint8_t id, bool onoff);
-  bool readPosition(uint8_t id, int32_t &position, int32_t &realtime_tick);
+  bool readPresentPosition(uint8_t id, int32_t *position);
+  bool readRealtimeTick(uint8_t id, int32_t *realtime_tick);
+  bool readGoalPosition(uint8_t id, int32_t *goal_position);
+  bool readPresentVelocity(uint8_t id, int32_t *velocity);
+  bool readGoalVelocity(uint8_t id, int32_t *velocity);
+  bool readPresentVoltage(uint8_t id, int32_t *voltage);
+  bool readPresentTemperature(uint8_t id, int32_t *temperature);
+  bool readIsMoving(uint8_t id, bool *is_moving);
 };
 }
-
 
 #endif // DYNAMIXEL_WORKBENCH_MONITOR_H_
