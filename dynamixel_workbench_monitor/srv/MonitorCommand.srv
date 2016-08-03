@@ -1,5 +1,6 @@
 string cmd
-string dxl_id
+uint8 dxl_id
+bool onoff
 uint32 pos_value
 uint32 vel_value
 ---

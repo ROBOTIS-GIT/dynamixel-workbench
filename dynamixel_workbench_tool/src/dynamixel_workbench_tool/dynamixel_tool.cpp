@@ -123,29 +123,54 @@ bool DynamixelWorkbenchTool::setTorque(std::vector<uint8_t> dxl_id_vec, bool ono
   return true;
 }
 
-bool DynamixelWorkbenchTool::writeGoalPosition(std::vector<uint32_t> dxl_id_vec, uint32_t pos_value)
+bool DynamixelWorkbenchTool::writeGoalPosition(std::vector<uint8_t> dxl_id_array, uint32_t pos_value)
 {
-//  dynamixel::GroupSyncWrite groupSyncWrite(portHandler_, packetHandler_, ADDR_XM_GOAL_POSITION, 4);
+  dynamixel::GroupSyncWrite groupSyncWrite(portHandler_, packetHandler_, ADDR_XM_GOAL_POSITION, 4);
 
-//  for (int i = 0; i < dxl_id_vec.size(); i++)
-//  {
-//    dxl_addparam_result_ = groupSyncWrite.addParam(dxl_id_vec.at(i), (uint8_t*)&pos_value);
-//    if (dxl_addparam_result_ != true)
-//    {
-//      ROS_ERROR("[ID:%03d] groupSyncWrite addparam failed", dxl_id_vec.at(i));
-//      return false;
-//    }
-//  }
+  for (int i = 0; i < dxl_id_array.size(); i++)
+  {
+    dxl_addparam_result_ = groupSyncWrite.addParam(dxl_id_array.at(i), (uint8_t*)&pos_value);
+    if (dxl_addparam_result_ != true)
+    {
+      ROS_ERROR("[ID:%03d] groupSyncWrite addparam failed", dxl_id_array.at(i));
+      return false;
+    }
+  }
 
-//  dxl_comm_result_ = groupSyncWrite.txPacket();
-//  if (dxl_comm_result_ != COMM_SUCCESS)
-//  {
-//    packetHandler_->printTxRxResult(dxl_comm_result_);
-//    return false;
-//  }
+  dxl_comm_result_ = groupSyncWrite.txPacket();
+  if (dxl_comm_result_ != COMM_SUCCESS)
+  {
+    packetHandler_->printTxRxResult(dxl_comm_result_);
+    return false;
+  }
 
-//  groupSyncWrite.clearParam();
-//  return true;
+  groupSyncWrite.clearParam();
+  return true;
+}
+
+bool DynamixelWorkbenchTool::writeProfileVelocity(std::vector<uint8_t> dxl_id_array, uint32_t vel_value)
+{
+  dynamixel::GroupSyncWrite groupSyncWrite(portHandler_, packetHandler_, ADDR_XM_PROFILE_VELOCITY, 4);
+
+  for (int i = 0; i < dxl_id_array.size(); i++)
+  {
+    dxl_addparam_result_ = groupSyncWrite.addParam(dxl_id_array[i], (uint8_t*)&vel_value);
+    if (dxl_addparam_result_ != true)
+    {
+      ROS_ERROR("[ID:%03d] groupSyncWrite addparam failed", dxl_id_array[i]);
+      return false;
+    }
+  }
+
+  dxl_comm_result_ = groupSyncWrite.txPacket();
+  if (dxl_comm_result_ != COMM_SUCCESS)
+  {
+    packetHandler_->printTxRxResult(dxl_comm_result_);
+    return false;
+  }
+
+  groupSyncWrite.clearParam();
+  return true;
 }
 
 bool DynamixelWorkbenchTool::readRealtimeTick(std::vector<uint8_t> dxl_id_vec, std::vector<uint16_t> *dxl_read_data)

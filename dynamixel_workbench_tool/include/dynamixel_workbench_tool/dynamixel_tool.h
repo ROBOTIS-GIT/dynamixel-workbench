@@ -53,7 +53,8 @@ class DynamixelWorkbenchTool
 
   bool scanDynamixelId(std::vector<uint8_t> *dxl_id_vec, std::vector<uint16_t> *dxl_model_vec);
   bool setTorque(std::vector<uint8_t> dxl_id_vec, bool onoff);
-  bool writeGoalPosition(std::vector<uint32_t> dxl_id_vec, uint32_t pos_value);
+  bool writeGoalPosition(std::vector<uint8_t> dxl_id_vec, uint32_t pos_value);
+  bool writeProfileVelocity(std::vector<uint8_t> dxl_id_vec, uint32_t vel_value);
   // SyncRead dynamixel register
   bool readRealtimeTick(std::vector<uint8_t> dxl_id_vec, std::vector<uint16_t> *dxl_read_data);
   bool readOperatingMode(std::vector<uint8_t> dxl_id_vec, std::vector<uint16_t> *dxl_read_data);

@@ -31,7 +31,7 @@ DynamixelWorkbenchMonitor::DynamixelWorkbenchMonitor()
   dynamixel_tool_->scanDynamixelId(&dxl_id_vec_, &dxl_model_vec_);
 
   // Enable Dynamixel Torque
-  dynamixel_tool_->setTorque(dxl_id_vec_, false);
+  dynamixel_tool_->setTorque(dxl_id_vec_, true);
 
   ROS_INFO("Press ESC to exit dynamixel workbench monitor node");
 }
@@ -201,17 +201,49 @@ bool DynamixelWorkbenchMonitor::readDynamixelRegister(uint8_t id, uint16_t addr,
 bool DynamixelWorkbenchMonitor::dynamixelCommandServer(dynamixel_workbench_monitor::MonitorCommand::Request &req,
                                                        dynamixel_workbench_monitor::MonitorCommand::Response &res)
 {
-//  if (strcmp(req.cmd.c_str(), "pos") == 0)
-//  {
-//    //ROS_INFO("request: x=%ld, y=%ld",(long int)req.dxl_id, (long int)req.pos_value);
-//    dynamixel_tool_->writeGoalPosition(dxl_id_vec_, req.pos_value);
-//  }
-////  else if (strcmp(req.cmd.c_str(), "vel") == 0)
-////  {
-////    ROS_INFO("request: x=%ld, y=%ld",(long int)req.dxl_id, (long int)req.vel_value);
-////    writeDynamixelRegister(req.dxl_id, ADDR_XM_PROFILE_VELOCITY, 4, req.vel_value);
-////  }
-//  return true;
+  if (strcmp(req.cmd.c_str(), "push") == 0)
+  {
+    ROS_INFO("Push DXL ID : %d", req.dxl_id);
+    dxl_control_vec_.push_back(req.dxl_id);
+  }
+  else if (strcmp(req.cmd.c_str(), "pop") == 0)
+  {
+    ROS_INFO("Pop DXL ID : %d", req.dxl_id);
+    dxl_control_vec_.pop_back();
+  }
+  else if (strcmp(req.cmd.c_str(), "check") == 0)
+  {
+    for (int i = 0; i < dxl_control_vec_.size(); i++)
+    {
+      ROS_INFO("Registered DXL : %d", dxl_control_vec_.at(i));
+    }
+  }
+  else if (strcmp(req.cmd.c_str(), "torque") == 0)
+  {
+    ROS_INFO("DXL torque statue : %d", req.onoff);
+    for (int i = 0; i < dxl_control_vec_.size(); i++)
+    {
+      ROS_INFO("request: x=%ld, y=%ld",(long int)dxl_control_vec_.at(i), (long int)req.onoff);
+    }
+    dynamixel_tool_->setTorque(dxl_control_vec_, req.onoff);
+  }
+  else if (strcmp(req.cmd.c_str(), "pos") == 0)
+  {
+    for (int i = 0; i < dxl_control_vec_.size(); i++)
+    {
+      ROS_INFO("request: x=%ld, y=%ld",(long int)dxl_control_vec_.at(i), (long int)req.pos_value);
+    }
+    dynamixel_tool_->writeGoalPosition(dxl_control_vec_, req.pos_value);
+  }
+  else if (strcmp(req.cmd.c_str(), "vel") == 0)
+  {
+    for (int i = 0; i< dxl_control_vec_.size(); i++)
+    {
+      ROS_INFO("request: x=%ld, y=%ld",(long int)dxl_control_vec_.at(i), (long int)req.vel_value);
+    }
+    dynamixel_tool_->writeProfileVelocity(dxl_control_vec_, req.vel_value);
+  }
+  return true;
 }
 
 void DynamixelWorkbenchMonitor::dynamixelMonitorLoop(void)

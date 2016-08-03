@@ -9,7 +9,6 @@
 #include <ros/ros.h>
 #include <std_msgs/Int32.h>
 #include <std_msgs/Float64.h>
-//#include <geometry_msgs/Twist.h>
 #include <dynamixel_workbench_msgs/DynamixelResponseList.h>
 
 #include "dynamixel_sdk.h"  // Uses Dynamixel SDK Library
@@ -24,7 +23,7 @@
 #define BAUDRATE                    1000000
 #define DEVICENAME                  "/dev/ttyUSB0"
 
-#define ESC_ASCII_VALUE                     0x1b
+#define ESC_ASCII_VALUE             0x1b
 
 namespace dynamixel_workbench_monitor
 {
@@ -34,6 +33,7 @@ class DynamixelWorkbenchMonitor
   dynamixel::PortHandler *portHandler_;
   dynamixel::PacketHandler *packetHandler_;
   dynamixel_workbench_tool::DynamixelWorkbenchTool *dynamixel_tool_;
+  std::vector<uint8_t> dxl_control_vec_;
 
  private:
   // ROS NodeHandle
@@ -47,7 +47,7 @@ class DynamixelWorkbenchMonitor
   ros::Publisher dxl_position_pub_;
   // Parameters
   std::string device_name_;
-  std::vector<uint8_t> dxl_id_vec_;
+  std::vector<uint8_t> dxl_id_vec_;  
   std::vector<uint16_t> dxl_model_vec_;
   std::vector<uint16_t> dxl_realtime_tick_read_data_;
   std::vector<uint16_t> dxl_operating_mode_read_data_;
@@ -59,7 +59,6 @@ class DynamixelWorkbenchMonitor
   std::vector<uint16_t> dxl_voltage_;
   std::vector<uint8_t> dxl_temperature_;
   std::vector<bool> dxl_is_moving_;
-
 
   float baud_rate_;
   float protocol_version_;

@@ -94,7 +94,7 @@ bool DynamixelWorkbenchRemote::remoteLoop()
   char *token;
   dynamixel_workbench_monitor::MonitorCommand monitor_command_service;
 
-  ROS_INFO("[CMD] ");
+  printf("[CMD] ");
   fgets(input, sizeof(input), stdin);
 
   char *p;
@@ -126,13 +126,48 @@ bool DynamixelWorkbenchRemote::remoteLoop()
     ros::shutdown();
     return true;
   }
-  else if (strcmp(cmd, "pos") == 0)
+  else if (strcmp(cmd, "push") == 0)
   {
-    if (num_param == 2)
+    if (num_param == 1)
     {
       monitor_command_service.request.cmd = cmd;
       monitor_command_service.request.dxl_id = atoi(param[0]);
-      monitor_command_service.request.pos_value = atoi(param[1]);
+      dynamixel_workbench_remote_client_.call(monitor_command_service);
+    }
+    else
+    {
+      ROS_ERROR("Invalid parameters!");
+    }
+  }
+  else if (strcmp(cmd, "pop") == 0)
+  {
+    monitor_command_service.request.cmd = cmd;
+    dynamixel_workbench_remote_client_.call(monitor_command_service);
+  }
+  else if (strcmp(cmd, "check") == 0)
+  {
+    monitor_command_service.request.cmd = cmd;
+    dynamixel_workbench_remote_client_.call(monitor_command_service);
+  }
+  else if (strcmp(cmd, "torque") == 0)
+  {
+    if (num_param == 1)
+    {
+      monitor_command_service.request.cmd = cmd;
+      monitor_command_service.request.onoff = atoi(param[0]);
+      dynamixel_workbench_remote_client_.call(monitor_command_service);
+    }
+    else
+    {
+      ROS_ERROR("Invalid parameters!");
+    }
+  }
+  else if (strcmp(cmd, "pos") == 0)
+  {
+    if (num_param == 1)
+    {
+      monitor_command_service.request.cmd = cmd;
+      monitor_command_service.request.pos_value = atoi(param[0]);
       dynamixel_workbench_remote_client_.call(monitor_command_service);
     }
     else
@@ -142,11 +177,10 @@ bool DynamixelWorkbenchRemote::remoteLoop()
   }
   else if (strcmp(cmd, "vel") == 0)
   {
-    if (num_param == 2)
+    if (num_param == 1)
     {
       monitor_command_service.request.cmd = cmd;
-      monitor_command_service.request.dxl_id = atoi(param[0]);
-      monitor_command_service.request.vel_value = atoi(param[1]);
+      monitor_command_service.request.vel_value = atoi(param[0]);
       dynamixel_workbench_remote_client_.call(monitor_command_service);
     }
     else
