@@ -6,6 +6,7 @@ project(dynamixel_workbench_tool)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  roslib
 )
 
 ## System dependencies are found with CMake's conventions
@@ -100,7 +101,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES dynamixel_workbench_tool
-  CATKIN_DEPENDS roscpp
+  CATKIN_DEPENDS roscpp roslib
 #  DEPENDS system_lib
 )
 
@@ -119,7 +120,8 @@ include_directories(
 
 ## Declare a C++ library
  add_library(dynamixel_workbench_tool
-   src/dynamixel_workbench_tool/dynamixel_tool.cpp
+   src/dynamixel_workbench_tool/dynamixel_position_control.cpp
+   src/dynamixel_workbench_tool/dxl_motor.cpp
  )
 
 ## Add cmake target dependencies of the library

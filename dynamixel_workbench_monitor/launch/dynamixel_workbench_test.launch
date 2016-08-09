@@ -2,6 +2,12 @@
 
 <launch>
     <node name="dynamixel_workbench_test" pkg="dynamixel_workbench_monitor" type="dynamixel_workbench_monitor_node" required="true" output="screen">
-        <rosparam file="$(find dynamixel_workbench_monitor)/param/dynamixel.yaml" command="load"/>
+        <!-- <rosparam file="$(find dynamixel_workbench_monitor)/param/dynamixel.yaml" command="load"/> -->
+        <rosparam>
+          device_name_: "/dev/ttyUSB0"
+          baud_rate_: 1000000
+          protocol_version_: 2.0
+          control_mode_set_: "position"
+        </rosparam>
     </node>
 </launch>

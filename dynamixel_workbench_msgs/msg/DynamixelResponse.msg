@@ -1,5 +1,6 @@
 int16 timestamps          # motor state is at this time
 int8 id                     # motor id
+string model_name
 int16 operating_mode
 bool torque
 int32 goal_position          # commanded position (in encoder units)

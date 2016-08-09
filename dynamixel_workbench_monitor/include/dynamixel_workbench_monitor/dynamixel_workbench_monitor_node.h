@@ -12,7 +12,7 @@
 #include <dynamixel_workbench_msgs/DynamixelResponseList.h>
 
 #include "dynamixel_sdk.h"  // Uses Dynamixel SDK Library
-#include "dynamixel_workbench_tool/dynamixel_tool.h"
+#include "dynamixel_workbench_tool/dynamixel_position_control.h"
 #include "dynamixel_workbench_monitor/MonitorCommand.h"
 
 // Protocol version
@@ -22,6 +22,7 @@
 #define DXL_ID                      1
 #define BAUDRATE                    1000000
 #define DEVICENAME                  "/dev/ttyUSB0"
+#define CONTROL_MODE                "position"
 
 #define ESC_ASCII_VALUE             0x1b
 
@@ -30,10 +31,8 @@ namespace dynamixel_workbench_monitor
 class DynamixelWorkbenchMonitor
 {
  public:
-  dynamixel::PortHandler *portHandler_;
-  dynamixel::PacketHandler *packetHandler_;
-  dynamixel_workbench_tool::DynamixelWorkbenchTool *dynamixel_tool_;
-  std::vector<uint8_t> dxl_control_vec_;
+  dynamixel_position_control::DynamixelPositionControl *dxl_position_control_tool_;
+  std::vector<dxl_motor::DxlMotor *> dxl_control_;
 
  private:
   // ROS NodeHandle
@@ -46,9 +45,7 @@ class DynamixelWorkbenchMonitor
   // ROS Topic Publisher
   ros::Publisher dxl_position_pub_;
   // Parameters
-  std::string device_name_;
-  std::vector<uint8_t> dxl_id_vec_;  
-  std::vector<uint16_t> dxl_model_vec_;
+  std::vector<dxl_motor::DxlMotor *> dxl_;
   std::vector<uint16_t> dxl_realtime_tick_read_data_;
   std::vector<uint16_t> dxl_operating_mode_read_data_;
   std::vector<bool> dxl_torque_read_data_;
@@ -60,8 +57,10 @@ class DynamixelWorkbenchMonitor
   std::vector<uint8_t> dxl_temperature_;
   std::vector<bool> dxl_is_moving_;
 
+  std::string device_name_;
   float baud_rate_;
   float protocol_version_;
+  std::string control_mode_set_;
 
  public:
   DynamixelWorkbenchMonitor();
@@ -74,8 +73,8 @@ class DynamixelWorkbenchMonitor
   int kbhit(void);
   bool initDynamixelController(void);
   bool shutdownDynamixelWorkbenchMonitor(void);
-  bool writeDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, int32_t value);
-  bool readDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, uint32_t *value);
+  //bool writeDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, int32_t value);
+  //bool readDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, uint32_t *value);
 
   // ROS Service Server
   bool dynamixelCommandServer(dynamixel_workbench_monitor::MonitorCommand::Request &req,
