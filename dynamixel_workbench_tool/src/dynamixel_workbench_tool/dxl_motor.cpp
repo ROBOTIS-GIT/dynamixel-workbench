@@ -31,7 +31,7 @@ DxlMotor::DxlMotor(uint8_t id, uint16_t model_number, float protocol_version)
   id_ = id;
   protocol_version_ = protocol_version;
   getModelName(model_number);
-  getPath();
+  getModelPath();
   getModelItem();
 }
 
@@ -40,7 +40,7 @@ DxlMotor::~DxlMotor()
 
 }
 
-bool DxlMotor::getPath()
+bool DxlMotor::getModelPath()
 {
   dynamixel_item_path_  = ros::package::getPath("dynamixel_workbench_tool") + "/dynamixel";
 
@@ -107,52 +107,68 @@ bool DxlMotor::getModelItem()
         item->item_name = tokens[1];
         item->address = std::atoi(tokens[0].c_str());
         item->data_length = std::atoi(tokens[2].c_str());
+        if(tokens[3] == "R")
+            item->access_type = READ;
+        else if(tokens[3] == "RW")
+            item->access_type = READ_WRITE;
+        if(tokens[4] == "EEPROM")
+            item->memory_type = EEPROM;
+        else if(tokens[4] == "RAM")
+            item->memory_type = RAM;
+        item->data_min_value = std::atol(tokens[5].c_str());
+        item->data_max_value = std::atol(tokens[6].c_str());
+        if(tokens[7] == "Y")
+            item->is_signed = true;
+        else if(tokens[7] == "N")
+            item->is_signed = false;
 
-        if (item->item_name == "realtime_tick")
-        {
-          realtime_tick_item = item;
-        }
-        else if (item->item_name == "operating_mode")
-        {
-          operating_mode_item = item;
-        }
-        else if (item->item_name == "torque_enable")
-        {
-          torque_enable_item = item;
-        }
-        else if (item->item_name == "goal_position")
-        {
-          ROS_INFO("%d",item->address);
-          goal_position_item = item;
-        }
-        else if (item->item_name == "goal_velocity")
-        {
-          goal_velocity_item = item;
-        }
-        else if (item->item_name == "present_position")
-        {
-          present_position_item = item;
-        }
-        else if (item->item_name == "profile_velocity")
-        {
-          profile_velocity_item = item;
-        }
-        else if (item->item_name == "present_velocity")
-        {
-          present_velocity_item = item;
-        }
-        else if (item->item_name == "present_input_voltage")
-        {
-          present_input_voltage_item = item;
-        }
-        else if (item->item_name == "present_temperature")
-        {
-          present_temperature_item = item;
-        }
-        else if (item->item_name == "moving")
-        {
-          is_moving_item = item;
-        }
+        ctrl_table_[item->item_name] = item;
+
+//        if (item->item_name == "realtime_tick")
+//        {
+//          realtime_tick_item = item;
+//        }
+//        else if (item->item_name == "operating_mode")
+//        {
+//          operating_mode_item = item;
+//        }
+//        else if (item->item_name == "torque_enable")
+//        {
+//          torque_enable_item = item;
+//        }
+//        else if (item->item_name == "goal_position")
+//        {
+//          ROS_INFO("%d",item->address);
+//          goal_position_item = item;
+//        }
+//        else if (item->item_name == "goal_velocity")
+//        {
+//          goal_velocity_item = item;
+//        }
+//        else if (item->item_name == "present_position")
+//        {
+//          present_position_item = item;
+//        }
+//        else if (item->item_name == "profile_velocity")
+//        {
+//          profile_velocity_item = item;
+//        }
+//        else if (item->item_name == "present_velocity")
+//        {
+//          present_velocity_item = item;
+//        }
+//        else if (item->item_name == "present_input_voltage")
+//        {
+//          present_input_voltage_item = item;
+//        }
+//        else if (item->item_name == "present_temperature")
+//        {
+//          present_temperature_item = item;
+//        }
+//        else if (item->item_name == "moving")
+//        {
+//          is_moving_item = item;
+//        }
       }
     }
     file.close();

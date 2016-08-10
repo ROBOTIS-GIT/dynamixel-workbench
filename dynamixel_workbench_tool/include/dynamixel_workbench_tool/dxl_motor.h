@@ -12,11 +12,26 @@
 
 namespace dxl_motor
 {
+enum ACCESS_TYPE {
+  READ,
+  READ_WRITE
+};
+
+enum MEMORY_TYPE {
+  EEPROM,
+  RAM
+};
+
 struct ControlTableItem
 {
  std::string item_name;
  uint16_t address;
+ ACCESS_TYPE access_type;
+ MEMORY_TYPE memory_type;
  uint8_t data_length;
+ uint32_t data_min_value;
+ uint32_t data_max_value;
+ bool is_signed;
 };
 
 class DxlMotor
@@ -29,22 +44,27 @@ class DxlMotor
   float protocol_version_;
   std::string model_name_;
 
-  ControlTableItem *realtime_tick_item;
-  ControlTableItem *operating_mode_item;
-  ControlTableItem *torque_enable_item;
-  ControlTableItem *goal_position_item;
-  ControlTableItem *goal_velocity_item;
-  ControlTableItem *present_position_item;
-  ControlTableItem *profile_velocity_item;
-  ControlTableItem *present_velocity_item;
-  ControlTableItem *present_input_voltage_item;
-  ControlTableItem *present_temperature_item;
-  ControlTableItem *is_moving_item;
+  std::map<std::string, ControlTableItem *> ctrl_table_;
+  std::map<std::string, ControlTableItem *>::iterator it_;
+  //std::vector<ControlTableItem *> dxl_item_;
+  ControlTableItem *dxl_item_;
+
+//  ControlTableItem *realtime_tick_item;
+//  ControlTableItem *operating_mode_item;
+//  ControlTableItem *torque_enable_item;
+//  ControlTableItem *goal_position_item;
+//  ControlTableItem *goal_velocity_item;
+//  ControlTableItem *present_position_item;
+//  ControlTableItem *profile_velocity_item;
+//  ControlTableItem *present_velocity_item;
+//  ControlTableItem *present_input_voltage_item;
+//  ControlTableItem *present_temperature_item;
+//  ControlTableItem *is_moving_item;
 
  public:
-  DxlMotor(uint8_t id = 1, uint16_t model_number = 0, float protocol_version = 2.0);
+  DxlMotor(uint8_t id, uint16_t model_number, float protocol_version);
   ~DxlMotor();
-  bool getPath(void);
+  bool getModelPath(void);
   bool getModelName(uint16_t model_number);
   bool getModelItem();
 };

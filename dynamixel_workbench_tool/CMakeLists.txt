@@ -120,7 +120,7 @@ include_directories(
 
 ## Declare a C++ library
  add_library(dynamixel_workbench_tool
-   src/dynamixel_workbench_tool/dynamixel_position_control.cpp
+#   src/dynamixel_workbench_tool/dynamixel_position_control.cpp
    src/dynamixel_workbench_tool/dxl_motor.cpp
  )
 
