@@ -9,7 +9,9 @@
 #include <ros/ros.h>
 #include <std_msgs/Int32.h>
 #include <std_msgs/Float64.h>
-#include <dynamixel_workbench_msgs/DynamixelResponseList.h>
+#include <dynamixel_workbench_msgs/DynamixelRX.h>
+#include <dynamixel_workbench_msgs/DynamixelMX.h>
+#include <dynamixel_workbench_msgs/DynamixelXM.h>
 #include <dynamixel_workbench_tool/dxl_motor.h>
 
 #include "dynamixel_sdk.h"  // Uses Dynamixel SDK Library
@@ -23,6 +25,7 @@
 #define DEVICENAME                  "/dev/ttyUSB0"
 
 #define ESC_ASCII_VALUE             0x1b
+#define SPACEBAR_ASCII_VALUE        0x20
 
 namespace dynamixel_workbench_single_manager
 {
@@ -46,19 +49,24 @@ class DynamixelWorkbenchSingleManager
   float baud_rate_;
   float protocol_version_;
   uint32_t read_value_;
+  uint16_t dxl_number_;
 
  public:
   DynamixelWorkbenchSingleManager();
   ~DynamixelWorkbenchSingleManager();
-  bool scanDynamixelID(void);
-  void viewRemoteMenu(void);
+  bool scanDynamixelID();
+  void viewMangerMenu(void);
+  void showControlTable(void);
+  void mxMotorMessage(void);
+  void xmMotorMessage(void);
+  void checkValidationCommand(bool *valid_cmd, char *cmd);
   bool dynamixelSingleManagerLoop(void);
 
  private:
   int getch(void);
   int kbhit(void);
   bool initDynamixelWorkbenchSingleManager(void);
-  bool shutdownDynamixelWorkbenchSingleManager(void);  
+  bool shutdownDynamixelWorkbenchSingleManager(void);
   bool writeDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, int32_t value);
   bool readDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, uint32_t *value);
 };

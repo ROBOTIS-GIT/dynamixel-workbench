@@ -45,21 +45,10 @@ class DxlMotor
   std::string model_name_;
 
   std::map<std::string, ControlTableItem *> ctrl_table_;
-  std::map<std::string, ControlTableItem *>::iterator it_;
-  //std::vector<ControlTableItem *> dxl_item_;
+  std::map<std::string, ControlTableItem *>::iterator it_ctrl_;
+  std::map<uint32_t, uint32_t> baud_rate_table_;
+  std::map<uint32_t, uint32_t>::iterator it_baud_;
   ControlTableItem *dxl_item_;
-
-//  ControlTableItem *realtime_tick_item;
-//  ControlTableItem *operating_mode_item;
-//  ControlTableItem *torque_enable_item;
-//  ControlTableItem *goal_position_item;
-//  ControlTableItem *goal_velocity_item;
-//  ControlTableItem *present_position_item;
-//  ControlTableItem *profile_velocity_item;
-//  ControlTableItem *present_velocity_item;
-//  ControlTableItem *present_input_voltage_item;
-//  ControlTableItem *present_temperature_item;
-//  ControlTableItem *is_moving_item;
 
  public:
   DxlMotor(uint8_t id, uint16_t model_number, float protocol_version);

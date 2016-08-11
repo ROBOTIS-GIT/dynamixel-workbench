@@ -45,8 +45,10 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
  add_message_files(
    FILES
-   DynamixelResponse.msg
-   DynamixelResponseList.msg
+   DynamixelMX.msg
+   DynamixelRX.msg
+   DynamixelXM.msg
+   DynamixelPro.msg
  )
 
 ## Generate services in the 'srv' folder

@@ -35,10 +35,7 @@ DxlMotor::DxlMotor(uint8_t id, uint16_t model_number, float protocol_version)
   getModelItem();
 }
 
-DxlMotor::~DxlMotor()
-{
-
-}
+DxlMotor::~DxlMotor(){}
 
 bool DxlMotor::getModelPath()
 {
@@ -56,11 +53,19 @@ bool DxlMotor::getModelName(uint16_t model_number)
 {
   if (model_number == 1030)
   {
-    model_name_ = "XM430-W210";
+    model_name_ = "XM430_W210";
   }
-  else if(model_number == 51200)
+  else if (model_number == 51200)
   {
-    model_name_ = "H42-20-S300-R";
+    model_name_ = "H42_20_S300_R";
+  }
+  else if (model_number == 29)
+  {
+    model_name_ = "MX_28";
+  }
+  else if (model_number == 28)
+  {
+    model_name_ = "RX_28";
   }
 }
 
@@ -76,7 +81,7 @@ bool DxlMotor::getModelItem()
     {
       std::getline(file, input_str);
 
-      // remove commnet ( # )
+      // remove comment ( # )
       std::size_t pos = input_str.find("#");
       if (pos != std::string::npos)
       {
@@ -97,7 +102,15 @@ bool DxlMotor::getModelItem()
         continue;
       }
 
-      if (session == "control table")
+      if (session == "baud rate")
+      {
+        std::vector<std::string> tokens = split(input_str, '|');
+        if(tokens.size() != 2)
+          continue;
+
+        baud_rate_table_[std::atoi(tokens[0].c_str())] = std::atoi(tokens[1].c_str());
+      }
+      else if (session == "control table")
       {
         std::vector<std::string> tokens = split(input_str, '|');
         if(tokens.size() != 8)
@@ -123,52 +136,6 @@ bool DxlMotor::getModelItem()
             item->is_signed = false;
 
         ctrl_table_[item->item_name] = item;
-
-//        if (item->item_name == "realtime_tick")
-//        {
-//          realtime_tick_item = item;
-//        }
-//        else if (item->item_name == "operating_mode")
-//        {
-//          operating_mode_item = item;
-//        }
-//        else if (item->item_name == "torque_enable")
-//        {
-//          torque_enable_item = item;
-//        }
-//        else if (item->item_name == "goal_position")
-//        {
-//          ROS_INFO("%d",item->address);
-//          goal_position_item = item;
-//        }
-//        else if (item->item_name == "goal_velocity")
-//        {
-//          goal_velocity_item = item;
-//        }
-//        else if (item->item_name == "present_position")
-//        {
-//          present_position_item = item;
-//        }
-//        else if (item->item_name == "profile_velocity")
-//        {
-//          profile_velocity_item = item;
-//        }
-//        else if (item->item_name == "present_velocity")
-//        {
-//          present_velocity_item = item;
-//        }
-//        else if (item->item_name == "present_input_voltage")
-//        {
-//          present_input_voltage_item = item;
-//        }
-//        else if (item->item_name == "present_temperature")
-//        {
-//          present_temperature_item = item;
-//        }
-//        else if (item->item_name == "moving")
-//        {
-//          is_moving_item = item;
-//        }
       }
     }
     file.close();
