@@ -29,9 +29,6 @@ struct ControlTableItem
  ACCESS_TYPE access_type;
  MEMORY_TYPE memory_type;
  uint8_t data_length;
- uint32_t data_min_value;
- uint32_t data_max_value;
- bool is_signed;
 };
 
 class DxlMotor
@@ -39,15 +36,17 @@ class DxlMotor
  public:
   uint8_t id_;
   uint16_t model_number_;
-  std::string dynamixel_item_path_;
-
-  float protocol_version_;
   std::string model_name_;
+  float protocol_version_;
+  std::string dynamixel_item_path_;
+  std::string dynamixel_name_path_;
 
   std::map<std::string, ControlTableItem *> ctrl_table_;
   std::map<std::string, ControlTableItem *>::iterator it_ctrl_;
   std::map<uint32_t, uint32_t> baud_rate_table_;
   std::map<uint32_t, uint32_t>::iterator it_baud_;
+  std::map<uint8_t, std::string> dxl_info_;
+  std::map<uint8_t, std::string>::iterator it_dxl_;
   ControlTableItem *dxl_item_;
 
  public:

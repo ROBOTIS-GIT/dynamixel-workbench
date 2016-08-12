@@ -50,16 +50,7 @@ DynamixelWorkbenchSingleManager::DynamixelWorkbenchSingleManager()
   }
 
   scanDynamixelID();
-
-  // Init ROS publish
-  if (!strncmp(dxl_->model_name_.c_str(), "MX", 2))
-  {
-    dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelMX>("/" + dxl_->model_name_ + "/motor_state",10);
-  }
-  else if (!strncmp(dxl_->model_name_.c_str(), "XM", 2))
-  {
-    dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelXM>("/" + dxl_->model_name_ + "/motor_state",10);
-  }
+  setPublisher();
 }
 
 DynamixelWorkbenchSingleManager::~DynamixelWorkbenchSingleManager()
@@ -67,20 +58,20 @@ DynamixelWorkbenchSingleManager::~DynamixelWorkbenchSingleManager()
   ROS_ASSERT(shutdownDynamixelWorkbenchSingleManager());
 }
 
-bool DynamixelWorkbenchSingleManager::initDynamixelWorkbenchSingleManager()
+bool DynamixelWorkbenchSingleManager::initDynamixelWorkbenchSingleManager(void)
 {
   ROS_INFO("dynamixel_workbench_single_manager : Init OK!");
   return true;
 }
 
-bool DynamixelWorkbenchSingleManager::shutdownDynamixelWorkbenchSingleManager()
+bool DynamixelWorkbenchSingleManager::shutdownDynamixelWorkbenchSingleManager(void)
 {
   portHandler_->closePort();
   ros::shutdown();
   return true;
 }
 
-int DynamixelWorkbenchSingleManager::getch()
+int DynamixelWorkbenchSingleManager::getch(void)
 {
   struct termios oldt, newt;
   int ch;
@@ -97,7 +88,7 @@ int DynamixelWorkbenchSingleManager::getch()
   return ch;
 }
 
-int DynamixelWorkbenchSingleManager::kbhit()
+int DynamixelWorkbenchSingleManager::kbhit(void)
 {
   struct termios oldt, newt;
   int ch;
@@ -123,7 +114,92 @@ int DynamixelWorkbenchSingleManager::kbhit()
   return 0;
 }
 
-bool DynamixelWorkbenchSingleManager::scanDynamixelID()
+void DynamixelWorkbenchSingleManager::setPublisher(void)
+{
+  // Init ROS publish
+  if(!strncmp(dxl_->model_name_.c_str(), "AX", 2))
+  {
+    dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelAX>("/" + dxl_->model_name_ + "/motor_state",10);
+  }
+  else if (!strncmp(dxl_->model_name_.c_str(), "MX", 2))
+  {
+    if (dxl_->model_number_ == 310) // MX-64
+    {
+      dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelMX64>("/" + dxl_->model_name_ + "/motor_state",10);
+    }
+    else if (dxl_->model_number_ == 320) // MX-106
+    {
+      dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelMX106>("/" + dxl_->model_name_ + "/motor_state",10);
+    }
+    else
+    {
+      dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelMX>("/" + dxl_->model_name_ + "/motor_state",10);
+    }
+  }
+  else if (!strncmp(dxl_->model_name_.c_str(), "RX", 2))
+  {
+    dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelRX>("/" + dxl_->model_name_ + "/motor_state",10);
+  }
+  else if (!strncmp(dxl_->model_name_.c_str(), "XM", 2))
+  {
+    dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelXM>("/" + dxl_->model_name_ + "/motor_state",10);
+  }
+  else if (!strncmp(dxl_->model_name_.c_str(), "PRO", 3))
+  {
+    if (dxl_->model_number_ == 35072) // PRO_L42_10_S300_R
+    {
+      dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelProL42>("/" + dxl_->model_name_ + "/motor_state",10);
+    }
+    else
+    {
+      dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelPro>("/" + dxl_->model_name_ + "/motor_state",10);
+    }
+  }
+}
+
+void DynamixelWorkbenchSingleManager::getPublisher(void)
+{
+  if (!strncmp(dxl_->model_name_.c_str(), "AX", 2))
+  {
+    axMotorMessage();
+  }
+  else if (!strncmp(dxl_->model_name_.c_str(), "RX", 2))
+  {
+    rxMotorMessage();
+  }
+  else if (!strncmp(dxl_->model_name_.c_str(), "MX", 2))
+  {
+    if (dxl_->model_number_ == 310) // MX-64
+    {
+      mx64MotorMessage();
+    }
+    else if (dxl_->model_number_ == 320) //MX-106
+    {
+      mx106MotorMessage();
+    }
+    else
+    {
+      mxMotorMessage();
+    }
+  }
+  else if (!strncmp(dxl_->model_name_.c_str(), "XM", 2))
+  {
+    xmMotorMessage();
+  }
+  else if (!strncmp(dxl_->model_name_.c_str(), "PRO", 3))
+  {
+    if (dxl_->model_number_ == 35072) // PRO_L42_10_S300_R
+    {
+      proL42MotorMessage();
+    }
+    else
+    {
+      proMotorMessage();
+    }
+  }
+}
+
+bool DynamixelWorkbenchSingleManager::scanDynamixelID(void)
 {
   uint8_t dxl_error = 0;
   uint8_t dxl_id = 0;
@@ -136,8 +212,9 @@ bool DynamixelWorkbenchSingleManager::scanDynamixelID()
     {
       if (packetHandler_->ping(portHandler_, dxl_id, &dxl_model, &dxl_error) == COMM_SUCCESS)
       {
-        dxl_ = new dxl_motor::DxlMotor(dxl_id, dxl_model, protocol_version_);
+        ROS_INFO("Model Number: %d", dxl_model);
         dxl_number_ = dxl_model;
+        dxl_ = new dxl_motor::DxlMotor(dxl_id, dxl_model, protocol_version_);
       }
       else
       {
@@ -158,7 +235,9 @@ bool DynamixelWorkbenchSingleManager::scanDynamixelID()
     {
       if (packetHandler_->ping(portHandler_, dxl_id, &dxl_model, &dxl_error) == COMM_SUCCESS)
       {
-        dxl_ = new dxl_motor::DxlMotor(dxl_id, dxl_model, protocol_version_);
+        ROS_INFO("Model Number: %d", dxl_model);
+        dxl_number_ = dxl_model;
+        dxl_ = new dxl_motor::DxlMotor(dxl_id, dxl_model, protocol_version_);        
       }
       else
       {
@@ -189,7 +268,7 @@ bool DynamixelWorkbenchSingleManager::scanDynamixelID()
   }
 }
 
-bool DynamixelWorkbenchSingleManager::writeDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, int32_t value)
+bool DynamixelWorkbenchSingleManager::writeDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, uint32_t value)
 {
   uint8_t dxl_error = 0;
   int dxl_comm_result = COMM_TX_FAIL;
@@ -256,20 +335,17 @@ bool DynamixelWorkbenchSingleManager::readDynamixelRegister(uint8_t id, uint16_t
     if (length == 1)
     {
       *value = value_8_bit;
-      //ROS_INFO("[ID] %u, [Present Value] %d", id, value_8_bit);
       return true;
 
     }
     else if (length == 2)
     {
       *value = value_16_bit;
-      //ROS_INFO("[ID] %u, [Present Value] %d", id, value_16_bit);
       return true;
     }
     else if (length == 4)
     {
       *value = value_32_bit;
-      //ROS_INFO("[ID] %u, [Present Value] %d", id, value_32_bit);
       return true;
     }
   }
@@ -281,20 +357,71 @@ bool DynamixelWorkbenchSingleManager::readDynamixelRegister(uint8_t id, uint16_t
   }
 }
 
-void DynamixelWorkbenchSingleManager::viewMangerMenu()
+void DynamixelWorkbenchSingleManager::viewMangerMenu(void)
 {
   ROS_INFO("----------------------------------------------------------------------");
-  ROS_INFO("Menu:");
-  ROS_INFO("Press Spacebar to control dynamixel");
-  ROS_INFO("[-h].......................: display this help");
+  ROS_INFO("Press SpaceBar to command dynamixel");
+  ROS_INFO("----------------------------------------------------------------------");
+  ROS_INFO("Command list :");
+  ROS_INFO("[-help]....................: display this help");
   ROS_INFO("[-table]...................: check dynamixel control table");
-  ROS_INFO("[-dxl].....................: Information of dynamixel");
+  ROS_INFO("[-reboot]..................: reboot dynamixel(only protocol version 2.0)");
+  ROS_INFO("[-factory_reset]...........: factory reset dynamixel ");
   ROS_INFO("[-[table_item] [value].....: control dynamixel write address");
   ROS_INFO("[-exit]....................: shutdown");
   ROS_INFO("----------------------------------------------------------------------");
 }
 
-void DynamixelWorkbenchSingleManager::showControlTable()
+bool DynamixelWorkbenchSingleManager::rebootDynamixel(void)
+{
+  if (protocol_version_ != 2.0)
+  {
+    ROS_ERROR("reboot command only can operate in protocol version 2.0");
+  }
+  else
+  {
+    uint8_t dxl_error = 0;
+    uint16_t dxl_comm_result = COMM_RX_FAIL;
+
+    dxl_comm_result = packetHandler_->reboot(portHandler_, dxl_->id_, &dxl_error);
+    if (dxl_comm_result == COMM_SUCCESS)
+    {
+      if (dxl_error != 0)
+      {
+        packetHandler_->printRxPacketError(dxl_error);
+      }
+      ROS_INFO("Success to reboot!");
+    }
+    else
+    {
+      packetHandler_->printTxRxResult(dxl_comm_result);
+      ROS_INFO("Fail to reboot!");
+    }
+  }
+}
+
+bool DynamixelWorkbenchSingleManager::resetDynamixel(void)
+{
+  uint8_t dxl_error = 0;
+  uint16_t dxl_comm_result = COMM_RX_FAIL;
+
+  dxl_comm_result = packetHandler_->factoryReset(portHandler_, dxl_->id_,0x00, &dxl_error);
+  if (dxl_comm_result == COMM_SUCCESS)
+  {
+    if (dxl_error != 0)
+    {
+      packetHandler_->printRxPacketError(dxl_error);
+    }
+    fprintf(stderr, "\n Success to reset! \n\n");
+  }
+  else
+  {
+    packetHandler_->printTxRxResult(dxl_comm_result);
+    fprintf(stderr, "\n Fail to reset! \n\n");
+  }
+}
+
+void DynamixelWorkbenchSingleManager::showControlTable(void)
 {
   for (dxl_->it_ctrl_ = dxl_->ctrl_table_.begin(); dxl_->it_ctrl_ != dxl_->ctrl_table_.end(); dxl_->it_ctrl_++)
   {
@@ -323,7 +450,163 @@ void DynamixelWorkbenchSingleManager::checkValidationCommand(bool *valid_cmd, ch
   }
 }
 
-void DynamixelWorkbenchSingleManager::mxMotorMessage()
+void DynamixelWorkbenchSingleManager::axMotorMessage(void)
+{
+  dynamixel_workbench_msgs::DynamixelAX dxl_response;
+
+  for (dxl_->it_ctrl_ = dxl_->ctrl_table_.begin(); dxl_->it_ctrl_ != dxl_->ctrl_table_.end(); dxl_->it_ctrl_++)
+  {
+    dxl_->dxl_item_ = dxl_->ctrl_table_[dxl_->it_ctrl_->first.c_str()];
+    readDynamixelRegister(dxl_->id_, dxl_->dxl_item_->address, dxl_->dxl_item_->data_length, &read_value_);
+
+    if ("model_number" == dxl_->dxl_item_->item_name)
+      dxl_response.model_number = read_value_;
+    else if ("version_of_firmware" == dxl_->dxl_item_->item_name)
+      dxl_response.version_of_firmware = read_value_;
+    else if ("id" == dxl_->dxl_item_->item_name)
+      dxl_response.id = read_value_;
+    else if ("baud_rate" == dxl_->dxl_item_->item_name)
+      dxl_response.baud_rate = read_value_;
+    else if ("return_delay_time" == dxl_->dxl_item_->item_name)
+      dxl_response.return_delay_time = read_value_;
+    else if ("cw_angle_limit" == dxl_->dxl_item_->item_name)
+      dxl_response.cw_angle_limit = read_value_;
+    else if ("ccw_angle_limit" == dxl_->dxl_item_->item_name)
+      dxl_response.ccw_angle_limit = read_value_;
+    else if ("the_highest_limit_temperature" == dxl_->dxl_item_->item_name)
+      dxl_response.the_highest_limit_temperature = read_value_;
+    else if ("the_lowest_limit_voltage" == dxl_->dxl_item_->item_name)
+      dxl_response.the_lowest_limit_voltage = read_value_;
+    else if ("the_highest_limit_voltage" == dxl_->dxl_item_->item_name)
+      dxl_response.the_highest_limit_voltage = read_value_;
+    else if ("max_torque" == dxl_->dxl_item_->item_name)
+      dxl_response.max_torque = read_value_;
+    else if ("status_return_level" == dxl_->dxl_item_->item_name)
+      dxl_response.status_return_level = read_value_;
+    else if ("alarm_led" == dxl_->dxl_item_->item_name)
+      dxl_response.alarm_led = read_value_;
+    else if ("alarm_shutdown" == dxl_->dxl_item_->item_name)
+      dxl_response.alarm_shutdown = read_value_;
+    else if ("torque_enable" == dxl_->dxl_item_->item_name)
+      dxl_response.torque_enable = read_value_;
+    else if ("led" == dxl_->dxl_item_->item_name)
+      dxl_response.led = read_value_;
+    else if ("cw_compliance_margin" == dxl_->dxl_item_->item_name)
+      dxl_response.cw_compliance_margin = read_value_;
+    else if ("ccw_compliance_margin" == dxl_->dxl_item_->item_name)
+      dxl_response.ccw_compliance_margin = read_value_;
+    else if ("cw_compliance_slope" == dxl_->dxl_item_->item_name)
+      dxl_response.cw_compliance_slope = read_value_;
+    else if ("ccw_compliance_margin" == dxl_->dxl_item_->item_name)
+      dxl_response.ccw_compliance_margin = read_value_;
+    else if ("goal_position" == dxl_->dxl_item_->item_name)
+      dxl_response.goal_position = read_value_;
+    else if ("moving_speed" == dxl_->dxl_item_->item_name)
+      dxl_response.moving_speed = read_value_;
+    else if ("torque_limit" == dxl_->dxl_item_->item_name)
+      dxl_response.torque_limit = read_value_;
+    else if ("present_position" == dxl_->dxl_item_->item_name)
+      dxl_response.present_position = read_value_;
+    else if ("present_speed" == dxl_->dxl_item_->item_name)
+      dxl_response.present_speed = read_value_;
+    else if ("present_load" == dxl_->dxl_item_->item_name)
+      dxl_response.present_load = read_value_;
+    else if ("present_voltage" == dxl_->dxl_item_->item_name)
+      dxl_response.present_voltage = read_value_;
+    else if ("present_temperature" == dxl_->dxl_item_->item_name)
+      dxl_response.present_temperature = read_value_;
+    else if ("registered" == dxl_->dxl_item_->item_name)
+      dxl_response.registered = read_value_;
+    else if ("moving" == dxl_->dxl_item_->item_name)
+      dxl_response.moving = read_value_;
+    else if ("lock" == dxl_->dxl_item_->item_name)
+      dxl_response.lock = read_value_;
+    else if ("punch" == dxl_->dxl_item_->item_name)
+      dxl_response.punch = read_value_;
+  }
+
+  dxl_state_pub_.publish(dxl_response);
+}
+
+void DynamixelWorkbenchSingleManager::rxMotorMessage(void)
+{
+  dynamixel_workbench_msgs::DynamixelRX dxl_response;
+
+  for (dxl_->it_ctrl_ = dxl_->ctrl_table_.begin(); dxl_->it_ctrl_ != dxl_->ctrl_table_.end(); dxl_->it_ctrl_++)
+  {
+    dxl_->dxl_item_ = dxl_->ctrl_table_[dxl_->it_ctrl_->first.c_str()];
+    readDynamixelRegister(dxl_->id_, dxl_->dxl_item_->address, dxl_->dxl_item_->data_length, &read_value_);
+
+    if ("model_number" == dxl_->dxl_item_->item_name)
+      dxl_response.model_number = read_value_;
+    else if ("version_of_firmware" == dxl_->dxl_item_->item_name)
+      dxl_response.version_of_firmware = read_value_;
+    else if ("id" == dxl_->dxl_item_->item_name)
+      dxl_response.id = read_value_;
+    else if ("baud_rate" == dxl_->dxl_item_->item_name)
+      dxl_response.baud_rate = read_value_;
+    else if ("return_delay_time" == dxl_->dxl_item_->item_name)
+      dxl_response.return_delay_time = read_value_;
+    else if ("cw_angle_limit" == dxl_->dxl_item_->item_name)
+      dxl_response.cw_angle_limit = read_value_;
+    else if ("ccw_angle_limit" == dxl_->dxl_item_->item_name)
+      dxl_response.ccw_angle_limit = read_value_;
+    else if ("the_highest_limit_temperature" == dxl_->dxl_item_->item_name)
+      dxl_response.the_highest_limit_temperature = read_value_;
+    else if ("the_lowest_limit_voltage" == dxl_->dxl_item_->item_name)
+      dxl_response.the_lowest_limit_voltage = read_value_;
+    else if ("the_highest_limit_voltage" == dxl_->dxl_item_->item_name)
+      dxl_response.the_highest_limit_voltage = read_value_;
+    else if ("max_torque" == dxl_->dxl_item_->item_name)
+      dxl_response.max_torque = read_value_;
+    else if ("status_return_level" == dxl_->dxl_item_->item_name)
+      dxl_response.status_return_level = read_value_;
+    else if ("alarm_led" == dxl_->dxl_item_->item_name)
+      dxl_response.alarm_led = read_value_;
+    else if ("alarm_shutdown" == dxl_->dxl_item_->item_name)
+      dxl_response.alarm_shutdown = read_value_;
+    else if ("torque_enable" == dxl_->dxl_item_->item_name)
+      dxl_response.torque_enable = read_value_;
+    else if ("led" == dxl_->dxl_item_->item_name)
+      dxl_response.led = read_value_;
+    else if ("cw_compliance_margin" == dxl_->dxl_item_->item_name)
+      dxl_response.cw_compliance_margin = read_value_;
+    else if ("ccw_compliance_margin" == dxl_->dxl_item_->item_name)
+      dxl_response.ccw_compliance_margin = read_value_;
+    else if ("cw_compliance_slope" == dxl_->dxl_item_->item_name)
+      dxl_response.cw_compliance_slope = read_value_;
+    else if ("ccw_compliance_margin" == dxl_->dxl_item_->item_name)
+      dxl_response.ccw_compliance_margin = read_value_;
+    else if ("goal_position" == dxl_->dxl_item_->item_name)
+      dxl_response.goal_position = read_value_;
+    else if ("moving_speed" == dxl_->dxl_item_->item_name)
+      dxl_response.moving_speed = read_value_;
+    else if ("torque_limit" == dxl_->dxl_item_->item_name)
+      dxl_response.torque_limit = read_value_;
+    else if ("present_position" == dxl_->dxl_item_->item_name)
+      dxl_response.present_position = read_value_;
+    else if ("present_speed" == dxl_->dxl_item_->item_name)
+      dxl_response.present_speed = read_value_;
+    else if ("present_load" == dxl_->dxl_item_->item_name)
+      dxl_response.present_load = read_value_;
+    else if ("present_voltage" == dxl_->dxl_item_->item_name)
+      dxl_response.present_voltage = read_value_;
+    else if ("present_temperature" == dxl_->dxl_item_->item_name)
+      dxl_response.present_temperature = read_value_;
+    else if ("registered" == dxl_->dxl_item_->item_name)
+      dxl_response.registered = read_value_;
+    else if ("moving" == dxl_->dxl_item_->item_name)
+      dxl_response.moving = read_value_;
+    else if ("lock" == dxl_->dxl_item_->item_name)
+      dxl_response.lock = read_value_;
+    else if ("punch" == dxl_->dxl_item_->item_name)
+      dxl_response.punch = read_value_;
+  }
+
+  dxl_state_pub_.publish(dxl_response);
+}
+
+void DynamixelWorkbenchSingleManager::mxMotorMessage(void)
 {
   dynamixel_workbench_msgs::DynamixelMX dxl_response;
 
@@ -336,7 +619,7 @@ void DynamixelWorkbenchSingleManager::mxMotorMessage()
       dxl_response.model_number = read_value_;
     else if ("version_of_firmware" == dxl_->dxl_item_->item_name)
       dxl_response.version_of_firmware = read_value_;
-    else if ("ID" == dxl_->dxl_item_->item_name)
+    else if ("id" == dxl_->dxl_item_->item_name)
       dxl_response.id = read_value_;
     else if ("baud_rate" == dxl_->dxl_item_->item_name)
       dxl_response.baud_rate = read_value_;
@@ -365,8 +648,8 @@ void DynamixelWorkbenchSingleManager::mxMotorMessage()
     else if ("resolution_divider" == dxl_->dxl_item_->item_name)
       dxl_response.resolution_divider = read_value_;
     else if ("torque_enable" == dxl_->dxl_item_->item_name)
-      dxl_response.torque = read_value_;
-    else if ("LED" == dxl_->dxl_item_->item_name)
+      dxl_response.torque_enable = read_value_;
+    else if ("led" == dxl_->dxl_item_->item_name)
       dxl_response.led = read_value_;
     else if ("d_gain" == dxl_->dxl_item_->item_name)
       dxl_response.d_gain = read_value_;
@@ -405,7 +688,185 @@ void DynamixelWorkbenchSingleManager::mxMotorMessage()
   dxl_state_pub_.publish(dxl_response);
 }
 
-void DynamixelWorkbenchSingleManager::xmMotorMessage()
+void DynamixelWorkbenchSingleManager::mx64MotorMessage(void)
+{
+  dynamixel_workbench_msgs::DynamixelMX64 dxl_response;
+
+  for (dxl_->it_ctrl_ = dxl_->ctrl_table_.begin(); dxl_->it_ctrl_ != dxl_->ctrl_table_.end(); dxl_->it_ctrl_++)
+  {
+    dxl_->dxl_item_ = dxl_->ctrl_table_[dxl_->it_ctrl_->first.c_str()];
+    readDynamixelRegister(dxl_->id_, dxl_->dxl_item_->address, dxl_->dxl_item_->data_length, &read_value_);
+
+    if ("model_number" == dxl_->dxl_item_->item_name)
+      dxl_response.model_number = read_value_;
+    else if ("version_of_firmware" == dxl_->dxl_item_->item_name)
+      dxl_response.version_of_firmware = read_value_;
+    else if ("id" == dxl_->dxl_item_->item_name)
+      dxl_response.id = read_value_;
+    else if ("baud_rate" == dxl_->dxl_item_->item_name)
+      dxl_response.baud_rate = read_value_;
+    else if ("return_delay_time" == dxl_->dxl_item_->item_name)
+      dxl_response.return_delay_time = read_value_;
+    else if ("cw_angle_limit" == dxl_->dxl_item_->item_name)
+      dxl_response.cw_angle_limit = read_value_;
+    else if ("ccw_angle_limit" == dxl_->dxl_item_->item_name)
+      dxl_response.ccw_angle_limit = read_value_;
+    else if ("the_highest_limit_temperature" == dxl_->dxl_item_->item_name)
+      dxl_response.the_highest_limit_temperature = read_value_;
+    else if ("the_lowest_limit_voltage" == dxl_->dxl_item_->item_name)
+      dxl_response.the_lowest_limit_voltage = read_value_;
+    else if ("the_highest_limit_voltage" == dxl_->dxl_item_->item_name)
+      dxl_response.the_highest_limit_voltage = read_value_;
+    else if ("max_torque" == dxl_->dxl_item_->item_name)
+      dxl_response.max_torque = read_value_;
+    else if ("status_return_level" == dxl_->dxl_item_->item_name)
+      dxl_response.status_return_level = read_value_;
+    else if ("alarm_led" == dxl_->dxl_item_->item_name)
+      dxl_response.alarm_led = read_value_;
+    else if ("alarm_shutdown" == dxl_->dxl_item_->item_name)
+      dxl_response.alarm_shutdown = read_value_;
+    else if ("multi_turn_offset" == dxl_->dxl_item_->item_name)
+      dxl_response.multi_turn_offset = read_value_;
+    else if ("resolution_divider" == dxl_->dxl_item_->item_name)
+      dxl_response.resolution_divider = read_value_;
+    else if ("torque_enable" == dxl_->dxl_item_->item_name)
+      dxl_response.torque_enable = read_value_;
+    else if ("led" == dxl_->dxl_item_->item_name)
+      dxl_response.led = read_value_;
+    else if ("d_gain" == dxl_->dxl_item_->item_name)
+      dxl_response.d_gain = read_value_;
+    else if ("i_gain" == dxl_->dxl_item_->item_name)
+      dxl_response.i_gain = read_value_;
+    else if ("p_gain" == dxl_->dxl_item_->item_name)
+      dxl_response.p_gain = read_value_;
+    else if ("goal_position" == dxl_->dxl_item_->item_name)
+      dxl_response.goal_position = read_value_;
+    else if ("moving_speed" == dxl_->dxl_item_->item_name)
+      dxl_response.moving_speed = read_value_;
+    else if ("torque_limit" == dxl_->dxl_item_->item_name)
+      dxl_response.torque_limit = read_value_;
+    else if ("present_position" == dxl_->dxl_item_->item_name)
+      dxl_response.present_position = read_value_;
+    else if ("present_speed" == dxl_->dxl_item_->item_name)
+      dxl_response.present_speed = read_value_;
+    else if ("present_load" == dxl_->dxl_item_->item_name)
+      dxl_response.present_load = read_value_;
+    else if ("present_voltage" == dxl_->dxl_item_->item_name)
+      dxl_response.present_voltage = read_value_;
+    else if ("present_temperature" == dxl_->dxl_item_->item_name)
+      dxl_response.present_temperature = read_value_;
+    else if ("registered" == dxl_->dxl_item_->item_name)
+      dxl_response.registered = read_value_;
+    else if ("moving" == dxl_->dxl_item_->item_name)
+      dxl_response.moving = read_value_;
+    else if ("lock" == dxl_->dxl_item_->item_name)
+      dxl_response.lock = read_value_;
+    else if ("punch" == dxl_->dxl_item_->item_name)
+      dxl_response.punch = read_value_;
+    else if ("current" == dxl_->dxl_item_->item_name)
+      dxl_response.current = read_value_;
+    else if ("torque_control_mode_enable" == dxl_->dxl_item_->item_name)
+      dxl_response.torque_control_mode_enable = read_value_;
+    else if ("goal_torque" == dxl_->dxl_item_->item_name)
+      dxl_response.goal_torque = read_value_;
+    else if ("goal_acceleration" == dxl_->dxl_item_->item_name)
+      dxl_response.goal_acceleration = read_value_;
+  }
+
+  dxl_state_pub_.publish(dxl_response);
+}
+
+void DynamixelWorkbenchSingleManager::mx106MotorMessage(void)
+{
+  dynamixel_workbench_msgs::DynamixelMX106 dxl_response;
+
+  for (dxl_->it_ctrl_ = dxl_->ctrl_table_.begin(); dxl_->it_ctrl_ != dxl_->ctrl_table_.end(); dxl_->it_ctrl_++)
+  {
+    dxl_->dxl_item_ = dxl_->ctrl_table_[dxl_->it_ctrl_->first.c_str()];
+    readDynamixelRegister(dxl_->id_, dxl_->dxl_item_->address, dxl_->dxl_item_->data_length, &read_value_);
+
+    if ("model_number" == dxl_->dxl_item_->item_name)
+      dxl_response.model_number = read_value_;
+    else if ("version_of_firmware" == dxl_->dxl_item_->item_name)
+      dxl_response.version_of_firmware = read_value_;
+    else if ("id" == dxl_->dxl_item_->item_name)
+      dxl_response.id = read_value_;
+    else if ("baud_rate" == dxl_->dxl_item_->item_name)
+      dxl_response.baud_rate = read_value_;
+    else if ("return_delay_time" == dxl_->dxl_item_->item_name)
+      dxl_response.return_delay_time = read_value_;
+    else if ("cw_angle_limit" == dxl_->dxl_item_->item_name)
+      dxl_response.cw_angle_limit = read_value_;
+    else if ("ccw_angle_limit" == dxl_->dxl_item_->item_name)
+      dxl_response.ccw_angle_limit = read_value_;
+    else if ("drive_mode" == dxl_->dxl_item_->item_name)
+      dxl_response.drive_mode = read_value_;
+    else if ("the_highest_limit_temperature" == dxl_->dxl_item_->item_name)
+      dxl_response.the_highest_limit_temperature = read_value_;
+    else if ("the_lowest_limit_voltage" == dxl_->dxl_item_->item_name)
+      dxl_response.the_lowest_limit_voltage = read_value_;
+    else if ("the_highest_limit_voltage" == dxl_->dxl_item_->item_name)
+      dxl_response.the_highest_limit_voltage = read_value_;
+    else if ("max_torque" == dxl_->dxl_item_->item_name)
+      dxl_response.max_torque = read_value_;
+    else if ("status_return_level" == dxl_->dxl_item_->item_name)
+      dxl_response.status_return_level = read_value_;
+    else if ("alarm_led" == dxl_->dxl_item_->item_name)
+      dxl_response.alarm_led = read_value_;
+    else if ("alarm_shutdown" == dxl_->dxl_item_->item_name)
+      dxl_response.alarm_shutdown = read_value_;
+    else if ("multi_turn_offset" == dxl_->dxl_item_->item_name)
+      dxl_response.multi_turn_offset = read_value_;
+    else if ("resolution_divider" == dxl_->dxl_item_->item_name)
+      dxl_response.resolution_divider = read_value_;
+    else if ("torque_enable" == dxl_->dxl_item_->item_name)
+      dxl_response.torque_enable = read_value_;
+    else if ("led" == dxl_->dxl_item_->item_name)
+      dxl_response.led = read_value_;
+    else if ("d_gain" == dxl_->dxl_item_->item_name)
+      dxl_response.d_gain = read_value_;
+    else if ("i_gain" == dxl_->dxl_item_->item_name)
+      dxl_response.i_gain = read_value_;
+    else if ("p_gain" == dxl_->dxl_item_->item_name)
+      dxl_response.p_gain = read_value_;
+    else if ("goal_position" == dxl_->dxl_item_->item_name)
+      dxl_response.goal_position = read_value_;
+    else if ("moving_speed" == dxl_->dxl_item_->item_name)
+      dxl_response.moving_speed = read_value_;
+    else if ("torque_limit" == dxl_->dxl_item_->item_name)
+      dxl_response.torque_limit = read_value_;
+    else if ("present_position" == dxl_->dxl_item_->item_name)
+      dxl_response.present_position = read_value_;
+    else if ("present_speed" == dxl_->dxl_item_->item_name)
+      dxl_response.present_speed = read_value_;
+    else if ("present_load" == dxl_->dxl_item_->item_name)
+      dxl_response.present_load = read_value_;
+    else if ("present_voltage" == dxl_->dxl_item_->item_name)
+      dxl_response.present_voltage = read_value_;
+    else if ("present_temperature" == dxl_->dxl_item_->item_name)
+      dxl_response.present_temperature = read_value_;
+    else if ("registered" == dxl_->dxl_item_->item_name)
+      dxl_response.registered = read_value_;
+    else if ("moving" == dxl_->dxl_item_->item_name)
+      dxl_response.moving = read_value_;
+    else if ("lock" == dxl_->dxl_item_->item_name)
+      dxl_response.lock = read_value_;
+    else if ("punch" == dxl_->dxl_item_->item_name)
+      dxl_response.punch = read_value_;
+    else if ("current" == dxl_->dxl_item_->item_name)
+      dxl_response.current = read_value_;
+    else if ("torque_control_mode_enable" == dxl_->dxl_item_->item_name)
+      dxl_response.torque_control_mode_enable = read_value_;
+    else if ("goal_torque" == dxl_->dxl_item_->item_name)
+      dxl_response.goal_torque = read_value_;
+    else if ("goal_acceleration" == dxl_->dxl_item_->item_name)
+      dxl_response.goal_acceleration = read_value_;
+  }
+
+  dxl_state_pub_.publish(dxl_response);
+}
+
+void DynamixelWorkbenchSingleManager::xmMotorMessage(void)
 {
   dynamixel_workbench_msgs::DynamixelXM dxl_response;
 
@@ -418,7 +879,7 @@ void DynamixelWorkbenchSingleManager::xmMotorMessage()
       dxl_response.model_number = read_value_;
     else if ("version_of_firmware" == dxl_->dxl_item_->item_name)
       dxl_response.version_of_firmware = read_value_;
-    else if ("ID" == dxl_->dxl_item_->item_name)
+    else if ("id" == dxl_->dxl_item_->item_name)
       dxl_response.id = read_value_;
     else if ("baud_rate" == dxl_->dxl_item_->item_name)
       dxl_response.baud_rate = read_value_;
@@ -426,6 +887,8 @@ void DynamixelWorkbenchSingleManager::xmMotorMessage()
       dxl_response.return_delay_time = read_value_;
     else if ("operating_mode" == dxl_->dxl_item_->item_name)
       dxl_response.operating_mode = read_value_;
+    else if ("protocol_version" == dxl_->dxl_item_->item_name)
+      dxl_response.protocol_version = read_value_;
     else if ("homing_offset" == dxl_->dxl_item_->item_name)
       dxl_response.homing_offset = read_value_;
     else if ("moving_threshold" == dxl_->dxl_item_->item_name)
@@ -451,8 +914,8 @@ void DynamixelWorkbenchSingleManager::xmMotorMessage()
     else if ("shutdown" == dxl_->dxl_item_->item_name)
       dxl_response.shutdown = read_value_;
     else if ("torque_enable" == dxl_->dxl_item_->item_name)
-      dxl_response.torque = read_value_;
-    else if ("LED" == dxl_->dxl_item_->item_name)
+      dxl_response.torque_enable = read_value_;
+    else if ("led" == dxl_->dxl_item_->item_name)
       dxl_response.led = read_value_;
     else if ("status_return_level" == dxl_->dxl_item_->item_name)
       dxl_response.status_return_level = read_value_;
@@ -521,6 +984,115 @@ void DynamixelWorkbenchSingleManager::xmMotorMessage()
   dxl_state_pub_.publish(dxl_response);
 }
 
+void DynamixelWorkbenchSingleManager::proMotorMessage(void)
+{
+  dynamixel_workbench_msgs::DynamixelPro dxl_response;
+
+  for (dxl_->it_ctrl_ = dxl_->ctrl_table_.begin(); dxl_->it_ctrl_ != dxl_->ctrl_table_.end(); dxl_->it_ctrl_++)
+  {
+    dxl_->dxl_item_ = dxl_->ctrl_table_[dxl_->it_ctrl_->first.c_str()];
+    readDynamixelRegister(dxl_->id_, dxl_->dxl_item_->address, dxl_->dxl_item_->data_length, &read_value_);
+
+    if ("model_number" == dxl_->dxl_item_->item_name)
+      dxl_response.model_number = read_value_;
+    else if ("version_of_firmware" == dxl_->dxl_item_->item_name)
+      dxl_response.version_of_firmware = read_value_;
+    else if ("id" == dxl_->dxl_item_->item_name)
+      dxl_response.id = read_value_;
+    else if ("baud_rate" == dxl_->dxl_item_->item_name)
+      dxl_response.baud_rate = read_value_;
+    else if ("return_delay_time" == dxl_->dxl_item_->item_name)
+      dxl_response.return_delay_time = read_value_;
+    else if ("operating_mode" == dxl_->dxl_item_->item_name)
+      dxl_response.operating_mode = read_value_;
+    else if ("homing_offset" == dxl_->dxl_item_->item_name)
+      dxl_response.homing_offset = read_value_;
+    else if ("moving_threshold" == dxl_->dxl_item_->item_name)
+      dxl_response.moving_threshold = read_value_;
+    else if ("max_temperature_limit" == dxl_->dxl_item_->item_name)
+      dxl_response.max_temperature_limit = read_value_;
+    else if ("max_voltage_limit" == dxl_->dxl_item_->item_name)
+      dxl_response.max_voltage_limit = read_value_;
+    else if ("min_voltage_limit" == dxl_->dxl_item_->item_name)
+      dxl_response.min_voltage_limit = read_value_;
+    else if ("acceleration_limit" == dxl_->dxl_item_->item_name)
+      dxl_response.acceleration_limit = read_value_;
+    else if ("torque_limit" == dxl_->dxl_item_->item_name)
+      dxl_response.torque_limit = read_value_;
+    else if ("velocity_limit" == dxl_->dxl_item_->item_name)
+      dxl_response.velocity_limit = read_value_;
+    else if ("max_position_limit" == dxl_->dxl_item_->item_name)
+      dxl_response.max_position_limit = read_value_;
+    else if ("min_position_limit" == dxl_->dxl_item_->item_name)
+      dxl_response.min_position_limit = read_value_;
+    else if ("external_port_mod_1" == dxl_->dxl_item_->item_name)
+      dxl_response.external_port_mod_1 = read_value_;
+    else if ("external_port_mod_2" == dxl_->dxl_item_->item_name)
+      dxl_response.external_port_mod_2 = read_value_;
+    else if ("external_port_mod_3" == dxl_->dxl_item_->item_name)
+      dxl_response.external_port_mod_3 = read_value_;
+    else if ("external_port_mod_4" == dxl_->dxl_item_->item_name)
+      dxl_response.external_port_mod_4 = read_value_;
+    else if ("shutdown" == dxl_->dxl_item_->item_name)
+      dxl_response.shutdown = read_value_;
+    else if ("indirect_address_1" == dxl_->dxl_item_->item_name)
+      dxl_response.indirect_address_1 = read_value_;
+    else if ("torque_enable" == dxl_->dxl_item_->item_name)
+      dxl_response.torque_enable = read_value_;
+    else if ("led_red" == dxl_->dxl_item_->item_name)
+      dxl_response.led_red = read_value_;
+    else if ("led_green" == dxl_->dxl_item_->item_name)
+      dxl_response.led_green = read_value_;
+    else if ("led_blue" == dxl_->dxl_item_->item_name)
+      dxl_response.led_blue = read_value_;
+    else if ("velocity_i_gain" == dxl_->dxl_item_->item_name)
+      dxl_response.velocity_i_gain = read_value_;
+    else if ("velocity_p_gain" == dxl_->dxl_item_->item_name)
+      dxl_response.velocity_p_gain = read_value_;
+    else if ("position_p_gain" == dxl_->dxl_item_->item_name)
+      dxl_response.position_p_gain = read_value_;
+    else if ("goal_position" == dxl_->dxl_item_->item_name)
+      dxl_response.goal_position = read_value_;
+    else if ("goal_velocity" == dxl_->dxl_item_->item_name)
+      dxl_response.goal_velocity = read_value_;
+    else if ("goal_torque" == dxl_->dxl_item_->item_name)
+      dxl_response.goal_torque = read_value_;
+    else if ("goal_acceleration" == dxl_->dxl_item_->item_name)
+      dxl_response.goal_acceleration = read_value_;
+    else if ("is_moving" == dxl_->dxl_item_->item_name)
+      dxl_response.is_moving = read_value_;
+    else if ("present_position" == dxl_->dxl_item_->item_name)
+      dxl_response.present_position = read_value_;
+    else if ("present_velocity" == dxl_->dxl_item_->item_name)
+      dxl_response.present_velocity = read_value_;
+    else if ("present_current" == dxl_->dxl_item_->item_name)
+      dxl_response.present_current = read_value_;
+    else if ("present_voltage" == dxl_->dxl_item_->item_name)
+      dxl_response.present_voltage = read_value_;
+    else if ("present_temperature" == dxl_->dxl_item_->item_name)
+      dxl_response.present_temperature = read_value_;
+    else if ("external_port_data_1" == dxl_->dxl_item_->item_name)
+      dxl_response.external_port_data_1 = read_value_;
+    else if ("external_port_data_2" == dxl_->dxl_item_->item_name)
+      dxl_response.external_port_data_2 = read_value_;
+    else if ("external_port_data_3" == dxl_->dxl_item_->item_name)
+      dxl_response.external_port_data_3 = read_value_;
+    else if ("external_port_data_4" == dxl_->dxl_item_->item_name)
+      dxl_response.external_port_data_4 = read_value_;
+    else if ("indirect_data_1" == dxl_->dxl_item_->item_name)
+      dxl_response.indirect_data_1 = read_value_;
+    else if ("registered_instruction" == dxl_->dxl_item_->item_name)
+      dxl_response.registered_instruction = read_value_;
+    else if ("status_return_level" == dxl_->dxl_item_->item_name)
+      dxl_response.status_return_level = read_value_;
+    else if ("hardware_error_status" == dxl_->dxl_item_->item_name)
+      dxl_response.hardware_error_status = read_value_;
+  }
+
+  dxl_state_pub_.publish(dxl_response);
+}
+
+
 bool DynamixelWorkbenchSingleManager::dynamixelSingleManagerLoop(void)
 {
   char input[128];
@@ -530,14 +1102,7 @@ bool DynamixelWorkbenchSingleManager::dynamixelSingleManagerLoop(void)
   char *token;
   bool valid_cmd = false;
 
-  if (!strncmp(dxl_->model_name_.c_str(), "MX", 2))
-  {
-    mxMotorMessage();
-  }
-  else if (!strncmp(dxl_->model_name_.c_str(), "XM", 2))
-  {
-    dynamixel_workbench_msgs::DynamixelXM dxl_response;
-  }
+  getPublisher();
 
   if (kbhit())
   {
@@ -585,13 +1150,20 @@ bool DynamixelWorkbenchSingleManager::dynamixelSingleManagerLoop(void)
       {
         scanDynamixelID();
       }
+      else if (strcmp(cmd, "reboot") == 0)
+      {
+        rebootDynamixel();
+      }
+      else if (strcmp(cmd, "factory_reset") == 0)
+      {
+        resetDynamixel();
+      }
       else if (valid_cmd == true)
       {
         if (num_param == 1)
         {
           dxl_->dxl_item_ = dxl_->ctrl_table_[cmd];
-          //TODO strange....can not find .device path
-          if (dxl_->dxl_item_->item_name == "ID")
+          if (dxl_->dxl_item_->item_name == "id")
           {
             writeDynamixelRegister(dxl_->id_, dxl_->dxl_item_->address, dxl_->dxl_item_->data_length, atoi(param[0]));
             dxl_ = new dxl_motor::DxlMotor(atoi(param[0]), dxl_number_, protocol_version_);
@@ -599,7 +1171,6 @@ bool DynamixelWorkbenchSingleManager::dynamixelSingleManagerLoop(void)
           }
           else if (dxl_->dxl_item_->item_name == "baud_rate")
           {
-            ROS_INFO("%d", dxl_->baud_rate_table_.find(atoi(param[0]))->second);
             writeDynamixelRegister(dxl_->id_, dxl_->dxl_item_->address, dxl_->dxl_item_->data_length, dxl_->baud_rate_table_.find(atoi(param[0]))->second);
 
             if (portHandler_->setBaudRate(dxl_->baud_rate_table_.find(atoi(param[0]))->first) == false)
@@ -610,6 +1181,12 @@ bool DynamixelWorkbenchSingleManager::dynamixelSingleManagerLoop(void)
             {
               ROS_INFO(" Success to change baudrate! [ BAUD RATE: %d ]\n", dxl_->baud_rate_table_.find(atoi(param[0]))->first);
             }
+          }
+          else if (dxl_->dxl_item_->item_name == "protocol_version")
+          {
+            //TODO: Find restriced access address in protocol_version 1.0 of XM430
+            writeDynamixelRegister(dxl_->id_, dxl_->dxl_item_->address, dxl_->dxl_item_->data_length, atof(param[0]));
+            packetHandler_->getPacketHandler(atof(param[0]));
           }
           else
           {

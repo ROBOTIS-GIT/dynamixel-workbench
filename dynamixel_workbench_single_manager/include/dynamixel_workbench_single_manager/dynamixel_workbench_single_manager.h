@@ -9,9 +9,14 @@
 #include <ros/ros.h>
 #include <std_msgs/Int32.h>
 #include <std_msgs/Float64.h>
+#include <dynamixel_workbench_msgs/DynamixelAX.h>
 #include <dynamixel_workbench_msgs/DynamixelRX.h>
 #include <dynamixel_workbench_msgs/DynamixelMX.h>
+#include <dynamixel_workbench_msgs/DynamixelMX64.h>
+#include <dynamixel_workbench_msgs/DynamixelMX106.h>
 #include <dynamixel_workbench_msgs/DynamixelXM.h>
+#include <dynamixel_workbench_msgs/DynamixelPro.h>
+#include <dynamixel_workbench_msgs/DynamixelProL42.h>
 #include <dynamixel_workbench_tool/dxl_motor.h>
 
 #include "dynamixel_sdk.h"  // Uses Dynamixel SDK Library
@@ -34,7 +39,6 @@ class DynamixelWorkbenchSingleManager
  public:
   dynamixel::PortHandler *portHandler_;
   dynamixel::PacketHandler *packetHandler_;
-  dxl_motor::DxlMotor *dxl_;
 
  private:
   // ROS NodeHandle
@@ -45,6 +49,7 @@ class DynamixelWorkbenchSingleManager
   // ROS Topic Publisher
   ros::Publisher dxl_state_pub_;
   // Parameters
+  dxl_motor::DxlMotor *dxl_;
   std::string device_name_;
   float baud_rate_;
   float protocol_version_;
@@ -54,12 +59,7 @@ class DynamixelWorkbenchSingleManager
  public:
   DynamixelWorkbenchSingleManager();
   ~DynamixelWorkbenchSingleManager();
-  bool scanDynamixelID();
   void viewMangerMenu(void);
-  void showControlTable(void);
-  void mxMotorMessage(void);
-  void xmMotorMessage(void);
-  void checkValidationCommand(bool *valid_cmd, char *cmd);
   bool dynamixelSingleManagerLoop(void);
 
  private:
@@ -67,8 +67,24 @@ class DynamixelWorkbenchSingleManager
   int kbhit(void);
   bool initDynamixelWorkbenchSingleManager(void);
   bool shutdownDynamixelWorkbenchSingleManager(void);
-  bool writeDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, int32_t value);
+  void setPublisher(void);
+  void getPublisher(void);
+  bool writeDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, uint32_t value);
   bool readDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, uint32_t *value);
+  bool scanDynamixelID();
+  void showControlTable(void);
+  bool rebootDynamixel();
+  bool resetDynamixel();
+  void checkValidationCommand(bool *valid_cmd, char *cmd);
+
+  void axMotorMessage(void);
+  void rxMotorMessage(void);
+  void mxMotorMessage(void);
+  void mx64MotorMessage(void);
+  void mx106MotorMessage(void);
+  void xmMotorMessage(void);
+  void proMotorMessage(void);
+  void proL42MotorMessage(void);
 };
 }
 

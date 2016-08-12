@@ -4,7 +4,6 @@ int8  id
 uint16 baud_rate
 uint16 return_delay_time
 uint16 operating_mode
-uint16 homing_offset
 uint16 moving_threshold
 uint16 max_temperature_limit
 uint16 max_voltage_limit

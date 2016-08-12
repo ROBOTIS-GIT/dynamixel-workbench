@@ -27,57 +27,82 @@ static inline std::vector<std::string> split(const std::string &text, char sep) 
 }
 
 DxlMotor::DxlMotor(uint8_t id, uint16_t model_number, float protocol_version)
+    :id_(0),
+     protocol_version_(2.0),
+     model_name_(""),
+     dynamixel_item_path_(""),
+     dynamixel_name_path_("")
 {
   id_ = id;
   protocol_version_ = protocol_version;
+
   getModelName(model_number);
-  getModelPath();
   getModelItem();
 }
 
 DxlMotor::~DxlMotor(){}
 
-bool DxlMotor::getModelPath()
-{
-  dynamixel_item_path_  = ros::package::getPath("dynamixel_workbench_tool") + "/dynamixel";
-
-  if(dynamixel_item_path_.compare(dynamixel_item_path_.size()-1, 1, "/") != 0)
-  {
-    dynamixel_item_path_ += "/";
-  }
-
-  dynamixel_item_path_ = dynamixel_item_path_ + model_name_ + ".device";
-}
-
 bool DxlMotor::getModelName(uint16_t model_number)
 {
-  if (model_number == 1030)
+  dynamixel_name_path_  = ros::package::getPath("dynamixel_workbench_tool") + "/dynamixel/model_info.list";
+  ROS_INFO("Get file path : %s", dynamixel_name_path_.c_str());
+
+  std::ifstream file(dynamixel_name_path_.c_str());
+  if (file.is_open())
   {
-    model_name_ = "XM430_W210";
+    std::string input_str;
+
+    while (!file.eof())
+    {
+      std::getline(file, input_str);
+
+      // remove comment ( # )
+      std::size_t pos = input_str.find("#");
+      if (pos != std::string::npos)
+      {
+        input_str = input_str.substr(0,pos);
+      }
+
+      std::vector<std::string> tokens = split(input_str, '|');
+      if (tokens.size() != 2)
+        continue;
+
+      if (model_number == std::atoi(tokens[0].c_str()))
+      {
+        model_number_ = model_number;
+        model_name_ = tokens[1];
+      }
+    }
+    file.close();
   }
-  else if (model_number == 51200)
+  else
   {
-    model_name_ = "H42_20_S300_R";
+    ROS_ERROR("Unable to open file : %s", dynamixel_name_path_.c_str());
   }
-  else if (model_number == 29)
-  {
-    model_name_ = "MX_28";
-  }
-  else if (model_number == 28)
-  {
-    model_name_ = "RX_28";
-  }
+}
+
+bool DxlMotor::getModelPath()
+{
+  std::string dxl_series = "";
+  dxl_series = model_name_.substr(0,2);
+
+  dynamixel_item_path_  = ros::package::getPath("dynamixel_workbench_tool");
+
+  dynamixel_item_path_ = dynamixel_item_path_ + "/dynamixel" + "/" + dxl_series + "/" + model_name_ + ".device";
+  ROS_INFO("Get file path : %s", dynamixel_item_path_.c_str());
 }
 
 bool DxlMotor::getModelItem()
 {
+  getModelPath();
+
   std::ifstream file(dynamixel_item_path_.c_str());
-  if(file.is_open())
+  if (file.is_open())
   {
     std::string session = "";
     std::string input_str;
 
-    while(!file.eof())
+    while (!file.eof())
     {
       std::getline(file, input_str);
 
@@ -113,7 +138,7 @@ bool DxlMotor::getModelItem()
       else if (session == "control table")
       {
         std::vector<std::string> tokens = split(input_str, '|');
-        if(tokens.size() != 8)
+        if(tokens.size() != 5)
           continue;
 
         ControlTableItem *item = new ControlTableItem;
@@ -128,12 +153,6 @@ bool DxlMotor::getModelItem()
             item->memory_type = EEPROM;
         else if(tokens[4] == "RAM")
             item->memory_type = RAM;
-        item->data_min_value = std::atol(tokens[5].c_str());
-        item->data_max_value = std::atol(tokens[6].c_str());
-        if(tokens[7] == "Y")
-            item->is_signed = true;
-        else if(tokens[7] == "N")
-            item->is_signed = false;
 
         ctrl_table_[item->item_name] = item;
       }

@@ -1,6 +1,6 @@
 int16 model_number
 int16 version_of_firmware
-int8  id
+int8 id
 int16 baud_rate
 int16 return_delay_time
 int16 cw_angle_limit
@@ -12,12 +12,13 @@ int16 max_torque
 int16 status_return_level
 int16 alarm_led
 int16 alarm_shutdown
-bool  torque_enable
+int16 multi_turn_offset
+int16 resolution_divider
+bool torque_enable
 int16 led
-int16 cw_compliance_margin
-int16 ccw_compliance_margin
-int16 cw_compliance_slope
-int16 ccw_compliance_slope
+int16 d_gain
+int16 i_gain
+int16 p_gain
 int16 goal_position
 int16 moving_speed
 int16 torque_limit
@@ -30,3 +31,7 @@ int16 registered
 bool moving
 int16 lock
 int16 punch
+int16 current
+int16 torque_control_mode_enable
+int16 goal_torque
+int16 goal_acceleration
