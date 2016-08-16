@@ -50,6 +50,7 @@ find_package(catkin REQUIRED COMPONENTS
    DynamixelMX.msg
    DynamixelMX64.msg
    DynamixelMX106.msg
+   DynamixelXL.msg
    DynamixelXM.msg
    DynamixelPro.msg
    DynamixelProL42.msg

@@ -14,6 +14,7 @@
 #include <dynamixel_workbench_msgs/DynamixelMX.h>
 #include <dynamixel_workbench_msgs/DynamixelMX64.h>
 #include <dynamixel_workbench_msgs/DynamixelMX106.h>
+#include <dynamixel_workbench_msgs/DynamixelXL.h>
 #include <dynamixel_workbench_msgs/DynamixelXM.h>
 #include <dynamixel_workbench_msgs/DynamixelPro.h>
 #include <dynamixel_workbench_msgs/DynamixelProL42.h>
@@ -82,6 +83,7 @@ class DynamixelWorkbenchSingleManager
   void mxMotorMessage(void);
   void mx64MotorMessage(void);
   void mx106MotorMessage(void);
+  void xlMotorMessage(void);
   void xmMotorMessage(void);
   void proMotorMessage(void);
   void proL42MotorMessage(void);
