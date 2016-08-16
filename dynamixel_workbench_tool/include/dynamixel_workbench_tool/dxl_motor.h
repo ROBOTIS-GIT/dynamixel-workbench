@@ -51,6 +51,7 @@ class DxlMotor
 
  public:
   DxlMotor(uint8_t id, uint16_t model_number, float protocol_version);
+  DxlMotor(uint8_t id, std::string model_name, float protocol_version);
   ~DxlMotor();
   bool getModelPath(void);
   bool getModelName(uint16_t model_number);

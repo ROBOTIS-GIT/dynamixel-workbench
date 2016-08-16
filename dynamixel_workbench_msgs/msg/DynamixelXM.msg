@@ -36,7 +36,7 @@ int16 profile_acceleration
 int16 profile_velocity
 int16 goal_position
 int16 realtime_tick
-int16 moving
+bool moving
 int16 moving_status
 int16 present_pwm
 int16 present_current

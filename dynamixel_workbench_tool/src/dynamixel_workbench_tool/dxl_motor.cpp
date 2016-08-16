@@ -28,6 +28,7 @@ static inline std::vector<std::string> split(const std::string &text, char sep) 
 
 DxlMotor::DxlMotor(uint8_t id, uint16_t model_number, float protocol_version)
     :id_(0),
+     model_number_(0),
      protocol_version_(2.0),
      model_name_(""),
      dynamixel_item_path_(""),
@@ -37,6 +38,21 @@ DxlMotor::DxlMotor(uint8_t id, uint16_t model_number, float protocol_version)
   protocol_version_ = protocol_version;
 
   getModelName(model_number);
+  getModelItem();
+}
+
+DxlMotor::DxlMotor(uint8_t id, std::string model_name, float protocol_version)
+    :id_(0),
+     model_number_(0),
+     protocol_version_(2.0),
+     model_name_(""),
+     dynamixel_item_path_(""),
+     dynamixel_name_path_("")
+{
+  id_ = id;
+  model_name_ = model_name;
+  protocol_version_ = protocol_version;
+
   getModelItem();
 }
 

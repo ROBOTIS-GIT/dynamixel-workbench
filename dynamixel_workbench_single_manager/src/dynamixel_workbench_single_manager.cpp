@@ -365,7 +365,7 @@ bool DynamixelWorkbenchSingleManager::readDynamixelRegister(uint8_t id, uint16_t
   }
 }
 
-void DynamixelWorkbenchSingleManager::viewMangerMenu(void)
+void DynamixelWorkbenchSingleManager::viewManagerMenu(void)
 {
   ROS_INFO("----------------------------------------------------------------------");
   ROS_INFO("Press SpaceBar to command dynamixel");
@@ -1324,10 +1324,12 @@ bool DynamixelWorkbenchSingleManager::dynamixelSingleManagerLoop(void)
 
       if (strcmp(cmd, "help") == 0 || strcmp(cmd, "h") == 0 || strcmp(cmd, "?") == 0)
       {
-          viewMangerMenu();
+          viewManagerMenu();
       }
       else if (strcmp(cmd, "exit") == 0)
       {
+        dxl_->dxl_item_ = dxl_->ctrl_table_["torque_enable"];
+        writeDynamixelRegister(dxl_->id_, dxl_->dxl_item_->address, dxl_->dxl_item_->data_length, 0);
         shutdownDynamixelWorkbenchSingleManager();
         return true;
       }
@@ -1401,7 +1403,7 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "dynamixel_workbench_single_manager");
   DynamixelWorkbenchSingleManager manager;
   ros::Rate loop_rate(10);
-  manager.viewMangerMenu();
+  manager.viewManagerMenu();
 
   while (ros::ok())
   {

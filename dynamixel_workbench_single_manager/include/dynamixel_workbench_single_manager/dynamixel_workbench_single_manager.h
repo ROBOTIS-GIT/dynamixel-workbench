@@ -60,7 +60,7 @@ class DynamixelWorkbenchSingleManager
  public:
   DynamixelWorkbenchSingleManager();
   ~DynamixelWorkbenchSingleManager();
-  void viewMangerMenu(void);
+  void viewManagerMenu(void);
   bool dynamixelSingleManagerLoop(void);
 
  private:
