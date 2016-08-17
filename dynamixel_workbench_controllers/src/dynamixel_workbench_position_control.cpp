@@ -164,6 +164,7 @@ bool DynamixelWorkbenchPositionControl::readTorque(void)
     for (int i = 0; i < dynamixel_.size(); i++)
     {
       packetHandler_ = packetHandler_->getPacketHandler(dynamixel_[i]->protocol_version_);
+
       dynamixel_[i]->dxl_item_ = dynamixel_[i]->ctrl_table_["torque_enable"];
       readDynamixelRegister(packetHandler_, dynamixel_[i]->id_, dynamixel_[i]->dxl_item_->address, dynamixel_[i]->dxl_item_->data_length, &value_);
       data->dxl_bool_data.push_back(value_);

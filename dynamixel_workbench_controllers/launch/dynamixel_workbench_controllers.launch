@@ -1,13 +1,13 @@
 <!-- -*- mode: XML -*- -->
 
 <launch>
-    <node name="dynamixel_workbench_pan_tilt" pkg="dynamixel_workbench_controllers" type="dynamixel_workbench_position_control" required="true" output="screen">
+    <node name="dynamixel_workbench_pan_tilt" pkg="dynamixel_workbench_controllers" type="dynamixel_workbench_torque_control" required="true" output="screen">
         <!-- <rosparam file="$(find dynamixel_workbench_monitor)/param/dynamixel.yaml" command="load"/> -->
         <rosparam>
           device_name_: "/dev/ttyUSB0"
           baud_rate_: 1000000
           pan_motor_:
-            motor_model_: "XM430_W210_R"
+            motor_model_: "PRO_H54_200_S500_R"
             motor_id_: 1
             protocol_version_: 2.0
           tilt_motor_:

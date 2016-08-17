@@ -1142,7 +1142,7 @@ void DynamixelWorkbenchSingleManager::proMotorMessage(void)
       dxl_response.goal_torque = read_value_;
     else if ("goal_acceleration" == dxl_->dxl_item_->item_name)
       dxl_response.goal_acceleration = read_value_;
-    else if ("is_moving" == dxl_->dxl_item_->item_name)
+    else if ("moving" == dxl_->dxl_item_->item_name)
       dxl_response.is_moving = read_value_;
     else if ("present_position" == dxl_->dxl_item_->item_name)
       dxl_response.present_position = read_value_;
@@ -1248,7 +1248,7 @@ void DynamixelWorkbenchSingleManager::proL42MotorMessage(void)
       dxl_response.goal_torque = read_value_;
     else if ("goal_acceleration" == dxl_->dxl_item_->item_name)
       dxl_response.goal_acceleration = read_value_;
-    else if ("is_moving" == dxl_->dxl_item_->item_name)
+    else if ("moving" == dxl_->dxl_item_->item_name)
       dxl_response.is_moving = read_value_;
     else if ("present_position" == dxl_->dxl_item_->item_name)
       dxl_response.present_position = read_value_;

@@ -49,7 +49,7 @@ model_name  = PRO_M42_10_S260_R
    600 | goal_velocity            | 4      | RW     | RAM
    604 | goal_torque              | 2      | RW     | RAM
    606 | goal_acceleration        | 4      | RW     | RAM
-   610 | is_moving                | 1      | R      | RAM
+   610 | moving                   | 1      | R      | RAM
    611 | present_position         | 4      | R      | RAM
    615 | present_velocity         | 4      | R      | RAM
    621 | present_current          | 2      | R      | RAM
