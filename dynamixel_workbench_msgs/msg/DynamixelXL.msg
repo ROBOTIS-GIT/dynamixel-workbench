@@ -21,7 +21,7 @@ int16 goal_position
 int16 goal_velocity
 int16 goal_torque
 int16 present_position
-int16 present_speed
+int16 present_velocity
 int16 present_load
 int16 present_voltage
 int16 present_temperature

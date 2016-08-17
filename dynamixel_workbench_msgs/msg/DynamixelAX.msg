@@ -19,10 +19,10 @@ int16 ccw_compliance_margin
 int16 cw_compliance_slope
 int16 ccw_compliance_slope
 int16 goal_position
-int16 moving_speed
+int16 goal_velocity
 int16 torque_limit
 int16 present_position
-int16 present_speed
+int16 present_velocity
 int16 present_load
 int16 present_voltage
 int16 present_temperature

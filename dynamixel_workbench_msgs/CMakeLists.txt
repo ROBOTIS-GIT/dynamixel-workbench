@@ -55,6 +55,7 @@ find_package(catkin REQUIRED COMPONENTS
    DynamixelPro.msg
    DynamixelProL42.msg
    MotorState.msg
+   ExtendedMotorState.msg
    MotorStateList.msg
  )
 

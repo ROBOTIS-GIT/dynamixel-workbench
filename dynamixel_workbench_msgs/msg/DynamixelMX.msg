@@ -20,10 +20,10 @@ int16 d_gain
 int16 i_gain
 int16 p_gain
 int16 goal_position
-int16 moving_speed
+int16 goal_velocity
 int16 torque_limit
 int16 present_position
-int16 present_speed
+int16 present_velocity
 int16 present_load
 int16 present_voltage
 int16 present_temperature

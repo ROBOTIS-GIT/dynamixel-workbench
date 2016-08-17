@@ -18,7 +18,7 @@
 #include <dynamixel_workbench_msgs/DynamixelXM.h>
 #include <dynamixel_workbench_msgs/DynamixelPro.h>
 #include <dynamixel_workbench_msgs/DynamixelProL42.h>
-#include <dynamixel_workbench_tool/dxl_motor.h>
+#include <dynamixel_workbench_toolbox/dynamixel_tool.h>
 
 #include "dynamixel_sdk.h"  // Uses Dynamixel SDK Library
 
@@ -50,7 +50,7 @@ class DynamixelWorkbenchSingleManager
   // ROS Topic Publisher
   ros::Publisher dxl_state_pub_;
   // Parameters
-  dxl_motor::DxlMotor *dxl_;
+  dynamixel_tool::DynamixelTool *dxl_;
   std::string device_name_;
   float baud_rate_;
   float protocol_version_;

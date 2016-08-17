@@ -11,9 +11,9 @@
             motor_id_: 1
             protocol_version_: 2.0
           tilt_motor_:
-            motor_model_: "XM430_W210_R"
+            motor_model_: "RX_28"
             motor_id_: 2
-            protocol_version_: 2.0
+            protocol_version_: 1.0
         </rosparam>
     </node>
 </launch>

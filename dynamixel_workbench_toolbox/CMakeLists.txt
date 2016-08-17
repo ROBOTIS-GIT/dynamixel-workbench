@@ -1,14 +1,12 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(dynamixel_workbench_single_manager)
+project(dynamixel_workbench_toolbox)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
-  std_msgs
-  dynamixel_workbench_msgs
-  dynamixel_workbench_toolbox
+  roslib
 )
 
 ## System dependencies are found with CMake's conventions
@@ -66,10 +64,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
- generate_messages(
-   DEPENDENCIES
-   std_msgs
- )
+# generate_messages(
+#   DEPENDENCIES
+#   std_msgs
+# )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -101,9 +99,9 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES dynamixel_workbench_single_manager
-  CATKIN_DEPENDS roscpp std_msgs dynamixel_workbench_msgs
+ INCLUDE_DIRS include
+ LIBRARIES dynamixel_workbench_toolbox
+ CATKIN_DEPENDS roscpp roslib
 #  DEPENDS system_lib
 )
 
@@ -121,30 +119,30 @@ include_directories(
 )
 
 ## Declare a C++ library
-# add_library(dynamixel_workbench_single_manager
-#   src/${PROJECT_NAME}/dynamixel_workbench_single_manager.cpp
-# )
+add_library(dynamixel_workbench_toolbox
+  src/dynamixel_tool.cpp
+)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-# add_dependencies(dynamixel_workbench_single_manager ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+ add_dependencies(dynamixel_workbench_toolbox ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
- add_executable(dynamixel_workbench_single_manager src/dynamixel_workbench_single_manager.cpp)
+# add_executable(dynamixel_workbench_toolbox_node src/dynamixel_workbench_toolbox_node.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
- add_dependencies(dynamixel_workbench_single_manager ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(dynamixel_workbench_toolbox_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
  if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
    if (CMAKE_SIZEOF_VOID_P EQUAL 4)
      message(": 32bit linux system")
-     target_link_libraries(dynamixel_workbench_single_manager ${catkin_LIBRARIES} /usr/local/lib/libdxl_x86_cpp.so)
+     target_link_libraries(dynamixel_workbench_toolbox ${catkin_LIBRARIES} /usr/local/lib/libdxl_x86_cpp.so)
    elseif (CMAKE_SIZEOF_VOID_P EQUAL 8)
      message(": 64bit linux system")
-     target_link_libraries(dynamixel_workbench_single_manager ${catkin_LIBRARIES} /usr/local/lib/libdxl_x64_cpp.so)
+     target_link_libraries(dynamixel_workbench_toolbox ${catkin_LIBRARIES} /usr/local/lib/libdxl_x64_cpp.so)
    endif ()
  else()
    message(": Non-linux system")
@@ -165,7 +163,7 @@ include_directories(
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS dynamixel_workbench_single_manager dynamixel_workbench_single_manager_node
+# install(TARGETS dynamixel_workbench_toolbox dynamixel_workbench_toolbox_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -190,7 +188,7 @@ include_directories(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_dynamixel_workbench_single_manager.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_dynamixel_workbench_toolbox.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

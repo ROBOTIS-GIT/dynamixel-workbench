@@ -1,5 +1,5 @@
-#ifndef DYNAMIXEL_WORKBENCH_POSITION_CONTROL_H
-#define DYNAMIXEL_WORKBENCH_POSITION_CONTROL_H
+#ifndef DYNAMIXEL_WORKBENCH_TORQUE_CONTROL_H
+#define DYNAMIXEL_WORKBENCH_TORQUE_CONTROL_H
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -17,14 +17,14 @@
 #define DEVICENAME                  "/dev/ttyUSB0"
 #define PROTOCOL_VERSION            2.0
 
-namespace dynamixel_workbench_position_control
+namespace dynamixel_workbench_torque_control
 {
 struct ReadData{
  std::vector<bool> dxl_bool_data;
  std::vector<uint16_t> dxl_int_data;
 };
 
-class DynamixelWorkbenchPositionControl
+class DynamixelWorkbenchTorqueControl
 {
  public:
   dynamixel::PortHandler *portHandler_;
@@ -54,13 +54,13 @@ class DynamixelWorkbenchPositionControl
   uint32_t value_;
 
  public:
-  DynamixelWorkbenchPositionControl();
-  ~DynamixelWorkbenchPositionControl();
+  DynamixelWorkbenchTorqueControl();
+  ~DynamixelWorkbenchTorqueControl();
   bool dynamixelControlLoop(void);
 
  private:
-  bool initDynamixelWorkbenchPositionControl(void);
-  bool shutdownDynamixelWorkbenchPositionControl(void);
+  bool initDynamixelWorkbenchTorqueControl(void);
+  bool shutdownDynamixelWorkbenchTorqueControl(void);
   bool initMotor(dynamixel_tool::DynamixelTool *dxl_motor, std::string motor_model, uint8_t motor_id, float protocol_version);
   bool readDynamixelRegister(dynamixel::PacketHandler *packetHandler, uint8_t id, uint16_t addr, uint8_t length, uint32_t *value);
   bool readTorque(void);
@@ -72,4 +72,4 @@ class DynamixelWorkbenchPositionControl
 };
 }
 
-#endif //DYNAMIXEL_WORKBENCH_POSITION_CONTROL_H
+#endif //DYNAMIXEL_WORKBENCH_TORQUE_CONTROL_H

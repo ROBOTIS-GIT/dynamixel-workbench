@@ -1,8 +1,8 @@
-#include "dynamixel_workbench_controllers/dynamixel_workbench_position_control.h"
+#include "dynamixel_workbench_controllers/dynamixel_workbench_torque_control.h"
 
-using namespace dynamixel_workbench_position_control;
+using namespace dynamixel_workbench_torque_control;
 
-DynamixelWorkbenchPositionControl::DynamixelWorkbenchPositionControl()
+DynamixelWorkbenchTorqueControl::DynamixelWorkbenchTorqueControl()
     :nh_priv_("~"),
      is_debug_(false),
      dxl_addparam_result_(false),
@@ -22,7 +22,7 @@ DynamixelWorkbenchPositionControl::DynamixelWorkbenchPositionControl()
   nh_priv_.getParam("baud_rate_", baud_rate_);
 
   // Init target name
-  ROS_ASSERT(initDynamixelWorkbenchPositionControl());
+  ROS_ASSERT(initDynamixelWorkbenchTorqueControl());
 
   // Initialize PortHandler instance
   // Set the port path
@@ -76,31 +76,31 @@ DynamixelWorkbenchPositionControl::DynamixelWorkbenchPositionControl()
   initMotor(dxl_tilt_motor_, motor_model_, motor_id_, protocol_version_);
 }
 
-DynamixelWorkbenchPositionControl::~DynamixelWorkbenchPositionControl()
+DynamixelWorkbenchTorqueControl::~DynamixelWorkbenchTorqueControl()
 {
-  ROS_ASSERT(shutdownDynamixelWorkbenchPositionControl());
+  ROS_ASSERT(shutdownDynamixelWorkbenchTorqueControl());
 }
 
-bool DynamixelWorkbenchPositionControl::initDynamixelWorkbenchPositionControl(void)
+bool DynamixelWorkbenchTorqueControl::initDynamixelWorkbenchTorqueControl(void)
 {
-  ROS_INFO("dynamixel_workbench_position_control : Init OK!");
+  ROS_INFO("dynamixel_workbench_torque_control : Init OK!");
   return true;
 }
 
-bool DynamixelWorkbenchPositionControl::shutdownDynamixelWorkbenchPositionControl(void)
+bool DynamixelWorkbenchTorqueControl::shutdownDynamixelWorkbenchTorqueControl(void)
 {
   portHandler_->closePort();
   ros::shutdown();
   return true;
 }
 
-bool DynamixelWorkbenchPositionControl::initMotor(dynamixel_tool::DynamixelTool *dxl_motor, std::string motor_model, uint8_t motor_id, float protocol_version)
+bool DynamixelWorkbenchTorqueControl::initMotor(dynamixel_tool::DynamixelTool *dxl_motor, std::string motor_model, uint8_t motor_id, float protocol_version)
 {
   dxl_motor = new dynamixel_tool::DynamixelTool(motor_id, motor_model, protocol_version);
   dynamixel_.push_back(dxl_motor);
 }
 
-bool DynamixelWorkbenchPositionControl::readDynamixelRegister(dynamixel::PacketHandler *packetHandler, uint8_t id, uint16_t addr, uint8_t length, uint32_t *value)
+bool DynamixelWorkbenchTorqueControl::readDynamixelRegister(dynamixel::PacketHandler *packetHandler, uint8_t id, uint16_t addr, uint8_t length, uint32_t *value)
 {
   uint8_t dxl_error = 0;
 
@@ -153,7 +153,7 @@ bool DynamixelWorkbenchPositionControl::readDynamixelRegister(dynamixel::PacketH
   }
 }
 
-bool DynamixelWorkbenchPositionControl::readTorque(void)
+bool DynamixelWorkbenchTorqueControl::readTorque(void)
 {
   ReadData *data = new ReadData;
   dynamixel_[0]->dxl_item_ = dynamixel_[0]->ctrl_table_["torque_enable"];
@@ -225,7 +225,7 @@ bool DynamixelWorkbenchPositionControl::readTorque(void)
   }
 }
 
-bool DynamixelWorkbenchPositionControl::readMoving(void)
+bool DynamixelWorkbenchTorqueControl::readMoving(void)
 {
   ReadData *data = new ReadData;
   dynamixel_[0]->dxl_item_ = dynamixel_[0]->ctrl_table_["moving"];
@@ -297,7 +297,7 @@ bool DynamixelWorkbenchPositionControl::readMoving(void)
   }
 }
 
-bool DynamixelWorkbenchPositionControl::readPresentPosition(void)
+bool DynamixelWorkbenchTorqueControl::readPresentPosition(void)
 {
   ReadData *data = new ReadData;
   dynamixel_[0]->dxl_item_ = dynamixel_[0]->ctrl_table_["present_position"];
@@ -369,7 +369,7 @@ bool DynamixelWorkbenchPositionControl::readPresentPosition(void)
   }
 }
 
-bool DynamixelWorkbenchPositionControl::readPresentVelocity(void)
+bool DynamixelWorkbenchTorqueControl::readPresentVelocity(void)
 {
   ReadData *data = new ReadData;
   dynamixel_[0]->dxl_item_ = dynamixel_[0]->ctrl_table_["present_velocity"];
@@ -441,7 +441,7 @@ bool DynamixelWorkbenchPositionControl::readPresentVelocity(void)
   }
 }
 
-bool DynamixelWorkbenchPositionControl::readGoalPosition(void)
+bool DynamixelWorkbenchTorqueControl::readGoalPosition(void)
 {
   ReadData *data = new ReadData;
   dynamixel_[0]->dxl_item_ = dynamixel_[0]->ctrl_table_["goal_position"];
@@ -513,7 +513,7 @@ bool DynamixelWorkbenchPositionControl::readGoalPosition(void)
   }
 }
 
-bool DynamixelWorkbenchPositionControl::readGoalVelocity(void)
+bool DynamixelWorkbenchTorqueControl::readGoalVelocity(void)
 {
   ReadData *data = new ReadData;
   dynamixel_[0]->dxl_item_ = dynamixel_[0]->ctrl_table_["goal_velocity"];
@@ -585,7 +585,7 @@ bool DynamixelWorkbenchPositionControl::readGoalVelocity(void)
   }
 }
 
-bool DynamixelWorkbenchPositionControl::dynamixelControlLoop(void)
+bool DynamixelWorkbenchTorqueControl::dynamixelControlLoop(void)
 {
   readTorque();
   readMoving();
@@ -637,13 +637,13 @@ bool DynamixelWorkbenchPositionControl::dynamixelControlLoop(void)
 int main(int argc, char **argv)
 {
   // Init ROS node
-  ros::init(argc, argv, "dynamixel_workbench_position_control");
-  DynamixelWorkbenchPositionControl dxl_pos_ctrl;
+  ros::init(argc, argv, "dynamixel_workbench_torque_control");
+  DynamixelWorkbenchTorqueControl dxl_torque_ctrl;
   ros::Rate loop_rate(10);
 
   while (ros::ok())
   {
-    dxl_pos_ctrl.dynamixelControlLoop();
+    dxl_torque_ctrl.dynamixelControlLoop();
     ros::spinOnce();
     loop_rate.sleep();
   }
