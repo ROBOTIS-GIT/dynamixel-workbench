@@ -16,7 +16,7 @@ model_name  = PRO_H54_100_S500_R
 
 [control table]
 # addr | item name                | length | access | memory
-   0   | model_number             | 2      | R      | EEPROM
+   0   | model_number             | 4      | R      | EEPROM
    6   | version_of_firmware      | 1      | R      | EEPROM
    7   | id                       | 1      | RW     | EEPROM
    8   | baud_rate                | 1      | RW     | EEPROM

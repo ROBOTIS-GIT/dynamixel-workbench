@@ -1,2 +1,3 @@
-int16 pos
+int64 set_pan_pos
+int64 set_tilt_pos
 ---

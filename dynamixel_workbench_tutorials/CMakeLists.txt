@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   dynamixel_workbench_msgs
+  geometry_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -102,7 +103,7 @@ generate_messages(
 catkin_package(
  INCLUDE_DIRS include
  LIBRARIES dynamixel_workbench_tutorials
- CATKIN_DEPENDS roscpp std_msgs dynamixel_workbench_msgs
+ CATKIN_DEPENDS roscpp std_msgs dynamixel_workbench_msgs geometry_msgs
 #  DEPENDS system_lib
 )
 
@@ -116,7 +117,6 @@ catkin_package(
 include_directories(
   ${catkin_INCLUDE_DIRS}
   include
-  /usr/local/include
 )
 
 ## Declare a C++ library
@@ -136,18 +136,19 @@ add_executable(dynamixel_workbench_pan_tilt src/dynamixel_workbench_pan_tilt.cpp
 # same as for the library above
 add_dependencies(dynamixel_workbench_pan_tilt ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
- ## Specify libraries to link a library or executable target against
-  if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-    if (CMAKE_SIZEOF_VOID_P EQUAL 4)
-      message(": 32bit linux system")
-      target_link_libraries(dynamixel_workbench_pan_tilt ${catkin_LIBRARIES} /usr/local/lib/libdxl_x86_cpp.so)
-    elseif (CMAKE_SIZEOF_VOID_P EQUAL 8)
-      message(": 64bit linux system")
-      target_link_libraries(dynamixel_workbench_pan_tilt ${catkin_LIBRARIES} /usr/local/lib/libdxl_x64_cpp.so)
-    endif ()
-  else()
-    message(": Non-linux system")
-  endif ()
+## Specify libraries to link a library or executable target against
+target_link_libraries(dynamixel_workbench_pan_tilt ${catkin_LIBRARIES})
+
+
+# Declare a C++ executable
+add_executable(dynamixel_workbench_wheel src/dynamixel_workbench_wheel.cpp)
+
+# Add cmake target dependencies of the executable
+# same as for the library above
+add_dependencies(dynamixel_workbench_wheel ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+## Specify libraries to link a library or executable target against
+target_link_libraries(dynamixel_workbench_wheel ${catkin_LIBRARIES})
 
 #############
 ## Install ##

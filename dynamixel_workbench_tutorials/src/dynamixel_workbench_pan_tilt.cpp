@@ -12,7 +12,8 @@ DynamixelWorkbenchPanTilt::DynamixelWorkbenchPanTilt()
   // Init target name
   ROS_ASSERT(initDynamixelWorkbenchPanTilt());
 
-  // init ROS Subscribe
+  // init ROS Client
+  position_control_client_ = nh_.serviceClient<dynamixel_workbench_msgs::GetPosition>("/dynamixel_workbench_position_control");
 }
 
 DynamixelWorkbenchPanTilt::~DynamixelWorkbenchPanTilt()
@@ -36,13 +37,26 @@ int main(int argc, char **argv)
 {
   // Init ROS node
   ros::init(argc, argv, "dynamixel_workbench_pan_tilt");
-  DynamixelWorkbenchPanTilt dxl_pan_tilt;
-  ros::Rate loop_rate(10);
 
-  while (ros::ok())
+  DynamixelWorkbenchPanTilt dxl_pan_tilt;
+  dynamixel_workbench_msgs::GetPosition dxl_call;
+
+  if (argc != 3)
   {
-    ros::spinOnce();
-    loop_rate.sleep();
+    ROS_INFO("cmd: rosrun dynamixel_workbench_tutorials dynamixel_workbench_pan_tilt [pan_pos] [tilt_pos]");
+    return 1;
+  }
+
+  dxl_call.request.set_pan_pos = atoll(argv[1]);
+  dxl_call.request.set_tilt_pos = atoll(argv[2]);
+
+  if (dxl_pan_tilt.position_control_client_.call(dxl_call))
+  {
+    ROS_INFO("send message: [pan_pos: %ld] [tilt_pos: %ld]", (long int)dxl_call.request.set_pan_pos, (long int)dxl_call.request.set_tilt_pos);
+  }
+  else
+  {
+    ROS_ERROR("Failed to call service dynamixel_workbench_pan_tilt");
   }
 
   return 0;

@@ -1,6 +1,6 @@
 [device info]
-model_number = 320
-model_name  = MX_106
+model_number = 107
+model_name  = EX_106
 
 [baud rate]
 # baud rate | value
@@ -13,9 +13,6 @@ model_name  = MX_106
 57600       |  34
 19200       |  103
 9600        |  207
-2250000     |  250
-2500000     |  251
-3000000     |  252
 
 [control table]
 #  addr | item name                     | length | access | memory
@@ -38,14 +35,12 @@ model_name  = MX_106
     16  | status_return_level           | 1      | RW     | EEPROM
     17  | alarm_led                     | 1      | RW     | EEPROM
     18  | alarm_shutdown                | 1      | RW     | EEPROM
-    20  | multi_turn_offset             | 2      | RW     | EEPROM
-#   21  | multi_turn_offset(H)          | 1      | RW     | EEPROM
-    22  | resolution_divider            | 1      | RW     | EEPROM
     24  | torque_enable                 | 1      | RW     | RAM
     25  | led                           | 1      | RW     | RAM
-    26  | d_gain                        | 1      | RW     | RAM
-    27  | i_gain                        | 1      | RW     | RAM
-    28  | p_gain                        | 1      | RW     | RAM
+    26  | cw_compliance_margin          | 1      | RW     | RAM
+    27  | ccw_compliance_margin         | 1      | RW     | RAM
+    28  | cw_compliance_slope           | 1      | RW     | RAM
+    29  | ccw_compliance_slope          | 1      | RW     | RAM
     30  | goal_position                 | 2      | RW     | RAM
 #   31  | goal_position(H)              | 1      | RW     | RAM
     32  | goal_velocity                 | 2      | RW     | RAM
@@ -65,9 +60,5 @@ model_name  = MX_106
     47  | lock                          | 1      | RW     | RAM
     48  | punch                         | 2      | RW     | RAM
 #   49  | punch(H)                      | 1      | RW     | RAM
-    68  | current(L)                    | 2      | R     | RAM
-#   69  | current(H)                    | 1      | R     | RAM
-    70  | torque_control_mode_enable    | 1      | RW     | RAM
-    71  | goal_torque                   | 2      | RW     | RAM
-#   72  | goal_torque(H)                | 1      | RW     | RAM
-    73  | goal_acceleration             | 1      | RW     | RAM
+    56  | sensed_current                | 2      | R     | RAM
+#   57  | sensed_current(H)             | 1      | R     | RAM

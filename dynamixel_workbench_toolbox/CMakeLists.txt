@@ -115,7 +115,6 @@ catkin_package(
 include_directories(
   ${catkin_INCLUDE_DIRS}
   include
-  /usr/local/include
 )
 
 ## Declare a C++ library
@@ -136,17 +135,7 @@ add_library(dynamixel_workbench_toolbox
 # add_dependencies(dynamixel_workbench_toolbox_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
- if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-   if (CMAKE_SIZEOF_VOID_P EQUAL 4)
-     message(": 32bit linux system")
-     target_link_libraries(dynamixel_workbench_toolbox ${catkin_LIBRARIES} /usr/local/lib/libdxl_x86_cpp.so)
-   elseif (CMAKE_SIZEOF_VOID_P EQUAL 8)
-     message(": 64bit linux system")
-     target_link_libraries(dynamixel_workbench_toolbox ${catkin_LIBRARIES} /usr/local/lib/libdxl_x64_cpp.so)
-   endif ()
- else()
-   message(": Non-linux system")
- endif ()
+target_link_libraries(dynamixel_workbench_toolbox ${catkin_LIBRARIES})
 
 #############
 ## Install ##

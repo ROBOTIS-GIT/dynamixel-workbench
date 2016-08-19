@@ -5,6 +5,7 @@ int64 baud_rate
 int64 return_delay_time
 int64 cw_angle_limit
 int64 ccw_angle_limit
+int64 drive_mode
 int64 the_highest_limit_temperature
 int64 the_lowest_limit_voltage
 int64 the_highest_limit_voltage
@@ -12,13 +13,12 @@ int64 max_torque
 int64 status_return_level
 int64 alarm_led
 int64 alarm_shutdown
-int64 multi_turn_offset
-int64 resolution_divider
 bool torque_enable
 int64 led
-int64 d_gain
-int64 i_gain
-int64 p_gain
+int64 cw_compliance_margin
+int64 ccw_compliance_margin
+int64 cw_compliance_slope
+int64 ccw_compliance_slope
 int64 goal_position
 int64 goal_velocity
 int64 torque_limit
@@ -31,4 +31,4 @@ int64 registered
 bool moving
 int64 lock
 int64 punch
-int64 goal_acceleration
+int64 sensed_current

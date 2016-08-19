@@ -14,6 +14,7 @@
 #include <dynamixel_workbench_msgs/DynamixelMX.h>
 #include <dynamixel_workbench_msgs/DynamixelMX64.h>
 #include <dynamixel_workbench_msgs/DynamixelMX106.h>
+#include <dynamixel_workbench_msgs/DynamixelEX.h>
 #include <dynamixel_workbench_msgs/DynamixelXL.h>
 #include <dynamixel_workbench_msgs/DynamixelXM.h>
 #include <dynamixel_workbench_msgs/DynamixelPro.h>
@@ -21,14 +22,6 @@
 #include <dynamixel_workbench_toolbox/dynamixel_tool.h>
 
 #include "dynamixel_sdk.h"  // Uses Dynamixel SDK Library
-
-
-// Protocol version
-#define PROTOCOL_VERSION            2.0
-
-// Default setting
-#define BAUDRATE                    1000000
-#define DEVICENAME                  "/dev/ttyUSB0"
 
 #define ESC_ASCII_VALUE             0x1b
 #define SPACEBAR_ASCII_VALUE        0x20
@@ -50,12 +43,14 @@ class DynamixelWorkbenchSingleManager
   // ROS Topic Publisher
   ros::Publisher dxl_state_pub_;
   // Parameters
-  dynamixel_tool::DynamixelTool *dxl_;
   std::string device_name_;
   float baud_rate_;
   float protocol_version_;
-  uint32_t read_value_;
   uint16_t dxl_number_;
+
+  dynamixel_tool::DynamixelTool *dxl_;
+
+  int64_t read_value_;
 
  public:
   DynamixelWorkbenchSingleManager();
@@ -64,25 +59,30 @@ class DynamixelWorkbenchSingleManager
   bool dynamixelSingleManagerLoop(void);
 
  private:
-  int getch(void);
-  int kbhit(void);
   bool initDynamixelWorkbenchSingleManager(void);
   bool shutdownDynamixelWorkbenchSingleManager(void);
-  void setPublisher(void);
-  void getPublisher(void);
-  bool writeDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, uint32_t value);
-  bool readDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, uint32_t *value);
+
+  int getch(void);
+  int kbhit(void);
+
   bool scanDynamixelID();
   void showControlTable(void);
   bool rebootDynamixel();
   bool resetDynamixel();
   void checkValidationCommand(bool *valid_cmd, char *cmd);
 
+  void setPublisher(void);
+  void getPublisher(void);
+
+  bool writeDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, int64_t value);
+  bool readDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, int64_t *value);
+
   void axMotorMessage(void);
   void rxMotorMessage(void);
   void mxMotorMessage(void);
   void mx64MotorMessage(void);
   void mx106MotorMessage(void);
+  void exMotorMessage(void);
   void xlMotorMessage(void);
   void xmMotorMessage(void);
   void proMotorMessage(void);

@@ -9,13 +9,13 @@
 #include <std_msgs/Float64.h>
 #include <dynamixel_workbench_msgs/GetPosition.h>
 
-#include "dynamixel_sdk.h"  // Uses Dynamixel SDK Library
-
 namespace dynamixel_workbench_pan_tilt
 {
 class DynamixelWorkbenchPanTilt
 {
  public:
+  // ROS Server Client
+  ros::ServiceClient position_control_client_;
 
  private:
   // ROS NodeHandle
@@ -23,8 +23,6 @@ class DynamixelWorkbenchPanTilt
   ros::NodeHandle nh_priv_;
   // ROS Parameters
   bool is_debug_;
-  // ROS Topic Publisher
-  ros::Publisher dxl_state_pub_;
   // Parameters
 
  public:
@@ -34,7 +32,6 @@ class DynamixelWorkbenchPanTilt
  private:
   bool initDynamixelWorkbenchPanTilt(void);
   bool shutdownDynamixelWorkbenchPanTilt(void);
-
 };
 }
 

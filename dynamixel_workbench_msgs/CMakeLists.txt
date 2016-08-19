@@ -50,12 +50,12 @@ find_package(catkin REQUIRED COMPONENTS
    DynamixelMX.msg
    DynamixelMX64.msg
    DynamixelMX106.msg
+   DynamixelEX.msg
    DynamixelXL.msg
    DynamixelXM.msg
    DynamixelPro.msg
    DynamixelProL42.msg
    MotorState.msg
-   ExtendedMotorState.msg
    MotorStateList.msg
  )
 
@@ -63,6 +63,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_service_files(
   FILES
   GetPosition.srv
+  GetDirection.srv
 )
 
 ## Generate actions in the 'action' folder
