@@ -21,7 +21,7 @@
 #include <dynamixel_workbench_msgs/DynamixelProL42.h>
 #include <dynamixel_workbench_toolbox/dynamixel_tool.h>
 
-#include "dynamixel_sdk.h"  // Uses Dynamixel SDK Library
+#include <dynamixel_sdk/dynamixel_sdk.h>
 
 #define ESC_ASCII_VALUE             0x1b
 #define SPACEBAR_ASCII_VALUE        0x20

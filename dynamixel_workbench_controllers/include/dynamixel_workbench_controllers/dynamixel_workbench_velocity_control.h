@@ -10,8 +10,7 @@
 #include <dynamixel_workbench_toolbox/dynamixel_tool.h>
 #include <dynamixel_workbench_msgs/MotorStateList.h>
 #include <dynamixel_workbench_msgs/GetDirection.h>
-
-#include "dynamixel_sdk.h"  // Uses Dynamixel SDK Library
+#include <dynamixel_sdk/dynamixel_sdk.h>
 
 #define LEFT_WHEEL                  0
 #define RIGHT_WHEEL                 1

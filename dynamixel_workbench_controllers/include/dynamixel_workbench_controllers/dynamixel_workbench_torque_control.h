@@ -11,7 +11,7 @@
 #include <dynamixel_workbench_msgs/MotorStateList.h>
 #include <dynamixel_workbench_msgs/GetPosition.h>
 
-#include "dynamixel_sdk.h"  // Uses Dynamixel SDK Library
+#include <dynamixel_sdk/dynamixel_sdk.h>
 
 // Default setting
 #define BAUDRATE                    1000000

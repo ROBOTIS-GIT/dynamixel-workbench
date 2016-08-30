@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   dynamixel_workbench_msgs
   dynamixel_workbench_toolbox
+  dynamixel_sdk
 )
 
 ## System dependencies are found with CMake's conventions
@@ -137,7 +138,7 @@ include_directories(
  add_dependencies(dynamixel_workbench_single_manager ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
- target_link_libraries(dynamixel_workbench_single_manager ${catkin_LIBRARIES} /opt/ros/kinetic/lib/libdynamixel_sdk.so)
+ target_link_libraries(dynamixel_workbench_single_manager ${catkin_LIBRARIES})
 
 #############
 ## Install ##

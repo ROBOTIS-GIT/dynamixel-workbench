@@ -7,6 +7,7 @@ project(dynamixel_workbench_controllers)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
+  dynamixel_sdk
   dynamixel_workbench_msgs
   dynamixel_workbench_toolbox
 )
@@ -117,7 +118,6 @@ catkin_package(
 include_directories(
   ${catkin_INCLUDE_DIRS}
   include
-  /opt/ros/kinetic/include
 )
 
 ## Declare a C++ library
@@ -138,18 +138,7 @@ include_directories(
  add_dependencies(dynamixel_workbench_position_control ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 # ## Specify libraries to link a library or executable target against
-#  if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-#    if (CMAKE_SIZEOF_VOID_P EQUAL 4)
-#      message(": 32bit linux system")
-#      target_link_libraries(dynamixel_workbench_position_control ${catkin_LIBRARIES} /usr/local/lib/libdxl_x86_cpp.so)
-#    elseif (CMAKE_SIZEOF_VOID_P EQUAL 8)
-#      message(": 64bit linux system")
-#      target_link_libraries(dynamixel_workbench_position_control ${catkin_LIBRARIES} /usr/local/lib/libdxl_x64_cpp.so)
-#    endif ()
-#  else()
-#    message(": Non-linux system")
-#  endif ()
- target_link_libraries(dynamixel_workbench_position_control ${catkin_LIBRARIES} /opt/ros/kinetic/lib/libdynamixel_sdk.so)
+ target_link_libraries(dynamixel_workbench_position_control ${catkin_LIBRARIES})
 
 ## Declare a C++ executable
  add_executable(dynamixel_workbench_velocity_control src/dynamixel_workbench_velocity_control.cpp)
@@ -159,7 +148,7 @@ include_directories(
  add_dependencies(dynamixel_workbench_velocity_control ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ### Specify libraries to link a library or executable target against
- target_link_libraries(dynamixel_workbench_velocity_control ${catkin_LIBRARIES} /opt/ros/kinetic/lib/libdynamixel_sdk.so)
+ target_link_libraries(dynamixel_workbench_velocity_control ${catkin_LIBRARIES})
 
 ## Declare a C++ executable
  add_executable(dynamixel_workbench_torque_control src/dynamixel_workbench_torque_control.cpp)
@@ -169,19 +158,7 @@ include_directories(
  add_dependencies(dynamixel_workbench_torque_control ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-#   if (CMAKE_SIZEOF_VOID_P EQUAL 4)
-#     message(": 32bit linux system")
-#     target_link_libraries(dynamixel_workbench_torque_control ${catkin_LIBRARIES} /usr/local/lib/libdxl_x86_cpp.so)
-#   elseif (CMAKE_SIZEOF_VOID_P EQUAL 8)
-#     message(": 64bit linux system")
-#     target_link_libraries(dynamixel_workbench_torque_control ${catkin_LIBRARIES} /usr/local/lib/libdxl_x64_cpp.so)
-#   endif ()
-# else()
-#   message(": Non-linux system")
-# endif ()
-
- target_link_libraries(dynamixel_workbench_torque_control ${catkin_LIBRARIES} /opt/ros/kinetic/lib/libdynamixel_sdk.so)
+ target_link_libraries(dynamixel_workbench_torque_control ${catkin_LIBRARIES})
 
 #############
 ## Install ##
