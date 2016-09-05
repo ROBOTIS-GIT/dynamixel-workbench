@@ -13,7 +13,7 @@ DynamixelWorkbenchWheel::DynamixelWorkbenchWheel()
   ROS_ASSERT(initDynamixelWorkbenchWheel());
 
   // init ROS Client
-  wheel_control_client_ = nh_.serviceClient<dynamixel_workbench_msgs::GetDirection>("/dynamixel_workbench_velocity_control");
+  wheel_control_client_ = nh_.serviceClient<dynamixel_workbench_msgs::SetDirection>("/dynamixel_workbench_velocity_control");
 }
 
 DynamixelWorkbenchWheel::~DynamixelWorkbenchWheel()
@@ -90,7 +90,7 @@ int main(int argc, char **argv)
   ROS_INFO("ESC : exit");
 
   DynamixelWorkbenchWheel dxl_wheel;
-  dynamixel_workbench_msgs::GetDirection dxl_call;
+  dynamixel_workbench_msgs::SetDirection srv;
   ros::Rate loop_rate(10);
 
   while(1)
@@ -104,46 +104,46 @@ int main(int argc, char **argv)
       }
       if (c == FORWARD)
       {
-        dxl_call.request.forward = true;
-        dxl_call.request.backward = false;
-        dxl_call.request.left = false;
-        dxl_call.request.right = false;
-        dxl_call.request.stop = false;
+        srv.request.forward = true;
+        srv.request.backward = false;
+        srv.request.left = false;
+        srv.request.right = false;
+        srv.request.stop = false;
       }
       else if (c == BACKWARD)
       {
-        dxl_call.request.forward = false;
-        dxl_call.request.backward = true;
-        dxl_call.request.left = false;
-        dxl_call.request.right = false;
-        dxl_call.request.stop = false;
+        srv.request.forward = false;
+        srv.request.backward = true;
+        srv.request.left = false;
+        srv.request.right = false;
+        srv.request.stop = false;
       }
       else if (c == LEFT)
       {
-        dxl_call.request.forward = false;
-        dxl_call.request.backward = false;
-        dxl_call.request.left = true;
-        dxl_call.request.right = false;
-        dxl_call.request.stop = false;
+        srv.request.forward = false;
+        srv.request.backward = false;
+        srv.request.left = true;
+        srv.request.right = false;
+        srv.request.stop = false;
       }
       else if (c == RIGHT)
       {
-        dxl_call.request.forward = false;
-        dxl_call.request.backward = false;
-        dxl_call.request.left = false;
-        dxl_call.request.right = true;
-        dxl_call.request.stop = false;
+        srv.request.forward = false;
+        srv.request.backward = false;
+        srv.request.left = false;
+        srv.request.right = true;
+        srv.request.stop = false;
       }
       else if (c == STOP)
       {
-        dxl_call.request.forward = false;
-        dxl_call.request.backward = false;
-        dxl_call.request.left = false;
-        dxl_call.request.right = false;
-        dxl_call.request.stop = true;
+        srv.request.forward = false;
+        srv.request.backward = false;
+        srv.request.left = false;
+        srv.request.right = false;
+        srv.request.stop = true;
       }
     }
-    dxl_wheel.wheel_control_client_.call(dxl_call);
+    dxl_wheel.wheel_control_client_.call(srv);
 
     ros::spinOnce();
     loop_rate.sleep();

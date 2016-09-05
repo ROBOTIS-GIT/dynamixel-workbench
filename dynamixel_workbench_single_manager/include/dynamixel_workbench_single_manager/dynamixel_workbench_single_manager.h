@@ -19,6 +19,10 @@
 #include <dynamixel_workbench_msgs/DynamixelXM.h>
 #include <dynamixel_workbench_msgs/DynamixelPro.h>
 #include <dynamixel_workbench_msgs/DynamixelProL42.h>
+#include <dynamixel_workbench_msgs/DynamixelCommand.h>
+#include <dynamixel_workbench_msgs/WorkbenchParam.h>
+#include <dynamixel_workbench_msgs/GetWorkbenchParam.h>
+
 #include <dynamixel_workbench_toolbox/dynamixel_tool.h>
 
 #include <dynamixel_sdk/dynamixel_sdk.h>
@@ -42,6 +46,10 @@ class DynamixelWorkbenchSingleManager
   bool is_debug_;
   // ROS Topic Publisher
   ros::Publisher dxl_state_pub_;
+  // ROS Topic Subscriber
+  ros::Subscriber dxl_command_sub_;
+  // ROS Server
+  ros::ServiceServer workbench_param_server_;
   // Parameters
   std::string device_name_;
   float baud_rate_;
@@ -72,7 +80,12 @@ class DynamixelWorkbenchSingleManager
   void checkValidationCommand(bool *valid_cmd, char *cmd);
 
   void setPublisher(void);
+  void setSubscriber(void);
   void getPublisher(void);
+  void setServer(void);
+
+  void dynamixelCommandMsgCallback(const dynamixel_workbench_msgs::DynamixelCommand::ConstPtr &msg);
+  bool getWorkbenchParamCallback(dynamixel_workbench_msgs::GetWorkbenchParam::Request &req, dynamixel_workbench_msgs::GetWorkbenchParam::Response &res);
 
   bool writeDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, int64_t value);
   bool readDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, int64_t *value);

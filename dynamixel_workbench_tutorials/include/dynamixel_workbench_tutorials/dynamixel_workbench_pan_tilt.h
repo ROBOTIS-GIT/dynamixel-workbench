@@ -7,7 +7,7 @@
 #include <ros/ros.h>
 #include <std_msgs/Int32.h>
 #include <std_msgs/Float64.h>
-#include <dynamixel_workbench_msgs/GetPosition.h>
+#include <dynamixel_workbench_msgs/SetPosition.h>
 
 namespace dynamixel_workbench_pan_tilt
 {

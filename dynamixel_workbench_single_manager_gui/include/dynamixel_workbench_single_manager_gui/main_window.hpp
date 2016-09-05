@@ -48,6 +48,15 @@ public Q_SLOTS:
 	** Auto-connections (connectSlotsByName())
 	*******************************************/
         void on_actionAbout_triggered();
+        void on_torque_enable_toggle_button_toggled(bool check);
+        void on_reboot_push_button_clicked(bool check);
+        void on_factory_reset_push_button_clicked(bool check);
+
+        void changeDynamixelID();
+        void changeOperatingMode();
+        void changeBaudrate();
+        void changeControlTableValue();
+
         //void on_button_connect_clicked(bool check );
         //void on_checkbox_use_environment_stateChanged(int state);
 
@@ -55,10 +64,16 @@ public Q_SLOTS:
     ** Manual connections
     *******************************************/
     void updateLoggingView(); // no idea why this can't connect automatically
+    void updateWorkbenchParamLineEdit(dynamixel_workbench_msgs::WorkbenchParam msg);
 
 private:
         Ui::MainWindowDesign ui_;
         QNode qnode_;
+        bool reboot_button_;
+        bool operating_mode_spinbox_;
+
+        void makeUI();
+        void makeConnect();
 };
 
 }  // namespace dynamixel_workbench_single_manager_gui

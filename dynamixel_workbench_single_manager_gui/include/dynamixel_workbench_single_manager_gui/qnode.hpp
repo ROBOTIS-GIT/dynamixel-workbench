@@ -22,7 +22,20 @@
 #include <QThread>
 #include <QStringListModel>
 
-#include "dynamixel_workbench_msgs/DynamixelXM.h"
+#include <dynamixel_workbench_msgs/DynamixelAX.h>
+#include <dynamixel_workbench_msgs/DynamixelRX.h>
+#include <dynamixel_workbench_msgs/DynamixelMX.h>
+#include <dynamixel_workbench_msgs/DynamixelMX64.h>
+#include <dynamixel_workbench_msgs/DynamixelMX106.h>
+#include <dynamixel_workbench_msgs/DynamixelEX.h>
+#include <dynamixel_workbench_msgs/DynamixelXL.h>
+#include <dynamixel_workbench_msgs/DynamixelXM.h>
+#include <dynamixel_workbench_msgs/DynamixelPro.h>
+#include <dynamixel_workbench_msgs/DynamixelProL42.h>
+
+#include "dynamixel_workbench_msgs/DynamixelCommand.h"
+#include "dynamixel_workbench_msgs/WorkbenchParam.h"
+#include "dynamixel_workbench_msgs/GetWorkbenchParam.h"
 
 #endif
 /*****************************************************************************
@@ -34,43 +47,72 @@ namespace dynamixel_workbench_single_manager_gui {
 /*****************************************************************************
 ** Class
 *****************************************************************************/
+enum Operating_Mode
+{
+ position_control = 0,
+ velocity_control,
+ current_control,
+ extended_position_control,
+ position_control_based_on_current,
+ pwm_control
+};
 
-class QNode : public QThread {
-    Q_OBJECT
-public:
-	QNode(int argc, char** argv );
-	virtual ~QNode();
-	bool init();
-	bool init(const std::string &master_url, const std::string &host_url);
-	void run();
+class QNode : public QThread
+{
+Q_OBJECT
+ public:
+  QNode(int argc, char** argv );
+  virtual ~QNode();
+  bool init();
+  void run();
 
-	/*********************
-	** Logging
-	**********************/
-	enum LogLevel {
-	         Debug,
-	         Info,
-	         Warn,
-	         Error,
-	         Fatal
-	 };
+  QStringListModel* loggingModel() { return &logging_model_; }
+  void log(const std::string &msg, int64_t sender);
+  void log(const std::string &msg);
 
-	QStringListModel* loggingModel() { return &logging_model; }
-        void log(const LogLevel &level, const std::string &msg, int64_t sender);
+  void dynamixelAXStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelAX::ConstPtr &msg);
+  void dynamixelRXStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelRX::ConstPtr &msg);
+  void dynamixelMXStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelMX::ConstPtr &msg);
+  void dynamixelMX64StatusMsgCallback(const dynamixel_workbench_msgs::DynamixelMX64::ConstPtr &msg);
+  void dynamixelMX106StatusMsgCallback(const dynamixel_workbench_msgs::DynamixelMX106::ConstPtr &msg);
+  void dynamixelEXStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelEX::ConstPtr &msg);
+  void dynamixelXLStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelXL::ConstPtr &msg);
+  void dynamixelXMStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelXM::ConstPtr &msg);
+  void dynamixelProStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelPro::ConstPtr &msg);
+  void dynamixelProL42StatusMsgCallback(const dynamixel_workbench_msgs::DynamixelProL42::ConstPtr &msg);
 
-        void dynamixelStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelXM::ConstPtr &msg);
+  void sendTorqueMsg(std::string addr_name, int64_t onoff);
+  void sendRebootMsg(void);
+  void sendResetMsg(void);
+  void sendSetIdMsg(int64_t id);
+  void sendSetOperatingModeMsg(int64_t index);
+  void sendSetBaudrateMsg(float baud_rate);
+  void sendControlTableValueMsg(std::string table_item, int64_t value);
+
+  void getWorkbenchParam(void);
+  void setSubscribe(ros::NodeHandle n);
 
 Q_SIGNALS:
-	void loggingUpdated();
-    void rosShutdown();
+  void loggingUpdated();
+  void rosShutdown();
 
-private:
-	int init_argc;
-	char** init_argv;
-	ros::Publisher chatter_publisher;
-    QStringListModel logging_model;
+  void updateWorkbenchParam(dynamixel_workbench_msgs::WorkbenchParam);
 
-    ros::Subscriber dynamixel_status_msg_sub_;
+ private:
+  int init_argc;
+  char** init_argv;
+
+  QStringListModel logging_model_;
+
+  ros::Publisher dxl_command_msg_pub_;
+  ros::Publisher set_workbench_param_msg_pub_;
+  ros::Subscriber dxl_status_msg_sub_;
+  ros::ServiceClient get_workbench_param_client_;
+
+  int64_t row_count_;
+  std::string dxl_model_name_;
+  int8_t dxl_model_num_;
+  Operating_Mode operating_mode;
 };
 
 }  // namespace dynamixel_workbench_single_manager_gui

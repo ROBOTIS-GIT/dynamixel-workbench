@@ -37,10 +37,10 @@ DynamixelWorkbenchPositionControl::DynamixelWorkbenchPositionControl()
   packetHandler_ = dynamixel::PacketHandler::getPacketHandler(2.0);
 
   // init ROS Publish
-  dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::MotorStateList>("/motor_state",10);
+  dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::MotorStateList>("/dynamixel_workbench_position_control/motor_state",10);
 
   // init ROS Server
-  position_control_server = nh_.advertiseService("/dynamixel_workbench_position_control", &DynamixelWorkbenchPositionControl::controlPanTiltMotor, this);
+  position_control_server = nh_.advertiseService("/dynamixel_workbench_position_control", &DynamixelWorkbenchPositionControl::controlPanTiltMotorCallback, this);
 
   // Open port
   if (portHandler_->openPort())
@@ -671,8 +671,8 @@ bool DynamixelWorkbenchPositionControl::dynamixelControlLoop(void)
   dxl_state_pub_.publish(dxl_response_list);
 }
 
-bool DynamixelWorkbenchPositionControl::controlPanTiltMotor(dynamixel_workbench_msgs::GetPosition::Request &req,
-                                                            dynamixel_workbench_msgs::GetPosition::Response &res)
+bool DynamixelWorkbenchPositionControl::controlPanTiltMotorCallback(dynamixel_workbench_msgs::GetPosition::Request &req,
+                                                                    dynamixel_workbench_msgs::GetPosition::Response &res)
 {
   dynamixel_[PAN_MOTOR]->dxl_item_ = dynamixel_[PAN_MOTOR]->ctrl_table_["goal_position"];
   dynamixel_[TILT_MOTOR]->dxl_item_ = dynamixel_[TILT_MOTOR]->ctrl_table_["goal_position"];

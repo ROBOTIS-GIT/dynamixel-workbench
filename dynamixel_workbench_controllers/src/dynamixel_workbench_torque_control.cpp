@@ -35,7 +35,7 @@ DynamixelWorkbenchTorqueControl::DynamixelWorkbenchTorqueControl()
   packetHandler_ = dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION);
 
   // init ROS Publish
-  dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::MotorStateList>("/motor_state",10);
+  dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::MotorStateList>("/dynamixel_workbench_position_control/motor_state",10);
 
   // init ROS Server
   position_control_server = nh_.advertiseService("/dynamixel_workbench_torque_control", &DynamixelWorkbenchTorqueControl::controlPanTiltMotor, this);

@@ -87,7 +87,7 @@ class DynamixelWorkbenchVelocityControl
   bool writeVelocity(int64_t left_wheel_velocity, int64_t right_wheel_velocity);
 
   bool getPublisher(void);
-  bool controlTurtlebot(dynamixel_workbench_msgs::GetDirection::Request &req,
+  bool controlTurtlebotCallback(dynamixel_workbench_msgs::GetDirection::Request &req,
                            dynamixel_workbench_msgs::GetDirection::Response &res);
 };
 }

@@ -87,8 +87,8 @@ class DynamixelWorkbenchPositionControl
   bool writeVelocity(int64_t pan_value, int64_t tilt_value);
 
   bool getPublisher(void);
-  bool controlPanTiltMotor(dynamixel_workbench_msgs::GetPosition::Request &req,
-                           dynamixel_workbench_msgs::GetPosition::Response &res);
+  bool controlPanTiltMotorCallback(dynamixel_workbench_msgs::GetPosition::Request &req,
+                                   dynamixel_workbench_msgs::GetPosition::Response &res);
 };
 }
 

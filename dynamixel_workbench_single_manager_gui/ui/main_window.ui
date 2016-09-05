@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1076</width>
-    <height>760</height>
+    <width>891</width>
+    <height>741</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,6 +30,12 @@
         <height>0</height>
        </size>
       </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>700</height>
+       </size>
+      </property>
       <property name="locale">
        <locale language="English" country="Australia"/>
       </property>
@@ -38,7 +44,7 @@
       </property>
       <widget class="QWidget" name="tab_status">
        <attribute name="title">
-        <string>Ros Communications</string>
+        <string>Dynamixel current state</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
@@ -53,37 +59,6 @@
            <string>Logging</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_3">
-           <item row="1" column="0">
-            <widget class="QFrame" name="frame">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::StyledPanel</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Raised</enum>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_3">
-              <item>
-               <widget class="QPushButton" name="quit_button">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>Quit</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
            <item row="0" column="0">
             <widget class="QListView" name="view_logging"/>
            </item>
@@ -101,7 +76,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1076</width>
+     <width>891</width>
      <height>19</height>
     </rect>
    </property>
@@ -119,6 +94,407 @@
    <addaction name="menu_File"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QDockWidget" name="dockWidget">
+   <property name="minimumSize">
+    <size>
+     <width>350</width>
+     <height>700</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>350</width>
+     <height>700</height>
+    </size>
+   </property>
+   <property name="windowTitle">
+    <string>    Manager Command Panel</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QVBoxLayout" name="verticalLayout_3">
+     <item>
+      <widget class="QFrame" name="info_command_frame">
+       <property name="minimumSize">
+        <size>
+         <width>320</width>
+         <height>450</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>320</width>
+         <height>450</height>
+        </size>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="QGroupBox" name="dynamixel_information_group_box">
+          <property name="minimumSize">
+           <size>
+            <width>300</width>
+            <height>150</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>300</width>
+            <height>150</height>
+           </size>
+          </property>
+          <property name="title">
+           <string>Dynamixel information</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+          <layout class="QGridLayout" name="gridLayout">
+           <property name="leftMargin">
+            <number>9</number>
+           </property>
+           <property name="bottomMargin">
+            <number>9</number>
+           </property>
+           <property name="spacing">
+            <number>6</number>
+           </property>
+           <item row="0" column="0">
+            <widget class="QLabel" name="device_name_label">
+             <property name="text">
+              <string>Device Name</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="device_name_line_edit">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="get_baud_rate_label">
+             <property name="text">
+              <string>Baudrate</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLineEdit" name="get_baud_rate_line_edit">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="protocol_version_label">
+             <property name="text">
+              <string>Protocol Version</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLineEdit" name="protocol_version_line_edit">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="model_name_label">
+             <property name="text">
+              <string>Model Name</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QLineEdit" name="model_name_line_edit">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="dynamixel_command_group_box">
+          <property name="minimumSize">
+           <size>
+            <width>300</width>
+            <height>270</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>300</width>
+            <height>270</height>
+           </size>
+          </property>
+          <property name="title">
+           <string>Dynamixel Command</string>
+          </property>
+          <property name="flat">
+           <bool>false</bool>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_2">
+           <item row="4" column="1">
+            <widget class="QDial" name="address_value_dial"/>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="set_baud_rate_label">
+             <property name="text">
+              <string>Baudrate</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="operating_mode_label">
+             <property name="text">
+              <string>Operating Mode</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="id_label">
+             <property name="text">
+              <string>ID</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLineEdit" name="address_name_line_edit">
+             <property name="inputMask">
+              <string/>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="maxLength">
+              <number>32767</number>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QSpinBox" name="id_spin_box"/>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLineEdit" name="set_baud_rate_line_edit"/>
+           </item>
+           <item row="5" column="1">
+            <widget class="QSpinBox" name="address_value_spin_box"/>
+           </item>
+           <item row="1" column="1">
+            <widget class="QComboBox" name="operating_mode_combo_box">
+             <item>
+              <property name="text">
+               <string>Position Control</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Velocity Control</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Current Control</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Extended Position Control</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Position Control based on current</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>PWM Control</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QFrame" name="button_frame">
+       <property name="minimumSize">
+        <size>
+         <width>320</width>
+         <height>200</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>320</width>
+         <height>200</height>
+        </size>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QPushButton" name="torque_enable_toggle_button">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Torque Enable</string>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="factory_reset_push_button">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Factory reset</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="reboot_push_button">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Reboot</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="quit_button">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Quit</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
   <action name="action_Quit">
    <property name="text">
     <string>&amp;Quit</string>
@@ -146,6 +522,10 @@
    </property>
   </action>
  </widget>
+ <tabstops>
+  <tabstop>tab_manager</tabstop>
+  <tabstop>view_logging</tabstop>
+ </tabstops>
  <resources>
   <include location="../../../ROBOTIS-MANIPULATOR-X/manipulator_x_position_ctrl_gui/resources/images.qrc"/>
  </resources>

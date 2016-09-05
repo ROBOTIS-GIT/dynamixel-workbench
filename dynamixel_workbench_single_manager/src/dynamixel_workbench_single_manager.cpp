@@ -52,7 +52,9 @@ DynamixelWorkbenchSingleManager::DynamixelWorkbenchSingleManager()
   }
 
   scanDynamixelID();
+  setServer();
   setPublisher();
+  setSubscriber();
 }
 
 DynamixelWorkbenchSingleManager::~DynamixelWorkbenchSingleManager()
@@ -123,50 +125,61 @@ void DynamixelWorkbenchSingleManager::setPublisher(void)
   // Init ROS publish
   if(!strncmp(dxl_->model_name_.c_str(), "AX", 2))
   {
-    dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelAX>("/" + dxl_->model_name_ + "/motor_state",10);
+    dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelAX>("/dynamixel_workbench_single_manager/motor_state",10);
   }
   else if (!strncmp(dxl_->model_name_.c_str(), "MX", 2))
   {
     if (dxl_->model_number_ == 310) // MX-64
     {
-      dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelMX64>("/" + dxl_->model_name_ + "/motor_state",10);
+      dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelMX64>("/dynamixel_workbench_single_manager/motor_state",10);
     }
     else if (dxl_->model_number_ == 320) // MX-106
     {
-      dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelMX106>("/" + dxl_->model_name_ + "/motor_state",10);
+      dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelMX106>("/dynamixel_workbench_single_manager/motor_state",10);
     }
     else
     {
-      dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelMX>("/" + dxl_->model_name_ + "/motor_state",10);
+      dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelMX>("/dynamixel_workbench_single_manager/motor_state",10);
     }
   }
   else if (!strncmp(dxl_->model_name_.c_str(), "RX", 2))
   {
-    dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelRX>("/" + dxl_->model_name_ + "/motor_state",10);
+    dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelRX>("/dynamixel_workbench_single_manager/motor_state",10);
   }
   else if (!strncmp(dxl_->model_name_.c_str(), "EX", 2))
   {
-    dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelEX>("/" + dxl_->model_name_ + "/motor_state",10);
+    dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelEX>("/dynamixel_workbench_single_manager/motor_state",10);
   }
   else if (!strncmp(dxl_->model_name_.c_str(), "XL", 2))
   {
-    dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelXL>("/" + dxl_->model_name_ + "/motor_state",10);
+    dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelXL>("/dynamixel_workbench_single_manager/motor_state",10);
   }
   else if (!strncmp(dxl_->model_name_.c_str(), "XM", 2))
   {
-    dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelXM>("/" + dxl_->model_name_ + "/motor_state",10);
+    dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelXM>("/dynamixel_workbench_single_manager/motor_state",10);
   }
   else if (!strncmp(dxl_->model_name_.c_str(), "PRO", 3))
   {
     if (dxl_->model_number_ == 35072) // PRO_L42_10_S300_R
     {
-      dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelProL42>("/" + dxl_->model_name_ + "/motor_state",10);
+      dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelProL42>("/dynamixel_workbench_single_manager/motor_state",10);
     }
     else
     {
-      dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelPro>("/" + dxl_->model_name_ + "/motor_state",10);
+      dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelPro>("/dynamixel_workbench_single_manager/motor_state",10);
     }
   }
+}
+
+void DynamixelWorkbenchSingleManager::setSubscriber(void)
+{
+  // Init ROS subscriber
+  dxl_command_sub_ = nh_.subscribe("/dynamixel_workbench_single_manager/motor_command", 10, &DynamixelWorkbenchSingleManager::dynamixelCommandMsgCallback, this);
+}
+
+void DynamixelWorkbenchSingleManager::setServer(void)
+{
+  workbench_param_server_ = nh_.advertiseService("/dynamixel_workbench_single_manager/get_workbench_parameter", &DynamixelWorkbenchSingleManager::getWorkbenchParamCallback, this);
 }
 
 void DynamixelWorkbenchSingleManager::getPublisher(void)
@@ -274,14 +287,14 @@ bool DynamixelWorkbenchSingleManager::scanDynamixelID(void)
 
   if (dxl_ == NULL)
   {
-    ROS_INFO("");
+    fprintf(stderr,"\n");
     ROS_ERROR("...Failed to find dynamixel!");
     shutdownDynamixelWorkbenchSingleManager();
     return false;
   }
   else
   {
-    ROS_INFO("");
+    fprintf(stderr,"\n");
     ROS_INFO("...Succeeded to find dynamixel");
     ROS_INFO("[ID] %u, [Model Name] %s", dxl_->id_, dxl_->model_name_.c_str());
     return true;
@@ -445,7 +458,7 @@ void DynamixelWorkbenchSingleManager::showControlTable(void)
   for (dxl_->it_ctrl_ = dxl_->ctrl_table_.begin(); dxl_->it_ctrl_ != dxl_->ctrl_table_.end(); dxl_->it_ctrl_++)
   {
     dxl_->dxl_item_ = dxl_->ctrl_table_[dxl_->it_ctrl_->first.c_str()];
-    if(dxl_->dxl_item_->access_type == 1) //1 = READ_WRITE
+    if(dxl_->dxl_item_->access_type == dynamixel_tool::READ_WRITE)
     {
       ROS_INFO("%s", dxl_->dxl_item_->item_name.c_str());
     }
@@ -1375,6 +1388,56 @@ void DynamixelWorkbenchSingleManager::proL42MotorMessage(void)
   dxl_state_pub_.publish(dxl_response);
 }
 
+bool DynamixelWorkbenchSingleManager::getWorkbenchParamCallback(dynamixel_workbench_msgs::GetWorkbenchParam::Request &req, dynamixel_workbench_msgs::GetWorkbenchParam::Response &res)
+{
+  res.workbench_parameter.device_name = device_name_;
+  res.workbench_parameter.baud_rate = baud_rate_;
+  res.workbench_parameter.protocol_version = protocol_version_;
+  res.workbench_parameter.model_name = dxl_->model_name_;
+  res.workbench_parameter.model_num = dxl_->model_number_;
+
+  return true;
+}
+
+void DynamixelWorkbenchSingleManager::dynamixelCommandMsgCallback(const dynamixel_workbench_msgs::DynamixelCommand::ConstPtr &msg)
+{
+  if (msg->addr_name == "reboot")
+  {
+    rebootDynamixel();
+  }
+  else if (msg->addr_name == "factory_reset")
+  {
+    resetDynamixel();
+  }
+  else if (msg->addr_name == "baud_rate")
+  {
+      dxl_->dxl_item_ = dxl_->ctrl_table_[msg->addr_name];
+      writeDynamixelRegister(dxl_->id_, dxl_->dxl_item_->address, dxl_->dxl_item_->data_length, dxl_->baud_rate_table_.find(msg->value)->second);
+
+      if (portHandler_->setBaudRate(dxl_->baud_rate_table_.find(msg->value)->first) == false)
+      {
+        ROS_INFO(" Failed to change baudrate!");
+      }
+      else
+      {
+        ROS_INFO(" Success to change baudrate! [ BAUD RATE: %d ]", dxl_->baud_rate_table_.find(msg->value)->first);
+      }
+  }
+  else if (msg->addr_name == "id")
+  {
+    dxl_->dxl_item_ = dxl_->ctrl_table_[msg->addr_name];
+    writeDynamixelRegister(dxl_->id_, dxl_->dxl_item_->address, dxl_->dxl_item_->data_length, msg->value);
+
+    dxl_ = new dynamixel_tool::DynamixelTool(msg->value, dxl_number_, protocol_version_);
+    scanDynamixelID();
+  }
+  else
+  {
+    dxl_->dxl_item_ = dxl_->ctrl_table_[msg->addr_name];
+    writeDynamixelRegister(dxl_->id_, dxl_->dxl_item_->address, dxl_->dxl_item_->data_length, msg->value);
+  }
+}
+
 bool DynamixelWorkbenchSingleManager::dynamixelSingleManagerLoop(void)
 {
   char input[128];
@@ -1422,7 +1485,7 @@ bool DynamixelWorkbenchSingleManager::dynamixelSingleManagerLoop(void)
       else if (strcmp(cmd, "exit") == 0)
       {
         dxl_->dxl_item_ = dxl_->ctrl_table_["torque_enable"];
-        writeDynamixelRegister(dxl_->id_, dxl_->dxl_item_->address, dxl_->dxl_item_->data_length, 0);
+        writeDynamixelRegister(dxl_->id_, dxl_->dxl_item_->address, dxl_->dxl_item_->data_length, false);
         shutdownDynamixelWorkbenchSingleManager();
         return true;
       }
@@ -1459,11 +1522,11 @@ bool DynamixelWorkbenchSingleManager::dynamixelSingleManagerLoop(void)
 
             if (portHandler_->setBaudRate(dxl_->baud_rate_table_.find(atoi(param[0]))->first) == false)
             {
-              ROS_INFO(" Failed to change baudrate! \n");
+              ROS_INFO(" Failed to change baudrate!");
             }
             else
             {
-              ROS_INFO(" Success to change baudrate! [ BAUD RATE: %d ]\n", dxl_->baud_rate_table_.find(atoi(param[0]))->first);
+              ROS_INFO(" Success to change baudrate! [ BAUD RATE: %d ]", dxl_->baud_rate_table_.find(atoi(param[0]))->first);
             }
           }
           else if (dxl_->dxl_item_->item_name == "protocol_version")

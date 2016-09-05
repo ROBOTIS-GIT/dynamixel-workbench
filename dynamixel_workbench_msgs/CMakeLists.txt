@@ -57,13 +57,16 @@ find_package(catkin REQUIRED COMPONENTS
    DynamixelProL42.msg
    MotorState.msg
    MotorStateList.msg
+   DynamixelCommand.msg
+   WorkbenchParam.msg
  )
 
 ## Generate services in the 'srv' folder
 add_service_files(
   FILES
-  GetPosition.srv
-  GetDirection.srv
+  SetPosition.srv
+  SetDirection.srv
+  GetWorkbenchParam.srv
 )
 
 ## Generate actions in the 'action' folder

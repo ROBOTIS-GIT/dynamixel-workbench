@@ -38,10 +38,10 @@ DynamixelWorkbenchVelocityControl::DynamixelWorkbenchVelocityControl()
   packetHandler_ = dynamixel::PacketHandler::getPacketHandler(2.0);
 
   // init ROS Publish
-  dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::MotorStateList>("/wheel_state",10);
+  dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::MotorStateList>("/dynamixel_workbench_position_control/wheel_state",10);
 
   // init ROS Server
-  wheel_control_server_ = nh_.advertiseService("/dynamixel_workbench_velocity_control", &DynamixelWorkbenchVelocityControl::controlTurtlebot, this);
+  wheel_control_server_ = nh_.advertiseService("/dynamixel_workbench_velocity_control", &DynamixelWorkbenchVelocityControl::controlTurtlebotCallback, this);
 
   // Open port
   if (portHandler_->openPort())
@@ -660,8 +660,8 @@ bool DynamixelWorkbenchVelocityControl::dynamixelControlLoop(void)
   dxl_state_pub_.publish(dxl_response_list);
 }
 
-bool DynamixelWorkbenchVelocityControl::controlTurtlebot(dynamixel_workbench_msgs::GetDirection::Request &req,
-                                                            dynamixel_workbench_msgs::GetDirection::Response &res)
+bool DynamixelWorkbenchVelocityControl::controlTurtlebotCallback(dynamixel_workbench_msgs::GetDirection::Request &req,
+                                                                 dynamixel_workbench_msgs::GetDirection::Response &res)
 {
 
   if (req.forward == true)
