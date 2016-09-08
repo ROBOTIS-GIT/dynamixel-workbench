@@ -33,6 +33,7 @@
 #include <dynamixel_workbench_msgs/DynamixelPro.h>
 #include <dynamixel_workbench_msgs/DynamixelProL42.h>
 
+#include "dynamixel_workbench_toolbox/dynamixel_tool.h"
 #include "dynamixel_workbench_msgs/DynamixelCommand.h"
 #include "dynamixel_workbench_msgs/WorkbenchParam.h"
 #include "dynamixel_workbench_msgs/GetWorkbenchParam.h"
@@ -47,16 +48,6 @@ namespace dynamixel_workbench_single_manager_gui {
 /*****************************************************************************
 ** Class
 *****************************************************************************/
-enum Operating_Mode
-{
- position_control = 0,
- velocity_control,
- current_control,
- extended_position_control,
- position_control_based_on_current,
- pwm_control
-};
-
 class QNode : public QThread
 {
 Q_OBJECT
@@ -85,12 +76,13 @@ Q_OBJECT
   void sendRebootMsg(void);
   void sendResetMsg(void);
   void sendSetIdMsg(int64_t id);
-  void sendSetOperatingModeMsg(int64_t index);
+  void sendSetOperatingModeMsg(std::__cxx11::string index);
   void sendSetBaudrateMsg(float baud_rate);
-  void sendControlTableValueMsg(std::string table_item, int64_t value);
+  void sendControlTableValueMsg(QString table_item, int64_t value);
+  void setPositionZeroMsg(int32_t zero_position);
 
   void getWorkbenchParam(void);
-  void setSubscribe(ros::NodeHandle n);
+  void setSubscriber(ros::NodeHandle nh);
 
 Q_SIGNALS:
   void loggingUpdated();
@@ -110,9 +102,10 @@ Q_SIGNALS:
   ros::ServiceClient get_workbench_param_client_;
 
   int64_t row_count_;
+
   std::string dxl_model_name_;
-  int8_t dxl_model_num_;
-  Operating_Mode operating_mode;
+  uint16_t dxl_model_number_;
+
 };
 
 }  // namespace dynamixel_workbench_single_manager_gui

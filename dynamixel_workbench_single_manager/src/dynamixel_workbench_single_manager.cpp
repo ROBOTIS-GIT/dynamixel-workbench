@@ -8,8 +8,9 @@ DynamixelWorkbenchSingleManager::DynamixelWorkbenchSingleManager()
      device_name_(""),
      baud_rate_(0),
      protocol_version_(0),
-     dxl_number_(0),
+     dxl_model_number_(0),
      read_value_(0),
+     dxl_torque_status_(false),
      dxl_(NULL)
 {
   // Init parameter
@@ -71,7 +72,7 @@ bool DynamixelWorkbenchSingleManager::initDynamixelWorkbenchSingleManager(void)
 bool DynamixelWorkbenchSingleManager::shutdownDynamixelWorkbenchSingleManager(void)
 {
   dxl_->dxl_item_ = dxl_->ctrl_table_["torque_enable"];
-  writeDynamixelRegister(dxl_->id_, dxl_->dxl_item_->address, dxl_->dxl_item_->data_length, 0);
+  writeDynamixelRegister(dxl_->id_, dxl_->dxl_item_->address, dxl_->dxl_item_->data_length, false);
   portHandler_->closePort();
   ros::shutdown();
   return true;
@@ -182,7 +183,7 @@ void DynamixelWorkbenchSingleManager::setServer(void)
   workbench_param_server_ = nh_.advertiseService("/dynamixel_workbench_single_manager/get_workbench_parameter", &DynamixelWorkbenchSingleManager::getWorkbenchParamCallback, this);
 }
 
-void DynamixelWorkbenchSingleManager::getPublisher(void)
+void DynamixelWorkbenchSingleManager::setPublishedMsg(void)
 {
   if (!strncmp(dxl_->model_name_.c_str(), "AX", 2))
   {
@@ -246,7 +247,8 @@ bool DynamixelWorkbenchSingleManager::scanDynamixelID(void)
       if (packetHandler_->ping(portHandler_, dxl_id, &dxl_num, &dxl_error) == COMM_SUCCESS)
       {
         ROS_INFO("Model Number: %d", dxl_num);
-        dxl_number_ = dxl_num;
+        dxl_model_number_ = dxl_num;
+        dxl_model_id_ = dxl_id;
         dxl_ = new dynamixel_tool::DynamixelTool(dxl_id, dxl_num, protocol_version_);
       }
       else
@@ -269,7 +271,8 @@ bool DynamixelWorkbenchSingleManager::scanDynamixelID(void)
       if (packetHandler_->ping(portHandler_, dxl_id, &dxl_num, &dxl_error) == COMM_SUCCESS)
       {
         ROS_INFO("Model Number: %d", dxl_num);
-        dxl_number_ = dxl_num;
+        dxl_model_number_ = dxl_num;
+        dxl_model_id_ = dxl_id;
         dxl_ = new dynamixel_tool::DynamixelTool(dxl_id, dxl_num, protocol_version_);
       }
       else
@@ -384,7 +387,7 @@ bool DynamixelWorkbenchSingleManager::readDynamixelRegister(uint8_t id, uint16_t
   else
   {
     packetHandler_->printTxRxResult(dxl_comm_result);
-    ROS_ERROR("[ID] %u, Fail to read!", id);
+    ROS_ERROR("[ID] %u, Fail to read!, %d", id, addr);
     return false;
   }
 }
@@ -458,9 +461,19 @@ void DynamixelWorkbenchSingleManager::showControlTable(void)
   for (dxl_->it_ctrl_ = dxl_->ctrl_table_.begin(); dxl_->it_ctrl_ != dxl_->ctrl_table_.end(); dxl_->it_ctrl_++)
   {
     dxl_->dxl_item_ = dxl_->ctrl_table_[dxl_->it_ctrl_->first.c_str()];
-    if(dxl_->dxl_item_->access_type == dynamixel_tool::READ_WRITE)
+    if (dxl_torque_status_)
     {
-      ROS_INFO("%s", dxl_->dxl_item_->item_name.c_str());
+      if ((dxl_->dxl_item_->access_type == dynamixel_tool::READ_WRITE) && (dxl_->dxl_item_->memory_type == dynamixel_tool::RAM))
+      {
+        ROS_INFO("%s", dxl_->dxl_item_->item_name.c_str());
+      }
+    }
+    else
+    {
+      if (dxl_->dxl_item_->access_type == dynamixel_tool::READ_WRITE)
+      {
+        ROS_INFO("%s", dxl_->dxl_item_->item_name.c_str());
+      }
     }
   }
 }
@@ -520,7 +533,7 @@ void DynamixelWorkbenchSingleManager::axMotorMessage(void)
     else if ("alarm_shutdown" == dxl_->dxl_item_->item_name)
       dxl_response.alarm_shutdown = read_value_;
     else if ("torque_enable" == dxl_->dxl_item_->item_name)
-      dxl_response.torque_enable = read_value_;
+      dxl_response.torque_enable = dxl_torque_status_ = read_value_;
     else if ("led" == dxl_->dxl_item_->item_name)
       dxl_response.led = read_value_;
     else if ("cw_compliance_margin" == dxl_->dxl_item_->item_name)
@@ -598,7 +611,7 @@ void DynamixelWorkbenchSingleManager::rxMotorMessage(void)
     else if ("alarm_shutdown" == dxl_->dxl_item_->item_name)
       dxl_response.alarm_shutdown = read_value_;
     else if ("torque_enable" == dxl_->dxl_item_->item_name)
-      dxl_response.torque_enable = read_value_;
+      dxl_response.torque_enable = dxl_torque_status_ = read_value_;
     else if ("led" == dxl_->dxl_item_->item_name)
       dxl_response.led = read_value_;
     else if ("cw_compliance_margin" == dxl_->dxl_item_->item_name)
@@ -680,7 +693,7 @@ void DynamixelWorkbenchSingleManager::mxMotorMessage(void)
     else if ("resolution_divider" == dxl_->dxl_item_->item_name)
       dxl_response.resolution_divider = read_value_;
     else if ("torque_enable" == dxl_->dxl_item_->item_name)
-      dxl_response.torque_enable = read_value_;
+      dxl_response.torque_enable = dxl_torque_status_ = read_value_;
     else if ("led" == dxl_->dxl_item_->item_name)
       dxl_response.led = read_value_;
     else if ("d_gain" == dxl_->dxl_item_->item_name)
@@ -762,7 +775,7 @@ void DynamixelWorkbenchSingleManager::mx64MotorMessage(void)
     else if ("resolution_divider" == dxl_->dxl_item_->item_name)
       dxl_response.resolution_divider = read_value_;
     else if ("torque_enable" == dxl_->dxl_item_->item_name)
-      dxl_response.torque_enable = read_value_;
+      dxl_response.torque_enable = dxl_torque_status_ = read_value_;
     else if ("led" == dxl_->dxl_item_->item_name)
       dxl_response.led = read_value_;
     else if ("d_gain" == dxl_->dxl_item_->item_name)
@@ -852,7 +865,7 @@ void DynamixelWorkbenchSingleManager::mx106MotorMessage(void)
     else if ("resolution_divider" == dxl_->dxl_item_->item_name)
       dxl_response.resolution_divider = read_value_;
     else if ("torque_enable" == dxl_->dxl_item_->item_name)
-      dxl_response.torque_enable = read_value_;
+      dxl_response.torque_enable = dxl_torque_status_ = read_value_;
     else if ("led" == dxl_->dxl_item_->item_name)
       dxl_response.led = read_value_;
     else if ("d_gain" == dxl_->dxl_item_->item_name)
@@ -938,7 +951,7 @@ void DynamixelWorkbenchSingleManager::exMotorMessage(void)
     else if ("alarm_shutdown" == dxl_->dxl_item_->item_name)
       dxl_response.alarm_shutdown = read_value_;
     else if ("torque_enable" == dxl_->dxl_item_->item_name)
-      dxl_response.torque_enable = read_value_;
+      dxl_response.torque_enable = dxl_torque_status_ = read_value_;
     else if ("led" == dxl_->dxl_item_->item_name)
       dxl_response.led = read_value_;
     else if ("cw_compliance_margin" == dxl_->dxl_item_->item_name)
@@ -1018,7 +1031,7 @@ void DynamixelWorkbenchSingleManager::xlMotorMessage(void)
     else if ("alarm_shutdown" == dxl_->dxl_item_->item_name)
       dxl_response.alarm_shutdown = read_value_;
     else if ("torque_enable" == dxl_->dxl_item_->item_name)
-      dxl_response.torque_enable = read_value_;
+      dxl_response.torque_enable = dxl_torque_status_ = read_value_;
     else if ("led" == dxl_->dxl_item_->item_name)
       dxl_response.led = read_value_;
     else if ("d_gain" == dxl_->dxl_item_->item_name)
@@ -1104,7 +1117,7 @@ void DynamixelWorkbenchSingleManager::xmMotorMessage(void)
     else if ("shutdown" == dxl_->dxl_item_->item_name)
       dxl_response.shutdown = read_value_;
     else if ("torque_enable" == dxl_->dxl_item_->item_name)
-      dxl_response.torque_enable = read_value_;
+      dxl_response.torque_enable = dxl_torque_status_ = read_value_;
     else if ("led" == dxl_->dxl_item_->item_name)
       dxl_response.led = read_value_;
     else if ("status_return_level" == dxl_->dxl_item_->item_name)
@@ -1228,7 +1241,7 @@ void DynamixelWorkbenchSingleManager::proMotorMessage(void)
     else if ("indirect_address_1" == dxl_->dxl_item_->item_name)
       dxl_response.indirect_address_1 = read_value_;
     else if ("torque_enable" == dxl_->dxl_item_->item_name)
-      dxl_response.torque_enable = read_value_;
+      dxl_response.torque_enable = dxl_torque_status_ = read_value_;
     else if ("led_red" == dxl_->dxl_item_->item_name)
       dxl_response.led_red = read_value_;
     else if ("led_green" == dxl_->dxl_item_->item_name)
@@ -1334,7 +1347,7 @@ void DynamixelWorkbenchSingleManager::proL42MotorMessage(void)
     else if ("indirect_address_1" == dxl_->dxl_item_->item_name)
       dxl_response.indirect_address_1 = read_value_;
     else if ("torque_enable" == dxl_->dxl_item_->item_name)
-      dxl_response.torque_enable = read_value_;
+      dxl_response.torque_enable = dxl_torque_status_ = read_value_;
     else if ("led_red" == dxl_->dxl_item_->item_name)
       dxl_response.led_red = read_value_;
     else if ("led_green" == dxl_->dxl_item_->item_name)
@@ -1394,7 +1407,8 @@ bool DynamixelWorkbenchSingleManager::getWorkbenchParamCallback(dynamixel_workbe
   res.workbench_parameter.baud_rate = baud_rate_;
   res.workbench_parameter.protocol_version = protocol_version_;
   res.workbench_parameter.model_name = dxl_->model_name_;
-  res.workbench_parameter.model_num = dxl_->model_number_;
+  res.workbench_parameter.model_id = dxl_model_id_;
+  res.workbench_parameter.model_number = dxl_model_number_;
 
   return true;
 }
@@ -1428,8 +1442,9 @@ void DynamixelWorkbenchSingleManager::dynamixelCommandMsgCallback(const dynamixe
     dxl_->dxl_item_ = dxl_->ctrl_table_[msg->addr_name];
     writeDynamixelRegister(dxl_->id_, dxl_->dxl_item_->address, dxl_->dxl_item_->data_length, msg->value);
 
-    dxl_ = new dynamixel_tool::DynamixelTool(msg->value, dxl_number_, protocol_version_);
-    scanDynamixelID();
+    dxl_ = new dynamixel_tool::DynamixelTool(msg->value, dxl_model_number_, protocol_version_);
+    ROS_INFO("...Succeeded to set dynamixel id");
+    ROS_INFO("[ID] %u, [Model Name] %s", dxl_->id_, dxl_->model_name_.c_str());
   }
   else
   {
@@ -1447,7 +1462,7 @@ bool DynamixelWorkbenchSingleManager::dynamixelSingleManagerLoop(void)
   char *token;
   bool valid_cmd = false;
 
-  getPublisher();
+  setPublishedMsg();
 
   if (kbhit())
   {
@@ -1484,8 +1499,6 @@ bool DynamixelWorkbenchSingleManager::dynamixelSingleManagerLoop(void)
       }
       else if (strcmp(cmd, "exit") == 0)
       {
-        dxl_->dxl_item_ = dxl_->ctrl_table_["torque_enable"];
-        writeDynamixelRegister(dxl_->id_, dxl_->dxl_item_->address, dxl_->dxl_item_->data_length, false);
         shutdownDynamixelWorkbenchSingleManager();
         return true;
       }
@@ -1513,8 +1526,9 @@ bool DynamixelWorkbenchSingleManager::dynamixelSingleManagerLoop(void)
           if (dxl_->dxl_item_->item_name == "id")
           {
             writeDynamixelRegister(dxl_->id_, dxl_->dxl_item_->address, dxl_->dxl_item_->data_length, atoi(param[0]));
-            dxl_ = new dynamixel_tool::DynamixelTool(atoi(param[0]), dxl_number_, protocol_version_);
-            scanDynamixelID();
+            dxl_ = new dynamixel_tool::DynamixelTool(atoi(param[0]), dxl_model_number_, protocol_version_);
+            ROS_INFO("...Succeeded to set dynamixel id");
+            ROS_INFO("[ID] %u, [Model Name] %s", dxl_->id_, dxl_->model_name_.c_str());
           }
           else if (dxl_->dxl_item_->item_name == "baud_rate")
           {

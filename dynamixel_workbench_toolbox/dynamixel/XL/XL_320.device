@@ -2,6 +2,13 @@
 model_number = 350
 model_name  = XL_320
 
+[type info]
+value_of_0_radian_position      = 512
+value_of_min_radian_position    = 0
+value_of_max_radian_position    = 1024
+min_radian                      = -3.14159265
+max_radian                      =  3.14159265
+
 [baud rate]
 # baud rate | value
 9600        | 0

@@ -39,6 +39,12 @@ class DynamixelTool
   std::string model_name_;
   float protocol_version_;
 
+  int32_t value_of_0_radian_position_;
+  int32_t value_of_min_radian_position_;
+  int32_t value_of_max_radian_position_;
+  double  min_radian_;
+  double  max_radian_;
+
   std::string dynamixel_item_path_;
   std::string dynamixel_name_path_;
 

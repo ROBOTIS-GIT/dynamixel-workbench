@@ -144,7 +144,24 @@ bool DynamixelTool::getModelItem()
         continue;
       }
 
-      if (session == "baud rate")
+      if (session == "type info")
+      {
+        std::vector<std::string> tokens = split(input_str, '=');
+        if (tokens.size() != 2)
+          continue;
+
+        if (tokens[0] == "value_of_0_radian_position")
+          value_of_0_radian_position_ = std::atoi(tokens[1].c_str());
+        else if (tokens[0] == "value_of_min_radian_position")
+          value_of_min_radian_position_ = std::atoi(tokens[1].c_str());
+        else if (tokens[0] == "value_of_max_radian_position")
+          value_of_max_radian_position_ = std::atoi(tokens[1].c_str());
+        else if (tokens[0] == "min_radian")
+          min_radian_ = std::atof(tokens[1].c_str());
+        else if (tokens[0] == "max_radian")
+          max_radian_ = std::atof(tokens[1].c_str());
+      }
+      else if (session == "baud rate")
       {
         std::vector<std::string> tokens = split(input_str, '|');
         if(tokens.size() != 2)

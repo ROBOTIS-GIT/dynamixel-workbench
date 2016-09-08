@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
     qt_build
     roscpp
     dynamixel_workbench_msgs
+    dynamixel_workbench_toolbox
 )
 include_directories(${catkin_INCLUDE_DIRS})
 # Use this to define what the package will export (e.g. libs, headers).

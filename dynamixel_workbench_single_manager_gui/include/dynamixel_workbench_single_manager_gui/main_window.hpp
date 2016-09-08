@@ -17,6 +17,8 @@
 #include "ui_main_window.h"
 #include "qnode.hpp"
 
+#include "dynamixel_workbench_toolbox/dynamixel_tool.h"
+
 #endif
 /*****************************************************************************
 ** Namespace
@@ -51,14 +53,12 @@ public Q_SLOTS:
         void on_torque_enable_toggle_button_toggled(bool check);
         void on_reboot_push_button_clicked(bool check);
         void on_factory_reset_push_button_clicked(bool check);
+        void on_set_position_zero_push_button_clicked(bool check);
 
         void changeDynamixelID();
         void changeOperatingMode();
         void changeBaudrate();
         void changeControlTableValue();
-
-        //void on_button_connect_clicked(bool check );
-        //void on_checkbox_use_environment_stateChanged(int state);
 
     /******************************************
     ** Manual connections
@@ -69,9 +69,10 @@ public Q_SLOTS:
 private:
         Ui::MainWindowDesign ui_;
         QNode qnode_;
+        dynamixel_tool::DynamixelTool * dxl_;
+
         bool reboot_button_;
         bool operating_mode_spinbox_;
-
         void makeUI();
         void makeConnect();
 };

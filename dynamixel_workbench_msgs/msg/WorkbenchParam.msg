@@ -1,5 +1,6 @@
 string device_name
-float32 baud_rate
-float32 protocol_version
+uint64 baud_rate
+uint16 protocol_version
 string model_name
-int8 model_num
+uint16 model_id
+uint16 model_number

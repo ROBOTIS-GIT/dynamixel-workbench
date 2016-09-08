@@ -54,7 +54,9 @@ class DynamixelWorkbenchSingleManager
   std::string device_name_;
   float baud_rate_;
   float protocol_version_;
-  uint16_t dxl_number_;
+  uint16_t dxl_model_number_;
+  uint8_t dxl_model_id_;
+  bool dxl_torque_status_;
 
   dynamixel_tool::DynamixelTool *dxl_;
 
@@ -81,7 +83,7 @@ class DynamixelWorkbenchSingleManager
 
   void setPublisher(void);
   void setSubscriber(void);
-  void getPublisher(void);
+  void setPublishedMsg(void);
   void setServer(void);
 
   void dynamixelCommandMsgCallback(const dynamixel_workbench_msgs::DynamixelCommand::ConstPtr &msg);

@@ -6,9 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>891</width>
-    <height>741</height>
+    <width>800</width>
+    <height>871</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>800</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>819</width>
+    <height>16777215</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>QRosApp</string>
@@ -26,14 +38,14 @@
      <widget class="QTabWidget" name="tab_manager">
       <property name="minimumSize">
        <size>
-        <width>100</width>
-        <height>0</height>
+        <width>390</width>
+        <height>800</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>16777215</width>
-        <height>700</height>
+        <width>390</width>
+        <height>800</height>
        </size>
       </property>
       <property name="locale">
@@ -76,7 +88,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>891</width>
+     <width>800</width>
      <height>19</height>
     </rect>
    </property>
@@ -97,14 +109,14 @@
   <widget class="QDockWidget" name="dockWidget">
    <property name="minimumSize">
     <size>
-     <width>350</width>
-     <height>700</height>
+     <width>390</width>
+     <height>830</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
-     <width>350</width>
-     <height>700</height>
+     <width>390</width>
+     <height>830</height>
     </size>
    </property>
    <property name="windowTitle">
@@ -119,14 +131,14 @@
       <widget class="QFrame" name="info_command_frame">
        <property name="minimumSize">
         <size>
-         <width>320</width>
-         <height>450</height>
+         <width>370</width>
+         <height>580</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>320</width>
-         <height>450</height>
+         <width>370</width>
+         <height>580</height>
         </size>
        </property>
        <property name="layoutDirection">
@@ -143,14 +155,14 @@
          <widget class="QGroupBox" name="dynamixel_information_group_box">
           <property name="minimumSize">
            <size>
-            <width>300</width>
-            <height>150</height>
+            <width>350</width>
+            <height>250</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>300</width>
-            <height>150</height>
+            <width>350</width>
+            <height>250</height>
            </size>
           </property>
           <property name="title">
@@ -268,14 +280,14 @@
          <widget class="QGroupBox" name="dynamixel_command_group_box">
           <property name="minimumSize">
            <size>
-            <width>300</width>
-            <height>270</height>
+            <width>350</width>
+            <height>300</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>300</width>
-            <height>270</height>
+            <width>350</width>
+            <height>300</height>
            </size>
           </property>
           <property name="title">
@@ -285,31 +297,20 @@
            <bool>false</bool>
           </property>
           <layout class="QGridLayout" name="gridLayout_2">
-           <item row="4" column="1">
-            <widget class="QDial" name="address_value_dial"/>
-           </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="set_baud_rate_label">
-             <property name="text">
-              <string>Baudrate</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="operating_mode_label">
-             <property name="text">
-              <string>Operating Mode</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="0">
             <widget class="QLabel" name="id_label">
+             <property name="minimumSize">
+              <size>
+               <width>130</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>130</width>
+               <height>16777215</height>
+              </size>
+             </property>
              <property name="text">
               <string>ID</string>
              </property>
@@ -318,60 +319,169 @@
              </property>
             </widget>
            </item>
-           <item row="4" column="0">
-            <widget class="QLineEdit" name="address_name_line_edit">
-             <property name="inputMask">
-              <string/>
+           <item row="1" column="1">
+            <widget class="QComboBox" name="operating_mode_combo_box">
+             <property name="minimumSize">
+              <size>
+               <width>190</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>190</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="editable">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLineEdit" name="set_baud_rate_line_edit">
+             <property name="minimumSize">
+              <size>
+               <width>190</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>190</width>
+               <height>16777215</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="1">
+            <widget class="QPushButton" name="set_position_zero_push_button">
+             <property name="minimumSize">
+              <size>
+               <width>190</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>190</width>
+               <height>16777215</height>
+              </size>
              </property>
              <property name="text">
-              <string/>
+              <string>Position ZERO</string>
              </property>
-             <property name="maxLength">
-              <number>32767</number>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="set_baud_rate_label">
+             <property name="minimumSize">
+              <size>
+               <width>130</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>130</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Baudrate</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1">
+            <widget class="QDial" name="address_value_dial">
+             <property name="minimumSize">
+              <size>
+               <width>190</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>190</width>
+               <height>16777215</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="operating_mode_label">
+             <property name="minimumSize">
+              <size>
+               <width>130</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>130</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Operating Mode</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
              </property>
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QSpinBox" name="id_spin_box"/>
+            <widget class="QLineEdit" name="id_line_edit">
+             <property name="minimumSize">
+              <size>
+               <width>190</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>190</width>
+               <height>16777215</height>
+              </size>
+             </property>
+            </widget>
            </item>
-           <item row="2" column="1">
-            <widget class="QLineEdit" name="set_baud_rate_line_edit"/>
+           <item row="9" column="1">
+            <widget class="QSpinBox" name="address_value_spin_box">
+             <property name="minimumSize">
+              <size>
+               <width>190</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>190</width>
+               <height>16777215</height>
+              </size>
+             </property>
+            </widget>
            </item>
-           <item row="5" column="1">
-            <widget class="QSpinBox" name="address_value_spin_box"/>
-           </item>
-           <item row="1" column="1">
-            <widget class="QComboBox" name="operating_mode_combo_box">
-             <item>
-              <property name="text">
-               <string>Position Control</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Velocity Control</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Current Control</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Extended Position Control</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Position Control based on current</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>PWM Control</string>
-              </property>
-             </item>
+           <item row="5" column="0">
+            <widget class="QComboBox" name="address_name_combo_box">
+             <property name="minimumSize">
+              <size>
+               <width>130</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>130</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="maxVisibleItems">
+              <number>100</number>
+             </property>
             </widget>
            </item>
           </layout>
@@ -384,13 +494,13 @@
       <widget class="QFrame" name="button_frame">
        <property name="minimumSize">
         <size>
-         <width>320</width>
+         <width>370</width>
          <height>200</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>320</width>
+         <width>370</width>
          <height>200</height>
         </size>
        </property>
