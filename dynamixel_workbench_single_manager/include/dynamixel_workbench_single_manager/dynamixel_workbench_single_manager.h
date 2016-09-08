@@ -29,6 +29,7 @@
 
 #define ESC_ASCII_VALUE             0x1b
 #define SPACEBAR_ASCII_VALUE        0x20
+#define BAUD_RATE_NUM               16
 
 namespace dynamixel_workbench_single_manager
 {
@@ -37,6 +38,8 @@ class DynamixelWorkbenchSingleManager
  public:
   dynamixel::PortHandler *portHandler_;
   dynamixel::PacketHandler *packetHandler_;
+  dynamixel::PacketHandler *packetHandler1_;
+  dynamixel::PacketHandler *packetHandler2_;
 
  private:
   // ROS NodeHandle
@@ -52,14 +55,13 @@ class DynamixelWorkbenchSingleManager
   ros::ServiceServer workbench_param_server_;
   // Parameters
   std::string device_name_;
+  //uint64_t baud_rate_list_[BAUD_RATE_NUM];
   float baud_rate_;
   float protocol_version_;
   uint16_t dxl_model_number_;
   uint8_t dxl_model_id_;
   bool dxl_torque_status_;
-
   dynamixel_tool::DynamixelTool *dxl_;
-
   int64_t read_value_;
 
  public:

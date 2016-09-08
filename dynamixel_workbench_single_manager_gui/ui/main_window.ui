@@ -182,7 +182,7 @@
             <number>6</number>
            </property>
            <item row="0" column="0">
-            <widget class="QLabel" name="device_name_label">
+            <widget class="QLabel" name="get_device_name_label">
              <property name="text">
               <string>Device Name</string>
              </property>
@@ -192,7 +192,7 @@
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QLineEdit" name="device_name_line_edit">
+            <widget class="QLineEdit" name="get_device_name_line_edit">
              <property name="enabled">
               <bool>false</bool>
              </property>
@@ -228,7 +228,7 @@
             </widget>
            </item>
            <item row="2" column="0">
-            <widget class="QLabel" name="protocol_version_label">
+            <widget class="QLabel" name="get_protocol_version_label">
              <property name="text">
               <string>Protocol Version</string>
              </property>
@@ -238,7 +238,7 @@
             </widget>
            </item>
            <item row="2" column="1">
-            <widget class="QLineEdit" name="protocol_version_line_edit">
+            <widget class="QLineEdit" name="get_protocol_version_line_edit">
              <property name="enabled">
               <bool>false</bool>
              </property>
@@ -250,8 +250,8 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="model_name_label">
+           <item row="4" column="0">
+            <widget class="QLabel" name="get_model_name_label">
              <property name="text">
               <string>Model Name</string>
              </property>
@@ -260,8 +260,8 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="1">
-            <widget class="QLineEdit" name="model_name_line_edit">
+           <item row="4" column="1">
+            <widget class="QLineEdit" name="get_model_name_line_edit">
              <property name="enabled">
               <bool>false</bool>
              </property>
@@ -298,7 +298,7 @@
           </property>
           <layout class="QGridLayout" name="gridLayout_2">
            <item row="0" column="0">
-            <widget class="QLabel" name="id_label">
+            <widget class="QLabel" name="set_id_label">
              <property name="minimumSize">
               <size>
                <width>130</width>
@@ -320,7 +320,7 @@
             </widget>
            </item>
            <item row="1" column="1">
-            <widget class="QComboBox" name="operating_mode_combo_box">
+            <widget class="QComboBox" name="set_operating_mode_combo_box">
              <property name="minimumSize">
               <size>
                <width>190</width>
@@ -396,7 +396,7 @@
             </widget>
            </item>
            <item row="5" column="1">
-            <widget class="QDial" name="address_value_dial">
+            <widget class="QDial" name="set_address_value_dial">
              <property name="minimumSize">
               <size>
                <width>190</width>
@@ -412,7 +412,7 @@
             </widget>
            </item>
            <item row="1" column="0">
-            <widget class="QLabel" name="operating_mode_label">
+            <widget class="QLabel" name="set_operating_mode_label">
              <property name="minimumSize">
               <size>
                <width>130</width>
@@ -434,7 +434,7 @@
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QLineEdit" name="id_line_edit">
+            <widget class="QLineEdit" name="set_id_line_edit">
              <property name="minimumSize">
               <size>
                <width>190</width>
@@ -450,7 +450,7 @@
             </widget>
            </item>
            <item row="9" column="1">
-            <widget class="QSpinBox" name="address_value_spin_box">
+            <widget class="QSpinBox" name="set_address_value_spin_box">
              <property name="minimumSize">
               <size>
                <width>190</width>
@@ -466,7 +466,7 @@
             </widget>
            </item>
            <item row="5" column="0">
-            <widget class="QComboBox" name="address_name_combo_box">
+            <widget class="QComboBox" name="set_address_name_combo_box">
              <property name="minimumSize">
               <size>
                <width>130</width>

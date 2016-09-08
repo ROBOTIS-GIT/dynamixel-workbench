@@ -43,7 +43,7 @@ int main(int argc, char **argv)
 
   if (argc != 3)
   {
-    ROS_INFO("cmd: rosrun dynamixel_workbench_tutorials dynamixel_workbench_pan_tilt [pan_pos] [tilt_pos]");
+    ROS_INFO("cmd: rosrun dynamixel_workbench_tutorials dynamixel_workbench_pan_tilt [pan_pos(radian)] [tilt_pos(radian)]");
     return 1;
   }
 
@@ -52,7 +52,7 @@ int main(int argc, char **argv)
 
   if (dxl_pan_tilt.position_control_client_.call(srv))
   {
-    ROS_INFO("send message: [pan_pos: %ld] [tilt_pos: %ld]", (long int)srv.request.set_pan_pos, (long int)srv.request.set_tilt_pos);
+    ROS_INFO("send message: [pan_pos: %.3f (radian)] [tilt_pos: %.3f (radian)]", srv.request.set_pan_pos, srv.request.set_tilt_pos);
   }
   else
   {

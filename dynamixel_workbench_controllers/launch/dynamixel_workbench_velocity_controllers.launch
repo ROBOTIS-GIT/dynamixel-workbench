@@ -9,11 +9,11 @@
           velocity_ : 300
           left_wheel_:
             motor_model_: "XM430_W210_R"
-            motor_id_: 1
+            motor_id_: 11
             protocol_version_: 2.0
           right_wheel_:
             motor_model_: "XM430_W210_R"
-            motor_id_: 2
+            motor_id_: 12
             protocol_version_: 2.0
         </rosparam>
     </node>

@@ -13,16 +13,18 @@
 
 #include <dynamixel_sdk/dynamixel_sdk.h>
 
-#define PAN_MOTOR                   0
-#define TILT_MOTOR                  1
+#define PI 3.14159265358979323846
+#define DEGREE2RADIAN (PI / 180.0)
+#define RADIAN2DEGREE (180.0 / PI)
+
+#define PAN_MOTOR    0
+#define TILT_MOTOR   1
+
+#define VELOCITY      100
+#define ACCELERATION  20
 
 namespace dynamixel_workbench_position_control
 {
-struct ReadData{
- std::vector<bool> dxl_bool_data;
- std::vector<int64_t> dxl_int_data;
-};
-
 class DynamixelWorkbenchPositionControl
 {
  public:
@@ -40,11 +42,6 @@ class DynamixelWorkbenchPositionControl
   // ROS Service Server
   ros::ServiceServer position_control_server;
   // Parameters
-  bool dxl_addparam_result_;
-  int dxl_comm_result_;
-  bool dxl_getdata_result_;
-
-  dynamixel_tool::DynamixelTool *dxl_motor_;
   std::vector<dynamixel_tool::DynamixelTool *> dynamixel_;
 
   std::string device_name_;
@@ -53,10 +50,8 @@ class DynamixelWorkbenchPositionControl
   float protocol_version_;
   float baud_rate_;
 
-  std::map<std::string, ReadData *> read_data_;
+  std::map<std::string, std::vector<int64_t> *> read_data_;
   int64_t read_value_;
-  int pan_velocity_value_;
-  int tilt_velocity_value_;
 
  public:
   DynamixelWorkbenchPositionControl();
@@ -67,26 +62,19 @@ class DynamixelWorkbenchPositionControl
   bool initDynamixelWorkbenchPositionControl(void);
   bool shutdownDynamixelWorkbenchPositionControl(void);
 
-  bool initMotor(dynamixel_tool::DynamixelTool *dxl_motor, std::string motor_model, uint8_t motor_id, float protocol_version);
-  bool writeDynamixelRegister(dynamixel::PacketHandler *packetHandler, uint8_t id, uint16_t addr, uint8_t length, int64_t value);
-  bool writeSyncDynamixel(uint16_t addr, uint8_t length, int64_t pan_motor_value, int64_t tilt_motor_value);
-  bool readDynamixelRegister(dynamixel::PacketHandler *packetHandler, uint8_t id, uint16_t addr, uint8_t length, int64_t *value);
-  bool readSyncDynamixel(uint16_t addr, uint8_t length, ReadData *data);
+  bool initMotor(std::string motor_model, uint8_t motor_id, float protocol_version);
 
-  bool readTorque(void);
-  bool readMoving(void);
-  bool readGoalPosition(void);
-  bool readGoalVelocity(void);
-  bool readPresentPosition(void);
-  bool readPresentVelocity(void);
-  bool readProfileVelocity(void);
+  bool readDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, int64_t *value);
+  bool readMotorState(std::string addr_name);
   bool readMaxPositionLimit(void);
   bool readMinPositionLimit(void);
 
+  bool writeSyncDynamixel(uint16_t addr, uint8_t length, int64_t pan_motor_value, int64_t tilt_motor_value);
   bool writeTorque(bool onoff);
-  bool writeVelocity(int64_t pan_value, int64_t tilt_value);
 
-  bool getPublisher(void);
+  int64_t convertRadian2Value(double radian);
+
+  bool getPublishedMsg(void);
   bool controlPanTiltMotorCallback(dynamixel_workbench_msgs::GetPosition::Request &req,
                                    dynamixel_workbench_msgs::GetPosition::Response &res);
 };

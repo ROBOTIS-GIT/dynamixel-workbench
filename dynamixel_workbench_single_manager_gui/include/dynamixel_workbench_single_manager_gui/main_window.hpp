@@ -59,6 +59,7 @@ public Q_SLOTS:
         void changeOperatingMode();
         void changeBaudrate();
         void changeControlTableValue();
+        void showHideButton(QString index);
 
     /******************************************
     ** Manual connections

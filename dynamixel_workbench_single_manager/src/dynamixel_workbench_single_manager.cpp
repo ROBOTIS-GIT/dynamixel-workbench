@@ -7,8 +7,8 @@ DynamixelWorkbenchSingleManager::DynamixelWorkbenchSingleManager()
      is_debug_(false),
      device_name_(""),
      baud_rate_(0),
-     protocol_version_(0),
      dxl_model_number_(0),
+     protocol_version_(0.0),
      read_value_(0),
      dxl_torque_status_(false),
      dxl_(NULL)
@@ -17,7 +17,6 @@ DynamixelWorkbenchSingleManager::DynamixelWorkbenchSingleManager()
   nh_priv_.param("is_debug", is_debug_, is_debug_);
   nh_priv_.getParam("device_name_", device_name_);
   nh_priv_.getParam("baud_rate_", baud_rate_);
-  nh_priv_.getParam("protocol_version_",protocol_version_);
 
   // Init target name
   ROS_ASSERT(initDynamixelWorkbenchSingleManager());
@@ -29,8 +28,9 @@ DynamixelWorkbenchSingleManager::DynamixelWorkbenchSingleManager()
 
   // Initialize PacketHandler instance
   // Set the protocol version
-  // Get methods and members of Protocol1.0 PacketHandler or Protocol 2.0 PacketHandler
-  packetHandler_ = dynamixel::PacketHandler::getPacketHandler(protocol_version_);
+  // Get methods and members of Protocol1.0 PacketHandler and Protocol 2.0 PacketHandler
+  packetHandler1_ = dynamixel::PacketHandler::getPacketHandler(1.0);
+  packetHandler2_ = dynamixel::PacketHandler::getPacketHandler(2.0);
 
   // Open port
   if (portHandler_->openPort())
@@ -49,7 +49,7 @@ DynamixelWorkbenchSingleManager::DynamixelWorkbenchSingleManager()
   }
   else
   {
-    ROS_ERROR("Failed to change the baudrate!");
+      ROS_ERROR("Failed to change the baudrate!");
   }
 
   scanDynamixelID();
@@ -239,52 +239,51 @@ bool DynamixelWorkbenchSingleManager::scanDynamixelID(void)
   uint8_t dxl_id = 0;
   uint16_t dxl_num = 0;
 
-  if (packetHandler_->getProtocolVersion() == 1.0)
+  ROS_INFO("Scan Dynamixel Using Protocol 1.0");
+  for (dxl_id = 1; dxl_id < 253; dxl_id++)
   {
-    ROS_INFO("Scan Dynamixel Using Protocol 1.0");
-    for (dxl_id = 1; dxl_id < 253; dxl_id++)
+    if (packetHandler1_->ping(portHandler_, dxl_id, &dxl_num, &dxl_error) == COMM_SUCCESS)
     {
-      if (packetHandler_->ping(portHandler_, dxl_id, &dxl_num, &dxl_error) == COMM_SUCCESS)
-      {
-        ROS_INFO("Model Number: %d", dxl_num);
-        dxl_model_number_ = dxl_num;
-        dxl_model_id_ = dxl_id;
-        dxl_ = new dynamixel_tool::DynamixelTool(dxl_id, dxl_num, protocol_version_);
-      }
-      else
-      {
-        fprintf(stderr,".");
-      }
+      dxl_model_number_ = dxl_num;
+      dxl_model_id_ = dxl_id;
+      protocol_version_ = packetHandler1_->getProtocolVersion();
+      packetHandler_ = packetHandler1_->getPacketHandler(protocol_version_);
+      dxl_ = new dynamixel_tool::DynamixelTool(dxl_id, dxl_num, protocol_version_);
+      ROS_INFO("Model Number: %d", dxl_num);
+    }
+    else
+    {
+      fprintf(stderr,".");
+    }
 
-      if (kbhit())
-      {
-        char c = getch();
-        if (c == ESC_ASCII_VALUE) break;
-      }
+    if (kbhit())
+    {
+      char c = getch();
+      if (c == ESC_ASCII_VALUE) break;
     }
   }
-  else
-  {
-    ROS_INFO("Scan Dynamixel Using Protocol 2.0");
-    for (dxl_id = 1; dxl_id < 253; dxl_id++)
-    {
-      if (packetHandler_->ping(portHandler_, dxl_id, &dxl_num, &dxl_error) == COMM_SUCCESS)
-      {
-        ROS_INFO("Model Number: %d", dxl_num);
-        dxl_model_number_ = dxl_num;
-        dxl_model_id_ = dxl_id;
-        dxl_ = new dynamixel_tool::DynamixelTool(dxl_id, dxl_num, protocol_version_);
-      }
-      else
-      {
-        fprintf(stderr,".");
-      }
 
-      if (kbhit())
-      {
-        char c = getch();
-        if (c == ESC_ASCII_VALUE) break;
-      }
+  ROS_INFO("Scan Dynamixel Using Protocol 2.0");
+  for (dxl_id = 1; dxl_id < 253; dxl_id++)
+  {
+    if (packetHandler2_->ping(portHandler_, dxl_id, &dxl_num, &dxl_error) == COMM_SUCCESS)
+    {
+      dxl_model_number_ = dxl_num;
+      dxl_model_id_ = dxl_id;
+      protocol_version_ = packetHandler2_->getProtocolVersion();
+      packetHandler_ = packetHandler2_->getPacketHandler(protocol_version_);
+      dxl_ = new dynamixel_tool::DynamixelTool(dxl_id, dxl_num, protocol_version_);
+      ROS_INFO("Model Number: %d", dxl_num);
+    }
+    else
+    {
+      fprintf(stderr,".");
+    }
+
+    if (kbhit())
+    {
+      char c = getch();
+      if (c == ESC_ASCII_VALUE) break;
     }
   }
 

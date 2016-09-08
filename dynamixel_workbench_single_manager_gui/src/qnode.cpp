@@ -166,6 +166,64 @@ void QNode::sendSetOperatingModeMsg(std::string index)
       dxl_command_msg_pub_.publish(msg);
     }
   }
+  else if (index == "extended_position_control")
+  {
+    if(!strncmp(dxl_model_name_.c_str(), "MX", 2))
+    {
+      msg.addr_name = std::string("cw_angle_limit");
+      msg.value = 4095;
+
+      dxl_command_msg_pub_.publish(msg);
+
+      msg.addr_name = std::string("ccw_angle_limit");
+      msg.value = 4095;
+
+      dxl_command_msg_pub_.publish(msg);
+    }
+    else
+    {
+      msg.addr_name = std::string("operating_mode");
+      msg.value = 4;
+    }
+  }
+  else if (index == "torque_control")
+  {
+    if(!strncmp(dxl_model_name_.c_str(), "MX", 2))
+    {
+      msg.addr_name = std::string("torque_control_mode_enable");
+      msg.value = 1;
+
+      dxl_command_msg_pub_.publish(msg);
+    }
+    else
+    {
+      msg.addr_name = std::string("operating_mode");
+      msg.value = 0;
+
+      dxl_command_msg_pub_.publish(msg);
+    }
+  }
+  else if (index == "current_control")
+  {
+    msg.addr_name = std::string("operating_mode");
+    msg.value = 0;
+
+    dxl_command_msg_pub_.publish(msg);
+  }
+  else if (index == "position_control_based_on_current")
+  {
+    msg.addr_name = std::string("operating_mode");
+    msg.value = 5;
+
+    dxl_command_msg_pub_.publish(msg);
+  }
+  else if (index == "pwm_control")
+  {
+    msg.addr_name = std::string("operating_mode");
+    msg.value = 16;
+
+    dxl_command_msg_pub_.publish(msg);
+  }
 }
 
 void QNode::sendSetBaudrateMsg(float baud_rate)

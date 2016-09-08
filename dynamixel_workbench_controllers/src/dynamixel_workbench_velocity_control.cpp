@@ -78,7 +78,6 @@ DynamixelWorkbenchVelocityControl::DynamixelWorkbenchVelocityControl()
   ROS_INFO("right_wheel_id: %d", motor_id_);
   ROS_INFO("right_wheel_model: %s", motor_model_.c_str());
   ROS_INFO("right_wheel_protocol_version_: %.1f", protocol_version_);
-  ROS_INFO("");
   ROS_INFO("Set velocity: %d", velocity_);
 
   initMotor(dxl_motor_, motor_model_, motor_id_, protocol_version_);
@@ -651,7 +650,6 @@ bool DynamixelWorkbenchVelocityControl::dynamixelControlLoop(void)
     dxl_response[i].present_velocity = read_data_["present_velocity"]->dxl_int_data.at(i);
     dxl_response[i].goal_position = read_data_["goal_position"]->dxl_int_data.at(i);
     dxl_response[i].goal_velocity = read_data_["goal_velocity"]->dxl_int_data.at(i);
-    dxl_response[i].profile_velocity = read_data_["profile_velocity"]->dxl_int_data.at(i);
     dxl_response[i].max_position_limit = read_data_["max_position_limit"]->dxl_int_data.at(i);
     dxl_response[i].min_position_limit = read_data_["min_position_limit"]->dxl_int_data.at(i);
 
