@@ -21,7 +21,7 @@ int64 d_gain
 int64 i_gain
 int64 p_gain
 int64 goal_position
-int64 goal_velocity
+int64 moving_speed
 int64 torque_limit
 int64 present_position
 int64 present_velocity

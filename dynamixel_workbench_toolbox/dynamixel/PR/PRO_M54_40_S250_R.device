@@ -3,6 +3,8 @@ model_number = 46096
 model_name  = PRO_M54_40_S250_R
 
 [type info]
+velocity_to_value_ratio 	= 2400.69
+
 value_of_0_radian_position      = 0
 value_of_min_radian_position    = -125700
 value_of_max_radian_position    =  125700

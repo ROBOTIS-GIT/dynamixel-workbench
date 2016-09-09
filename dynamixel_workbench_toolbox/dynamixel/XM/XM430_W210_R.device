@@ -3,6 +3,9 @@ model_number = 1030
 model_name  = XM430_W210_R
 
 [type info]
+torque_to_current_value_ratio   = 235.53647082
+velocity_to_value_ratio 	= 41.7
+
 value_of_0_radian_position      = 2048
 value_of_min_radian_position    = 0
 value_of_max_radian_position    = 4095

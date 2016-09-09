@@ -124,15 +124,27 @@ void QNode::sendSetOperatingModeMsg(std::string index)
 
       dxl_command_msg_pub_.publish(msg);
     }
-    else
+    else if ((!strncmp(dxl_model_name_.c_str(), "AX", 2)) || (!strncmp(dxl_model_name_.c_str(), "RX", 2)))
     {
       msg.addr_name = std::string("cw_angle_limit");
-      msg.value = 1;
+      msg.value = 0;
 
       dxl_command_msg_pub_.publish(msg);
 
       msg.addr_name = std::string("ccw_angle_limit");
-      msg.value = 1;
+      msg.value = 1023;
+
+      dxl_command_msg_pub_.publish(msg);
+    }
+    else if ((!strncmp(dxl_model_name_.c_str(), "MX", 2)) || (!strncmp(dxl_model_name_.c_str(), "EX", 2)))
+    {
+      msg.addr_name = std::string("cw_angle_limit");
+      msg.value = 0;
+
+      dxl_command_msg_pub_.publish(msg);
+
+      msg.addr_name = std::string("ccw_angle_limit");
+      msg.value = 4095;
 
       dxl_command_msg_pub_.publish(msg);
     }
@@ -184,6 +196,8 @@ void QNode::sendSetOperatingModeMsg(std::string index)
     {
       msg.addr_name = std::string("operating_mode");
       msg.value = 4;
+
+      dxl_command_msg_pub_.publish(msg);
     }
   }
   else if (index == "torque_control")
@@ -304,7 +318,7 @@ void QNode::dynamixelAXStatusMsgCallback(const dynamixel_workbench_msgs::Dynamix
   log(std::string("cw_compliance_slope: "), msg->cw_compliance_slope);
   log(std::string("ccw_compliance_slope: "), msg->ccw_compliance_slope);
   log(std::string("goal_position: "), msg->goal_position);
-  log(std::string("goal_velocity: "), msg->goal_velocity);
+  log(std::string("moving_speed: "), msg->moving_speed);
   log(std::string("torque_limit: "), msg->torque_limit);
   log(std::string("present_position: "), msg->present_position);
   log(std::string("present_velocity: "), msg->present_velocity);
@@ -345,7 +359,7 @@ void QNode::dynamixelRXStatusMsgCallback(const dynamixel_workbench_msgs::Dynamix
   log(std::string("cw_compliance_slope: "), msg->cw_compliance_slope);
   log(std::string("ccw_compliance_slope: "), msg->ccw_compliance_slope);
   log(std::string("goal_position: "), msg->goal_position);
-  log(std::string("goal_velocity: "), msg->goal_velocity);
+  log(std::string("moving_speed: "), msg->moving_speed);
   log(std::string("torque_limit: "), msg->torque_limit);
   log(std::string("present_position: "), msg->present_position);
   log(std::string("present_velocity: "), msg->present_velocity);
@@ -387,7 +401,7 @@ void QNode::dynamixelMXStatusMsgCallback(const dynamixel_workbench_msgs::Dynamix
   log(std::string("i_gain: "), msg->i_gain);
   log(std::string("p_gain: "), msg->p_gain);
   log(std::string("goal_position: "), msg->goal_position);
-  log(std::string("goal_velocity: "), msg->goal_velocity);
+  log(std::string("moving_speed: "), msg->moving_speed);
   log(std::string("torque_limit: "), msg->torque_limit);
   log(std::string("present_position: "), msg->present_position);
   log(std::string("present_velocity: "), msg->present_velocity);
@@ -430,7 +444,7 @@ void QNode::dynamixelMX64StatusMsgCallback(const dynamixel_workbench_msgs::Dynam
   log(std::string("i_gain: "), msg->i_gain);
   log(std::string("p_gain: "), msg->p_gain);
   log(std::string("goal_position: "), msg->goal_position);
-  log(std::string("goal_velocity: "), msg->goal_velocity);
+  log(std::string("moving_speed: "), msg->moving_speed);
   log(std::string("torque_limit: "), msg->torque_limit);
   log(std::string("present_position: "), msg->present_position);
   log(std::string("present_velocity: "), msg->present_velocity);
@@ -477,7 +491,7 @@ void QNode::dynamixelMX106StatusMsgCallback(const dynamixel_workbench_msgs::Dyna
   log(std::string("i_gain: "), msg->i_gain);
   log(std::string("p_gain: "), msg->p_gain);
   log(std::string("goal_position: "), msg->goal_position);
-  log(std::string("goal_velocity: "), msg->goal_velocity);
+  log(std::string("moving_speed: "), msg->moving_speed);
   log(std::string("torque_limit: "), msg->torque_limit);
   log(std::string("present_position: "), msg->present_position);
   log(std::string("present_velocity: "), msg->present_velocity);
@@ -523,7 +537,7 @@ void QNode::dynamixelEXStatusMsgCallback(const dynamixel_workbench_msgs::Dynamix
   log(std::string("cw_compliance_slope: "), msg->cw_compliance_slope);
   log(std::string("ccw_compliance_slope: "), msg->ccw_compliance_slope);
   log(std::string("goal_position: "), msg->goal_position);
-  log(std::string("goal_velocity: "), msg->goal_velocity);
+  log(std::string("moving_speed: "), msg->moving_speed);
   log(std::string("torque_limit: "), msg->torque_limit);
   log(std::string("present_position: "), msg->present_position);
   log(std::string("present_velocity: "), msg->present_velocity);

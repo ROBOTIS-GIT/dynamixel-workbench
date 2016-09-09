@@ -9,7 +9,7 @@
 #include <std_msgs/Float64.h>
 #include <dynamixel_workbench_toolbox/dynamixel_tool.h>
 #include <dynamixel_workbench_msgs/MotorStateList.h>
-#include <dynamixel_workbench_msgs/GetPosition.h>
+#include <dynamixel_workbench_msgs/SetPosition.h>
 
 #include <dynamixel_sdk/dynamixel_sdk.h>
 
@@ -79,8 +79,8 @@ class DynamixelWorkbenchTorqueControl
   bool readPresentVelocity(void);
   bool writeTorque(bool onoff);
 
-  bool controlPanTiltMotor(dynamixel_workbench_msgs::GetPosition::Request &req,
-                           dynamixel_workbench_msgs::GetPosition::Response &res);
+  bool controlPanTiltMotor(dynamixel_workbench_msgs::SetPosition::Request &req,
+                           dynamixel_workbench_msgs::SetPosition::Response &res);
 };
 }
 

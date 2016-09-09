@@ -20,7 +20,7 @@ int64 ccw_compliance_margin
 int64 cw_compliance_slope
 int64 ccw_compliance_slope
 int64 goal_position
-int64 goal_velocity
+int64 moving_speed
 int64 torque_limit
 int64 present_position
 int64 present_velocity

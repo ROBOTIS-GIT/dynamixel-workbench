@@ -3,6 +3,8 @@ model_number = 29
 model_name  = MX_28
 
 [type info]
+velocity_to_value_ratio 	= 83.77
+
 value_of_0_radian_position      = 2048
 value_of_min_radian_position    = 0
 value_of_max_radian_position    = 4095
@@ -54,8 +56,8 @@ max_radian                      =  3.14159265
     28  | p_gain                        | 1      | RW     | RAM
     30  | goal_position                 | 2      | RW     | RAM
 #   31  | goal_position(H)              | 1      | RW     | RAM
-    32  | goal_velocity                 | 2      | RW     | RAM
-#   33  | goal_velocity(H)              | 1      | RW     | RAM
+    32  | moving_speed                  | 2      | RW     | RAM
+#   33  | moving_speed(H)               | 1      | RW     | RAM
     34  | torque_limit                  | 2      | RW     | RAM
 #   35  | torque_limit(H)               | 1      | RW     | RAM
     36  | present_position              | 2      | R      | RAM

@@ -179,7 +179,6 @@ void MainWindow::makeConnect()
   qRegisterMetaType<dynamixel_workbench_msgs::WorkbenchParam>("dynamixel_workbench_msgs::WorkbenchParam");
   QObject::connect(&qnode_, SIGNAL(updateWorkbenchParam(dynamixel_workbench_msgs::WorkbenchParam)), this, SLOT(updateWorkbenchParamLineEdit(dynamixel_workbench_msgs::WorkbenchParam)));
   QObject::connect(ui_.set_id_line_edit, SIGNAL(returnPressed()), this, SLOT(changeDynamixelID()));
-  QObject::connect(ui_.set_operating_mode_combo_box, SIGNAL(valueChanged(int)), this, SLOT(changeOperatingMode()));
   QObject::connect(ui_.set_baud_rate_line_edit, SIGNAL(returnPressed()), this, SLOT(changeBaudrate()));
   QObject::connect(ui_.set_operating_mode_combo_box, SIGNAL(currentIndexChanged(int)), this, SLOT(changeOperatingMode()));
   QObject::connect(ui_.set_address_name_combo_box, SIGNAL(activated(QString)), this, SLOT(showHideButton(QString)));

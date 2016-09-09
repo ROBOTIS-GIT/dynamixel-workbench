@@ -6,15 +6,12 @@
         <rosparam>
           device_name_: "/dev/ttyUSB0"
           baud_rate_: 1000000
-          velocity_ : 300
-          left_wheel_:
-            motor_model_: "XM430_W210_R"
+          motor_model_: "XM430_W350_R"
+          protocol_version_: 2.0
+          pan_motor_:
             motor_id_: 11
-            protocol_version_: 2.0
-          right_wheel_:
-            motor_model_: "XM430_W210_R"
+          tilt_motor_:
             motor_id_: 12
-            protocol_version_: 2.0
         </rosparam>
     </node>
 </launch>

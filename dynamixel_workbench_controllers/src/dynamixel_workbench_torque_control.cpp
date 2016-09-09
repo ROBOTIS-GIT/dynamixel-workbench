@@ -532,8 +532,8 @@ bool DynamixelWorkbenchTorqueControl::dynamixelControlLoop(void)
     dxl_state_pub_.publish(dxl_response_list);
 }
 
-bool DynamixelWorkbenchTorqueControl::controlPanTiltMotor(dynamixel_workbench_msgs::GetPosition::Request &req,
-                                                            dynamixel_workbench_msgs::GetPosition::Response &res)
+bool DynamixelWorkbenchTorqueControl::controlPanTiltMotor(dynamixel_workbench_msgs::SetPosition::Request &req,
+                                                            dynamixel_workbench_msgs::SetPosition::Response &res)
 {
   dynamixel_[PAN_MOTOR]->dxl_item_ = dynamixel_[PAN_MOTOR]->ctrl_table_["goal_position"];
   dynamixel_[TILT_MOTOR]->dxl_item_ = dynamixel_[TILT_MOTOR]->ctrl_table_["goal_position"];

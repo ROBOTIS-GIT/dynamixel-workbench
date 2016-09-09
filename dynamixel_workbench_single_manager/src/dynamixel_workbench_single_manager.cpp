@@ -545,8 +545,8 @@ void DynamixelWorkbenchSingleManager::axMotorMessage(void)
       dxl_response.ccw_compliance_margin = read_value_;
     else if ("goal_position" == dxl_->dxl_item_->item_name)
       dxl_response.goal_position = read_value_;
-    else if ("goal_velocity" == dxl_->dxl_item_->item_name)
-      dxl_response.goal_velocity = read_value_;
+    else if ("moving_speed" == dxl_->dxl_item_->item_name)
+      dxl_response.moving_speed = read_value_;
     else if ("torque_limit" == dxl_->dxl_item_->item_name)
       dxl_response.torque_limit = read_value_;
     else if ("present_position" == dxl_->dxl_item_->item_name)
@@ -623,8 +623,8 @@ void DynamixelWorkbenchSingleManager::rxMotorMessage(void)
       dxl_response.ccw_compliance_margin = read_value_;
     else if ("goal_position" == dxl_->dxl_item_->item_name)
       dxl_response.goal_position = read_value_;
-    else if ("goal_velocity" == dxl_->dxl_item_->item_name)
-      dxl_response.goal_velocity = read_value_;
+    else if ("moving_speed" == dxl_->dxl_item_->item_name)
+      dxl_response.moving_speed = read_value_;
     else if ("torque_limit" == dxl_->dxl_item_->item_name)
       dxl_response.torque_limit = read_value_;
     else if ("present_position" == dxl_->dxl_item_->item_name)
@@ -703,8 +703,8 @@ void DynamixelWorkbenchSingleManager::mxMotorMessage(void)
       dxl_response.p_gain = read_value_;
     else if ("goal_position" == dxl_->dxl_item_->item_name)
       dxl_response.goal_position = read_value_;
-    else if ("goal_velocity" == dxl_->dxl_item_->item_name)
-      dxl_response.goal_velocity = read_value_;
+    else if ("moving_speed" == dxl_->dxl_item_->item_name)
+      dxl_response.moving_speed = read_value_;
     else if ("torque_limit" == dxl_->dxl_item_->item_name)
       dxl_response.torque_limit = read_value_;
     else if ("present_position" == dxl_->dxl_item_->item_name)
@@ -785,8 +785,8 @@ void DynamixelWorkbenchSingleManager::mx64MotorMessage(void)
       dxl_response.p_gain = read_value_;
     else if ("goal_position" == dxl_->dxl_item_->item_name)
       dxl_response.goal_position = read_value_;
-    else if ("goal_velocity" == dxl_->dxl_item_->item_name)
-      dxl_response.goal_velocity = read_value_;
+    else if ("moving_speed" == dxl_->dxl_item_->item_name)
+      dxl_response.moving_speed = read_value_;
     else if ("torque_limit" == dxl_->dxl_item_->item_name)
       dxl_response.torque_limit = read_value_;
     else if ("present_position" == dxl_->dxl_item_->item_name)
@@ -875,8 +875,8 @@ void DynamixelWorkbenchSingleManager::mx106MotorMessage(void)
       dxl_response.p_gain = read_value_;
     else if ("goal_position" == dxl_->dxl_item_->item_name)
       dxl_response.goal_position = read_value_;
-    else if ("goal_velocity" == dxl_->dxl_item_->item_name)
-      dxl_response.goal_velocity = read_value_;
+    else if ("moving_speed" == dxl_->dxl_item_->item_name)
+      dxl_response.moving_speed = read_value_;
     else if ("torque_limit" == dxl_->dxl_item_->item_name)
       dxl_response.torque_limit = read_value_;
     else if ("present_position" == dxl_->dxl_item_->item_name)
@@ -963,8 +963,8 @@ void DynamixelWorkbenchSingleManager::exMotorMessage(void)
       dxl_response.ccw_compliance_slope = read_value_;
     else if ("goal_position" == dxl_->dxl_item_->item_name)
       dxl_response.goal_position = read_value_;
-    else if ("goal_velocity" == dxl_->dxl_item_->item_name)
-      dxl_response.goal_velocity = read_value_;
+    else if ("moving_speed" == dxl_->dxl_item_->item_name)
+      dxl_response.moving_speed = read_value_;
     else if ("torque_limit" == dxl_->dxl_item_->item_name)
       dxl_response.torque_limit = read_value_;
     else if ("present_position" == dxl_->dxl_item_->item_name)

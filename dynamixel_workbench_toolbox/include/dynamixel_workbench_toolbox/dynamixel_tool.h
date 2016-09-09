@@ -39,6 +39,8 @@ class DynamixelTool
   std::string model_name_;
   float protocol_version_;
 
+  double velocity_to_value_ratio_;
+  double torque_to_current_value_ratio_;
   int32_t value_of_0_radian_position_;
   int32_t value_of_min_radian_position_;
   int32_t value_of_max_radian_position_;

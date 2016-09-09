@@ -13,7 +13,7 @@ DynamixelWorkbenchWheel::DynamixelWorkbenchWheel()
   ROS_ASSERT(initDynamixelWorkbenchWheel());
 
   // init ROS Client
-  wheel_control_client_ = nh_.serviceClient<dynamixel_workbench_msgs::SetDirection>("/dynamixel_workbench_velocity_control");
+  wheel_control_client_ = nh_.serviceClient<dynamixel_workbench_msgs::SetDirection>("/dynamixel_workbench_tutorials/wheel");
 }
 
 DynamixelWorkbenchWheel::~DynamixelWorkbenchWheel()
@@ -80,13 +80,11 @@ int main(int argc, char **argv)
 {
   // Init ROS node
   ros::init(argc, argv, "dynamixel_workbench_wheel");
-  ROS_INFO("Control your Turtlebot!! by using keyboard");
+  ROS_INFO("Set angular velocity(+-0.2 rad/sec) to your motor!! by using keyboard");
   ROS_INFO("w : Forward");
-  ROS_INFO("x : Backward");
+  ROS_INFO("s : Backward");
   ROS_INFO("a : Left");
-  ROS_INFO("d : Right");
-  ROS_INFO("s : Stop");
-  ROS_INFO("");
+  ROS_INFO("d : Right\n");
   ROS_INFO("ESC : exit");
 
   DynamixelWorkbenchWheel dxl_wheel;
@@ -98,52 +96,42 @@ int main(int argc, char **argv)
     if (dxl_wheel.kbhit())
     {
       char c = dxl_wheel.getch();
+
       if (c == ESC_ASCII_VALUE)
       {
         break;
       }
+
       if (c == FORWARD)
       {
-        srv.request.forward = true;
-        srv.request.backward = false;
-        srv.request.left = false;
-        srv.request.right = false;
-        srv.request.stop = false;
+        srv.request.right_wheel_velocity = 0.2;
+        srv.request.left_wheel_velocity = 0.2;
       }
       else if (c == BACKWARD)
       {
-        srv.request.forward = false;
-        srv.request.backward = true;
-        srv.request.left = false;
-        srv.request.right = false;
-        srv.request.stop = false;
+        srv.request.right_wheel_velocity = -0.2;
+        srv.request.left_wheel_velocity = -0.2;
       }
       else if (c == LEFT)
       {
-        srv.request.forward = false;
-        srv.request.backward = false;
-        srv.request.left = true;
-        srv.request.right = false;
-        srv.request.stop = false;
+        srv.request.right_wheel_velocity = -0.2;
+        srv.request.left_wheel_velocity = 0.2;
       }
       else if (c == RIGHT)
       {
-        srv.request.forward = false;
-        srv.request.backward = false;
-        srv.request.left = false;
-        srv.request.right = true;
-        srv.request.stop = false;
+        srv.request.right_wheel_velocity = 0.2;
+        srv.request.left_wheel_velocity = -0.2;
       }
-      else if (c == STOP)
+
+      if (dxl_wheel.wheel_control_client_.call(srv))
       {
-        srv.request.forward = false;
-        srv.request.backward = false;
-        srv.request.left = false;
-        srv.request.right = false;
-        srv.request.stop = true;
+        ROS_INFO("[RIGHT_WHEEL_VELOCITY]: %.2f, [LEFT_WHEEL_VELOCITY]: %.2f", srv.response.right_wheel_velocity, srv.response.left_wheel_velocity);
+      }
+      else
+      {
+        ROS_ERROR("Failed to call service /pan_tilt");
       }
     }
-    dxl_wheel.wheel_control_client_.call(srv);
 
     ros::spinOnce();
     loop_rate.sleep();

@@ -150,7 +150,11 @@ bool DynamixelTool::getModelItem()
         if (tokens.size() != 2)
           continue;
 
-        if (tokens[0] == "value_of_0_radian_position")
+        if (tokens[0] == "velocity_to_value_ratio")
+          velocity_to_value_ratio_ = std::atof(tokens[1].c_str());
+        else if (tokens[0] == "torque_to_current_value_ratio_")
+          torque_to_current_value_ratio_ = std::atof(tokens[1].c_str());
+        else if (tokens[0] == "value_of_0_radian_position")
           value_of_0_radian_position_ = std::atoi(tokens[1].c_str());
         else if (tokens[0] == "value_of_min_radian_position")
           value_of_min_radian_position_ = std::atoi(tokens[1].c_str());

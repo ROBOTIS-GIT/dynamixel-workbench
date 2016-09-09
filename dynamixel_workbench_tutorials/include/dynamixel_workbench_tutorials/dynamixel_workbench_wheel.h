@@ -14,10 +14,9 @@
 
 #define ESC_ASCII_VALUE             0x1b
 #define FORWARD                     0x77
-#define BACKWARD                    0x78
+#define BACKWARD                    0x73
 #define LEFT                        0x61
 #define RIGHT                       0x64
-#define STOP                        0x73
 
 namespace dynamixel_workbench_wheel
 {

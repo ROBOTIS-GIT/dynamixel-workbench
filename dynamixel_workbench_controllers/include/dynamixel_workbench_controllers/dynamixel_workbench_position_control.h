@@ -9,7 +9,7 @@
 #include <std_msgs/Float64.h>
 #include <dynamixel_workbench_toolbox/dynamixel_tool.h>
 #include <dynamixel_workbench_msgs/MotorStateList.h>
-#include <dynamixel_workbench_msgs/GetPosition.h>
+#include <dynamixel_workbench_msgs/SetPosition.h>
 
 #include <dynamixel_sdk/dynamixel_sdk.h>
 
@@ -17,8 +17,9 @@
 #define DEGREE2RADIAN (PI / 180.0)
 #define RADIAN2DEGREE (180.0 / PI)
 
-#define PAN_MOTOR    0
-#define TILT_MOTOR   1
+#define PAN_TILT_MOTOR 0
+#define PAN_MOTOR      0
+#define TILT_MOTOR     1
 
 #define VELOCITY      100
 #define ACCELERATION  20
@@ -66,17 +67,17 @@ class DynamixelWorkbenchPositionControl
 
   bool readDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, int64_t *value);
   bool readMotorState(std::string addr_name);
-  bool readMaxPositionLimit(void);
-  bool readMinPositionLimit(void);
 
   bool writeSyncDynamixel(uint16_t addr, uint8_t length, int64_t pan_motor_value, int64_t tilt_motor_value);
   bool writeTorque(bool onoff);
+  bool writeProfile();
+  bool writePosition(int64_t pan_pos, int64_t tilt_pos);
 
   int64_t convertRadian2Value(double radian);
 
   bool getPublishedMsg(void);
-  bool controlPanTiltMotorCallback(dynamixel_workbench_msgs::GetPosition::Request &req,
-                                   dynamixel_workbench_msgs::GetPosition::Response &res);
+  bool controlPanTiltMotorCallback(dynamixel_workbench_msgs::SetPosition::Request &req,
+                                   dynamixel_workbench_msgs::SetPosition::Response &res);
 };
 }
 
