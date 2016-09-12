@@ -3,7 +3,7 @@ model_number = 37928
 model_name  = PRO_L54_30_S400_R
 
 [type info]
-velocity_to_value_ratio 	= 3824.49
+velocity_to_value_ratio 	= 3824.5
 
 value_of_0_radian_position      = 0
 value_of_min_radian_position    = -144198

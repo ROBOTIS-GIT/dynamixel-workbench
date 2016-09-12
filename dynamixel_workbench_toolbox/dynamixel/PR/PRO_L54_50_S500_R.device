@@ -3,7 +3,7 @@ model_number = 38152
 model_name  = PRO_L54_50_S500_R
 
 [type info]
-velocity_to_value_ratio 	= 4792.79
+velocity_to_value_ratio 	= 2792.6
 
 value_of_0_radian_position      = 0
 value_of_min_radian_position    = -180684

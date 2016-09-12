@@ -46,7 +46,7 @@ class DynamixelWorkbenchVelocityControl
   std::string motor_model_;
   int motor_id_;
   float protocol_version_;
-  float baud_rate_;
+  int baud_rate_;
   double right_motor_velocity_;
   double left_motor_velocity_;
 

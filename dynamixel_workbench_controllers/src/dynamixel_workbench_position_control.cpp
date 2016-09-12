@@ -9,8 +9,7 @@ DynamixelWorkbenchPositionControl::DynamixelWorkbenchPositionControl()
      baud_rate_(0.0),
      motor_model_(""),
      motor_id_(0),
-     protocol_version_(0.0),
-     read_value_(0)
+     protocol_version_(0.0)
 {
   // Init parameter
   nh_priv_.param("is_debug", is_debug_, is_debug_);
@@ -236,15 +235,16 @@ bool DynamixelWorkbenchPositionControl::writePosition(int64_t pan_pos, int64_t t
 bool DynamixelWorkbenchPositionControl::readMotorState(std::string addr_name)
 {
   std::vector<int64_t> *read_data = new std::vector<int64_t>;
+  int64_t read_value;
 
   dynamixel_[PAN_MOTOR]->dxl_item_ = dynamixel_[PAN_MOTOR]->ctrl_table_[addr_name];
   dynamixel_[TILT_MOTOR]->dxl_item_ = dynamixel_[TILT_MOTOR]->ctrl_table_[addr_name];
 
-  readDynamixelRegister(dynamixel_[PAN_MOTOR]->id_, dynamixel_[PAN_MOTOR]->dxl_item_->address, dynamixel_[PAN_MOTOR]->dxl_item_->data_length, &read_value_);
-  read_data->push_back(read_value_);
+  readDynamixelRegister(dynamixel_[PAN_MOTOR]->id_, dynamixel_[PAN_MOTOR]->dxl_item_->address, dynamixel_[PAN_MOTOR]->dxl_item_->data_length, &read_value);
+  read_data->push_back(read_value);
 
-  readDynamixelRegister(dynamixel_[TILT_MOTOR]->id_, dynamixel_[TILT_MOTOR]->dxl_item_->address, dynamixel_[TILT_MOTOR]->dxl_item_->data_length, &read_value_);
-  read_data->push_back(read_value_);
+  readDynamixelRegister(dynamixel_[TILT_MOTOR]->id_, dynamixel_[TILT_MOTOR]->dxl_item_->address, dynamixel_[TILT_MOTOR]->dxl_item_->data_length, &read_value);
+  read_data->push_back(read_value);
 
   read_data_[addr_name] = read_data;
   return true;
@@ -295,27 +295,27 @@ int64_t DynamixelWorkbenchPositionControl::convertRadian2Value(double radian)
   int64_t value = 0;
   if (radian > 0)
   {
-    if (dynamixel_[PAN_MOTOR]->value_of_max_radian_position_ <= dynamixel_[PAN_MOTOR]->value_of_0_radian_position_)
-      return dynamixel_[PAN_MOTOR]->value_of_max_radian_position_;
+    if (dynamixel_[PAN_TILT_MOTOR]->value_of_max_radian_position_ <= dynamixel_[PAN_TILT_MOTOR]->value_of_0_radian_position_)
+      return dynamixel_[PAN_TILT_MOTOR]->value_of_max_radian_position_;
 
-    value = (radian * (dynamixel_[PAN_MOTOR]->value_of_max_radian_position_ - dynamixel_[PAN_MOTOR]->value_of_0_radian_position_) / dynamixel_[PAN_MOTOR]->max_radian_)
-                + dynamixel_[PAN_MOTOR]->value_of_0_radian_position_;
+    value = (radian * (dynamixel_[PAN_TILT_MOTOR]->value_of_max_radian_position_ - dynamixel_[PAN_TILT_MOTOR]->value_of_0_radian_position_) / dynamixel_[PAN_TILT_MOTOR]->max_radian_)
+                + dynamixel_[PAN_TILT_MOTOR]->value_of_0_radian_position_;
   }
   else if (radian < 0)
   {
-    if (dynamixel_[PAN_MOTOR]->value_of_min_radian_position_ >= dynamixel_[PAN_MOTOR]->value_of_0_radian_position_)
-      return dynamixel_[PAN_MOTOR]->value_of_min_radian_position_;
+    if (dynamixel_[PAN_TILT_MOTOR]->value_of_min_radian_position_ >= dynamixel_[PAN_TILT_MOTOR]->value_of_0_radian_position_)
+      return dynamixel_[PAN_TILT_MOTOR]->value_of_min_radian_position_;
 
-    value = (radian * (dynamixel_[PAN_MOTOR]->value_of_min_radian_position_ - dynamixel_[PAN_MOTOR]->value_of_0_radian_position_) / dynamixel_[PAN_MOTOR]->min_radian_)
-                + dynamixel_[PAN_MOTOR]->value_of_0_radian_position_;
+    value = (radian * (dynamixel_[PAN_MOTOR]->value_of_min_radian_position_ - dynamixel_[PAN_TILT_MOTOR]->value_of_0_radian_position_) / dynamixel_[PAN_TILT_MOTOR]->min_radian_)
+                + dynamixel_[PAN_TILT_MOTOR]->value_of_0_radian_position_;
   }
   else
-    value = dynamixel_[PAN_MOTOR]->value_of_0_radian_position_;
+    value = dynamixel_[PAN_TILT_MOTOR]->value_of_0_radian_position_;
 
-  if (value > dynamixel_[PAN_MOTOR]->value_of_max_radian_position_)
-    return dynamixel_[PAN_MOTOR]->value_of_max_radian_position_;
-  else if (value < dynamixel_[PAN_MOTOR]->value_of_min_radian_position_)
-    return dynamixel_[PAN_MOTOR]->value_of_min_radian_position_;
+  if (value > dynamixel_[PAN_TILT_MOTOR]->value_of_max_radian_position_)
+    return dynamixel_[PAN_TILT_MOTOR]->value_of_max_radian_position_;
+  else if (value < dynamixel_[PAN_TILT_MOTOR]->value_of_min_radian_position_)
+    return dynamixel_[PAN_TILT_MOTOR]->value_of_min_radian_position_;
 
   return value;
 }
@@ -331,7 +331,7 @@ bool DynamixelWorkbenchPositionControl::dynamixelControlLoop(void)
   {
     dxl_response[i].motor_model = dynamixel_[i]->model_name_;
     dxl_response[i].id = dynamixel_[i]->id_;
-    dxl_response[i].torque_enable = read_data_["torque_enable"]->at(i);
+    dxl_response[i].torque_enable = read_data_[i, "torque_enable"]->at(i);
     dxl_response[i].present_position = read_data_["present_position"]->at(i);
     dxl_response[i].present_velocity = read_data_["present_velocity"]->at(i);
     dxl_response[i].goal_position = read_data_["goal_position"]->at(i);
@@ -376,10 +376,13 @@ bool DynamixelWorkbenchPositionControl::dynamixelControlLoop(void)
 bool DynamixelWorkbenchPositionControl::controlPanTiltMotorCallback(dynamixel_workbench_msgs::SetPosition::Request &req,
                                                                     dynamixel_workbench_msgs::SetPosition::Response &res)
 {
-  int64_t pan_pos = convertRadian2Value(req.set_pan_pos);
-  int64_t tilt_pos = convertRadian2Value(req.set_tilt_pos);
+  int64_t pan_pos = convertRadian2Value(req.pan_pos);
+  int64_t tilt_pos = convertRadian2Value(req.tilt_pos);
 
   writePosition(pan_pos, tilt_pos);
+
+  res.pan_pos = pan_pos;
+  res.tilt_pos = tilt_pos;
 }
 
 int main(int argc, char **argv)

@@ -151,6 +151,16 @@ include_directories(
  target_link_libraries(dynamixel_workbench_velocity_control ${catkin_LIBRARIES})
 
 ## Declare a C++ executable
+add_executable(dynamixel_workbench_multi_port_control src/dynamixel_workbench_multi_port_control.cpp)
+
+## Add cmake target dependencies of the executable
+## same as for the library above
+add_dependencies(dynamixel_workbench_multi_port_control ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+### Specify libraries to link a library or executable target against
+target_link_libraries(dynamixel_workbench_multi_port_control ${catkin_LIBRARIES})
+
+## Declare a C++ executable
  add_executable(dynamixel_workbench_torque_control src/dynamixel_workbench_torque_control.cpp)
 
 ## Add cmake target dependencies of the executable

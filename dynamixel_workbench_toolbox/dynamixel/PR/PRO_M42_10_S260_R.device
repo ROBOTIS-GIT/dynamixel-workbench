@@ -3,7 +3,7 @@ model_number = 43288
 model_name  = PRO_M42_10_S260_R
 
 [type info]
-velocity_to_value_ratio 	= 2454.17
+velocity_to_value_ratio 	= 2454.2
 
 value_of_0_radian_position      = 0
 value_of_min_radian_position    = -131584

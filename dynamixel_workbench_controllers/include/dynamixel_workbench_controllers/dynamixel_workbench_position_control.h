@@ -22,7 +22,7 @@
 #define TILT_MOTOR     1
 
 #define VELOCITY      100
-#define ACCELERATION  20
+#define ACCELERATION  10
 
 namespace dynamixel_workbench_position_control
 {
@@ -49,11 +49,9 @@ class DynamixelWorkbenchPositionControl
   std::string motor_model_;
   int motor_id_;
   float protocol_version_;
-  float baud_rate_;
+  int baud_rate_;
 
   std::map<std::string, std::vector<int64_t> *> read_data_;
-  int64_t read_value_;
-
  public:
   DynamixelWorkbenchPositionControl();
   ~DynamixelWorkbenchPositionControl();

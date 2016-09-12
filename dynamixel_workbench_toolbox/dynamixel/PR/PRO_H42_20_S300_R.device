@@ -3,7 +3,7 @@ model_number = 51200
 model_name  = PRO_H42_20_S300_R
 
 [type info]
-velocity_to_value_ratio 	= 2901.07
+velocity_to_value_ratio 	= 2901.1
 
 value_of_0_radian_position      = 0
 value_of_min_radian_position    = -151900

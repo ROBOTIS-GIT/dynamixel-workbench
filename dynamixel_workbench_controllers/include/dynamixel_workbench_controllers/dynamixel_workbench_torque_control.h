@@ -13,21 +13,19 @@
 
 #include <dynamixel_sdk/dynamixel_sdk.h>
 
-// Default setting
-#define BAUDRATE                    1000000
-#define DEVICENAME                  "/dev/ttyUSB0"
-#define PROTOCOL_VERSION            2.0
+#define PI 3.14159265358979323846
+#define DEGREE2RADIAN (PI / 180.0)
+#define RADIAN2DEGREE (180.0 / PI)
 
-#define PAN_MOTOR                   0
-#define TILT_MOTOR                  1
+#define PAN_TILT_MOTOR 0
+#define PAN_MOTOR      0
+#define TILT_MOTOR     1
+
+#define PROPORTION_GAIN 0.001
+#define DIFFERENTIAL_GAIN 0.00002
 
 namespace dynamixel_workbench_torque_control
 {
-struct ReadData{
- std::vector<bool> dxl_bool_data;
- std::vector<uint16_t> dxl_int_data;
-};
-
 class DynamixelWorkbenchTorqueControl
 {
  public:
@@ -45,18 +43,27 @@ class DynamixelWorkbenchTorqueControl
   // ROS Service Server
   ros::ServiceServer position_control_server;
   // Parameters
-  bool dxl_addparam_result_;
-  int dxl_comm_result_;
-  bool dxl_getdata_result_;
-  dynamixel_tool::DynamixelTool *dxl_motor_;
   std::vector<dynamixel_tool::DynamixelTool *> dynamixel_;
-  std::map<std::string, ReadData *> read_data_;
+
   std::string device_name_;
   std::string motor_model_;
   int motor_id_;
   float protocol_version_;
-  float baud_rate_;
-  uint32_t read_value_;
+  int baud_rate_;
+
+  int64_t pan_des_pos_;
+  int64_t tilt_des_pos_;
+
+  int64_t pan_pre_pos_;
+  int64_t tilt_pre_pos_;
+
+  int64_t pan_cur_pos_;
+  int64_t tilt_cur_pos_;
+
+  double pan_torque_;
+  double tilt_torque_;
+
+  std::map<std::string, std::vector<int64_t> *> read_data_;
 
  public:
   DynamixelWorkbenchTorqueControl();
@@ -66,21 +73,22 @@ class DynamixelWorkbenchTorqueControl
  private:
   bool initDynamixelWorkbenchTorqueControl(void);
   bool shutdownDynamixelWorkbenchTorqueControl(void);
-  bool initMotor(dynamixel_tool::DynamixelTool *dxl_motor, std::string motor_model, uint8_t motor_id, float protocol_version);
-  bool writeDynamixelRegister(dynamixel::PacketHandler *packetHandler, uint8_t id, uint16_t addr, uint8_t length, uint32_t value);
-  bool writeSyncDynamixel(uint16_t addr, uint8_t length, uint32_t pan_motor_value, uint32_t tilt_motor_value);
-  bool readDynamixelRegister(dynamixel::PacketHandler *packetHandler, uint8_t id, uint16_t addr, uint8_t length, uint32_t *value);
-  bool readSyncDynamixel(uint16_t addr, uint8_t length, ReadData *data);
-  bool readTorque(void);
-  bool readMoving(void);
-  bool readGoalPosition(void);
-  bool readGoalVelocity(void);
-  bool readPresentPosition(void);
-  bool readPresentVelocity(void);
-  bool writeTorque(bool onoff);
 
-  bool controlPanTiltMotor(dynamixel_workbench_msgs::SetPosition::Request &req,
-                           dynamixel_workbench_msgs::SetPosition::Response &res);
+  bool initMotor(std::string motor_model, uint8_t motor_id, float protocol_version);
+
+  bool readDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, int64_t *value);
+  bool readMotorState(std::string addr_name);
+
+  bool writeSyncDynamixel(uint16_t addr, uint8_t length, int64_t pan_motor_value, int64_t tilt_motor_value);
+  bool writeTorque(bool onoff);
+  bool writeCurrent(int64_t pan_cur, int64_t tilt_cur);
+
+  int16_t convertTorque2Value(double torque);
+  int64_t convertRadian2Value(double radian);
+
+  bool getPublishedMsg(void);
+  bool controlPanTiltMotorCallback(dynamixel_workbench_msgs::SetPosition::Request &req,
+                                   dynamixel_workbench_msgs::SetPosition::Response &res);
 };
 }
 

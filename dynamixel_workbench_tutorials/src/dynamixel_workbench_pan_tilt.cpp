@@ -47,16 +47,17 @@ int main(int argc, char **argv)
     return 1;
   }
 
-  srv.request.set_pan_pos = atof(argv[1]);
-  srv.request.set_tilt_pos = atof(argv[2]);
+  srv.request.pan_pos = atof(argv[1]);
+  srv.request.tilt_pos = atof(argv[2]);
 
   if (dxl_pan_tilt.position_control_client_.call(srv))
   {
-    ROS_INFO("send messages: [pan_pos: %.2f (radian)] [tilt_pos: %.2f (radian)]", srv.request.set_pan_pos, srv.request.set_tilt_pos);
+    ROS_INFO("send messages: [pan_pos: %ld (value)] [tilt_pos: %ld (value)]", srv.response.pan_pos, srv.response.tilt_pos);
   }
   else
   {
-    ROS_ERROR("Failed to call service /pan_tilt");
+    ROS_ERROR("Failed to call service /pan_tilt or /multi_port");
   }
+
   return 0;
 }

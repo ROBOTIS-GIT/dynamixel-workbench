@@ -114,13 +114,13 @@ int main(int argc, char **argv)
       }
       else if (c == LEFT)
       {
-        srv.request.right_wheel_velocity = -0.2;
-        srv.request.left_wheel_velocity = 0.2;
+        srv.request.right_wheel_velocity = 0.2;
+        srv.request.left_wheel_velocity = -0.2;
       }
       else if (c == RIGHT)
       {
-        srv.request.right_wheel_velocity = 0.2;
-        srv.request.left_wheel_velocity = -0.2;
+        srv.request.right_wheel_velocity = -0.2;
+        srv.request.left_wheel_velocity = 0.2;
       }
 
       if (dxl_wheel.wheel_control_client_.call(srv))
@@ -129,7 +129,7 @@ int main(int argc, char **argv)
       }
       else
       {
-        ROS_ERROR("Failed to call service /pan_tilt");
+        ROS_ERROR("Failed to call service /wheel");
       }
     }
 
