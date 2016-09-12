@@ -41,6 +41,6 @@ int64 external_port_data_2
 int64 external_port_data_3
 int64 external_port_data_4
 int64 indirect_data_1
-int64 registered_instruction
+bool registered_instruction
 int64 status_return_level
 int64 hardware_error_status

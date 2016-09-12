@@ -8,7 +8,6 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   dynamixel_workbench_msgs
-  geometry_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -103,7 +102,7 @@ generate_messages(
 catkin_package(
  INCLUDE_DIRS include
  LIBRARIES dynamixel_workbench_tutorials
- CATKIN_DEPENDS roscpp std_msgs dynamixel_workbench_msgs geometry_msgs
+ CATKIN_DEPENDS roscpp std_msgs dynamixel_workbench_msgs
 #  DEPENDS system_lib
 )
 

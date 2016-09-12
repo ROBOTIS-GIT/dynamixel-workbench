@@ -18,7 +18,7 @@ int64 max_position_limit
 int64 min_position_limit
 int64 shutdown
 bool  torque_enable
-int64 led
+bool led
 int64 status_return_level
 int64 registered_instruction
 int64 hardware_error_status

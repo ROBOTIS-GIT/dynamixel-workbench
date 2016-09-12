@@ -5,8 +5,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <ros/ros.h>
-#include <std_msgs/Int32.h>
-#include <std_msgs/Float64.h>
 #include <dynamixel_workbench_toolbox/dynamixel_tool.h>
 #include <dynamixel_workbench_msgs/MotorStateList.h>
 #include <dynamixel_workbench_msgs/SetPosition.h>
@@ -21,8 +19,12 @@
 #define PAN_MOTOR      0
 #define TILT_MOTOR     1
 
-#define PROPORTION_GAIN 0.001
+#define PROPORTION_GAIN   0.001
 #define DIFFERENTIAL_GAIN 0.00002
+
+#define TILT_MOTOR_MASS 0.082
+#define GRAVITY         9.8
+#define LINK_LENGTH     0.018
 
 namespace dynamixel_workbench_torque_control
 {
@@ -85,6 +87,7 @@ class DynamixelWorkbenchTorqueControl
 
   int16_t convertTorque2Value(double torque);
   int64_t convertRadian2Value(double radian);
+  double convertValue2Radian(int32_t value);
 
   bool getPublishedMsg(void);
   bool controlPanTiltMotorCallback(dynamixel_workbench_msgs::SetPosition::Request &req,

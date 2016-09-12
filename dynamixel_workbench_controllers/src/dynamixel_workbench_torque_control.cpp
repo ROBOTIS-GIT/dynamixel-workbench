@@ -278,6 +278,34 @@ int64_t DynamixelWorkbenchTorqueControl::convertRadian2Value(double radian)
   return value;
 }
 
+double DynamixelWorkbenchTorqueControl::convertValue2Radian(int32_t value)
+{
+  double radian = 0.0;
+  if (value > dynamixel_[PAN_TILT_MOTOR]->value_of_0_radian_position_)
+  {
+    if (dynamixel_[PAN_TILT_MOTOR]->max_radian_ <= 0)
+      return dynamixel_[PAN_TILT_MOTOR]->max_radian_;
+
+    radian = (double) (value - dynamixel_[PAN_TILT_MOTOR]->value_of_0_radian_position_) * dynamixel_[PAN_TILT_MOTOR]->max_radian_
+               / (double) (dynamixel_[PAN_TILT_MOTOR]->value_of_max_radian_position_ - dynamixel_[PAN_TILT_MOTOR]->value_of_0_radian_position_);
+  }
+  else if (value < dynamixel_[PAN_TILT_MOTOR]->value_of_0_radian_position_)
+  {
+    if (dynamixel_[PAN_TILT_MOTOR]->min_radian_ >= 0)
+      return dynamixel_[PAN_TILT_MOTOR]->min_radian_;
+
+    radian = (double) (value - dynamixel_[PAN_TILT_MOTOR]->value_of_0_radian_position_) * dynamixel_[PAN_TILT_MOTOR]->min_radian_
+               / (double) (dynamixel_[PAN_TILT_MOTOR]->value_of_min_radian_position_ - dynamixel_[PAN_TILT_MOTOR]->value_of_0_radian_position_);
+  }
+
+  if (radian > dynamixel_[PAN_TILT_MOTOR]->max_radian_)
+    return dynamixel_[PAN_TILT_MOTOR]->max_radian_;
+  else if (radian < dynamixel_[PAN_TILT_MOTOR]->min_radian_)
+    return dynamixel_[PAN_TILT_MOTOR]->min_radian_;
+
+  return radian;
+}
+
 int16_t DynamixelWorkbenchTorqueControl::convertTorque2Value(double torque)
 {
   return (int16_t) (torque * dynamixel_[PAN_TILT_MOTOR]->torque_to_current_value_ratio_);
@@ -297,13 +325,13 @@ bool DynamixelWorkbenchTorqueControl::dynamixelControlLoop(void)
     dxl_response[i].torque_enable = read_data_[i, "torque_enable"]->at(i);
     dxl_response[i].moving = read_data_["moving"]->at(i);
     dxl_response[i].goal_position = read_data_["goal_position"]->at(i);
-    dxl_response[i].goal_position = read_data_["goal_velocity"]->at(i);
-    dxl_response[i].goal_position = read_data_["goal_current"]->at(i);
+    dxl_response[i].goal_velocity = read_data_["goal_velocity"]->at(i);
+    dxl_response[i].goal_current = read_data_["goal_current"]->at(i);
     dxl_response[i].profile_velocity = read_data_["profile_velocity"]->at(i);
     dxl_response[i].profile_acceleration = read_data_["profile_acceleration"]->at(i);
     dxl_response[i].present_position = read_data_["present_position"]->at(i);
     dxl_response[i].present_velocity = read_data_["present_velocity"]->at(i);
-    dxl_response[i].goal_position = read_data_["present_current"]->at(i);
+    dxl_response[i].present_current = read_data_["present_current"]->at(i);
     dxl_response[i].max_position_limit = read_data_["max_position_limit"]->at(i);
     dxl_response[i].min_position_limit = read_data_["min_position_limit"]->at(i);
 
@@ -315,7 +343,8 @@ bool DynamixelWorkbenchTorqueControl::dynamixelControlLoop(void)
   tilt_cur_pos_ = read_data_["present_position"]->at(TILT_MOTOR);
 
   pan_torque_ = PROPORTION_GAIN * (pan_des_pos_ - pan_cur_pos_) + DIFFERENTIAL_GAIN * ((pan_pre_pos_ - pan_cur_pos_) / 0.004);
-  tilt_torque_ = PROPORTION_GAIN * (tilt_des_pos_ - tilt_cur_pos_) + DIFFERENTIAL_GAIN * ((tilt_pre_pos_ - tilt_cur_pos_) / 0.004);
+  tilt_torque_ = PROPORTION_GAIN * (tilt_des_pos_ - tilt_cur_pos_) + DIFFERENTIAL_GAIN * ((tilt_pre_pos_ - tilt_cur_pos_) / 0.004)
+                 + TILT_MOTOR_MASS * GRAVITY * LINK_LENGTH * cos(convertValue2Radian(tilt_cur_pos_));
 
   writeCurrent(convertTorque2Value(pan_torque_), convertTorque2Value(tilt_torque_));
 

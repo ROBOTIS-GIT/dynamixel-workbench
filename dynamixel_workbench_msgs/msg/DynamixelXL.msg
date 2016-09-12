@@ -25,7 +25,7 @@ int64 present_velocity
 int64 present_load
 int64 present_voltage
 int64 present_temperature
-int64 registered_instruction
+bool registered_instruction
 bool moving
 int64 hardware_error_status
 int64 punch

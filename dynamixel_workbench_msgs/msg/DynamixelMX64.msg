@@ -15,7 +15,7 @@ int64 alarm_shutdown
 int64 multi_turn_offset
 int64 resolution_divider
 bool torque_enable
-int64 led
+bool led
 int64 d_gain
 int64 i_gain
 int64 p_gain
@@ -27,11 +27,11 @@ int64 present_velocity
 int64 present_load
 int64 present_voltage
 int64 present_temperature
-int64 registered
+bool registered
 bool moving
-int64 lock
+bool lock
 int64 punch
 int64 current
-int64 torque_control_mode_enable
+bool torque_control_mode_enable
 int64 goal_torque
 int64 goal_acceleration

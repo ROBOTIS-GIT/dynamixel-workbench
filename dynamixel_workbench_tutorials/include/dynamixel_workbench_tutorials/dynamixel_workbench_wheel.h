@@ -7,9 +7,7 @@
 #include <termios.h>        // Terminal IO
 #include <stdio.h>
 #include <ros/ros.h>
-#include <std_msgs/Int32.h>
-#include <std_msgs/Float64.h>
-#include <geometry_msgs/Twist.h>
+
 #include <dynamixel_workbench_msgs/SetDirection.h>
 
 #define ESC_ASCII_VALUE             0x1b

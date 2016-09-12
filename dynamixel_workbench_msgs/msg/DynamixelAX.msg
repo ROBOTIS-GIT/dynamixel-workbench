@@ -13,7 +13,7 @@ int64 status_return_level
 int64 alarm_led
 int64 alarm_shutdown
 bool  torque_enable
-int64 led
+bool led
 int64 cw_compliance_margin
 int64 ccw_compliance_margin
 int64 cw_compliance_slope
@@ -26,7 +26,7 @@ int64 present_velocity
 int64 present_load
 int64 present_voltage
 int64 present_temperature
-int64 registered
+bool registered
 bool moving
-int64 lock
+bool lock
 int64 punch

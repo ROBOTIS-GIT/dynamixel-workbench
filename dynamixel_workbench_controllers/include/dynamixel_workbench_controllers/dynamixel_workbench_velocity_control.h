@@ -5,8 +5,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <ros/ros.h>
-#include <std_msgs/Int32.h>
-#include <std_msgs/Float64.h>
 #include <dynamixel_workbench_toolbox/dynamixel_tool.h>
 #include <dynamixel_workbench_msgs/MotorStateList.h>
 #include <dynamixel_workbench_msgs/SetDirection.h>
