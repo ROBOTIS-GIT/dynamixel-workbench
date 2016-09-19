@@ -82,7 +82,7 @@ Q_OBJECT
   void setPositionZeroMsg(int32_t zero_position);
 
   void getWorkbenchParam(void);
-  void setSubscriber(ros::NodeHandle nh);
+  void setSubscriber();
 
 Q_SIGNALS:
   void loggingUpdated();

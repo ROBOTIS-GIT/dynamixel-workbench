@@ -6,7 +6,7 @@ DynamixelWorkbenchTorqueControl::DynamixelWorkbenchTorqueControl()
     :nh_priv_("~"),
      is_debug_(false),
      device_name_(""),
-     baud_rate_(0.0),
+     baud_rate_(0),
      motor_model_(""),
      motor_id_(0),
      protocol_version_(0.0),

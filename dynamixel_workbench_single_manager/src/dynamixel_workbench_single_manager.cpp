@@ -249,11 +249,11 @@ bool DynamixelWorkbenchSingleManager::scanDynamixelID(void)
       protocol_version_ = packetHandler1_->getProtocolVersion();
       packetHandler_ = packetHandler1_->getPacketHandler(protocol_version_);
       dxl_ = new dynamixel_tool::DynamixelTool(dxl_id, dxl_num, protocol_version_);
-      ROS_INFO("Model Number: %d", dxl_num);
+      //ROS_INFO("Model Number: %d", dxl_num);
     }
     else
     {
-      fprintf(stderr,".");
+      //fprintf(stderr,".");
     }
 
     if (kbhit())
@@ -273,11 +273,11 @@ bool DynamixelWorkbenchSingleManager::scanDynamixelID(void)
       protocol_version_ = packetHandler2_->getProtocolVersion();
       packetHandler_ = packetHandler2_->getPacketHandler(protocol_version_);
       dxl_ = new dynamixel_tool::DynamixelTool(dxl_id, dxl_num, protocol_version_);
-      ROS_INFO("Model Number: %d", dxl_num);
+      //ROS_INFO("Model Number: %d", dxl_num);
     }
     else
     {
-      fprintf(stderr,".");
+      //fprintf(stderr,".");
     }
 
     if (kbhit())
@@ -289,14 +289,14 @@ bool DynamixelWorkbenchSingleManager::scanDynamixelID(void)
 
   if (dxl_ == NULL)
   {
-    fprintf(stderr,"\n");
+    //fprintf(stderr,"\n");
     ROS_ERROR("...Failed to find dynamixel!");
     shutdownDynamixelWorkbenchSingleManager();
     return false;
   }
   else
   {
-    fprintf(stderr,"\n");
+    //fprintf(stderr,"\n");
     ROS_INFO("...Succeeded to find dynamixel");
     ROS_INFO("[ID] %u, [Model Name] %s", dxl_->id_, dxl_->model_name_.c_str());
     return true;

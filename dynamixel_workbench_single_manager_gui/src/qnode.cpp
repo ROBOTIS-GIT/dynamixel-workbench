@@ -58,7 +58,7 @@ bool QNode::init()
   get_workbench_param_client_ = nh.serviceClient<dynamixel_workbench_msgs::GetWorkbenchParam>("/dynamixel_workbench_single_manager/get_workbench_parameter", 10);
   getWorkbenchParam();
 
-  setSubscriber(nh);
+  setSubscriber();
   dxl_command_msg_pub_ = nh.advertise<dynamixel_workbench_msgs::DynamixelCommand>("/dynamixel_workbench_single_manager/motor_command", 10);
 
   start();
@@ -765,8 +765,10 @@ void QNode::dynamixelProL42StatusMsgCallback(const dynamixel_workbench_msgs::Dyn
   row_count_ = 0;
 }
 
-void QNode::setSubscriber(ros::NodeHandle nh)
+void QNode::setSubscriber()
 {
+  ros::NodeHandle nh;
+
   // Init ROS subscribe
   if(!strncmp(dxl_model_name_.c_str(), "AX", 2))
   {

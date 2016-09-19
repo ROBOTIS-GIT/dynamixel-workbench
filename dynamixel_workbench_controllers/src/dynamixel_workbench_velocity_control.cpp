@@ -6,7 +6,7 @@ DynamixelWorkbenchVelocityControl::DynamixelWorkbenchVelocityControl()
     :nh_priv_("~"),
      is_debug_(false),
      device_name_(""),
-     baud_rate_(0.0),
+     baud_rate_(0),
      motor_model_(""),
      motor_id_(0),
      protocol_version_(0),
@@ -60,17 +60,17 @@ DynamixelWorkbenchVelocityControl::DynamixelWorkbenchVelocityControl()
     ROS_ERROR("Failed to change the baudrate!");
   }
 
-  nh_priv_.getParam("pan_motor_/motor_id_", motor_id_);
-  ROS_INFO("pan_motor_id: %d", motor_id_);
-  ROS_INFO("pan_motor_model: %s", motor_model_.c_str());
-  ROS_INFO("pan_motor_protocol_version_: %.1f\n", protocol_version_);
+  nh_priv_.getParam("left_motor_/motor_id_", motor_id_);
+  ROS_INFO("left_motor_id: %d", motor_id_);
+  ROS_INFO("left_motor_model: %s", motor_model_.c_str());
+  ROS_INFO("left_motor_protocol_version_: %.1f\n", protocol_version_);
 
   initMotor(motor_model_, motor_id_, protocol_version_);
 
-  nh_priv_.getParam("tilt_motor_/motor_id_", motor_id_);
-  ROS_INFO("tilt_motor_id: %d", motor_id_);
-  ROS_INFO("tilt_motor_model: %s", motor_model_.c_str());
-  ROS_INFO("tilt_motor_protocol_version_: %.1f", protocol_version_);
+  nh_priv_.getParam("right_motor_/motor_id_", motor_id_);
+  ROS_INFO("right_motor_id: %d", motor_id_);
+  ROS_INFO("right_motor_model: %s", motor_model_.c_str());
+  ROS_INFO("right_motor_protocol_version_: %.1f", protocol_version_);
 
   initMotor(motor_model_, motor_id_, protocol_version_);
   writeTorque(true);
