@@ -1,0 +1,53 @@
+[device info]
+model_number = 350
+model_name  = XL_320
+
+[type info]
+velocity_to_value_ratio 	= 86.03
+
+value_of_0_radian_position      = 512
+value_of_min_radian_position    = 0
+value_of_max_radian_position    = 1024
+min_radian                      = -3.14159265
+max_radian                      =  3.14159265
+
+[baud rate]
+# baud rate | value
+9600        | 0
+57600       | 1
+115200      | 2
+1000000     | 3
+
+[control table]
+# addr | item name                | length | access | memory
+   0   | model_number             | 2      | R      | EEPROM
+   2   | version_of_firmware      | 1      | R      | EEPROM
+   3   | id                       | 1      | RW     | EEPROM
+   4   | baud_rate                | 1      | RW     | EEPROM
+   5   | return_delay_time        | 1      | RW     | EEPROM
+   6   | cw_angle_limit           | 2      | RW     | EEPROM
+   8   | ccw_angle_limit          | 2      | RW     | EEPROM
+   11  | control_mode             | 1      | RW     | EEPROM
+   12  | limit_temperature        | 1      | RW     | EEPROM
+   13  | down_limit_voltage       | 1      | RW     | EEPROM
+   14  | up_limit_voltage         | 1      | RW     | EEPROM
+   15  | max_torque               | 2      | RW     | EEPROM
+   17  | return_level             | 1      | RW     | EEPROM
+   18  | alarm_shutdown           | 1      | RW     | EEPROM
+   24  | torque_enable            | 1      | RW     | RAM
+   25  | led                      | 1      | RW     | RAM
+   27  | d_gain                   | 1      | RW     | RAM
+   28  | i_gain                   | 1      | RW     | RAM
+   29  | p_gain                   | 1      | RW     | RAM
+   30  | goal_position            | 2      | RW     | RAM
+   32  | goal_velocity            | 2      | RW     | RAM
+   35  | goal_torque              | 2      | RW     | RAM
+   37  | present_position         | 2      | R      | RAM
+   39  | present_velocity         | 2      | R      | RAM
+   41  | present_load             | 2      | R      | RAM
+   45  | present_voltage          | 1      | R      | RAM
+   46  | present_temperature      | 1      | R      | RAM
+   47  | registered_instruction   | 1      | R      | RAM
+   49  | moving                   | 1      | R      | RAM
+   50  | hardware_error_status    | 1      | R      | RAM
+   51  | punch                    | 2      | RW     | RAM
