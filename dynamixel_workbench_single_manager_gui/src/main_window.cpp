@@ -170,6 +170,7 @@ void MainWindow::updateWorkbenchParamLineEdit(dynamixel_workbench_msgs::Workbenc
   ui_.get_baud_rate_line_edit->setText(QString::number(msg.baud_rate));
   ui_.get_protocol_version_line_edit->setText(QString::number(msg.protocol_version));
   ui_.get_model_name_line_edit->setText(QString::fromStdString(msg.model_name));
+  ui_.set_id_line_edit->setText(QString::number(msg.model_id));
 
   dxl_ = new dynamixel_tool::DynamixelTool(msg.model_id, msg.model_number, msg.protocol_version);
 }
@@ -190,8 +191,7 @@ void MainWindow::makeConnect()
 
 void MainWindow::makeUI()
 {
-  ui_.set_id_line_edit->setText(QString::number(1));
-  ui_.set_baud_rate_line_edit->setText(QString::number(1000000));
+  ui_.set_baud_rate_line_edit->setText(ui_.get_baud_rate_line_edit->text());
   ui_.set_operating_mode_combo_box->addItem((QString("Select Mode")));
   ui_.set_address_value_dial->setRange(dxl_->value_of_min_radian_position_, dxl_->value_of_max_radian_position_);
   ui_.set_address_value_spin_box->setRange(dxl_->value_of_min_radian_position_, dxl_->value_of_max_radian_position_);
