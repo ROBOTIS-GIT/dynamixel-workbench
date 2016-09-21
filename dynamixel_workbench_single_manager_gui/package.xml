@@ -1,17 +1,18 @@
 <?xml version="1.0"?>
 <package>
   <name>dynamixel_workbench_single_manager_gui</name>
-  <version>0.1.0</version>
-  <description>
+  <version>1.0.0</version>
+  <description>dynamixel_workbench_single_manager_gui</description>
 
-     dynamixel_workbench_single_manager_gui
+  <maintainer email="pyo@robotis.com">Pyo</maintainer>
 
-  </description>
-  <maintainer email="thlim@robotis.com">Darby Lim</maintainer>
-  <author>Darby Lim</author>
   <license>BSD</license>
-  <!-- <url type="bugtracker">https://github.com/stonier/qt_ros/issues</url> -->
-  <!-- <url type="repository">https://github.com/stonier/qt_ros</url> -->
+
+  <url type="bugtracker">https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues</url>
+  <url type="repository">https://github.com/ROBOTIS-GIT/dynamixel-workbench</url>
+  <url type="website">http://wiki.ros.org/dynamixel_workbench</url>
+
+  <author email="thlim@robotic.com">Darby Lim</author>
 
   <buildtool_depend>catkin</buildtool_depend>
 
