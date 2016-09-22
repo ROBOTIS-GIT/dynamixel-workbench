@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package>
+  <name>dynamixel_workbench_toolbox</name>
+  <version>0.0.1</version>
+  <description>The dynamixel_workbench_toolbox package</description>
+
+  <maintainer email="pyo@robotis.com">Pyo</maintainer>
+
+  <license>BSD</license>
+
+  <url type="bugtracker">https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues</url>
+  <url type="repository">https://github.com/ROBOTIS-GIT/dynamixel-workbench</url>
+  <url type="website">http://wiki.ros.org/dynamixel_workbench</url>
+
+  <author email="thlim@robotis.com">Darby Lim</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>roscpp</build_depend>
+  <build_depend>roslib</build_depend>
+  <build_depend>std_msgs</build_depend>
+
+  <run_depend>roscpp</run_depend>
+  <run_depend>roslib</run_depend>
+  <run_depend>std_msgs</run_depend>
+
+  <export>
+
+  </export>
+</package>
