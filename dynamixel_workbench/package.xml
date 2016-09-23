@@ -9,7 +9,7 @@
   </description>
   <license>BSD</license>
   <author email="thlim@robotis.com">Darby Lim</author>
-  <maintainer email="pyo@robotis.com">pyo</maintainer>
+  <maintainer email="pyo@robotis.com">Pyo</maintainer>
   <url type="bugtracker">https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues</url>
   <url type="repository">https://github.com/ROBOTIS-GIT/dynamixel-workbench</url>
   <url type="website">http://wiki.ros.org/dynamixel_workbench</url>
