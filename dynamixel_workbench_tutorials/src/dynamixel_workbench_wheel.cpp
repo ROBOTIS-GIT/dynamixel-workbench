@@ -87,15 +87,15 @@ int main(int argc, char **argv)
   ROS_INFO("d : Right\n");
   ROS_INFO("ESC : exit");
 
-  DynamixelWorkbenchWheel dxl_wheel;
+  DynamixelWorkbenchWheel dynamixel_wheel;
   dynamixel_workbench_msgs::SetDirection srv;
   ros::Rate loop_rate(10);
 
   while(1)
   {
-    if (dxl_wheel.kbhit())
+    if (dynamixel_wheel.kbhit())
     {
-      char c = dxl_wheel.getch();
+      char c = dynamixel_wheel.getch();
 
       if (c == ESC_ASCII_VALUE)
       {
@@ -123,7 +123,7 @@ int main(int argc, char **argv)
         srv.request.left_wheel_velocity = 0.2;
       }
 
-      if (dxl_wheel.wheel_control_client_.call(srv))
+      if (dynamixel_wheel.wheel_control_client_.call(srv))
       {
         ROS_INFO("[RIGHT_WHEEL_VELOCITY]: %.2f, [LEFT_WHEEL_VELOCITY]: %.2f", srv.response.right_wheel_velocity, srv.response.left_wheel_velocity);
       }

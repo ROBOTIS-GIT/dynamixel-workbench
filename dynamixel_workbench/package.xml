@@ -1,26 +1,24 @@
 <?xml version="1.0"?>
 <package>
   <name>dynamixel_workbench</name>
-  <version>1.0.0</version>
-  <description>ROS packages for dynamixel_workbench (meta package)</description>
-
-  <maintainer email="pyo@todo.todo">pyo</maintainer>
-
+  <version>0.1.0</version>
+  <description>
+    Dynamixel-workbench is dynamixel solution for ROS.
+    This metapackage can helps change each address in Dynamixel included id, baudrate and operating mode in command line or GUI.
+    Furthermore, it supports various controllers based on operating mode and Dynamixel SDK. These controllers are remoted by a tutorial.
+  </description>
   <license>BSD</license>
-
+  <author email="thlim@robotis.com">Darby Lim</author>
+  <maintainer email="pyo@robotis.com">pyo</maintainer>
   <url type="bugtracker">https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues</url>
   <url type="repository">https://github.com/ROBOTIS-GIT/dynamixel-workbench</url>
   <url type="website">http://wiki.ros.org/dynamixel_workbench</url>
-
-  <author email="thlim@robotic.com">Darby Lim</author>
-
   <buildtool_depend>catkin</buildtool_depend>
-
   <run_depend>dynamixel_workbench_single_manager</run_depend>
   <run_depend>dynamixel_workbench_single_manager_gui</run_depend>
+  <run_depend>dynamixel_workbench_msgs</run_depend>
   <run_depend>dynamixel_workbench_controllers</run_depend>
   <run_depend>dynamixel_workbench_tutorials</run_depend>
   <run_depend>dynamixel_workbench_toobox</run_depend>
-
   <export><metapackage/></export>
 </package>

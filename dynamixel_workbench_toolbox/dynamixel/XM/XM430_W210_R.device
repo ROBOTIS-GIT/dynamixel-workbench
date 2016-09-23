@@ -73,7 +73,7 @@ max_radian                      =  3.14159265
    140 | position_trajectory      | 4      | R      | RAM
    144 | present_input_voltage    | 2      | R      | RAM
    146 | present_temperature      | 1      | R      | RAM
-   168 | indirect_address_1       | 2      | RW     | RAM
-   224 | indirect_data_1          | 1      | RW     | RAM
-   578 | indirect_address_29      | 2      | RW     | RAM
-   634 | indirect_data_29         | 1      | RW     | RAM
+#   168 | indirect_address_1       | 2      | RW     | RAM
+#   224 | indirect_data_1          | 1      | RW     | RAM
+#   578 | indirect_address_29      | 2      | RW     | RAM
+#   634 | indirect_data_29         | 1      | RW     | RAM

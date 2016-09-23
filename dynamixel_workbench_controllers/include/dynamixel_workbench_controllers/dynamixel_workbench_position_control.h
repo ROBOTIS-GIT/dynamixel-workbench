@@ -37,7 +37,7 @@ class DynamixelWorkbenchPositionControl
   // ROS Parameters
   bool is_debug_;
   // ROS Topic Publisher
-  ros::Publisher dxl_state_pub_;
+  ros::Publisher dynamixel_state_pub_;
   // ROS Service Server
   ros::ServiceServer position_control_server;
   // Parameters

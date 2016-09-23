@@ -98,21 +98,21 @@ void MainWindow::on_torque_enable_toggle_button_toggled(bool check)
     ui_.set_address_name_combo_box->removeItem(0);
   }
 
-  for (dxl_->it_ctrl_ = dxl_->ctrl_table_.begin(); dxl_->it_ctrl_ != dxl_->ctrl_table_.end(); dxl_->it_ctrl_++)
+  for (dynamixel_->it_ctrl_ = dynamixel_->ctrl_table_.begin(); dynamixel_->it_ctrl_ != dynamixel_->ctrl_table_.end(); dynamixel_->it_ctrl_++)
   {
-    dxl_->dxl_item_ = dxl_->ctrl_table_[dxl_->it_ctrl_->first.c_str()];
+    dynamixel_->item_ = dynamixel_->ctrl_table_[dynamixel_->it_ctrl_->first.c_str()];
     if (ui_.torque_enable_toggle_button->isChecked())
     {
-      if ((dxl_->dxl_item_->access_type == dynamixel_tool::READ_WRITE) && (dxl_->dxl_item_->memory_type == dynamixel_tool::RAM))
+      if ((dynamixel_->item_->access_type == dynamixel_tool::READ_WRITE) && (dynamixel_->item_->memory_type == dynamixel_tool::RAM))
       {
-        ui_.set_address_name_combo_box->addItem(QString::fromStdString(dxl_->dxl_item_->item_name));
+        ui_.set_address_name_combo_box->addItem(QString::fromStdString(dynamixel_->item_->item_name));
       }
     }
     else
     {
-      if (dxl_->dxl_item_->access_type == dynamixel_tool::READ_WRITE)
+      if (dynamixel_->item_->access_type == dynamixel_tool::READ_WRITE)
       {
-        ui_.set_address_name_combo_box->addItem(QString::fromStdString(dxl_->dxl_item_->item_name));
+        ui_.set_address_name_combo_box->addItem(QString::fromStdString(dynamixel_->item_->item_name));
       }
     }
   }
@@ -130,9 +130,9 @@ void MainWindow::on_factory_reset_push_button_clicked(bool check)
 
 void MainWindow::on_set_position_zero_push_button_clicked(bool check)
 {
-  qnode_.setPositionZeroMsg(dxl_->value_of_0_radian_position_);
-  ui_.set_address_value_spin_box->setValue(dxl_->value_of_0_radian_position_);
-  ui_.set_address_value_dial->setValue(dxl_->value_of_0_radian_position_);
+  qnode_.setPositionZeroMsg(dynamixel_->value_of_0_radian_position_);
+  ui_.set_address_value_spin_box->setValue(dynamixel_->value_of_0_radian_position_);
+  ui_.set_address_value_dial->setValue(dynamixel_->value_of_0_radian_position_);
 }
 
 void MainWindow::changeDynamixelID()
@@ -153,6 +153,18 @@ void MainWindow::changeBaudrate()
 
 void MainWindow::changeControlTableValue()
 {
+  if (ui_.set_address_name_combo_box->currentText().toStdString() == "torque_enable")
+  {
+    if (ui_.set_address_value_spin_box->value() == 1)
+    {
+      ui_.torque_enable_toggle_button->setChecked(true);
+    }
+    else if ((ui_.set_address_value_spin_box->value() == 0))
+    {
+      ui_.torque_enable_toggle_button->setChecked(false);
+    }
+  }
+
   qnode_.sendControlTableValueMsg(ui_.set_address_name_combo_box->currentText(), ui_.set_address_value_dial->value());
 }
 
@@ -171,7 +183,7 @@ void MainWindow::updateWorkbenchParamLineEdit(dynamixel_workbench_msgs::Workbenc
   ui_.get_protocol_version_line_edit->setText(QString::number(msg.protocol_version));
   ui_.get_model_name_line_edit->setText(QString::fromStdString(msg.model_name));
 
-  dxl_ = new dynamixel_tool::DynamixelTool(msg.model_id, msg.model_number, msg.protocol_version);
+  dynamixel_ = new dynamixel_tool::DynamixelTool(msg.model_id, msg.model_number, msg.protocol_version);
 }
 
 void MainWindow::makeConnect()
@@ -190,11 +202,11 @@ void MainWindow::makeConnect()
 
 void MainWindow::makeUI()
 {
-  ui_.set_id_line_edit->setText(QString::number(dxl_->id_));
+  ui_.set_id_line_edit->setText(QString::number(dynamixel_->id_));
   ui_.set_baud_rate_line_edit->setText(ui_.get_baud_rate_line_edit->text());
   ui_.set_operating_mode_combo_box->addItem((QString("Select Mode")));
-  ui_.set_address_value_dial->setRange(dxl_->value_of_min_radian_position_, dxl_->value_of_max_radian_position_);
-  ui_.set_address_value_spin_box->setRange(dxl_->value_of_min_radian_position_, dxl_->value_of_max_radian_position_);
+  ui_.set_address_value_dial->setRange(dynamixel_->value_of_min_radian_position_, dynamixel_->value_of_max_radian_position_);
+  ui_.set_address_value_spin_box->setRange(dynamixel_->value_of_min_radian_position_, dynamixel_->value_of_max_radian_position_);
   ui_.set_position_zero_push_button->setVisible(false);
 
   if (ui_.get_protocol_version_line_edit->text().toFloat() == 2.0)
@@ -206,30 +218,30 @@ void MainWindow::makeUI()
     ui_.reboot_push_button->setEnabled(false);
   }
 
-  for (dxl_->it_ctrl_ = dxl_->ctrl_table_.begin(); dxl_->it_ctrl_ != dxl_->ctrl_table_.end(); dxl_->it_ctrl_++)
+  for (dynamixel_->it_ctrl_ = dynamixel_->ctrl_table_.begin(); dynamixel_->it_ctrl_ != dynamixel_->ctrl_table_.end(); dynamixel_->it_ctrl_++)
   {
-    dxl_->dxl_item_ = dxl_->ctrl_table_[dxl_->it_ctrl_->first.c_str()];
-    if ((dxl_->dxl_item_->access_type == dynamixel_tool::READ_WRITE))
+    dynamixel_->item_ = dynamixel_->ctrl_table_[dynamixel_->it_ctrl_->first.c_str()];
+    if ((dynamixel_->item_->access_type == dynamixel_tool::READ_WRITE))
     {
-      ui_.set_address_name_combo_box->addItem(QString::fromStdString(dxl_->dxl_item_->item_name));
+      ui_.set_address_name_combo_box->addItem(QString::fromStdString(dynamixel_->item_->item_name));
     }
   }
 
-  if(!strncmp(dxl_->model_name_.c_str(), "AX", 2))
+  if(!strncmp(dynamixel_->model_name_.c_str(), "AX", 2))
   {
     ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
     ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
   }
-  else if (!strncmp(dxl_->model_name_.c_str(), "MX", 2))
+  else if (!strncmp(dynamixel_->model_name_.c_str(), "MX", 2))
   {
-    if (dxl_->model_number_ == 310) // MX-64
+    if (dynamixel_->model_number_ == 310) // MX-64
     {
       ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
       ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
       ui_.set_operating_mode_combo_box->addItem(QString("extended_position_control"));
       ui_.set_operating_mode_combo_box->addItem(QString("torque_control"));
     }
-    else if (dxl_->model_number_ == 320) // MX-106
+    else if (dynamixel_->model_number_ == 320) // MX-106
     {
       ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
       ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
@@ -243,22 +255,22 @@ void MainWindow::makeUI()
       ui_.set_operating_mode_combo_box->addItem(QString("extended_position_control"));
     }
   }
-  else if (!strncmp(dxl_->model_name_.c_str(), "RX", 2))
+  else if (!strncmp(dynamixel_->model_name_.c_str(), "RX", 2))
   {
     ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
     ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
   }
-  else if (!strncmp(dxl_->model_name_.c_str(), "EX", 2))
+  else if (!strncmp(dynamixel_->model_name_.c_str(), "EX", 2))
   {
     ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
     ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
   }
-  else if (!strncmp(dxl_->model_name_.c_str(), "XL", 2))
+  else if (!strncmp(dynamixel_->model_name_.c_str(), "XL", 2))
   {
     ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
     ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
   }
-  else if (!strncmp(dxl_->model_name_.c_str(), "XM", 2))
+  else if (!strncmp(dynamixel_->model_name_.c_str(), "XM", 2))
   {
     ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
     ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
@@ -267,9 +279,9 @@ void MainWindow::makeUI()
     ui_.set_operating_mode_combo_box->addItem(QString("position_control_based_on_current"));
     ui_.set_operating_mode_combo_box->addItem(QString("pwm_control"));
   }
-  else if (!strncmp(dxl_->model_name_.c_str(), "PRO", 3))
+  else if (!strncmp(dynamixel_->model_name_.c_str(), "PRO", 3))
   {
-    if (dxl_->model_number_ == 35072) // PRO_L42_10_S300_R
+    if (dynamixel_->model_number_ == 35072) // PRO_L42_10_S300_R
     {
       ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
       ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));

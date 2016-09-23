@@ -38,7 +38,7 @@ int main(int argc, char **argv)
   // Init ROS node
   ros::init(argc, argv, "dynamixel_workbench_pan_tilt");
 
-  DynamixelWorkbenchPanTilt dxl_pan_tilt;
+  DynamixelWorkbenchPanTilt dynamixel_pan_tilt;
   dynamixel_workbench_msgs::SetPosition srv;
 
   if (argc != 3)
@@ -50,7 +50,7 @@ int main(int argc, char **argv)
   srv.request.pan_pos = atof(argv[1]);
   srv.request.tilt_pos = atof(argv[2]);
 
-  if (dxl_pan_tilt.position_control_client_.call(srv))
+  if (dynamixel_pan_tilt.position_control_client_.call(srv))
   {
     ROS_INFO("send messages: [pan_pos: %ld (value)] [tilt_pos: %ld (value)]", srv.response.pan_pos, srv.response.tilt_pos);
   }

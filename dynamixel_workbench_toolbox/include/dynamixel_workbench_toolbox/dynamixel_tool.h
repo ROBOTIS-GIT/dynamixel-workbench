@@ -45,17 +45,15 @@ class DynamixelTool
   double  min_radian_;
   double  max_radian_;
 
-  std::string dynamixel_item_path_;
+  std::string item_path_;
   std::string dynamixel_name_path_;
 
   std::map<std::string, ControlTableItem *> ctrl_table_;
   std::map<std::string, ControlTableItem *>::iterator it_ctrl_;
   std::map<uint32_t, uint32_t> baud_rate_table_;
   std::map<uint32_t, uint32_t>::iterator it_baud_;
-  std::map<uint8_t, std::string> dxl_info_;
-  std::map<uint8_t, std::string>::iterator it_dxl_;
 
-  ControlTableItem *dxl_item_;
+  ControlTableItem *item_;
 
  public:
   DynamixelTool(uint8_t id, uint16_t model_number, float protocol_version);

@@ -35,7 +35,7 @@ DynamixelWorkbenchVelocityControl::DynamixelWorkbenchVelocityControl()
   packetHandler_ = dynamixel::PacketHandler::getPacketHandler(protocol_version_);
 
   // init ROS Publish
-  dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::MotorStateList>("/dynamixel_workbench_velocity_control/wheel_state",10);
+  dynamixel_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::MotorStateList>("/dynamixel_workbench_velocity_control/wheel_state",10);
 
   // init ROS Server
   wheel_control_server_ = nh_.advertiseService("/dynamixel_workbench_tutorials/wheel", &DynamixelWorkbenchVelocityControl::controlWheelVelocityCallback, this);
@@ -97,55 +97,55 @@ bool DynamixelWorkbenchVelocityControl::shutdownDynamixelWorkbenchVelocityContro
 
 bool DynamixelWorkbenchVelocityControl::initMotor(std::string motor_model, uint8_t motor_id, float protocol_version)
 {
-  dynamixel_tool::DynamixelTool *dxl_motor = new dynamixel_tool::DynamixelTool(motor_id, motor_model, protocol_version);
-  dynamixel_.push_back(dxl_motor);
+  dynamixel_tool::DynamixelTool *dynamixel_motor = new dynamixel_tool::DynamixelTool(motor_id, motor_model, protocol_version);
+  dynamixel_.push_back(dynamixel_motor);
 }
 
 bool DynamixelWorkbenchVelocityControl::writeTorque(bool onoff)
 {
-  dynamixel_[LEFT_RIGHT_WHEEL]->dxl_item_ = dynamixel_[LEFT_RIGHT_WHEEL]->ctrl_table_["torque_enable"];
+  dynamixel_[LEFT_RIGHT_WHEEL]->item_ = dynamixel_[LEFT_RIGHT_WHEEL]->ctrl_table_["torque_enable"];
   if (onoff == true)
   {
-    writeSyncDynamixel(dynamixel_[LEFT_RIGHT_WHEEL]->dxl_item_->address, dynamixel_[LEFT_RIGHT_WHEEL]->dxl_item_->data_length, true, true);
+    writeSyncDynamixel(dynamixel_[LEFT_RIGHT_WHEEL]->item_->address, dynamixel_[LEFT_RIGHT_WHEEL]->item_->data_length, true, true);
   }
   else
   {
-    writeSyncDynamixel(dynamixel_[LEFT_RIGHT_WHEEL]->dxl_item_->address, dynamixel_[LEFT_RIGHT_WHEEL]->dxl_item_->data_length, false, false);
+    writeSyncDynamixel(dynamixel_[LEFT_RIGHT_WHEEL]->item_->address, dynamixel_[LEFT_RIGHT_WHEEL]->item_->data_length, false, false);
   }
 }
 
 bool DynamixelWorkbenchVelocityControl::writeVelocity(int64_t left_wheel_velocity, int64_t right_wheel_velocity)
 {
-  dynamixel_[LEFT_RIGHT_WHEEL]->dxl_item_ = dynamixel_[LEFT_RIGHT_WHEEL]->ctrl_table_["goal_velocity"];
+  dynamixel_[LEFT_RIGHT_WHEEL]->item_ = dynamixel_[LEFT_RIGHT_WHEEL]->ctrl_table_["goal_velocity"];
 
-  writeSyncDynamixel(dynamixel_[LEFT_RIGHT_WHEEL]->dxl_item_->address, dynamixel_[LEFT_RIGHT_WHEEL]->dxl_item_->data_length, left_wheel_velocity, right_wheel_velocity);
+  writeSyncDynamixel(dynamixel_[LEFT_RIGHT_WHEEL]->item_->address, dynamixel_[LEFT_RIGHT_WHEEL]->item_->data_length, left_wheel_velocity, right_wheel_velocity);
 }
 
 bool DynamixelWorkbenchVelocityControl::writeSyncDynamixel(uint16_t addr, uint8_t length, int64_t left_wheel_value, int64_t right_wheel_value)
 {
-  bool dxl_addparam_result_;
-  int8_t dxl_comm_result_;
+  bool dynamixel_addparam_result_;
+  int8_t dynamixel_comm_result_;
 
   dynamixel::GroupSyncWrite groupSyncWrite(portHandler_, packetHandler_, addr,length);
 
-  dxl_addparam_result_ = groupSyncWrite.addParam(dynamixel_[LEFT_WHEEL]->id_, (uint8_t*)&left_wheel_value);
-  if (dxl_addparam_result_ != true)
+  dynamixel_addparam_result_ = groupSyncWrite.addParam(dynamixel_[LEFT_WHEEL]->id_, (uint8_t*)&left_wheel_value);
+  if (dynamixel_addparam_result_ != true)
   {
     ROS_ERROR("[ID:%03d] groupSyncWrite addparam failed", dynamixel_[LEFT_WHEEL]->id_);
     return false;
   }
 
-  dxl_addparam_result_ = groupSyncWrite.addParam(dynamixel_[RIGHT_WHEEL]->id_, (uint8_t*)&right_wheel_value);
-  if (dxl_addparam_result_ != true)
+  dynamixel_addparam_result_ = groupSyncWrite.addParam(dynamixel_[RIGHT_WHEEL]->id_, (uint8_t*)&right_wheel_value);
+  if (dynamixel_addparam_result_ != true)
   {
     ROS_ERROR("[ID:%03d] groupSyncWrite addparam failed", dynamixel_[RIGHT_WHEEL]->id_);
     return false;
   }
 
-  dxl_comm_result_ = groupSyncWrite.txPacket();
-  if (dxl_comm_result_ != COMM_SUCCESS)
+  dynamixel_comm_result_ = groupSyncWrite.txPacket();
+  if (dynamixel_comm_result_ != COMM_SUCCESS)
   {
-    packetHandler_->printTxRxResult(dxl_comm_result_);
+    packetHandler_->printTxRxResult(dynamixel_comm_result_);
     return false;
   }
   groupSyncWrite.clearParam();
@@ -154,8 +154,8 @@ bool DynamixelWorkbenchVelocityControl::writeSyncDynamixel(uint16_t addr, uint8_
 
 bool DynamixelWorkbenchVelocityControl::readDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, int64_t *value)
 {
-  uint8_t dxl_error = 0;
-  int8_t dxl_comm_result_;
+  uint8_t dynamixel_error = 0;
+  int8_t dynamixel_comm_result_;
 
   int8_t value_8_bit = 0;
   int16_t value_16_bit = 0;
@@ -163,22 +163,22 @@ bool DynamixelWorkbenchVelocityControl::readDynamixelRegister(uint8_t id, uint16
 
   if (length == 1)
   {
-    dxl_comm_result_ = packetHandler_->read1ByteTxRx(portHandler_, id, addr, (uint8_t*)&value_8_bit, &dxl_error);
+    dynamixel_comm_result_ = packetHandler_->read1ByteTxRx(portHandler_, id, addr, (uint8_t*)&value_8_bit, &dynamixel_error);
   }
   else if (length == 2)
   {
-    dxl_comm_result_ = packetHandler_->read2ByteTxRx(portHandler_, id, addr, (uint16_t*)&value_16_bit, &dxl_error);
+    dynamixel_comm_result_ = packetHandler_->read2ByteTxRx(portHandler_, id, addr, (uint16_t*)&value_16_bit, &dynamixel_error);
   }
   else if (length == 4)
   {
-    dxl_comm_result_ = packetHandler_->read4ByteTxRx(portHandler_, id, addr, (uint32_t*)&value_32_bit, &dxl_error);
+    dynamixel_comm_result_ = packetHandler_->read4ByteTxRx(portHandler_, id, addr, (uint32_t*)&value_32_bit, &dynamixel_error);
   }
 
-  if (dxl_comm_result_ == COMM_SUCCESS)
+  if (dynamixel_comm_result_ == COMM_SUCCESS)
   {
-    if (dxl_error != 0)
+    if (dynamixel_error != 0)
     {
-      packetHandler_->printRxPacketError(dxl_error);
+      packetHandler_->printRxPacketError(dynamixel_error);
     }
 
     if (length == 1)
@@ -199,7 +199,7 @@ bool DynamixelWorkbenchVelocityControl::readDynamixelRegister(uint8_t id, uint16
   }
   else
   {
-    packetHandler_->printTxRxResult(dxl_comm_result_);
+    packetHandler_->printTxRxResult(dynamixel_comm_result_);
     ROS_ERROR("[ID] %u, Fail to read!", id);
     return false;
   }
@@ -209,13 +209,13 @@ bool DynamixelWorkbenchVelocityControl::readMotorState(std::string addr_name)
 {
   std::vector<int64_t> *read_data = new std::vector<int64_t>;
 
-  dynamixel_[LEFT_WHEEL]->dxl_item_ = dynamixel_[LEFT_WHEEL]->ctrl_table_[addr_name];
-  dynamixel_[RIGHT_WHEEL]->dxl_item_ = dynamixel_[RIGHT_WHEEL]->ctrl_table_[addr_name];
+  dynamixel_[LEFT_WHEEL]->item_ = dynamixel_[LEFT_WHEEL]->ctrl_table_[addr_name];
+  dynamixel_[RIGHT_WHEEL]->item_ = dynamixel_[RIGHT_WHEEL]->ctrl_table_[addr_name];
 
-  readDynamixelRegister(dynamixel_[LEFT_WHEEL]->id_, dynamixel_[LEFT_WHEEL]->dxl_item_->address, dynamixel_[LEFT_WHEEL]->dxl_item_->data_length, &read_value_);
+  readDynamixelRegister(dynamixel_[LEFT_WHEEL]->id_, dynamixel_[LEFT_WHEEL]->item_->address, dynamixel_[LEFT_WHEEL]->item_->data_length, &read_value_);
   read_data->push_back(read_value_);
 
-  readDynamixelRegister(dynamixel_[RIGHT_WHEEL]->id_, dynamixel_[RIGHT_WHEEL]->dxl_item_->address, dynamixel_[RIGHT_WHEEL]->dxl_item_->data_length, &read_value_);
+  readDynamixelRegister(dynamixel_[RIGHT_WHEEL]->id_, dynamixel_[RIGHT_WHEEL]->item_->address, dynamixel_[RIGHT_WHEEL]->item_->data_length, &read_value_);
   read_data->push_back(read_value_);
 
   read_data_[addr_name] = read_data;
@@ -271,53 +271,53 @@ bool DynamixelWorkbenchVelocityControl::dynamixelControlLoop(void)
 {
   getPublishedMsg();
 
-  dynamixel_workbench_msgs::MotorState dxl_response[dynamixel_.size()];
-  dynamixel_workbench_msgs::MotorStateList dxl_response_list;
+  dynamixel_workbench_msgs::MotorState dynamixel_response[dynamixel_.size()];
+  dynamixel_workbench_msgs::MotorStateList dynamixel_response_list;
 
   for (int i = 0; i < dynamixel_.size(); i++)
   {
-    dxl_response[i].motor_model = dynamixel_[i]->model_name_;
-    dxl_response[i].id = dynamixel_[i]->id_;
-    dxl_response[i].torque_enable = read_data_["torque_enable"]->at(i);
-    dxl_response[i].present_position = read_data_["present_position"]->at(i);
-    dxl_response[i].present_velocity = read_data_["present_velocity"]->at(i);
-    dxl_response[i].goal_position = read_data_["goal_position"]->at(i);
-    dxl_response[i].moving = read_data_["moving"]->at(i);
+    dynamixel_response[i].motor_model = dynamixel_[i]->model_name_;
+    dynamixel_response[i].id = dynamixel_[i]->id_;
+    dynamixel_response[i].torque_enable = read_data_["torque_enable"]->at(i);
+    dynamixel_response[i].present_position = read_data_["present_position"]->at(i);
+    dynamixel_response[i].present_velocity = read_data_["present_velocity"]->at(i);
+    dynamixel_response[i].goal_position = read_data_["goal_position"]->at(i);
+    dynamixel_response[i].moving = read_data_["moving"]->at(i);
 
     if (!strncmp(motor_model_.c_str(), "AX", 2) || !strncmp(motor_model_.c_str(), "RX", 2) || !strncmp(motor_model_.c_str(), "MX", 2) || !strncmp(motor_model_.c_str(), "EX", 2))
     {
-      dxl_response[i].moving_speed = read_data_["moving_speed"]->at(i);
+      dynamixel_response[i].moving_speed = read_data_["moving_speed"]->at(i);
     }
     else
     {
-      dxl_response[i].goal_velocity = read_data_["goal_velocity"]->at(i);
+      dynamixel_response[i].goal_velocity = read_data_["goal_velocity"]->at(i);
     }
 
     if (!strncmp(motor_model_.c_str(), "MX", 2) || !strncmp(motor_model_.c_str(), "PRO", 3))
     {
-      dxl_response[i].goal_acceleration = read_data_["goal_acceleration"]->at(i);
+      dynamixel_response[i].goal_acceleration = read_data_["goal_acceleration"]->at(i);
     }
 
     if (!strncmp(motor_model_.c_str(), "XM", 2))
     {
-      dxl_response[i].profile_velocity = read_data_["profile_velocity"]->at(i);
-      dxl_response[i].profile_acceleration = read_data_["profile_acceleration"]->at(i);
+      dynamixel_response[i].profile_velocity = read_data_["profile_velocity"]->at(i);
+      dynamixel_response[i].profile_acceleration = read_data_["profile_acceleration"]->at(i);
     }
 
     if (!strncmp(motor_model_.c_str(), "XM", 2) || !strncmp(motor_model_.c_str(), "PRO", 3))
     {
-      dxl_response[i].max_position_limit = read_data_["max_position_limit"]->at(i);
-      dxl_response[i].min_position_limit = read_data_["min_position_limit"]->at(i);
+      dynamixel_response[i].max_position_limit = read_data_["max_position_limit"]->at(i);
+      dynamixel_response[i].min_position_limit = read_data_["min_position_limit"]->at(i);
     }
     else
     {
-      dxl_response[i].cw_angle_limit = read_data_["cw_angle_limit"]->at(i);
-      dxl_response[i].ccw_angle_limit = read_data_["ccw_angle_limit"]->at(i);
+      dynamixel_response[i].cw_angle_limit = read_data_["cw_angle_limit"]->at(i);
+      dynamixel_response[i].ccw_angle_limit = read_data_["ccw_angle_limit"]->at(i);
     }
 
-    dxl_response_list.motor_states.push_back(dxl_response[i]);
+    dynamixel_response_list.motor_states.push_back(dynamixel_response[i]);
   }
-  dxl_state_pub_.publish(dxl_response_list);
+  dynamixel_state_pub_.publish(dynamixel_response_list);
 }
 
 bool DynamixelWorkbenchVelocityControl::controlWheelVelocityCallback(dynamixel_workbench_msgs::SetDirection::Request &req,
@@ -336,12 +336,12 @@ int main(int argc, char **argv)
 {
   // Init ROS node
   ros::init(argc, argv, "dynamixel_workbench_velocity_control");
-  DynamixelWorkbenchVelocityControl dxl_vel_ctrl;
+  DynamixelWorkbenchVelocityControl dynamixel_vel_ctrl;
   ros::Rate loop_rate(125);
 
   while (ros::ok())
   {
-    dxl_vel_ctrl.dynamixelControlLoop();
+    dynamixel_vel_ctrl.dynamixelControlLoop();
     ros::spinOnce();
     loop_rate.sleep();
   }

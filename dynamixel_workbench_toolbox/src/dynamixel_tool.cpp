@@ -31,7 +31,7 @@ DynamixelTool::DynamixelTool(uint8_t id, uint16_t model_number, float protocol_v
      model_number_(0),
      protocol_version_(0.0),
      model_name_(""),
-     dynamixel_item_path_(""),
+     item_path_(""),
      dynamixel_name_path_("")
 {
   id_ = id;
@@ -46,7 +46,7 @@ DynamixelTool::DynamixelTool(uint8_t id, std::string model_name, float protocol_
      model_number_(0),
      protocol_version_(0.0),
      model_name_(""),
-     dynamixel_item_path_(""),
+     item_path_(""),
      dynamixel_name_path_("")
 {
   id_ = id;
@@ -99,19 +99,19 @@ bool DynamixelTool::getModelName(uint16_t model_number)
 
 bool DynamixelTool::getModelPath()
 {
-  std::string dxl_series = "";
-  dxl_series = model_name_.substr(0,2);
+  std::string dynamixel_series = "";
+  dynamixel_series = model_name_.substr(0,2);
 
-  dynamixel_item_path_  = ros::package::getPath("dynamixel_workbench_toolbox");
+  item_path_  = ros::package::getPath("dynamixel_workbench_toolbox");
 
-  dynamixel_item_path_ = dynamixel_item_path_ + "/dynamixel" + "/" + dxl_series + "/" + model_name_ + ".device";
+  item_path_ = item_path_ + "/dynamixel" + "/" + dynamixel_series + "/" + model_name_ + ".device";
 }
 
 bool DynamixelTool::getModelItem()
 {
   getModelPath();
 
-  std::ifstream file(dynamixel_item_path_.c_str());
+  std::ifstream file(item_path_.c_str());
   if (file.is_open())
   {
     std::string session = "";
@@ -197,7 +197,7 @@ bool DynamixelTool::getModelItem()
   }
   else
   {
-    ROS_ERROR("Unable to open .device file : %s", dynamixel_item_path_.c_str());
+    ROS_ERROR("Unable to open .device file : %s", item_path_.c_str());
     ros::shutdown();
   }
 }
