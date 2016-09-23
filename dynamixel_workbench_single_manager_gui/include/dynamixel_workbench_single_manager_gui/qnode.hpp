@@ -96,15 +96,15 @@ Q_SIGNALS:
 
   QStringListModel logging_model_;
 
-  ros::Publisher dxl_command_msg_pub_;
+  ros::Publisher dynamixel_command_msg_pub_;
   ros::Publisher set_workbench_param_msg_pub_;
-  ros::Subscriber dxl_status_msg_sub_;
+  ros::Subscriber dynamixel_status_msg_sub_;
   ros::ServiceClient get_workbench_param_client_;
 
   int64_t row_count_;
 
-  std::string dxl_model_name_;
-  uint16_t dxl_model_number_;
+  std::string dynamixel_model_name_;
+  uint16_t dynamixel_model_number_;
 
 };
 

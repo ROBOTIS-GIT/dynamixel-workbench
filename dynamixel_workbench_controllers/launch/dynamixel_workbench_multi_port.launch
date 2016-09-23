@@ -1,0 +1,20 @@
+<!-- -*- mode: XML -*- -->
+
+<launch>
+    <node name="dynamixel_workbench_multi_port" pkg="dynamixel_workbench_controllers" type="dynamixel_workbench_multi_port" required="true" output="screen">
+        <rosparam>
+          pan_motor_:
+            device_name_: "/dev/ttyUSB0"
+            baud_rate_: 1000000
+            motor_model_: "XM430_W210_R"
+            protocol_version_: 2.0
+            motor_id_: 1
+          tilt_motor_:
+            device_name_: "/dev/ttyUSB1"
+            baud_rate_: 1000000
+            motor_model_: "RX_28"
+            protocol_version_: 1.0
+            motor_id_: 2
+        </rosparam>
+    </node>
+</launch>

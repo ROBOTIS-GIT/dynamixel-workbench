@@ -70,7 +70,7 @@ public Q_SLOTS:
 private:
         Ui::MainWindowDesign ui_;
         QNode qnode_;
-        dynamixel_tool::DynamixelTool * dxl_;
+        dynamixel_tool::DynamixelTool * dynamixel_;
 
         bool reboot_button_;
         bool operating_mode_spinbox_;

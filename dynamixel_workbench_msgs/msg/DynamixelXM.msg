@@ -46,7 +46,3 @@ int64 velocity_trajectory
 int64 position_trajectory
 int64 present_input_voltage
 int64 present_temperature
-int64 indirect_address_1
-int64 indirect_data_1
-int64 indirect_address_29
-int64 indirect_data_29

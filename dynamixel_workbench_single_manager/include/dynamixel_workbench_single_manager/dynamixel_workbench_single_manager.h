@@ -47,9 +47,9 @@ class DynamixelWorkbenchSingleManager
   // ROS Parameters
   bool is_debug_;
   // ROS Topic Publisher
-  ros::Publisher dxl_state_pub_;
+  ros::Publisher dynamixel_state_pub_;
   // ROS Topic Subscriber
-  ros::Subscriber dxl_command_sub_;
+  ros::Subscriber dynamixel_command_sub_;
   // ROS Server
   ros::ServiceServer workbench_param_server_;
   // Parameters
@@ -57,10 +57,10 @@ class DynamixelWorkbenchSingleManager
   //uint64_t baud_rate_list_[BAUD_RATE_NUM];
   int baud_rate_;
   float protocol_version_;
-  uint16_t dxl_model_number_;
-  uint8_t dxl_model_id_;
-  bool dxl_torque_status_;
-  dynamixel_tool::DynamixelTool *dxl_;
+  uint16_t dynamixel_model_number_;
+  uint8_t dynamixel_model_id_;
+  bool dynamixel_torque_status_;
+  dynamixel_tool::DynamixelTool *dynamixel_;
   int64_t read_value_;
 
  public:

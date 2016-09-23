@@ -34,7 +34,7 @@ class DynamixelWorkbenchVelocityControl
   // ROS Parameters
   bool is_debug_;
   // ROS Topic Publisher
-  ros::Publisher dxl_state_pub_;
+  ros::Publisher dynamixel_state_pub_;
   // ROS Service Server
   ros::ServiceServer wheel_control_server_;
   // Parameters
@@ -66,7 +66,7 @@ class DynamixelWorkbenchVelocityControl
   bool readDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, int64_t *value);
   bool readMotorState(std::string addr_name);
 
-  bool writeSyncDynamixel(uint16_t addr, uint8_t length, int64_t pan_motor_value, int64_t tilt_motor_value);
+  bool writeSyncDynamixel(uint16_t addr, uint8_t length, int64_t left_wheel_value, int64_t right_wheel_value);
   bool writeTorque(bool onoff);
   bool writeVelocity(int64_t left_wheel_velocity, int64_t right_wheel_velocity);
 
