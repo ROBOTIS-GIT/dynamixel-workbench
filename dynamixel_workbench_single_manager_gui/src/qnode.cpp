@@ -31,8 +31,8 @@ QNode::QNode(int argc, char** argv )
     :init_argc(argc),
      init_argv(argv),
      row_count_(0),
-     dxl_model_name_(""),
-     dxl_model_number_(0)
+     dynamixel_model_name_(""),
+     dynamixel_model_number_(0)
 {}
 
 QNode::~QNode()
@@ -59,7 +59,7 @@ bool QNode::init()
   getWorkbenchParam();
 
   setSubscriber();
-  dxl_command_msg_pub_ = nh.advertise<dynamixel_workbench_msgs::DynamixelCommand>("/dynamixel_workbench_single_manager/motor_command", 10);
+  dynamixel_command_msg_pub_ = nh.advertise<dynamixel_workbench_msgs::DynamixelCommand>("/dynamixel_workbench_single_manager/motor_command", 10);
 
   start();
   return true;
@@ -73,7 +73,7 @@ void QNode::sendTorqueMsg(std::string addr_name, int64_t onoff)
   msg.addr_name = addr_name;
   msg.value = onoff;
 
-  dxl_command_msg_pub_.publish(msg);
+  dynamixel_command_msg_pub_.publish(msg);
 }
 
 void QNode::sendRebootMsg(void)
@@ -82,7 +82,7 @@ void QNode::sendRebootMsg(void)
 
   msg.addr_name = std::string("reboot");
 
-  dxl_command_msg_pub_.publish(msg);
+  dynamixel_command_msg_pub_.publish(msg);
 }
 
 void QNode::sendResetMsg(void)
@@ -91,7 +91,7 @@ void QNode::sendResetMsg(void)
 
   msg.addr_name = std::string("factory_reset");
 
-  dxl_command_msg_pub_.publish(msg);
+  dynamixel_command_msg_pub_.publish(msg);
 }
 
 void QNode::sendSetIdMsg(int64_t id)
@@ -101,7 +101,7 @@ void QNode::sendSetIdMsg(int64_t id)
   msg.addr_name = std::string("id");
   msg.value = id;
 
-  dxl_command_msg_pub_.publish(msg);
+  dynamixel_command_msg_pub_.publish(msg);
 }
 
 void QNode::sendSetOperatingModeMsg(std::string index)
@@ -110,111 +110,111 @@ void QNode::sendSetOperatingModeMsg(std::string index)
 
   if (index == "position_control")
   {
-    if((!strncmp(dxl_model_name_.c_str(), "XM", 2)) || (!strncmp(dxl_model_name_.c_str(), "PRO", 3)))
+    if((!strncmp(dynamixel_model_name_.c_str(), "XM", 2)) || (!strncmp(dynamixel_model_name_.c_str(), "PRO", 3)))
     {
       msg.addr_name = std::string("operating_mode");
       msg.value = 3;
 
-      dxl_command_msg_pub_.publish(msg);
+      dynamixel_command_msg_pub_.publish(msg);
     }
-    else if(!strncmp(dxl_model_name_.c_str(), "XL", 2))
+    else if(!strncmp(dynamixel_model_name_.c_str(), "XL", 2))
     {
       msg.addr_name = std::string("control_mode");
       msg.value = 2;
 
-      dxl_command_msg_pub_.publish(msg);
+      dynamixel_command_msg_pub_.publish(msg);
     }
-    else if ((!strncmp(dxl_model_name_.c_str(), "AX", 2)) || (!strncmp(dxl_model_name_.c_str(), "RX", 2)))
+    else if ((!strncmp(dynamixel_model_name_.c_str(), "AX", 2)) || (!strncmp(dynamixel_model_name_.c_str(), "RX", 2)))
     {
       msg.addr_name = std::string("cw_angle_limit");
       msg.value = 0;
 
-      dxl_command_msg_pub_.publish(msg);
+      dynamixel_command_msg_pub_.publish(msg);
 
       msg.addr_name = std::string("ccw_angle_limit");
       msg.value = 1023;
 
-      dxl_command_msg_pub_.publish(msg);
+      dynamixel_command_msg_pub_.publish(msg);
     }
-    else if ((!strncmp(dxl_model_name_.c_str(), "MX", 2)) || (!strncmp(dxl_model_name_.c_str(), "EX", 2)))
+    else if ((!strncmp(dynamixel_model_name_.c_str(), "MX", 2)) || (!strncmp(dynamixel_model_name_.c_str(), "EX", 2)))
     {
       msg.addr_name = std::string("cw_angle_limit");
       msg.value = 0;
 
-      dxl_command_msg_pub_.publish(msg);
+      dynamixel_command_msg_pub_.publish(msg);
 
       msg.addr_name = std::string("ccw_angle_limit");
       msg.value = 4095;
 
-      dxl_command_msg_pub_.publish(msg);
+      dynamixel_command_msg_pub_.publish(msg);
     }
   }
   else if (index == "velocity_control")
   {
-    if((!strncmp(dxl_model_name_.c_str(), "XM", 2)) || (!strncmp(dxl_model_name_.c_str(), "PRO", 3)))
+    if((!strncmp(dynamixel_model_name_.c_str(), "XM", 2)) || (!strncmp(dynamixel_model_name_.c_str(), "PRO", 3)))
     {
       msg.addr_name = std::string("operating_mode");
       msg.value = 1;
 
-      dxl_command_msg_pub_.publish(msg);
+      dynamixel_command_msg_pub_.publish(msg);
     }
-    else if(!strncmp(dxl_model_name_.c_str(), "XL", 2))
+    else if(!strncmp(dynamixel_model_name_.c_str(), "XL", 2))
     {
       msg.addr_name = std::string("control_mode");
       msg.value = 1;
 
-      dxl_command_msg_pub_.publish(msg);
+      dynamixel_command_msg_pub_.publish(msg);
     }
     else
     {
       msg.addr_name = std::string("cw_angle_limit");
       msg.value = 0;
 
-      dxl_command_msg_pub_.publish(msg);
+      dynamixel_command_msg_pub_.publish(msg);
 
       msg.addr_name = std::string("ccw_angle_limit");
       msg.value = 0;
 
-      dxl_command_msg_pub_.publish(msg);
+      dynamixel_command_msg_pub_.publish(msg);
     }
   }
   else if (index == "extended_position_control")
   {
-    if(!strncmp(dxl_model_name_.c_str(), "MX", 2))
+    if(!strncmp(dynamixel_model_name_.c_str(), "MX", 2))
     {
       msg.addr_name = std::string("cw_angle_limit");
       msg.value = 4095;
 
-      dxl_command_msg_pub_.publish(msg);
+      dynamixel_command_msg_pub_.publish(msg);
 
       msg.addr_name = std::string("ccw_angle_limit");
       msg.value = 4095;
 
-      dxl_command_msg_pub_.publish(msg);
+      dynamixel_command_msg_pub_.publish(msg);
     }
     else
     {
       msg.addr_name = std::string("operating_mode");
       msg.value = 4;
 
-      dxl_command_msg_pub_.publish(msg);
+      dynamixel_command_msg_pub_.publish(msg);
     }
   }
   else if (index == "torque_control")
   {
-    if(!strncmp(dxl_model_name_.c_str(), "MX", 2))
+    if(!strncmp(dynamixel_model_name_.c_str(), "MX", 2))
     {
       msg.addr_name = std::string("torque_control_mode_enable");
       msg.value = 1;
 
-      dxl_command_msg_pub_.publish(msg);
+      dynamixel_command_msg_pub_.publish(msg);
     }
     else
     {
       msg.addr_name = std::string("operating_mode");
       msg.value = 0;
 
-      dxl_command_msg_pub_.publish(msg);
+      dynamixel_command_msg_pub_.publish(msg);
     }
   }
   else if (index == "current_control")
@@ -222,21 +222,21 @@ void QNode::sendSetOperatingModeMsg(std::string index)
     msg.addr_name = std::string("operating_mode");
     msg.value = 0;
 
-    dxl_command_msg_pub_.publish(msg);
+    dynamixel_command_msg_pub_.publish(msg);
   }
   else if (index == "position_control_based_on_current")
   {
     msg.addr_name = std::string("operating_mode");
     msg.value = 5;
 
-    dxl_command_msg_pub_.publish(msg);
+    dynamixel_command_msg_pub_.publish(msg);
   }
   else if (index == "pwm_control")
   {
     msg.addr_name = std::string("operating_mode");
     msg.value = 16;
 
-    dxl_command_msg_pub_.publish(msg);
+    dynamixel_command_msg_pub_.publish(msg);
   }
 }
 
@@ -247,7 +247,7 @@ void QNode::sendSetBaudrateMsg(float baud_rate)
   msg.addr_name = std::string("baud_rate");
   msg.value = baud_rate;
 
-  dxl_command_msg_pub_.publish(msg);
+  dynamixel_command_msg_pub_.publish(msg);
 }
 
 void QNode::setPositionZeroMsg(int32_t zero_position)
@@ -257,7 +257,7 @@ void QNode::setPositionZeroMsg(int32_t zero_position)
   msg.addr_name = std::string("goal_position");
   msg.value = zero_position;
 
-  dxl_command_msg_pub_.publish(msg);
+  dynamixel_command_msg_pub_.publish(msg);
 }
 
 void QNode::sendControlTableValueMsg(QString table_item, int64_t value)
@@ -267,7 +267,7 @@ void QNode::sendControlTableValueMsg(QString table_item, int64_t value)
   msg.addr_name = table_item.toStdString();
   msg.value = value;
 
-  dxl_command_msg_pub_.publish(msg);
+  dynamixel_command_msg_pub_.publish(msg);
 }
 
 void QNode::getWorkbenchParam(void)
@@ -285,8 +285,8 @@ void QNode::getWorkbenchParam(void)
     msg.model_id = srv.response.workbench_parameter.model_id;
     msg.model_number = srv.response.workbench_parameter.model_number;
 
-    dxl_model_name_ = srv.response.workbench_parameter.model_name;
-    dxl_model_number_ = srv.response.workbench_parameter.model_number;
+    dynamixel_model_name_ = srv.response.workbench_parameter.model_name;
+    dynamixel_model_number_ = srv.response.workbench_parameter.model_number;
 
     Q_EMIT updateWorkbenchParam(msg);
   }
@@ -646,10 +646,6 @@ void QNode::dynamixelXMStatusMsgCallback(const dynamixel_workbench_msgs::Dynamix
   log(std::string("position_trajectory: "), msg->position_trajectory);
   log(std::string("present_input_voltage: "), msg->present_input_voltage);
   log(std::string("present_temperature: "), msg->present_temperature);
-  log(std::string("indirect_address_1: "), msg->indirect_address_1);
-  log(std::string("indirect_data_1: "), msg->indirect_data_1);
-  log(std::string("indirect_address_29: "), msg->indirect_address_29);
-  log(std::string("indirect_data_29: "), msg->indirect_data_29);
 
   row_count_ = 0;
 }
@@ -770,50 +766,50 @@ void QNode::setSubscriber()
   ros::NodeHandle nh;
 
   // Init ROS subscribe
-  if(!strncmp(dxl_model_name_.c_str(), "AX", 2))
+  if(!strncmp(dynamixel_model_name_.c_str(), "AX", 2))
   {
-    dxl_status_msg_sub_ = nh.subscribe("/dynamixel_workbench_single_manager/motor_state", 10, &QNode::dynamixelAXStatusMsgCallback, this);
+    dynamixel_status_msg_sub_ = nh.subscribe("/dynamixel_workbench_single_manager/motor_state", 10, &QNode::dynamixelAXStatusMsgCallback, this);
   }
-  else if (!strncmp(dxl_model_name_.c_str(), "MX", 2))
+  else if (!strncmp(dynamixel_model_name_.c_str(), "MX", 2))
   {
-    if (dxl_model_number_ == 310) // MX-64
+    if (dynamixel_model_number_ == 310) // MX-64
     {
-      dxl_status_msg_sub_ = nh.subscribe("/dynamixel_workbench_single_manager/motor_state", 10, &QNode::dynamixelMX64StatusMsgCallback, this);
+      dynamixel_status_msg_sub_ = nh.subscribe("/dynamixel_workbench_single_manager/motor_state", 10, &QNode::dynamixelMX64StatusMsgCallback, this);
     }
-    else if (dxl_model_number_ == 320) // MX-106
+    else if (dynamixel_model_number_ == 320) // MX-106
     {
-      dxl_status_msg_sub_ = nh.subscribe("/dynamixel_workbench_single_manager/motor_state", 10, &QNode::dynamixelMX106StatusMsgCallback, this);
-    }
-    else
-    {
-      dxl_status_msg_sub_ = nh.subscribe("/dynamixel_workbench_single_manager/motor_state", 10, &QNode::dynamixelMXStatusMsgCallback, this);
-    }
-  }
-  else if (!strncmp(dxl_model_name_.c_str(), "RX", 2))
-  {
-    dxl_status_msg_sub_ = nh.subscribe("/dynamixel_workbench_single_manager/motor_state", 10, &QNode::dynamixelRXStatusMsgCallback, this);
-  }
-  else if (!strncmp(dxl_model_name_.c_str(), "EX", 2))
-  {
-    dxl_status_msg_sub_ = nh.subscribe("/dynamixel_workbench_single_manager/motor_state", 10, &QNode::dynamixelEXStatusMsgCallback, this);
-  }
-  else if (!strncmp(dxl_model_name_.c_str(), "XL", 2))
-  {
-    dxl_status_msg_sub_ = nh.subscribe("/dynamixel_workbench_single_manager/motor_state", 10, &QNode::dynamixelXLStatusMsgCallback, this);
-  }
-  else if (!strncmp(dxl_model_name_.c_str(), "XM", 2))
-  {
-    dxl_status_msg_sub_ = nh.subscribe("/dynamixel_workbench_single_manager/motor_state", 10, &QNode::dynamixelXMStatusMsgCallback, this);
-  }
-  else if (!strncmp(dxl_model_name_.c_str(), "PRO", 3))
-  {
-    if (dxl_model_number_ == 35072) // PRO_L42_10_S300_R
-    {
-      dxl_status_msg_sub_ = nh.subscribe("/dynamixel_workbench_single_manager/motor_state", 10, &QNode::dynamixelProL42StatusMsgCallback, this);
+      dynamixel_status_msg_sub_ = nh.subscribe("/dynamixel_workbench_single_manager/motor_state", 10, &QNode::dynamixelMX106StatusMsgCallback, this);
     }
     else
     {
-      dxl_status_msg_sub_ = nh.subscribe("/dynamixel_workbench_single_manager/motor_state", 10, &QNode::dynamixelProStatusMsgCallback, this);
+      dynamixel_status_msg_sub_ = nh.subscribe("/dynamixel_workbench_single_manager/motor_state", 10, &QNode::dynamixelMXStatusMsgCallback, this);
+    }
+  }
+  else if (!strncmp(dynamixel_model_name_.c_str(), "RX", 2))
+  {
+    dynamixel_status_msg_sub_ = nh.subscribe("/dynamixel_workbench_single_manager/motor_state", 10, &QNode::dynamixelRXStatusMsgCallback, this);
+  }
+  else if (!strncmp(dynamixel_model_name_.c_str(), "EX", 2))
+  {
+    dynamixel_status_msg_sub_ = nh.subscribe("/dynamixel_workbench_single_manager/motor_state", 10, &QNode::dynamixelEXStatusMsgCallback, this);
+  }
+  else if (!strncmp(dynamixel_model_name_.c_str(), "XL", 2))
+  {
+    dynamixel_status_msg_sub_ = nh.subscribe("/dynamixel_workbench_single_manager/motor_state", 10, &QNode::dynamixelXLStatusMsgCallback, this);
+  }
+  else if (!strncmp(dynamixel_model_name_.c_str(), "XM", 2))
+  {
+    dynamixel_status_msg_sub_ = nh.subscribe("/dynamixel_workbench_single_manager/motor_state", 10, &QNode::dynamixelXMStatusMsgCallback, this);
+  }
+  else if (!strncmp(dynamixel_model_name_.c_str(), "PRO", 3))
+  {
+    if (dynamixel_model_number_ == 35072) // PRO_L42_10_S300_R
+    {
+      dynamixel_status_msg_sub_ = nh.subscribe("/dynamixel_workbench_single_manager/motor_state", 10, &QNode::dynamixelProL42StatusMsgCallback, this);
+    }
+    else
+    {
+      dynamixel_status_msg_sub_ = nh.subscribe("/dynamixel_workbench_single_manager/motor_state", 10, &QNode::dynamixelProStatusMsgCallback, this);
     }
   }
 }

@@ -38,7 +38,7 @@ DynamixelWorkbenchTorqueControl::DynamixelWorkbenchTorqueControl()
   packetHandler_ = dynamixel::PacketHandler::getPacketHandler(protocol_version_);
 
   // init ROS Publish
-  dxl_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::MotorStateList>("/dynamixel_workbench_torque_control/motor_state",10);
+  dynamixel_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::MotorStateList>("/dynamixel_workbench_torque_control/motor_state",10);
 
   // init ROS Server
   position_control_server = nh_.advertiseService("/dynamixel_workbench_tutorials/pan_tilt", &DynamixelWorkbenchTorqueControl::controlPanTiltMotorCallback, this);
@@ -107,35 +107,35 @@ bool DynamixelWorkbenchTorqueControl::shutdownDynamixelWorkbenchTorqueControl(vo
 
 bool DynamixelWorkbenchTorqueControl::initMotor(std::string motor_model, uint8_t motor_id, float protocol_version)
 {
-  dynamixel_tool::DynamixelTool *dxl_motor = new dynamixel_tool::DynamixelTool(motor_id, motor_model, protocol_version);
-  dynamixel_.push_back(dxl_motor);
+  dynamixel_tool::DynamixelTool *dynamixel_motor = new dynamixel_tool::DynamixelTool(motor_id, motor_model, protocol_version);
+  dynamixel_.push_back(dynamixel_motor);
 }
 
 bool DynamixelWorkbenchTorqueControl::writeSyncDynamixel(uint16_t addr, uint8_t length, int64_t pan_motor_value, int64_t tilt_motor_value)
 {
-  bool dxl_addparam_result_;
-  int8_t dxl_comm_result_;
+  bool dynamixel_addparam_result_;
+  int8_t dynamixel_comm_result_;
 
   dynamixel::GroupSyncWrite groupSyncWrite(portHandler_, packetHandler_, addr,length);
 
-  dxl_addparam_result_ = groupSyncWrite.addParam(dynamixel_[PAN_MOTOR]->id_, (uint8_t*)&pan_motor_value);
-  if (dxl_addparam_result_ != true)
+  dynamixel_addparam_result_ = groupSyncWrite.addParam(dynamixel_[PAN_MOTOR]->id_, (uint8_t*)&pan_motor_value);
+  if (dynamixel_addparam_result_ != true)
   {
     ROS_ERROR("[ID:%03d] groupSyncWrite addparam failed", dynamixel_[PAN_MOTOR]->id_);
     return false;
   }
 
-  dxl_addparam_result_ = groupSyncWrite.addParam(dynamixel_[TILT_MOTOR]->id_, (uint8_t*)&tilt_motor_value);
-  if (dxl_addparam_result_ != true)
+  dynamixel_addparam_result_ = groupSyncWrite.addParam(dynamixel_[TILT_MOTOR]->id_, (uint8_t*)&tilt_motor_value);
+  if (dynamixel_addparam_result_ != true)
   {
     ROS_ERROR("[ID:%03d] groupSyncWrite addparam failed", dynamixel_[TILT_MOTOR]->id_);
     return false;
   }
 
-  dxl_comm_result_ = groupSyncWrite.txPacket();
-  if (dxl_comm_result_ != COMM_SUCCESS)
+  dynamixel_comm_result_ = groupSyncWrite.txPacket();
+  if (dynamixel_comm_result_ != COMM_SUCCESS)
   {
-    packetHandler_->printTxRxResult(dxl_comm_result_);
+    packetHandler_->printTxRxResult(dynamixel_comm_result_);
     return false;
   }
   groupSyncWrite.clearParam();
@@ -144,8 +144,8 @@ bool DynamixelWorkbenchTorqueControl::writeSyncDynamixel(uint16_t addr, uint8_t 
 
 bool DynamixelWorkbenchTorqueControl::readDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, int64_t *value)
 {
-  uint8_t dxl_error = 0;
-  int8_t dxl_comm_result_;
+  uint8_t dynamixel_error = 0;
+  int8_t dynamixel_comm_result_;
 
   int8_t value_8_bit = 0;
   int16_t value_16_bit = 0;
@@ -153,22 +153,22 @@ bool DynamixelWorkbenchTorqueControl::readDynamixelRegister(uint8_t id, uint16_t
 
   if (length == 1)
   {
-    dxl_comm_result_ = packetHandler_->read1ByteTxRx(portHandler_, id, addr, (uint8_t*)&value_8_bit, &dxl_error);
+    dynamixel_comm_result_ = packetHandler_->read1ByteTxRx(portHandler_, id, addr, (uint8_t*)&value_8_bit, &dynamixel_error);
   }
   else if (length == 2)
   {
-    dxl_comm_result_ = packetHandler_->read2ByteTxRx(portHandler_, id, addr, (uint16_t*)&value_16_bit, &dxl_error);
+    dynamixel_comm_result_ = packetHandler_->read2ByteTxRx(portHandler_, id, addr, (uint16_t*)&value_16_bit, &dynamixel_error);
   }
   else if (length == 4)
   {
-    dxl_comm_result_ = packetHandler_->read4ByteTxRx(portHandler_, id, addr, (uint32_t*)&value_32_bit, &dxl_error);
+    dynamixel_comm_result_ = packetHandler_->read4ByteTxRx(portHandler_, id, addr, (uint32_t*)&value_32_bit, &dynamixel_error);
   }
 
-  if (dxl_comm_result_ == COMM_SUCCESS)
+  if (dynamixel_comm_result_ == COMM_SUCCESS)
   {
-    if (dxl_error != 0)
+    if (dynamixel_error != 0)
     {
-      packetHandler_->printRxPacketError(dxl_error);
+      packetHandler_->printRxPacketError(dynamixel_error);
     }
 
     if (length == 1)
@@ -189,7 +189,7 @@ bool DynamixelWorkbenchTorqueControl::readDynamixelRegister(uint8_t id, uint16_t
   }
   else
   {
-    packetHandler_->printTxRxResult(dxl_comm_result_);
+    packetHandler_->printTxRxResult(dynamixel_comm_result_);
     ROS_ERROR("[ID] %u, Fail to read!", id);
     return false;
   }
@@ -197,21 +197,21 @@ bool DynamixelWorkbenchTorqueControl::readDynamixelRegister(uint8_t id, uint16_t
 
 bool DynamixelWorkbenchTorqueControl::writeTorque(bool onoff)
 {
-  dynamixel_[PAN_TILT_MOTOR]->dxl_item_ = dynamixel_[PAN_TILT_MOTOR]->ctrl_table_["torque_enable"];
+  dynamixel_[PAN_TILT_MOTOR]->item_ = dynamixel_[PAN_TILT_MOTOR]->ctrl_table_["torque_enable"];
   if (onoff == true)
   {
-    writeSyncDynamixel(dynamixel_[PAN_TILT_MOTOR]->dxl_item_->address, dynamixel_[PAN_TILT_MOTOR]->dxl_item_->data_length, true, true);
+    writeSyncDynamixel(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, true, true);
   }
   else
   {
-    writeSyncDynamixel(dynamixel_[PAN_TILT_MOTOR]->dxl_item_->address, dynamixel_[PAN_TILT_MOTOR]->dxl_item_->data_length, false, false);
+    writeSyncDynamixel(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, false, false);
   }
 }
 
 bool DynamixelWorkbenchTorqueControl::writeCurrent(int64_t pan_cur, int64_t tilt_cur)
 {
-  dynamixel_[PAN_TILT_MOTOR]->dxl_item_ = dynamixel_[PAN_TILT_MOTOR]->ctrl_table_["goal_current"];
-  writeSyncDynamixel(dynamixel_[PAN_TILT_MOTOR]->dxl_item_->address, dynamixel_[PAN_TILT_MOTOR]->dxl_item_->data_length, pan_cur, tilt_cur);
+  dynamixel_[PAN_TILT_MOTOR]->item_ = dynamixel_[PAN_TILT_MOTOR]->ctrl_table_["goal_current"];
+  writeSyncDynamixel(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, pan_cur, tilt_cur);
 }
 
 bool DynamixelWorkbenchTorqueControl::readMotorState(std::string addr_name)
@@ -219,13 +219,13 @@ bool DynamixelWorkbenchTorqueControl::readMotorState(std::string addr_name)
   std::vector<int64_t> *read_data = new std::vector<int64_t>;
   int64_t read_value;
 
-  dynamixel_[PAN_MOTOR]->dxl_item_ = dynamixel_[PAN_MOTOR]->ctrl_table_[addr_name];
-  dynamixel_[TILT_MOTOR]->dxl_item_ = dynamixel_[TILT_MOTOR]->ctrl_table_[addr_name];
+  dynamixel_[PAN_MOTOR]->item_ = dynamixel_[PAN_MOTOR]->ctrl_table_[addr_name];
+  dynamixel_[TILT_MOTOR]->item_ = dynamixel_[TILT_MOTOR]->ctrl_table_[addr_name];
 
-  readDynamixelRegister(dynamixel_[PAN_MOTOR]->id_, dynamixel_[PAN_MOTOR]->dxl_item_->address, dynamixel_[PAN_MOTOR]->dxl_item_->data_length, &read_value);
+  readDynamixelRegister(dynamixel_[PAN_MOTOR]->id_, dynamixel_[PAN_MOTOR]->item_->address, dynamixel_[PAN_MOTOR]->item_->data_length, &read_value);
   read_data->push_back(read_value);
 
-  readDynamixelRegister(dynamixel_[TILT_MOTOR]->id_, dynamixel_[TILT_MOTOR]->dxl_item_->address, dynamixel_[TILT_MOTOR]->dxl_item_->data_length, &read_value);
+  readDynamixelRegister(dynamixel_[TILT_MOTOR]->id_, dynamixel_[TILT_MOTOR]->item_->address, dynamixel_[TILT_MOTOR]->item_->data_length, &read_value);
   read_data->push_back(read_value);
 
   read_data_[addr_name] = read_data;
@@ -315,29 +315,29 @@ bool DynamixelWorkbenchTorqueControl::dynamixelControlLoop(void)
 {
   getPublishedMsg();
 
-  dynamixel_workbench_msgs::MotorState dxl_response[dynamixel_.size()];
-  dynamixel_workbench_msgs::MotorStateList dxl_response_list;
+  dynamixel_workbench_msgs::MotorState dynamixel_response[dynamixel_.size()];
+  dynamixel_workbench_msgs::MotorStateList dynamixel_response_list;
 
   for (int i = 0; i < dynamixel_.size(); i++)
   {
-    dxl_response[i].motor_model = dynamixel_[i]->model_name_;
-    dxl_response[i].id = dynamixel_[i]->id_;
-    dxl_response[i].torque_enable = read_data_[i, "torque_enable"]->at(i);
-    dxl_response[i].moving = read_data_["moving"]->at(i);
-    dxl_response[i].goal_position = read_data_["goal_position"]->at(i);
-    dxl_response[i].goal_velocity = read_data_["goal_velocity"]->at(i);
-    dxl_response[i].goal_current = read_data_["goal_current"]->at(i);
-    dxl_response[i].profile_velocity = read_data_["profile_velocity"]->at(i);
-    dxl_response[i].profile_acceleration = read_data_["profile_acceleration"]->at(i);
-    dxl_response[i].present_position = read_data_["present_position"]->at(i);
-    dxl_response[i].present_velocity = read_data_["present_velocity"]->at(i);
-    dxl_response[i].present_current = read_data_["present_current"]->at(i);
-    dxl_response[i].max_position_limit = read_data_["max_position_limit"]->at(i);
-    dxl_response[i].min_position_limit = read_data_["min_position_limit"]->at(i);
+    dynamixel_response[i].motor_model = dynamixel_[i]->model_name_;
+    dynamixel_response[i].id = dynamixel_[i]->id_;
+    dynamixel_response[i].torque_enable = read_data_[i, "torque_enable"]->at(i);
+    dynamixel_response[i].moving = read_data_["moving"]->at(i);
+    dynamixel_response[i].goal_position = read_data_["goal_position"]->at(i);
+    dynamixel_response[i].goal_velocity = read_data_["goal_velocity"]->at(i);
+    dynamixel_response[i].goal_current = read_data_["goal_current"]->at(i);
+    dynamixel_response[i].profile_velocity = read_data_["profile_velocity"]->at(i);
+    dynamixel_response[i].profile_acceleration = read_data_["profile_acceleration"]->at(i);
+    dynamixel_response[i].present_position = read_data_["present_position"]->at(i);
+    dynamixel_response[i].present_velocity = read_data_["present_velocity"]->at(i);
+    dynamixel_response[i].present_current = read_data_["present_current"]->at(i);
+    dynamixel_response[i].max_position_limit = read_data_["max_position_limit"]->at(i);
+    dynamixel_response[i].min_position_limit = read_data_["min_position_limit"]->at(i);
 
-    dxl_response_list.motor_states.push_back(dxl_response[i]);
+    dynamixel_response_list.motor_states.push_back(dynamixel_response[i]);
   }
-  dxl_state_pub_.publish(dxl_response_list);
+  dynamixel_state_pub_.publish(dynamixel_response_list);
 
   pan_cur_pos_ = read_data_["present_position"]->at(PAN_MOTOR);
   tilt_cur_pos_ = read_data_["present_position"]->at(TILT_MOTOR);
@@ -366,12 +366,12 @@ int main(int argc, char **argv)
 {
   // Init ROS node
   ros::init(argc, argv, "dynamixel_workbench_torque_control");
-  DynamixelWorkbenchTorqueControl dxl_torque_ctrl;
+  DynamixelWorkbenchTorqueControl dynamixel_torque_ctrl;
   ros::Rate loop_rate(250);
 
   while (ros::ok())
   {
-    dxl_torque_ctrl.dynamixelControlLoop();
+    dynamixel_torque_ctrl.dynamixelControlLoop();
     ros::spinOnce();
     loop_rate.sleep();
   }
