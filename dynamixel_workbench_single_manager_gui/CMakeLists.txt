@@ -50,7 +50,6 @@ QT4_ADD_RESOURCES(QT_RESOURCES_CPP ${QT_RESOURCES})
 QT4_WRAP_UI(QT_FORMS_HPP ${QT_FORMS})
 QT4_WRAP_CPP(QT_MOC_HPP ${QT_MOC})
 
-
 add_executable(dynamixel_workbench_single_manager_gui ${QT_SOURCES} ${QT_RESOURCES_CPP} ${QT_FORMS_HPP} ${QT_MOC_HPP})
 target_link_libraries(dynamixel_workbench_single_manager_gui ${QT_LIBRARIES} ${catkin_LIBRARIES})
 install(TARGETS dynamixel_workbench_single_manager_gui RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})

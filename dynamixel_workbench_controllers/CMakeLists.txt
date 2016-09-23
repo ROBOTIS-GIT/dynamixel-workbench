@@ -19,9 +19,9 @@ find_package(catkin REQUIRED COMPONENTS
 # Declare ROS messages, services and actions
 ################################################################################
 
-################################################
-## Declare ROS dynamic reconfigure parameters ##
-################################################
+################################################################################
+## Declare ROS dynamic reconfigure parameters
+################################################################################
 
 ################################################################################
 # Catkin specific configuration
@@ -48,7 +48,6 @@ add_executable(dynamixel_workbench_velocity_control src/dynamixel_workbench_velo
 add_dependencies(dynamixel_workbench_velocity_control ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(dynamixel_workbench_velocity_control ${catkin_LIBRARIES})
 
-
 add_executable(dynamixel_workbench_multi_port src/dynamixel_workbench_multi_port.cpp)
 add_dependencies(dynamixel_workbench_multi_port ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(dynamixel_workbench_multi_port ${catkin_LIBRARIES})
@@ -56,7 +55,6 @@ target_link_libraries(dynamixel_workbench_multi_port ${catkin_LIBRARIES})
 add_executable(dynamixel_workbench_torque_control src/dynamixel_workbench_torque_control.cpp)
 add_dependencies(dynamixel_workbench_torque_control ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(dynamixel_workbench_torque_control ${catkin_LIBRARIES})
-
 
 ################################################################################
 # Install
@@ -90,7 +88,7 @@ install(DIRECTORY include/${PROJECT_NAME}/
 )
 
 install(DIRECTORY launch/
-        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
 ################################################################################
