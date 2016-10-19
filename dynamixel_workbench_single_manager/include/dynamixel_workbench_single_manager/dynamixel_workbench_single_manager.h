@@ -54,8 +54,8 @@ class DynamixelWorkbenchSingleManager
   ros::ServiceServer workbench_param_server_;
   // Parameters
   std::string device_name_;
-  //uint64_t baud_rate_list_[BAUD_RATE_NUM];
-  int baud_rate_;
+
+	int baud_rate_;
   float protocol_version_;
   uint16_t dynamixel_model_number_;
   uint8_t dynamixel_model_id_;

@@ -1,5 +1,19 @@
 #include "dynamixel_workbench_controllers/dynamixel_workbench_velocity_control.h"
 
+/*
+ *
+ *     |-----------|
+ *     |-----------|
+ *     |-----------|
+ *     |-----------|
+ *     |-----------|
+ *    O-------------O
+ *  left          right
+ *   1              2
+ *
+ *
+ * */
+
 using namespace dynamixel_workbench_velocity_control;
 
 DynamixelWorkbenchVelocityControl::DynamixelWorkbenchVelocityControl()
@@ -106,22 +120,29 @@ bool DynamixelWorkbenchVelocityControl::writeTorque(bool onoff)
   dynamixel_[LEFT_RIGHT_WHEEL]->item_ = dynamixel_[LEFT_RIGHT_WHEEL]->ctrl_table_["torque_enable"];
   if (onoff == true)
   {
-    writeSyncDynamixel(dynamixel_[LEFT_RIGHT_WHEEL]->item_->address, dynamixel_[LEFT_RIGHT_WHEEL]->item_->data_length, true, true);
+    syncWriteDynamixels(dynamixel_[LEFT_RIGHT_WHEEL]->item_->address, dynamixel_[LEFT_RIGHT_WHEEL]->item_->data_length, true, true);
   }
   else
   {
-    writeSyncDynamixel(dynamixel_[LEFT_RIGHT_WHEEL]->item_->address, dynamixel_[LEFT_RIGHT_WHEEL]->item_->data_length, false, false);
+    syncWriteDynamixels(dynamixel_[LEFT_RIGHT_WHEEL]->item_->address, dynamixel_[LEFT_RIGHT_WHEEL]->item_->data_length, false, false);
   }
 }
 
 bool DynamixelWorkbenchVelocityControl::writeVelocity(int64_t left_wheel_velocity, int64_t right_wheel_velocity)
 {
-  dynamixel_[LEFT_RIGHT_WHEEL]->item_ = dynamixel_[LEFT_RIGHT_WHEEL]->ctrl_table_["goal_velocity"];
+  if (!strncmp(motor_model_.c_str(), "AX", 2) || !strncmp(motor_model_.c_str(), "RX", 2) || !strncmp(motor_model_.c_str(), "MX", 2) || !strncmp(motor_model_.c_str(), "EX", 2))
+  {
+      dynamixel_[LEFT_RIGHT_WHEEL]->item_ = dynamixel_[LEFT_RIGHT_WHEEL]->ctrl_table_["moving_speed"];
+  }
+  else
+  {
+      dynamixel_[LEFT_RIGHT_WHEEL]->item_ = dynamixel_[LEFT_RIGHT_WHEEL]->ctrl_table_["goal_velocity"];
+  }
 
-  writeSyncDynamixel(dynamixel_[LEFT_RIGHT_WHEEL]->item_->address, dynamixel_[LEFT_RIGHT_WHEEL]->item_->data_length, left_wheel_velocity, right_wheel_velocity);
+  syncWriteDynamixels(dynamixel_[LEFT_RIGHT_WHEEL]->item_->address, dynamixel_[LEFT_RIGHT_WHEEL]->item_->data_length, left_wheel_velocity, right_wheel_velocity);
 }
 
-bool DynamixelWorkbenchVelocityControl::writeSyncDynamixel(uint16_t addr, uint8_t length, int64_t left_wheel_value, int64_t right_wheel_value)
+bool DynamixelWorkbenchVelocityControl::syncWriteDynamixels(uint16_t addr, uint8_t length, int64_t left_wheel_value, int64_t right_wheel_value)
 {
   bool dynamixel_addparam_result_;
   int8_t dynamixel_comm_result_;
@@ -326,7 +347,29 @@ bool DynamixelWorkbenchVelocityControl::controlWheelVelocityCallback(dynamixel_w
   right_motor_velocity_ += req.right_wheel_velocity;
   left_motor_velocity_  += req.left_wheel_velocity;
 
-  writeVelocity(convertVelocity2Value(left_motor_velocity_), convertVelocity2Value(right_motor_velocity_)*(-1));
+  if (!strncmp(motor_model_.c_str(), "AX", 2) || !strncmp(motor_model_.c_str(), "RX", 2) || !strncmp(motor_model_.c_str(), "MX", 2) || !strncmp(motor_model_.c_str(), "EX", 2))
+  {
+    if (right_motor_velocity_ < 0.0 && left_motor_velocity_ < 0.0)
+    {
+      writeVelocity(convertVelocity2Value(left_motor_velocity_ * (-1)) + 1024, convertVelocity2Value(right_motor_velocity_) * (-1));
+    }
+    else if (right_motor_velocity_ < 0.0 && left_motor_velocity_ > 0.0)
+    {
+      writeVelocity(convertVelocity2Value(left_motor_velocity_), convertVelocity2Value(right_motor_velocity_) * (-1));
+    }
+    else if (right_motor_velocity_ > 0.0 && left_motor_velocity_ < 0.0)
+    {
+      writeVelocity(convertVelocity2Value(left_motor_velocity_ * (-1)) + 1024, convertVelocity2Value(right_motor_velocity_) + 1024);
+    }
+    else
+    {
+      writeVelocity(convertVelocity2Value(left_motor_velocity_), (convertVelocity2Value(right_motor_velocity_) + 1024));
+    }
+  }
+  else
+  {
+     writeVelocity(convertVelocity2Value(left_motor_velocity_), convertVelocity2Value(right_motor_velocity_) * (-1));
+  }
 
   res.right_wheel_velocity = right_motor_velocity_;
   res.left_wheel_velocity = left_motor_velocity_;

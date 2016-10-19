@@ -89,6 +89,11 @@ void QNode::sendResetMsg(void)
 {
   dynamixel_workbench_msgs::DynamixelCommand msg;
 
+  msg.addr_name = std::string("baud_rate");
+  msg.value = 57600;
+
+  dynamixel_command_msg_pub_.publish(msg);
+
   msg.addr_name = std::string("factory_reset");
 
   dynamixel_command_msg_pub_.publish(msg);
