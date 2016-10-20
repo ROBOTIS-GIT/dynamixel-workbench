@@ -26,7 +26,7 @@
    <string>QRosApp</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../../../ROBOTIS-MANIPULATOR-X/manipulator_x_position_ctrl_gui/resources/images.qrc">
+   <iconset resource="../../../ROBOTIS-MANIPULATOR-X/manipulator_x_torque_ctrl_gui/resources/images.qrc">
     <normaloff>:/images/icon.png</normaloff>:/images/icon.png</iconset>
   </property>
   <property name="locale">
@@ -338,22 +338,6 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="1">
-            <widget class="QLineEdit" name="set_baud_rate_line_edit">
-             <property name="minimumSize">
-              <size>
-               <width>190</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>190</width>
-               <height>16777215</height>
-              </size>
-             </property>
-            </widget>
-           </item>
            <item row="7" column="1">
             <widget class="QPushButton" name="set_position_zero_push_button">
              <property name="minimumSize">
@@ -481,6 +465,22 @@
              </property>
              <property name="maxVisibleItems">
               <number>100</number>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QComboBox" name="set_baud_rate_combo_box">
+             <property name="minimumSize">
+              <size>
+               <width>190</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>190</width>
+               <height>16777215</height>
+              </size>
              </property>
             </widget>
            </item>
@@ -637,7 +637,7 @@
   <tabstop>view_logging</tabstop>
  </tabstops>
  <resources>
-  <include location="../../../ROBOTIS-MANIPULATOR-X/manipulator_x_position_ctrl_gui/resources/images.qrc"/>
+  <include location="../../../ROBOTIS-MANIPULATOR-X/manipulator_x_torque_ctrl_gui/resources/images.qrc"/>
  </resources>
  <connections>
   <connection>
