@@ -49,7 +49,7 @@ DynamixelWorkbenchSingleManager::DynamixelWorkbenchSingleManager()
   }
   else
   {
-    ROS_ERROR("Failed to change the baudrate!");
+      ROS_ERROR("Failed to change the baudrate!");
   }
 
   scanDynamixelID();
@@ -130,11 +130,11 @@ void DynamixelWorkbenchSingleManager::setPublisher(void)
   }
   else if (!strncmp(dynamixel_->model_name_.c_str(), "MX", 2))
   {
-    if (dynamixel_->model_number_ == 310) // MX_64
+    if (dynamixel_->model_number_ == 310) // MX-64
     {
       dynamixel_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelMX64>("/dynamixel_workbench_single_manager/motor_state",10);
     }
-    else if (dynamixel_->model_number_ == 320) // MX_106
+    else if (dynamixel_->model_number_ == 320) // MX-106
     {
       dynamixel_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::DynamixelMX106>("/dynamixel_workbench_single_manager/motor_state",10);
     }
@@ -195,11 +195,11 @@ void DynamixelWorkbenchSingleManager::setPublishedMsg(void)
   }
   else if (!strncmp(dynamixel_->model_name_.c_str(), "MX", 2))
   {
-    if (dynamixel_->model_number_ == 310) // MX_64
+    if (dynamixel_->model_number_ == 310) // MX-64
     {
       mx64MotorMessage();
     }
-    else if (dynamixel_->model_number_ == 320) //MX_106
+    else if (dynamixel_->model_number_ == 320) //MX-106
     {
       mx106MotorMessage();
     }
@@ -248,7 +248,7 @@ bool DynamixelWorkbenchSingleManager::scanDynamixelID(void)
       dynamixel_model_id_ = dynamixel_id;
       protocol_version_ = packetHandler1_->getProtocolVersion();
       packetHandler_ = packetHandler1_->getPacketHandler(protocol_version_);
-      dynamixel_ = new dynamixel_tool::DynamixelTool(dynamixel_model_id_, dynamixel_model_number_, protocol_version_);
+      dynamixel_ = new dynamixel_tool::DynamixelTool(dynamixel_id, dynamixel_num, protocol_version_);
     }
 
     if (kbhit())
@@ -267,7 +267,7 @@ bool DynamixelWorkbenchSingleManager::scanDynamixelID(void)
       dynamixel_model_id_ = dynamixel_id;
       protocol_version_ = packetHandler2_->getProtocolVersion();
       packetHandler_ = packetHandler2_->getPacketHandler(protocol_version_);
-      dynamixel_ = new dynamixel_tool::DynamixelTool(dynamixel_model_id_, dynamixel_model_number_, protocol_version_);
+      dynamixel_ = new dynamixel_tool::DynamixelTool(dynamixel_id, dynamixel_num, protocol_version_);
     }
 
     if (kbhit())
@@ -1404,19 +1404,17 @@ void DynamixelWorkbenchSingleManager::dynamixelCommandMsgCallback(const dynamixe
   }
   else if (msg->addr_name == "baud_rate")
   {
-    dynamixel_->item_ = dynamixel_->ctrl_table_[msg->addr_name];
-    writeDynamixelRegister(dynamixel_->id_, dynamixel_->item_->address, dynamixel_->item_->data_length, dynamixel_->baud_rate_table_.find(msg->value)->second);
+      dynamixel_->item_ = dynamixel_->ctrl_table_[msg->addr_name];
+      writeDynamixelRegister(dynamixel_->id_, dynamixel_->item_->address, dynamixel_->item_->data_length, dynamixel_->baud_rate_table_.find(msg->value)->second);
 
-    if (portHandler_->setBaudRate(dynamixel_->baud_rate_table_.find(msg->value)->first) == false)
-    {
-      sleep(2);
-      ROS_INFO(" Failed to change baudrate!");
-    }
-    else
-    {
-      sleep(2);
-      ROS_INFO(" Success to change baudrate! [ BAUD RATE: %d ]", dynamixel_->baud_rate_table_.find(msg->value)->first);
-    }
+      if (portHandler_->setBaudRate(dynamixel_->baud_rate_table_.find(msg->value)->first) == false)
+      {
+        ROS_INFO(" Failed to change baudrate!");
+      }
+      else
+      {
+        ROS_INFO(" Success to change baudrate! [ BAUD RATE: %d ]", dynamixel_->baud_rate_table_.find(msg->value)->first);
+      }
   }
   else if (msg->addr_name == "id")
   {
@@ -1530,18 +1528,16 @@ bool DynamixelWorkbenchSingleManager::dynamixelSingleManagerLoop(void)
 
                 if (portHandler_->setBaudRate(dynamixel_->baud_rate_table_.find(atoi(param[0]))->first) == false)
                 {
-                  sleep(2);
                   ROS_INFO(" Failed to change baudrate!");
                 }
                 else
                 {
-                  sleep(2);
                   ROS_INFO(" Success to change baudrate! [ BAUD RATE: %d ]", dynamixel_->baud_rate_table_.find(atoi(param[0]))->first);
                 }
               }
               else if (dynamixel_->item_->item_name == "protocol_version")
               {
-                // TODO: Find restriced access address in protocol_version 1.0 of XM430
+                //TODO: Find restriced access address in protocol_version 1.0 of XM430
                 writeDynamixelRegister(dynamixel_->id_, dynamixel_->item_->address, dynamixel_->item_->data_length, atof(param[0]));
                 packetHandler_->getPacketHandler(atof(param[0]));
               }

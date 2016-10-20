@@ -64,7 +64,7 @@ class DynamixelWorkbenchPositionControl
   bool readDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, int64_t *value);
   bool readMotorState(std::string addr_name);
 
-	bool syncWriteDynamixels(uint16_t addr, uint8_t length, int64_t pan_motor_value, int64_t tilt_motor_value);
+  bool writeSyncDynamixel(uint16_t addr, uint8_t length, int64_t pan_motor_value, int64_t tilt_motor_value);
   bool writeTorque(bool onoff);
   bool writeProfile();
   bool writePosition(int64_t pan_pos, int64_t tilt_pos);

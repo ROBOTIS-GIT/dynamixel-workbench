@@ -125,12 +125,10 @@ int main(int argc, char **argv)
 
       if (dynamixel_wheel.wheel_control_client_.call(srv))
       {
-        sleep(0.8);
-        ROS_INFO("[LEFT_WHEEL_VELOCITY]: %.2f, [RIGHT_WHEEL_VELOCITY]: %.2f", srv.response.left_wheel_velocity, srv.response.right_wheel_velocity);
+        ROS_INFO("[RIGHT_WHEEL_VELOCITY]: %.2f, [LEFT_WHEEL_VELOCITY]: %.2f", srv.response.right_wheel_velocity, srv.response.left_wheel_velocity);
       }
       else
       {
-        sleep(0.8);
         ROS_ERROR("Failed to call service /wheel");
       }
     }

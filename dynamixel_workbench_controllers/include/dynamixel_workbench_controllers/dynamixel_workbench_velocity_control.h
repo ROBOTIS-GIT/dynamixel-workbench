@@ -66,7 +66,7 @@ class DynamixelWorkbenchVelocityControl
   bool readDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, int64_t *value);
   bool readMotorState(std::string addr_name);
 
-	bool syncWriteDynamixels(uint16_t addr, uint8_t length, int64_t left_wheel_value, int64_t right_wheel_value);
+  bool writeSyncDynamixel(uint16_t addr, uint8_t length, int64_t left_wheel_value, int64_t right_wheel_value);
   bool writeTorque(bool onoff);
   bool writeVelocity(int64_t left_wheel_velocity, int64_t right_wheel_velocity);
 

@@ -111,7 +111,7 @@ bool DynamixelWorkbenchTorqueControl::initMotor(std::string motor_model, uint8_t
   dynamixel_.push_back(dynamixel_motor);
 }
 
-bool DynamixelWorkbenchTorqueControl::syncWriteDynamixels(uint16_t addr, uint8_t length, int64_t pan_motor_value, int64_t tilt_motor_value)
+bool DynamixelWorkbenchTorqueControl::writeSyncDynamixel(uint16_t addr, uint8_t length, int64_t pan_motor_value, int64_t tilt_motor_value)
 {
   bool dynamixel_addparam_result_;
   int8_t dynamixel_comm_result_;
@@ -200,18 +200,18 @@ bool DynamixelWorkbenchTorqueControl::writeTorque(bool onoff)
   dynamixel_[PAN_TILT_MOTOR]->item_ = dynamixel_[PAN_TILT_MOTOR]->ctrl_table_["torque_enable"];
   if (onoff == true)
   {
-    syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, true, true);
+    writeSyncDynamixel(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, true, true);
   }
   else
   {
-    syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, false, false);
+    writeSyncDynamixel(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, false, false);
   }
 }
 
 bool DynamixelWorkbenchTorqueControl::writeCurrent(int64_t pan_cur, int64_t tilt_cur)
 {
   dynamixel_[PAN_TILT_MOTOR]->item_ = dynamixel_[PAN_TILT_MOTOR]->ctrl_table_["goal_current"];
-  syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, pan_cur, tilt_cur);
+  writeSyncDynamixel(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, pan_cur, tilt_cur);
 }
 
 bool DynamixelWorkbenchTorqueControl::readMotorState(std::string addr_name)
