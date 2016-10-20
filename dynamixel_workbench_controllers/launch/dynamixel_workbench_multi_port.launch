@@ -6,13 +6,13 @@
           pan_motor_:
             device_name_: "/dev/ttyUSB0"
             baud_rate_: 1000000
-            motor_model_: "XM430_W210_R"
+            motor_model_: "XM430_W350_R"
             protocol_version_: 2.0
             motor_id_: 1
           tilt_motor_:
             device_name_: "/dev/ttyUSB1"
             baud_rate_: 1000000
-            motor_model_: "RX_28"
+            motor_model_: "MX_28"
             protocol_version_: 1.0
             motor_id_: 2
         </rosparam>

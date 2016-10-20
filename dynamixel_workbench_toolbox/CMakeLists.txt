@@ -10,6 +10,7 @@ project(dynamixel_workbench_toolbox)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   roslib
+  std_msgs
 )
 
 ################################################################################
