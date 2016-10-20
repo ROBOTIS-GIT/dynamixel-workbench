@@ -128,25 +128,12 @@ void MainWindow::on_factory_reset_push_button_clicked(bool check)
   qnode_.sendResetMsg();
   sleep(1);
 
-  if (dynamixel_->protocol_version_ == 1.0)
-  {
-    ui_.get_baud_rate_line_edit->setText(QString::number(57600));
-    int index = ui_.set_baud_rate_combo_box->findText("Select Baudrate");
+  ui_.get_baud_rate_line_edit->setText(QString::number(57600));
+  int index = ui_.set_baud_rate_combo_box->findText("Select Baudrate");
 
-    if ( index != -1 )
-    {
-       ui_.set_baud_rate_combo_box->setCurrentIndex(index);
-    }
-  }
-  else if (dynamixel_->protocol_version_ == 2.0)
+  if ( index != -1 )
   {
-    ui_.get_baud_rate_line_edit->setText(QString::number(57600));
-    int index = ui_.set_baud_rate_combo_box->findText("Select Baudrate");
-
-    if ( index != -1 )
-    {
-       ui_.set_baud_rate_combo_box->setCurrentIndex(index);
-    }
+     ui_.set_baud_rate_combo_box->setCurrentIndex(index);
   }
 
   ui_.set_id_line_edit->setText(QString::number(1));
