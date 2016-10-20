@@ -10,6 +10,7 @@ project(dynamixel_workbench_toolbox)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   roslib
+  std_msgs
 )
 
 ################################################################################
@@ -55,7 +56,7 @@ install(DIRECTORY include/${PROJECT_NAME}/
 )
 
 install(DIRECTORY dynamixel/
-        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
 ################################################################################
