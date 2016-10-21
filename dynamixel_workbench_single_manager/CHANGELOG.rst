@@ -2,6 +2,16 @@
 Changelog for package dynamixel_workbench_single_manager
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.1 (2016-10-21)
+-----------
+* modified single manager and gui
+* modified factory reset
+* modified baudrate, factory reset, reboot and velocity controller
+* Revert "add baudrate combobox and modify velocity controller"
+  This reverts commit f4f83761d687c40660a2c864aa4fcbebe1df4ea4.
+* add baudrate combobox and modify velocity controller
+* Contributors: Darby Lim
+
 0.1.0 (2016-09-23)
 ------------------
 * modified the package information for release
