@@ -624,7 +624,7 @@ void QNode::dynamixelXMStatusMsgCallback(const dynamixel_workbench_msgs::Dynamix
   log(std::string("hardware_error_status: "), msg->hardware_error_status);
   log(std::string("velocity_i_gain: "), msg->velocity_i_gain);
   log(std::string("velocity_p_gain: "), msg->velocity_p_gain);
-  log(std::string("velocity_d_gain: "), msg->velocity_d_gain);
+  log(std::string("position_d_gain: "), msg->velocity_d_gain);
   log(std::string("position_i_gain: "), msg->position_i_gain);
   log(std::string("position_p_gain: "), msg->position_p_gain);
   log(std::string("feedforward_2nd_gain: "), msg->feedforward_2nd_gain);
@@ -833,7 +833,7 @@ void QNode::log(const std::string &msg, int64_t sender)
     if(logging_model_.rowCount() == row_count_)
         logging_model_.insertRows(row_count_, 1);
 
-	std::stringstream logging_model_msg;
+    std::stringstream logging_model_msg;
 
     logging_model_msg << msg << sender;
 
