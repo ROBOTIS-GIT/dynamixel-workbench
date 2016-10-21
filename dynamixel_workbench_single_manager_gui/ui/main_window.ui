@@ -26,7 +26,7 @@
    <string>QRosApp</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../../../ROBOTIS-MANIPULATOR-X/manipulator_x_torque_ctrl_gui/resources/images.qrc">
+   <iconset resource="../resources/images.qrc">
     <normaloff>:/images/icon.png</normaloff>:/images/icon.png</iconset>
   </property>
   <property name="locale">
@@ -191,6 +191,42 @@
              </property>
             </widget>
            </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="get_baud_rate_label">
+             <property name="text">
+              <string>Baudrate</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QLineEdit" name="get_protocol_version_line_edit">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="1">
+            <widget class="QLineEdit" name="get_model_name_line_edit">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
            <item row="0" column="1">
             <widget class="QLineEdit" name="get_device_name_line_edit">
              <property name="enabled">
@@ -204,17 +240,7 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="get_baud_rate_label">
-             <property name="text">
-              <string>Baudrate</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
+           <item row="2" column="1">
             <widget class="QLineEdit" name="get_baud_rate_line_edit">
              <property name="enabled">
               <bool>false</bool>
@@ -227,7 +253,7 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="0">
+           <item row="4" column="0">
             <widget class="QLabel" name="get_protocol_version_label">
              <property name="text">
               <string>Protocol Version</string>
@@ -237,20 +263,7 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="1">
-            <widget class="QLineEdit" name="get_protocol_version_line_edit">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0">
+           <item row="6" column="0">
             <widget class="QLabel" name="get_model_name_label">
              <property name="text">
               <string>Model Name</string>
@@ -260,8 +273,18 @@
              </property>
             </widget>
            </item>
-           <item row="4" column="1">
-            <widget class="QLineEdit" name="get_model_name_line_edit">
+           <item row="1" column="0">
+            <widget class="QLabel" name="get_id_label">
+             <property name="text">
+              <string>ID</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLineEdit" name="get_id_line_edit">
              <property name="enabled">
               <bool>false</bool>
              </property>
@@ -417,22 +440,6 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="1">
-            <widget class="QLineEdit" name="set_id_line_edit">
-             <property name="minimumSize">
-              <size>
-               <width>190</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>190</width>
-               <height>16777215</height>
-              </size>
-             </property>
-            </widget>
-           </item>
            <item row="9" column="1">
             <widget class="QSpinBox" name="set_address_value_spin_box">
              <property name="minimumSize">
@@ -481,6 +488,31 @@
                <width>190</width>
                <height>16777215</height>
               </size>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QComboBox" name="set_id_combo_box">
+             <property name="minimumSize">
+              <size>
+               <width>190</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>190</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="editable">
+              <bool>false</bool>
+             </property>
+             <property name="maxVisibleItems">
+              <number>5</number>
+             </property>
+             <property name="maxCount">
+              <number>200</number>
              </property>
             </widget>
            </item>
@@ -637,7 +669,7 @@
   <tabstop>view_logging</tabstop>
  </tabstops>
  <resources>
-  <include location="../../../ROBOTIS-MANIPULATOR-X/manipulator_x_torque_ctrl_gui/resources/images.qrc"/>
+  <include location="../resources/images.qrc"/>
  </resources>
  <connections>
   <connection>
