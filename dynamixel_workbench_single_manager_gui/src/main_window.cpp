@@ -1,56 +1,59 @@
-/**
- * @file /src/main_window.cpp
- *
- * @brief Implementation for the qt gui.
- *
- * @date February 2011
- **/
-/*****************************************************************************
-** Includes
-*****************************************************************************/
+/*******************************************************************************
+* Copyright (c) 2016, ROBOTIS CO., LTD.
+* All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions are met:
+*
+* * Redistributions of source code must retain the above copyright notice, this
+*   list of conditions and the following disclaimer.
+*
+* * Redistributions in binary form must reproduce the above copyright notice,
+*   this list of conditions and the following disclaimer in the documentation
+*   and/or other materials provided with the distribution.
+*
+* * Neither the name of ROBOTIS nor the names of its
+*   contributors may be used to endorse or promote products derived from
+*   this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+* FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+* DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+* CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+* OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+* OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*******************************************************************************/
+
+/* Author: Taehoon Lim (Darby) */
 
 #include <QtGui>
 #include <QMessageBox>
 #include <iostream>
 #include "../include/dynamixel_workbench_single_manager_gui/main_window.hpp"
 
-/*****************************************************************************
-** Namespaces
-*****************************************************************************/
-
-namespace dynamixel_workbench_single_manager_gui {
-
+namespace dynamixel_workbench_single_manager_gui
+{
 using namespace Qt;
-
-/*****************************************************************************
-** Implementation [MainWindow]
-*****************************************************************************/
 
 MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     : QMainWindow(parent)
     , qnode_(argc,argv)
 {
-  ui_.setupUi(this); // Calling this incidentally connects all ui's triggers to on_...() callbacks in this class.
-  QObject::connect(ui_.actionAbout_Qt, SIGNAL(triggered(bool)), qApp, SLOT(aboutQt())); // qApp is a global variable for the application
-
+  ui_.setupUi(this);
+  QObject::connect(ui_.actionAbout_Qt, SIGNAL(triggered(bool)), qApp, SLOT(aboutQt()));
   setWindowIcon(QIcon(":/images/icon.png"));
-  ui_.tab_manager->setCurrentIndex(0); // ensure the first tab is showing - qt-designer should have this already hardwired, but often loses it (settings?).
+  ui_.tab_manager->setCurrentIndex(0);
   QObject::connect(&qnode_, SIGNAL(rosShutdown()), this, SLOT(close()));
 
-  /*********************
-  ** Logging
-  **********************/
   ui_.view_logging->setModel(qnode_.loggingModel());
   QObject::connect(&qnode_, SIGNAL(loggingUpdated()), this, SLOT(updateLoggingView()));
 
-  /*********************
-  ** Connect
-  **********************/
   makeConnect();
 
-  /*********************
-  ** Auto Start
-  **********************/
   qnode_.init();
 
   makeUI();
@@ -58,15 +61,12 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
 
 MainWindow::~MainWindow() {}
 
-/*****************************************************************************
-** Implementation [Slots]
-*****************************************************************************/
-
-void MainWindow::showNoMasterMessage() {
-    QMessageBox msgBox;
-    msgBox.setText("Couldn't find the ros master.");
-    msgBox.exec();
-    close();
+void MainWindow::showNoMasterMessage()
+{
+  QMessageBox msgBox;
+  msgBox.setText("Couldn't find the ros master.");
+  msgBox.exec();
+  close();
 }
 
 void MainWindow::on_torque_enable_toggle_button_toggled(bool check)
@@ -80,6 +80,7 @@ void MainWindow::on_torque_enable_toggle_button_toggled(bool check)
     ui_.set_operating_mode_combo_box->setEnabled(false);
     ui_.set_baud_rate_combo_box->setEnabled(false);
     ui_.set_position_zero_push_button->setVisible(false);
+    ui_.set_address_value_dial->setEnabled(false);
   }
   else
   {
@@ -90,6 +91,7 @@ void MainWindow::on_torque_enable_toggle_button_toggled(bool check)
     ui_.set_operating_mode_combo_box->setEnabled(true);
     ui_.set_baud_rate_combo_box->setEnabled(true);
     ui_.set_position_zero_push_button->setVisible(false);
+    ui_.set_address_value_dial->setEnabled(false);
   }
 
   uint8_t index_num = ui_.set_address_name_combo_box->count();
@@ -199,9 +201,17 @@ void MainWindow::changeControlTableValue()
 void MainWindow::showHideButton(QString index)
 {
   if (index.toStdString() == "goal_position")
+  {
     ui_.set_position_zero_push_button->setVisible(true);
+    ui_.set_address_value_dial->setEnabled(true);
+    ui_.set_address_value_dial->setRange(dynamixel_->value_of_min_radian_position_, dynamixel_->value_of_max_radian_position_);
+  }
   else
+  {
     ui_.set_position_zero_push_button->setVisible(false);
+    ui_.set_address_value_dial->setEnabled(false);
+    ui_.set_address_value_dial->setRange(-1023, 1023);
+  }
 }
 
 void MainWindow::updateWorkbenchParamLineEdit(dynamixel_workbench_msgs::WorkbenchParam msg)
@@ -234,9 +244,9 @@ void MainWindow::makeUI()
   ui_.set_id_combo_box->addItem((QString("Select ID")));
   ui_.set_baud_rate_combo_box->addItem((QString("Select Baudrate")));
   ui_.set_operating_mode_combo_box->addItem((QString("Select Mode")));
-  ui_.set_address_value_dial->setRange(dynamixel_->value_of_min_radian_position_, dynamixel_->value_of_max_radian_position_);
-  ui_.set_address_value_spin_box->setRange(dynamixel_->value_of_min_radian_position_, dynamixel_->value_of_max_radian_position_);
+  ui_.set_address_value_spin_box->setRange(-1023, 1023);
   ui_.set_position_zero_push_button->setVisible(false);
+  ui_.set_address_value_dial->setEnabled(false);
 
   // Reboot Button Init
   if (ui_.get_protocol_version_line_edit->text().toFloat() == 2.0)
@@ -259,7 +269,7 @@ void MainWindow::makeUI()
   }
 
   // ID Combobox Init
-  for (int id = 0; id < 253; id++)
+  for (int id = 1; id < 253; id++)
   {
     ui_.set_id_combo_box->addItem(QString::number(id));
   }
@@ -393,32 +403,13 @@ void MainWindow::makeUI()
   }
 }
 
-/*****************************************************************************
-** Implemenation [Slots][manually connected]
-*****************************************************************************/
-
-/**
- * This function is signalled by the underlying model. When the model changes,
- * this will drop the cursor down to the last line in the QListview to ensure
- * the user can always see the latest log message.
- */
-void MainWindow::updateLoggingView() {
-       // ui_.view_logging->scrollToTop();
-}
-
-/*****************************************************************************
-** Implementation [Menu]
-*****************************************************************************/
-
 void MainWindow::on_actionAbout_triggered() {
     QMessageBox::about(this, tr("About ..."),tr("<h2>Dynamixel workbench 1.0</h2><p>Copyright Robotis</p>"));
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    //WriteSettings();
     QMainWindow::closeEvent(event);
 }
 
-}  // namespace dynamixel_workbench_single_manager_gui
-
+}

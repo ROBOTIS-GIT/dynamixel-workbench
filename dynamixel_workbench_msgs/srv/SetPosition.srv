@@ -1,5 +1,6 @@
+string unit
 float64 pan_pos
 float64 tilt_pos
 ---
-int64 pan_pos
-int64 tilt_pos
+float64 pan_pos
+float64 tilt_pos

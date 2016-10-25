@@ -24,7 +24,7 @@ int64 registered_instruction
 int64 hardware_error_status
 int64 velocity_i_gain
 int64 velocity_p_gain
-int64 velocity_d_gain
+int64 position_d_gain
 int64 position_i_gain
 int64 position_p_gain
 int64 feedforward_2nd_gain
