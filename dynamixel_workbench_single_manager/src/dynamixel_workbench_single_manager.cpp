@@ -418,14 +418,14 @@ void DynamixelWorkbenchSingleManager::viewManagerMenu(void)
   ROS_INFO("----------------------------------------------------------------------");
   ROS_INFO("Command list :");
   ROS_INFO("[help|h|?]................: display this menu");
-  ROS_INFO("[status]..................: status of a dynamixel");
+  ROS_INFO("[status]..................: status of a Dynamixel");
   ROS_INFO("[table]...................: check a control table of a dynamixel");
-  ROS_INFO("[reboot]..................: reboot a dynamixel(only protocol version 2.0)");
+  ROS_INFO("[reboot]..................: reboot a Dynamixel(only protocol version 2.0)");
   ROS_INFO("[factory_reset]...........: command for all data back to the factory settings values");
-  ROS_INFO("[[table_item] [value].....: change address of a dynamixel");
+  ROS_INFO("[[table_item] [value].....: change address value of a dynamixel");
   ROS_INFO("[exit]....................: shutdown");
   ROS_INFO("----------------------------------------------------------------------");
-  ROS_INFO("Press SpaceBar to command Dynamixel");
+  ROS_INFO("Press SpaceBar to command a Dynamixel");
 }
 
 bool DynamixelWorkbenchSingleManager::rebootDynamixel(void)
@@ -495,7 +495,7 @@ bool DynamixelWorkbenchSingleManager::resetDynamixel()
     else
     {
       packetHandler_->printTxRxResult(dynamixel_comm_result);
-      fprintf(stderr, "\n Fail to reset! \n\n");
+      ROS_ERROR("Fail to reset!");
     }
   }
   else if (packetHandler_->getProtocolVersion() == 2.0)
@@ -509,7 +509,7 @@ bool DynamixelWorkbenchSingleManager::resetDynamixel()
       {
         packetHandler_->printRxPacketError(dynamixel_error);
       }
-      fprintf(stderr, "\n Success to reset! \n\n");
+      ROS_INFO("Success to reset!");
 
       if (portHandler_->setBaudRate(57600) == false)
       {
@@ -526,7 +526,7 @@ bool DynamixelWorkbenchSingleManager::resetDynamixel()
     else
     {
       packetHandler_->printTxRxResult(dynamixel_comm_result);
-      fprintf(stderr, "\n Fail to reset! \n\n");
+      ROS_ERROR("Fail to reset!");
     }
   }
 }
@@ -1582,10 +1582,6 @@ bool DynamixelWorkbenchSingleManager::dynamixelSingleManagerLoop(void)
       {
         showControlTable();
       }
-      else if (strcmp(cmd, "scan") == 0)
-      {
-        scanDynamixelID();
-      }
       else if (strcmp(cmd, "reboot") == 0)
       {
         rebootDynamixel();
@@ -1629,25 +1625,47 @@ bool DynamixelWorkbenchSingleManager::dynamixelSingleManagerLoop(void)
               }
               else if (dynamixel_->item_->item_name == "baud_rate")
               {
-                if (atoi(param[0]) < 2250000)
+                if (dynamixel_->baud_rate_table_.find(atoi(param[0]))->second == dynamixel_->baud_rate_table_.end()->second)
                 {
-                  writeDynamixelRegister(dynamixel_->id_, dynamixel_->item_->address, dynamixel_->item_->data_length, dynamixel_->baud_rate_table_.find(atoi(param[0]))->second);
+                  ROS_ERROR(" Failed to change [ BAUD RATE: %d ]", atoi(param[0]));
+                  ROS_ERROR(" Please check the valid baud rate at dynamixel_tool packages or E-MANUAL");
+
+                  writeDynamixelRegister(dynamixel_->id_, dynamixel_->item_->address, dynamixel_->item_->data_length, dynamixel_->baud_rate_table_.find(57600)->second);
                   sleep(1);
 
-                  if (portHandler_->setBaudRate(dynamixel_->baud_rate_table_.find(atoi(param[0]))->first) == false)
+                  if (portHandler_->setBaudRate(dynamixel_->baud_rate_table_.find(57600)->first) == false)
                   {
                     sleep(1);
-                    ROS_INFO(" Failed to change baudrate!");
+                    ROS_INFO(" Failed to change default baudrate(57600)!");
                   }
                   else
                   {
                     sleep(1);
-                    ROS_INFO(" Success to change baudrate! [ BAUD RATE: %d ]", dynamixel_->baud_rate_table_.find(atoi(param[0]))->first);
+                    ROS_INFO(" Success to change default baudrate! [ BAUD RATE: 57600 ]");
                   }
                 }
                 else
                 {
-                  ROS_ERROR(" USB2Dynamixel supports baudrate under '2250000'");
+                  if (atoi(param[0]) < 2250000)
+                  {
+                    writeDynamixelRegister(dynamixel_->id_, dynamixel_->item_->address, dynamixel_->item_->data_length, dynamixel_->baud_rate_table_.find(atoi(param[0]))->second);
+                    sleep(1);
+
+                    if (portHandler_->setBaudRate(dynamixel_->baud_rate_table_.find(atoi(param[0]))->first) == false)
+                    {
+                      sleep(1);
+                      ROS_INFO(" Failed to change baudrate!");
+                    }
+                    else
+                    {
+                      sleep(1);
+                      ROS_INFO(" Success to change baudrate! [ BAUD RATE: %d ]", dynamixel_->baud_rate_table_.find(atoi(param[0]))->first);
+                    }
+                  }
+                  else
+                  {
+                    ROS_ERROR(" USB2Dynamixel supports baudrate under '2250000'");
+                  }
                 }
               }
               else if (dynamixel_->item_->item_name == "protocol_version")

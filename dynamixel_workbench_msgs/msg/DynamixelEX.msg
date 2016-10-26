@@ -1,3 +1,8 @@
+# Published by dynamixel_workbench_single_manager and Subscribed by dynamixel_workbench_single_manager_gui
+# This message is compatible with control table of Dynamixel EX Series (EX-106+)
+# and it is linked to EX_106.device in dynamixel_workbench_toolbox/dynamixel/EX folder
+# If you want to specific information about control table, please follow the link (http://support.robotis.com/en/)
+
 int64 model_number
 int64 version_of_firmware
 int8 id
