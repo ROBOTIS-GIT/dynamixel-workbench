@@ -114,14 +114,15 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "dynamixel_workbench_wheel");
   ROS_INFO("Set angular velocity(+-0.2 rad/sec) to your motor!! by using keyboard");
   ROS_INFO("w : Forward");
-  ROS_INFO("s : Backward");
+  ROS_INFO("x : Backward");
   ROS_INFO("a : Left");
-  ROS_INFO("d : Right\n");
+  ROS_INFO("d : Right");
+  ROS_INFO("s : STOPS\n");
   ROS_INFO("ESC : exit");
 
   DynamixelWorkbenchWheel dynamixel_wheel;
   dynamixel_workbench_msgs::SetDirection srv;
-  ros::Rate loop_rate(10);
+  ros::Rate loop_rate(125);
 
   while(1)
   {
@@ -152,6 +153,16 @@ int main(int argc, char **argv)
       else if (c == RIGHT)
       {
         srv.request.right_wheel_velocity = -0.2;
+        srv.request.left_wheel_velocity = 0.2;
+      }
+      else if (c == STOPS)
+      {
+        srv.request.right_wheel_velocity = 0.0;
+        srv.request.left_wheel_velocity = 0.0;
+      }
+      else
+      {
+        srv.request.right_wheel_velocity = 0.2;
         srv.request.left_wheel_velocity = 0.2;
       }
 

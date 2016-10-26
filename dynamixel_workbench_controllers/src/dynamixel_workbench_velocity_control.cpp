@@ -376,8 +376,17 @@ bool DynamixelWorkbenchVelocityControl::dynamixelControlLoop(void)
 bool DynamixelWorkbenchVelocityControl::controlWheelVelocityCallback(dynamixel_workbench_msgs::SetDirection::Request &req,
                                                                      dynamixel_workbench_msgs::SetDirection::Response &res)
 {
-  right_motor_velocity_ += req.right_wheel_velocity;
-  left_motor_velocity_  += req.left_wheel_velocity;
+  if (req.right_wheel_velocity == 0.0 || req.left_wheel_velocity == 0.0)
+  {
+    right_motor_velocity_ = 0.0;
+    left_motor_velocity_ = 0.0;
+  }
+  else
+  {
+    right_motor_velocity_ += req.right_wheel_velocity;
+    left_motor_velocity_  += req.left_wheel_velocity;
+  }
+
 
   if (!strncmp(motor_model_.c_str(), "AX", 2) || !strncmp(motor_model_.c_str(), "RX", 2) || !strncmp(motor_model_.c_str(), "MX", 2) || !strncmp(motor_model_.c_str(), "EX", 2))
   {

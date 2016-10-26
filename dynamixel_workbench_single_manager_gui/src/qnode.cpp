@@ -37,7 +37,8 @@
 #include <sstream>
 #include "../include/dynamixel_workbench_single_manager_gui/qnode.hpp"
 
-namespace dynamixel_workbench_single_manager_gui {
+namespace dynamixel_workbench_single_manager_gui
+{
 
 QNode::QNode(int argc, char** argv )
     :init_argc(argc),
@@ -49,7 +50,8 @@ QNode::QNode(int argc, char** argv )
 
 QNode::~QNode()
 {
-  if(ros::isStarted()) {
+  if(ros::isStarted())
+  {
     ros::shutdown();
     ros::waitForShutdown();
   }
@@ -59,7 +61,8 @@ QNode::~QNode()
 bool QNode::init()
 {
   ros::init(init_argc,init_argv,"dynamixel_workbench_single_manager_gui");
-  if (!ros::master::check()) {
+  if (!ros::master::check())
+  {
       return false;
   }
   ros::start();
@@ -75,7 +78,6 @@ bool QNode::init()
 
   start();
   return true;
-
 }
 
 void QNode::sendTorqueMsg(std::string addr_name, int64_t onoff)

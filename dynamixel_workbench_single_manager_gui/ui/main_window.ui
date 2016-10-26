@@ -645,7 +645,7 @@
            </size>
           </property>
           <property name="toolTip">
-           <string>reboot a dynamixel (Only for supports protocol 2.0)</string>
+           <string>Reboot a dynamixel (Only for supports protocol 2.0)</string>
           </property>
           <property name="text">
            <string>Reboot</string>
