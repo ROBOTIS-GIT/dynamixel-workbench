@@ -1,5 +1,9 @@
+# Server is dynamixel_workbench_tutorials and Client is dynamixel_workbench_controllers
+# In order to, send motor position with different unit (radian and raw value)
+
+string unit
 float64 pan_pos
 float64 tilt_pos
 ---
-int64 pan_pos
-int64 tilt_pos
+float64 pan_pos
+float64 tilt_pos

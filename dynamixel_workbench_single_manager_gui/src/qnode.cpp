@@ -1,14 +1,34 @@
-/**
- * @file /src/qnode.cpp
- *
- * @brief Ros communication central!
- *
- * @date February 2011
- **/
+/*******************************************************************************
+* Copyright (c) 2016, ROBOTIS CO., LTD.
+* All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions are met:
+*
+* * Redistributions of source code must retain the above copyright notice, this
+*   list of conditions and the following disclaimer.
+*
+* * Redistributions in binary form must reproduce the above copyright notice,
+*   this list of conditions and the following disclaimer in the documentation
+*   and/or other materials provided with the distribution.
+*
+* * Neither the name of ROBOTIS nor the names of its
+*   contributors may be used to endorse or promote products derived from
+*   this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+* FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+* DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+* CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+* OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+* OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*******************************************************************************/
 
-/*****************************************************************************
-** Includes
-*****************************************************************************/
+/* Author: Taehoon Lim (Darby) */
 
 #include <ros/ros.h>
 #include <ros/network.h>
@@ -17,15 +37,8 @@
 #include <sstream>
 #include "../include/dynamixel_workbench_single_manager_gui/qnode.hpp"
 
-/*****************************************************************************
-** Namespaces
-*****************************************************************************/
-
-namespace dynamixel_workbench_single_manager_gui {
-
-/*****************************************************************************
-** Implementation
-*****************************************************************************/
+namespace dynamixel_workbench_single_manager_gui
+{
 
 QNode::QNode(int argc, char** argv )
     :init_argc(argc),
@@ -37,8 +50,9 @@ QNode::QNode(int argc, char** argv )
 
 QNode::~QNode()
 {
-  if(ros::isStarted()) {
-    ros::shutdown(); // explicitly needed since we use ros::start();
+  if(ros::isStarted())
+  {
+    ros::shutdown();
     ros::waitForShutdown();
   }
   wait();
@@ -47,10 +61,11 @@ QNode::~QNode()
 bool QNode::init()
 {
   ros::init(init_argc,init_argv,"dynamixel_workbench_single_manager_gui");
-  if ( ! ros::master::check() ) {
+  if (!ros::master::check())
+  {
       return false;
   }
-  ros::start(); // explicitly needed since our nodehandle is going out of scope.
+  ros::start();
   ros::NodeHandle nh;
 
   // Add your ros communications here.
@@ -63,7 +78,6 @@ bool QNode::init()
 
   start();
   return true;
-
 }
 
 void QNode::sendTorqueMsg(std::string addr_name, int64_t onoff)
@@ -624,7 +638,7 @@ void QNode::dynamixelXMStatusMsgCallback(const dynamixel_workbench_msgs::Dynamix
   log(std::string("hardware_error_status: "), msg->hardware_error_status);
   log(std::string("velocity_i_gain: "), msg->velocity_i_gain);
   log(std::string("velocity_p_gain: "), msg->velocity_p_gain);
-  log(std::string("position_d_gain: "), msg->velocity_d_gain);
+  log(std::string("position_d_gain: "), msg->position_d_gain);
   log(std::string("position_i_gain: "), msg->position_i_gain);
   log(std::string("position_p_gain: "), msg->position_p_gain);
   log(std::string("feedforward_2nd_gain: "), msg->feedforward_2nd_gain);
@@ -825,7 +839,7 @@ void QNode::run()
   }
 
   std::cout << "ROS shutdown, proceeding to close the gui." << std::endl;
-  Q_EMIT rosShutdown(); // used to signal the gui for a shutdown (useful to roslaunch)
+  Q_EMIT rosShutdown();
 }
 
 void QNode::log(const std::string &msg, int64_t sender)
@@ -857,5 +871,4 @@ void QNode::log(const std::string &msg)
 
     row_count_++;
 }
-
-}  // namespace dynamixel_workbench_single_manager_gui
+}

@@ -1,3 +1,8 @@
+# Published by dynamixel_workbench_single_manager and Subscribed by dynamixel_workbench_single_manager_gui
+# This message is compatible with control table of Dynamixel PRO Series (L42-10-S300-R)
+# and it is linked to PRO_L42_10_S300_R.device in dynamixel_workbench_toolbox/dynamixel/PR folder
+# If you want to specific information about control table, please follow the link (http://support.robotis.com/en/)
+
 int64 model_number
 int64 version_of_firmware
 int8  id

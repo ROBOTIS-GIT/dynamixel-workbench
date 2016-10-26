@@ -1,16 +1,14 @@
-<!-- -*- mode: XML -*- -->
-
 <launch>
-    <node name="dynamixel_workbench_torque_controllers" pkg="dynamixel_workbench_controllers" type="dynamixel_workbench_torque_control" required="true" output="screen">
-        <rosparam>
-          device_name_: "/dev/ttyUSB0"
-          baud_rate_: 1000000
-          motor_model_: "XM430_W350_R"
-          protocol_version_: 2.0
-          pan_motor_:
-            motor_id_: 1
-          tilt_motor_:
-            motor_id_: 2
-        </rosparam>
-    </node>
+  <node name="dynamixel_workbench_torque_controllers" pkg="dynamixel_workbench_controllers" type="dynamixel_workbench_torque_control" required="true" output="screen">
+    <rosparam>
+      device_name_: "/dev/ttyUSB0"
+      baud_rate_: 1000000
+      motor_model_: "XM430_W350_R"
+      protocol_version_: 2.0
+      pan_motor_:
+        motor_id_: 1
+      tilt_motor_:
+        motor_id_: 2
+    </rosparam>
+  </node>
 </launch>
