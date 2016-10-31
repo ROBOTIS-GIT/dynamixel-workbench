@@ -2,6 +2,11 @@
 Changelog for package dynamixel_workbench_toolbox
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.2 (2016-10-31)
+-----------
+* modify beta test feedback
+* Contributors: Darby Lim
+
 0.1.1 (2016-10-21)
 -----------
 * Revert "add baudrate combobox and modify velocity controller"
