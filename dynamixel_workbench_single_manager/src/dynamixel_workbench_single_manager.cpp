@@ -1,3 +1,35 @@
+/*******************************************************************************
+* Copyright (c) 2016, ROBOTIS CO., LTD.
+* All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions are met:
+*
+* * Redistributions of source code must retain the above copyright notice, this
+*   list of conditions and the following disclaimer.
+*
+* * Redistributions in binary form must reproduce the above copyright notice,
+*   this list of conditions and the following disclaimer in the documentation
+*   and/or other materials provided with the distribution.
+*
+* * Neither the name of ROBOTIS nor the names of its
+*   contributors may be used to endorse or promote products derived from
+*   this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+* FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+* DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+* CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+* OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+* OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*******************************************************************************/
+
+/* Author: Taehoon Lim (Darby) */
+
 #include "dynamixel_workbench_single_manager/dynamixel_workbench_single_manager.h"
 
 using namespace dynamixel_workbench_single_manager;
@@ -381,19 +413,19 @@ bool DynamixelWorkbenchSingleManager::readDynamixelRegister(uint8_t id, uint16_t
 
 void DynamixelWorkbenchSingleManager::viewManagerMenu(void)
 {
-  ROS_INFO("[ID] %u, [Model Name] %s, [BAUD RATE] %d", dynamixel_->id_, dynamixel_->model_name_.c_str(), portHandler_->getBaudRate());
   ROS_INFO("----------------------------------------------------------------------");
-  ROS_INFO("Press SpaceBar to command dynamixel");
+  ROS_INFO("Single Manager supports GUI (dynamixel_workbench_single_manager_gui)  ");
   ROS_INFO("----------------------------------------------------------------------");
   ROS_INFO("Command list :");
-  ROS_INFO("[-help]....................: display this help");
-  ROS_INFO("[-status]..................: status of dynamixel");
-  ROS_INFO("[-table]...................: check dynamixel control table");
-  ROS_INFO("[-reboot]..................: reboot dynamixel(only protocol version 2.0)");
-  ROS_INFO("[-factory_reset]...........: factory reset dynamixel ");
-  ROS_INFO("[-[table_item] [value].....: control dynamixel write address");
-  ROS_INFO("[-exit]....................: shutdown");
+  ROS_INFO("[help|h|?]................: display this menu");
+  ROS_INFO("[status]..................: status of a Dynamixel");
+  ROS_INFO("[table]...................: check a control table of a dynamixel");
+  ROS_INFO("[reboot]..................: reboot a Dynamixel(only protocol version 2.0)");
+  ROS_INFO("[factory_reset]...........: command for all data back to the factory settings values");
+  ROS_INFO("[[table_item] [value].....: change address value of a dynamixel");
+  ROS_INFO("[exit]....................: shutdown");
   ROS_INFO("----------------------------------------------------------------------");
+  ROS_INFO("Press SpaceBar to command a Dynamixel");
 }
 
 bool DynamixelWorkbenchSingleManager::rebootDynamixel(void)
@@ -463,7 +495,7 @@ bool DynamixelWorkbenchSingleManager::resetDynamixel()
     else
     {
       packetHandler_->printTxRxResult(dynamixel_comm_result);
-      fprintf(stderr, "\n Fail to reset! \n\n");
+      ROS_ERROR("Fail to reset!");
     }
   }
   else if (packetHandler_->getProtocolVersion() == 2.0)
@@ -477,7 +509,7 @@ bool DynamixelWorkbenchSingleManager::resetDynamixel()
       {
         packetHandler_->printRxPacketError(dynamixel_error);
       }
-      fprintf(stderr, "\n Success to reset! \n\n");
+      ROS_INFO("Success to reset!");
 
       if (portHandler_->setBaudRate(57600) == false)
       {
@@ -494,7 +526,7 @@ bool DynamixelWorkbenchSingleManager::resetDynamixel()
     else
     {
       packetHandler_->printTxRxResult(dynamixel_comm_result);
-      fprintf(stderr, "\n Fail to reset! \n\n");
+      ROS_ERROR("Fail to reset!");
     }
   }
 }
@@ -1174,7 +1206,7 @@ void DynamixelWorkbenchSingleManager::xmMotorMessage(void)
     else if ("velocity_p_gain" == dynamixel_->item_->item_name)
       dynamixel_response.velocity_p_gain = read_value_;
     else if ("position_d_gain" == dynamixel_->item_->item_name)
-      dynamixel_response.velocity_d_gain = read_value_;
+      dynamixel_response.position_d_gain = read_value_;
     else if ("position_i_gain" == dynamixel_->item_->item_name)
       dynamixel_response.position_i_gain = read_value_;
     else if ("position_p_gain" == dynamixel_->item_->item_name)
@@ -1507,6 +1539,7 @@ bool DynamixelWorkbenchSingleManager::dynamixelSingleManagerLoop(void)
   {
     if (getchar() == SPACEBAR_ASCII_VALUE)
     {
+      sleep(0.5);
       printf("[CMD]");
       fgets(input, sizeof(input), stdin);
 
@@ -1549,10 +1582,6 @@ bool DynamixelWorkbenchSingleManager::dynamixelSingleManagerLoop(void)
       {
         showControlTable();
       }
-      else if (strcmp(cmd, "scan") == 0)
-      {
-        scanDynamixelID();
-      }
       else if (strcmp(cmd, "reboot") == 0)
       {
         rebootDynamixel();
@@ -1591,30 +1620,52 @@ bool DynamixelWorkbenchSingleManager::dynamixelSingleManagerLoop(void)
                 }
                 else
                 {
-                  ROS_ERROR(" Dynamixel ID can be set 0~252");
+                  ROS_ERROR(" Dynamixel ID can be set 1~252");
                 }
               }
               else if (dynamixel_->item_->item_name == "baud_rate")
               {
-                if (atoi(param[0]) < 2250000)
+                if (dynamixel_->baud_rate_table_.find(atoi(param[0]))->second == dynamixel_->baud_rate_table_.end()->second)
                 {
-                  writeDynamixelRegister(dynamixel_->id_, dynamixel_->item_->address, dynamixel_->item_->data_length, dynamixel_->baud_rate_table_.find(atoi(param[0]))->second);
+                  ROS_ERROR(" Failed to change [ BAUD RATE: %d ]", atoi(param[0]));
+                  ROS_ERROR(" Please check the valid baud rate at dynamixel_tool packages or E-MANUAL");
+
+                  writeDynamixelRegister(dynamixel_->id_, dynamixel_->item_->address, dynamixel_->item_->data_length, dynamixel_->baud_rate_table_.find(57600)->second);
                   sleep(1);
 
-                  if (portHandler_->setBaudRate(dynamixel_->baud_rate_table_.find(atoi(param[0]))->first) == false)
+                  if (portHandler_->setBaudRate(dynamixel_->baud_rate_table_.find(57600)->first) == false)
                   {
                     sleep(1);
-                    ROS_INFO(" Failed to change baudrate!");
+                    ROS_INFO(" Failed to change default baudrate(57600)!");
                   }
                   else
                   {
                     sleep(1);
-                    ROS_INFO(" Success to change baudrate! [ BAUD RATE: %d ]", dynamixel_->baud_rate_table_.find(atoi(param[0]))->first);
+                    ROS_INFO(" Success to change default baudrate! [ BAUD RATE: 57600 ]");
                   }
                 }
                 else
                 {
-                  ROS_ERROR(" USB2Dynamixel supports baudrate under '2250000'");
+                  if (atoi(param[0]) < 2250000)
+                  {
+                    writeDynamixelRegister(dynamixel_->id_, dynamixel_->item_->address, dynamixel_->item_->data_length, dynamixel_->baud_rate_table_.find(atoi(param[0]))->second);
+                    sleep(1);
+
+                    if (portHandler_->setBaudRate(dynamixel_->baud_rate_table_.find(atoi(param[0]))->first) == false)
+                    {
+                      sleep(1);
+                      ROS_INFO(" Failed to change baudrate!");
+                    }
+                    else
+                    {
+                      sleep(1);
+                      ROS_INFO(" Success to change baudrate! [ BAUD RATE: %d ]", dynamixel_->baud_rate_table_.find(atoi(param[0]))->first);
+                    }
+                  }
+                  else
+                  {
+                    ROS_ERROR(" USB2Dynamixel supports baudrate under '2250000'");
+                  }
                 }
               }
               else if (dynamixel_->item_->item_name == "protocol_version")

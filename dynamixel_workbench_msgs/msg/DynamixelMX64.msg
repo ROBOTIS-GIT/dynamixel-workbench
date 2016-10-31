@@ -1,3 +1,8 @@
+# Published by dynamixel_workbench_single_manager and Subscribed by dynamixel_workbench_single_manager_gui
+# This message is compatible with control table of Dynamixel MX-64 Series (MX-64, MX-64AT/AR)
+# and it is linked to MX_64.device in dynamixel_workbench_toolbox/dynamixel/MX folder
+# If you want to specific information about control table, please follow the link (http://support.robotis.com/en/)
+
 int64 model_number
 int64 version_of_firmware
 int8 id

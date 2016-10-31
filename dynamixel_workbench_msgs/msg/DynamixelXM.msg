@@ -1,3 +1,8 @@
+# Published by dynamixel_workbench_single_manager and Subscribed by dynamixel_workbench_single_manager_gui
+# This message is compatible with control table of Dynamixel XM Series (XM430-S210-R, XM430-W350-R)
+# and it is linked to XM430_W210_R.device and XM430_S350_R.device in dynamixel_workbench_toolbox/dynamixel/XM folder
+# If you want to specific information about control table, please follow the link (http://support.robotis.com/en/)
+
 int64 model_number
 int64 version_of_firmware
 int8  id
@@ -24,7 +29,7 @@ int64 registered_instruction
 int64 hardware_error_status
 int64 velocity_i_gain
 int64 velocity_p_gain
-int64 velocity_d_gain
+int64 position_d_gain
 int64 position_i_gain
 int64 position_p_gain
 int64 feedforward_2nd_gain

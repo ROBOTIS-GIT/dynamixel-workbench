@@ -1,3 +1,8 @@
+# Published by dynamixel_workbench_single_manager and Subscribed by dynamixel_workbench_single_manager_gui
+# This message is compatible with control table of Dynamixel AX Series (AX-12A, AX-12W, AX-18A)
+# and it is linked to AX_12A.device, AX_12W.device and AX_18A.device in dynamixel_workbench_toolbox/dynamixel/AX folder
+# If you want to specific information about control table, please follow the link (http://support.robotis.com/en/)
+
 int64 model_number
 int64 version_of_firmware
 int8  id
@@ -12,7 +17,7 @@ int64 max_torque
 int64 status_return_level
 int64 alarm_led
 int64 alarm_shutdown
-bool  torque_enable
+bool torque_enable
 bool led
 int64 cw_compliance_margin
 int64 ccw_compliance_margin

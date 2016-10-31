@@ -1,1 +1,0 @@
-DynamixelResponse[] dynamixel_responses

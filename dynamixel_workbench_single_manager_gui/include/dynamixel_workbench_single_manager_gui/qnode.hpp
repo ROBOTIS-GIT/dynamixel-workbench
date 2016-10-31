@@ -1,20 +1,38 @@
-/**
- * @file /include/dynamixel_workbench_single_manager_gui/qnode.hpp
- *
- * @brief Communications central!
- *
- * @date February 2011
- **/
-/*****************************************************************************
-** Ifdefs
-*****************************************************************************/
+/*******************************************************************************
+* Copyright (c) 2016, ROBOTIS CO., LTD.
+* All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions are met:
+*
+* * Redistributions of source code must retain the above copyright notice, this
+*   list of conditions and the following disclaimer.
+*
+* * Redistributions in binary form must reproduce the above copyright notice,
+*   this list of conditions and the following disclaimer in the documentation
+*   and/or other materials provided with the distribution.
+*
+* * Neither the name of ROBOTIS nor the names of its
+*   contributors may be used to endorse or promote products derived from
+*   this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+* FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+* DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+* CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+* OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+* OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*******************************************************************************/
 
-#ifndef dynamixel_workbench_single_manager_gui_QNODE_HPP_
-#define dynamixel_workbench_single_manager_gui_QNODE_HPP_
+/* Author: Taehoon Lim (Darby) */
 
-/*****************************************************************************
-** Includes
-*****************************************************************************/
+#ifndef DYNAMIXEL_WORKBENCH_SINGLE_MANAGER_GUI_QNODE_HPP
+#define DYNAMIXEL_WORKBENCH_SINGLE_MANAGER_GUI_QNODE_HPP
+
 #ifndef Q_MOC_RUN
 
 #include <ros/ros.h>
@@ -39,18 +57,12 @@
 #include "dynamixel_workbench_msgs/GetWorkbenchParam.h"
 
 #endif
-/*****************************************************************************
-** Namespaces
-*****************************************************************************/
 
-namespace dynamixel_workbench_single_manager_gui {
-
-/*****************************************************************************
-** Class
-*****************************************************************************/
+namespace dynamixel_workbench_single_manager_gui
+{
 class QNode : public QThread
 {
-Q_OBJECT
+ Q_OBJECT
  public:
   QNode(int argc, char** argv );
   virtual ~QNode();
@@ -84,7 +96,7 @@ Q_OBJECT
   void getWorkbenchParam(void);
   void setSubscriber();
 
-Q_SIGNALS:
+ Q_SIGNALS:
   void loggingUpdated();
   void rosShutdown();
 
@@ -107,7 +119,6 @@ Q_SIGNALS:
   uint16_t dynamixel_model_number_;
 
 };
+}
 
-}  // namespace dynamixel_workbench_single_manager_gui
-
-#endif /* dynamixel_workbench_single_manager_gui_QNODE_HPP_ */
+#endif //DYNAMIXEL_WORKBENCH_SINGLE_MANAGER_GUI_QNODE_HPP

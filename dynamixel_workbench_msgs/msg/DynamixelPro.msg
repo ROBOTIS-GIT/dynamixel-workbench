@@ -1,3 +1,13 @@
+# Published by dynamixel_workbench_single_manager and Subscribed by dynamixel_workbench_single_manager_gui
+# This message is compatible with control table of Dynamixel Pro Series
+# (L54-30-S500-R, L54-30-S400-R, L54-50-S500-R, L54-50-S290-R,
+#  M42-10-S260-R, M54-40-S250-R, M54-60-S250-R,
+#  H42-20-S300-R, H54-100-S500-R, H54-200-S500-R)
+# and it is linked to PRO_L54_30_S500_R.device, PRO_L54_30_S400_R.device, PRO_L54_50_S500_R.device, PRO_L54_50_S290_R.device,
+#                     PRO_M42_10_S260_R.device, PRO_M54_40_S250_R.device, PRO_M54_60_S250_R.device
+#                     PRO_H42_20_S300_R.device, PRO_H54_100_S500_R.device and PRO_H54_200_S500_R.device in dynamixel_workbench_toolbox/dynamixel/PR folder
+# If you want to specific information about control table, please follow the link (http://support.robotis.com/en/)
+
 int64 model_number
 int64 version_of_firmware
 int8  id

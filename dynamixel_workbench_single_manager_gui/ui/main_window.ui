@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>QRosApp</string>
+   <string>Dynamixel Workbench Single Manager</string>
   </property>
   <property name="windowIcon">
    <iconset resource="../resources/images.qrc">
@@ -314,7 +314,7 @@
            </size>
           </property>
           <property name="title">
-           <string>Dynamixel Command</string>
+           <string>Dynamixel Command (Change to)</string>
           </property>
           <property name="flat">
            <bool>false</bool>
@@ -454,6 +454,18 @@
                <height>16777215</height>
               </size>
              </property>
+             <property name="buttonSymbols">
+              <enum>QAbstractSpinBox::PlusMinus</enum>
+             </property>
+             <property name="keyboardTracking">
+              <bool>true</bool>
+             </property>
+             <property name="minimum">
+              <number>-1023</number>
+             </property>
+             <property name="maximum">
+              <number>1023</number>
+             </property>
             </widget>
            </item>
            <item row="5" column="0">
@@ -513,6 +525,28 @@
              </property>
              <property name="maxCount">
               <number>200</number>
+             </property>
+            </widget>
+           </item>
+           <item row="9" column="0">
+            <widget class="QLabel" name="set_address_value_label">
+             <property name="minimumSize">
+              <size>
+               <width>130</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>130</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Change Value</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -582,6 +616,15 @@
             <height>30</height>
            </size>
           </property>
+          <property name="toolTip">
+           <string>Command for all data back to the factory settings values</string>
+          </property>
+          <property name="statusTip">
+           <string/>
+          </property>
+          <property name="whatsThis">
+           <string/>
+          </property>
           <property name="text">
            <string>Factory reset</string>
           </property>
@@ -600,6 +643,9 @@
             <width>16777215</width>
             <height>30</height>
            </size>
+          </property>
+          <property name="toolTip">
+           <string>Reboot a dynamixel (Only for supports protocol 2.0)</string>
           </property>
           <property name="text">
            <string>Reboot</string>

@@ -4,7 +4,7 @@
   <version>0.1.1</version>
   <description>
     The dynamixel_workbench_msgs package
-    This package includes ROS messages and services for dynamixel_workbench packages</description>
+    This package includes ROS messages and services for dynamixel-workbench packages</description>
   <license>BSD</license>
   <author email="thlim@robotis.com">Darby Lim</author>
   <maintainer email="pyo@robotis.com">Pyo</maintainer>
