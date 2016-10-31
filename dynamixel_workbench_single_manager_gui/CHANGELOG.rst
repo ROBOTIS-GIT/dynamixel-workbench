@@ -2,6 +2,13 @@
 Changelog for package dynamixel_workbench_single_manager_gui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.2 (2016-10-31)
+-----------
+* add comment in msgs file
+* add stop sign in velocity controller
+* modify beta test feedback
+* Contributors: Darby Lim
+
 0.1.1 (2016-10-21)
 -----------
 * modified single manager and gui
