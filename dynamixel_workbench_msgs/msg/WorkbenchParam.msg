@@ -1,5 +1,5 @@
 # Published by dynamixel_workbench_single_manager_gui
-# In order to, send information of dynamixel_workbench_single_manager's parameter to dynamixel_workbench_single_manager_gui
+# This message sends information of dynamixel_workbench_single_manager's parameter to dynamixel_workbench_single_manager_gui
 
 string device_name
 uint64 baud_rate

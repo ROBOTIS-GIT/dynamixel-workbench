@@ -1,5 +1,5 @@
 # Published by dynamixel_workbench_controllers
-# In order to, representing status of Dynamixels in present.
+# This message represents status of Dynamixels in present.
 
 string motor_model
 int64 id

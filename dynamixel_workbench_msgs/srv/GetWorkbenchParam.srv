@@ -1,5 +1,5 @@
 # Server is dynamixel_workbench_single_manager and Client is dynamixel_workbench_single_manager_gui
-# In order to, send information of dynamixel_workbench_single_manager's parameter to dynamixel_workbench_single_manager_gui
+# This service sends information of dynamixel_workbench_single_manager's parameter to dynamixel_workbench_single_manager_gui
 
 ---
 
