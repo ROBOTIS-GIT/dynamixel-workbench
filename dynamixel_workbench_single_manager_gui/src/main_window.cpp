@@ -128,7 +128,6 @@ void MainWindow::on_reboot_push_button_clicked(bool check)
 void MainWindow::on_factory_reset_push_button_clicked(bool check)
 {
   qnode_.sendResetMsg();
-  sleep(2);
 
   ui_.get_baud_rate_line_edit->setText(QString::number(57600));
   int index = ui_.set_baud_rate_combo_box->findText("Select Baudrate");
@@ -160,7 +159,6 @@ void MainWindow::changeDynamixelID()
   if (ui_.set_id_combo_box->currentText().toStdString() != "Select ID")
   {
     qnode_.sendSetIdMsg(ui_.set_id_combo_box->currentText().toInt());
-    sleep(1);
     ui_.get_id_line_edit->setText(QString::number(ui_.set_id_combo_box->currentText().toInt()));
   }
 }
@@ -176,7 +174,6 @@ void MainWindow::changeBaudrate()
   if (ui_.set_baud_rate_combo_box->currentText().toStdString() != "Select Baudrate")
   {
     qnode_.sendSetBaudrateMsg(ui_.set_baud_rate_combo_box->currentText().toFloat());
-    sleep(2);
     ui_.get_baud_rate_line_edit->setText(QString::number(ui_.set_baud_rate_combo_box->currentText().toLongLong()));
   }
 }
@@ -210,7 +207,7 @@ void MainWindow::showHideButton(QString index)
   {
     ui_.set_position_zero_push_button->setVisible(false);
     ui_.set_address_value_dial->setEnabled(false);
-    ui_.set_address_value_dial->setRange(-1023, 1023);
+    ui_.set_address_value_dial->setRange(-2048, 2048);
   }
 }
 
@@ -244,7 +241,7 @@ void MainWindow::makeUI()
   ui_.set_id_combo_box->addItem((QString("Select ID")));
   ui_.set_baud_rate_combo_box->addItem((QString("Select Baudrate")));
   ui_.set_operating_mode_combo_box->addItem((QString("Select Mode")));
-  ui_.set_address_value_spin_box->setRange(-1023, 1023);
+  ui_.set_address_value_spin_box->setRange(-2048, 2048);
   ui_.set_position_zero_push_button->setVisible(false);
   ui_.set_address_value_dial->setEnabled(false);
 
