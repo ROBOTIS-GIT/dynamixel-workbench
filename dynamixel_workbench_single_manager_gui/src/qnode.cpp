@@ -615,6 +615,7 @@ void QNode::dynamixelXMStatusMsgCallback(const dynamixel_workbench_msgs::Dynamix
   log(std::string("id: "), msg->id);
   log(std::string("baud_rate: "), msg->baud_rate);
   log(std::string("return_delay_tiem: "), msg->return_delay_time);
+  log(std::string("drive_mode: "), msg->drive_mode);
   log(std::string("operating_mode: "), msg->operating_mode);
   log(std::string("protocol_version: "), msg->protocol_version);
   log(std::string("homing_offset: "), msg->homing_offset);

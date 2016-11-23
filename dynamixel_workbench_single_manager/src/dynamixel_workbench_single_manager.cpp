@@ -35,8 +35,7 @@
 using namespace dynamixel_workbench_single_manager;
 
 DynamixelWorkbenchSingleManager::DynamixelWorkbenchSingleManager()
-    :nh_priv_("~"),
-     is_debug_(false),
+    :is_debug_(false),
      device_name_(""),
      baud_rate_(0),
      dynamixel_model_number_(0),
@@ -46,9 +45,8 @@ DynamixelWorkbenchSingleManager::DynamixelWorkbenchSingleManager()
      dynamixel_(NULL)
 {
   // Init parameter
-  nh_priv_.param("is_debug", is_debug_, is_debug_);
-  nh_priv_.getParam("device_name_", device_name_);
-  nh_priv_.getParam("baud_rate_", baud_rate_);
+  device_name_ = nh_.param<std::string>("device_name", "/dev/ttyUSB0");
+  baud_rate_ = nh_.param<int>("baud_rate", 57600);
 
   // Init target name
   ROS_ASSERT(initDynamixelWorkbenchSingleManager());
@@ -1163,6 +1161,8 @@ void DynamixelWorkbenchSingleManager::xmMotorMessage(void)
       dynamixel_response.baud_rate = read_value_;
     else if ("return_delay_time" == dynamixel_->item_->item_name)
       dynamixel_response.return_delay_time = read_value_;
+    else if ("drive_mode" == dynamixel_->item_->item_name)
+      dynamixel_response.drive_mode = read_value_;
     else if ("operating_mode" == dynamixel_->item_->item_name)
       dynamixel_response.operating_mode = read_value_;
     else if ("protocol_version" == dynamixel_->item_->item_name)
