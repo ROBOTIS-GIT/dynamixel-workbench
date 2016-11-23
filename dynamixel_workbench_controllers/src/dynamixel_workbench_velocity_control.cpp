@@ -49,8 +49,7 @@
 using namespace dynamixel_workbench_velocity_control;
 
 DynamixelWorkbenchVelocityControl::DynamixelWorkbenchVelocityControl()
-    :nh_priv_("~"),
-     is_debug_(false),
+    :is_debug_(false),
      device_name_(""),
      baud_rate_(0),
      motor_model_(""),
@@ -61,11 +60,11 @@ DynamixelWorkbenchVelocityControl::DynamixelWorkbenchVelocityControl()
      left_motor_velocity_(0.0)
 {
   // Init parameter
-  nh_priv_.param("is_debug", is_debug_, is_debug_);
-  nh_priv_.getParam("device_name_", device_name_);
-  nh_priv_.getParam("baud_rate_", baud_rate_);
-  nh_priv_.getParam("motor_model_", motor_model_);
-  nh_priv_.getParam("protocol_version_", protocol_version_);
+  nh_.param("is_debug", is_debug_, is_debug_);
+  nh_.getParam("device_name_", device_name_);
+  nh_.getParam("baud_rate_", baud_rate_);
+  nh_.getParam("motor_model_", motor_model_);
+  nh_.getParam("protocol_version_", protocol_version_);
 
   // Init target name
   ROS_ASSERT(initDynamixelWorkbenchVelocityControl());
@@ -106,14 +105,14 @@ DynamixelWorkbenchVelocityControl::DynamixelWorkbenchVelocityControl()
     ROS_ERROR("Failed to change the baudrate!");
   }
 
-  nh_priv_.getParam("left_motor_/motor_id_", motor_id_);
+  nh_.getParam("left_motor_/motor_id_", motor_id_);
   ROS_INFO("left_motor_id: %d", motor_id_);
   ROS_INFO("left_motor_model: %s", motor_model_.c_str());
   ROS_INFO("left_motor_protocol_version_: %.1f\n", protocol_version_);
 
   initMotor(motor_model_, motor_id_, protocol_version_);
 
-  nh_priv_.getParam("right_motor_/motor_id_", motor_id_);
+  nh_.getParam("right_motor_/motor_id_", motor_id_);
   ROS_INFO("right_motor_id: %d", motor_id_);
   ROS_INFO("right_motor_model: %s", motor_model_.c_str());
   ROS_INFO("right_motor_protocol_version_: %.1f", protocol_version_);

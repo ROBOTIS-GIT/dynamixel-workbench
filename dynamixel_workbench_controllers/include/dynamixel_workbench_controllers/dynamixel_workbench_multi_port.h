@@ -62,7 +62,6 @@ class DynamixelWorkbenchMultiPort
  private:
   // ROS NodeHandle
   ros::NodeHandle nh_;
-  ros::NodeHandle nh_priv_;
   // ROS Parameters
   bool is_debug_;
   // ROS Topic Publisher

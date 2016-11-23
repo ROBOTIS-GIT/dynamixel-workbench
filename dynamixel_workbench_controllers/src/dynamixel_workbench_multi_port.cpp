@@ -35,8 +35,7 @@
 using namespace dynamixel_workbench_multi_port;
 
 DynamixelWorkbenchMultiPort::DynamixelWorkbenchMultiPort()
-    :nh_priv_("~"),
-     is_debug_(false),
+    :is_debug_(false),
      pan_motor_device_name_(""),
      pan_motor_baud_rate_(0),
      pan_motor_model_(""),
@@ -49,19 +48,19 @@ DynamixelWorkbenchMultiPort::DynamixelWorkbenchMultiPort()
      tilt_motor_protocol_version_(0.0)
 {
   // Init parameter
-  nh_priv_.param("is_debug", is_debug_, is_debug_);
+  nh_.param("is_debug", is_debug_, is_debug_);
 
-  nh_priv_.getParam("pan_motor_/device_name_", pan_motor_device_name_);
-  nh_priv_.getParam("pan_motor_/baud_rate_", pan_motor_baud_rate_);
-  nh_priv_.getParam("pan_motor_/motor_model_", pan_motor_model_);
-  nh_priv_.getParam("pan_motor_/protocol_version_", pan_motor_protocol_version_);
-  nh_priv_.getParam("pan_motor_/motor_id_", pan_motor_id_);
+  nh_.getParam("pan_motor_/device_name_", pan_motor_device_name_);
+  nh_.getParam("pan_motor_/baud_rate_", pan_motor_baud_rate_);
+  nh_.getParam("pan_motor_/motor_model_", pan_motor_model_);
+  nh_.getParam("pan_motor_/protocol_version_", pan_motor_protocol_version_);
+  nh_.getParam("pan_motor_/motor_id_", pan_motor_id_);
 
-  nh_priv_.getParam("tilt_motor_/device_name_", tilt_motor_device_name_);
-  nh_priv_.getParam("tilt_motor_/baud_rate_", tilt_motor_baud_rate_);
-  nh_priv_.getParam("tilt_motor_/motor_model_", tilt_motor_model_);
-  nh_priv_.getParam("tilt_motor_/protocol_version_", tilt_motor_protocol_version_);
-  nh_priv_.getParam("tilt_motor_/motor_id_", tilt_motor_id_);
+  nh_.getParam("tilt_motor_/device_name_", tilt_motor_device_name_);
+  nh_.getParam("tilt_motor_/baud_rate_", tilt_motor_baud_rate_);
+  nh_.getParam("tilt_motor_/motor_model_", tilt_motor_model_);
+  nh_.getParam("tilt_motor_/protocol_version_", tilt_motor_protocol_version_);
+  nh_.getParam("tilt_motor_/motor_id_", tilt_motor_id_);
 
   // Init target name
   ROS_ASSERT(initDynamixelWorkbenchMultiPort());
