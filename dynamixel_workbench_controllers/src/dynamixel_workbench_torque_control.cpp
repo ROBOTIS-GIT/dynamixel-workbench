@@ -35,7 +35,8 @@
 using namespace dynamixel_workbench_torque_control;
 
 DynamixelWorkbenchTorqueControl::DynamixelWorkbenchTorqueControl()
-    :is_debug_(false),
+    :nh_priv_("~"),
+     is_debug_(false),
      device_name_(""),
      baud_rate_(0),
      motor_model_(""),
@@ -46,14 +47,18 @@ DynamixelWorkbenchTorqueControl::DynamixelWorkbenchTorqueControl()
      pan_torque_(0.0),
      tilt_des_pos_(0),
      tilt_pre_pos_(0),
-     tilt_torque_(0.0)
+     tilt_torque_(0.0),
+     p_gain_(0.0),
+     d_gain_(0.0)
 {
   // Init parameter
   nh_.param("is_debug", is_debug_, is_debug_);
-  nh_.getParam("device_name_", device_name_);
-  nh_.getParam("baud_rate_", baud_rate_);
-  nh_.getParam("motor_model_", motor_model_);
-  nh_.getParam("protocol_version_", protocol_version_);
+  nh_priv_.getParam("device_name", device_name_);
+  nh_priv_.getParam("baud_rate", baud_rate_);
+  nh_priv_.getParam("motor_model", motor_model_);
+  nh_priv_.getParam("protocol_version", protocol_version_);
+  nh_priv_.getParam("p_gain", p_gain_);
+  nh_priv_.getParam("d_gain", d_gain_);
 
   // Init target name
   ROS_ASSERT(initDynamixelWorkbenchTorqueControl());
@@ -94,14 +99,14 @@ DynamixelWorkbenchTorqueControl::DynamixelWorkbenchTorqueControl()
     ROS_ERROR("Failed to change the baudrate!");
   }
 
-  nh_.getParam("pan_motor_/motor_id_", motor_id_);
+  nh_priv_.getParam("pan_motor/motor_id", motor_id_);
   ROS_INFO("pan_motor_id: %d", motor_id_);
   ROS_INFO("pan_motor_model: %s", motor_model_.c_str());
   ROS_INFO("pan_motor_protocol_version_: %.1f\n", protocol_version_);
 
   initMotor(motor_model_, motor_id_, protocol_version_);
 
-  nh_.getParam("tilt_motor_/motor_id_", motor_id_);
+  nh_priv_.getParam("tilt_motor/motor_id", motor_id_);
   ROS_INFO("tilt_motor_id: %d", motor_id_);
   ROS_INFO("tilt_motor_model: %s", motor_model_.c_str());
   ROS_INFO("tilt_motor_protocol_version_: %.1f", protocol_version_);
@@ -346,6 +351,9 @@ bool DynamixelWorkbenchTorqueControl::dynamixelControlLoop(void)
 {
   getPublishedMsg();
 
+  nh_priv_.getParam("p_gain", p_gain_);
+  nh_priv_.getParam("d_gain", d_gain_);
+
   dynamixel_workbench_msgs::MotorState dynamixel_response[dynamixel_.size()];
   dynamixel_workbench_msgs::MotorStateList dynamixel_response_list;
 
@@ -373,8 +381,8 @@ bool DynamixelWorkbenchTorqueControl::dynamixelControlLoop(void)
   pan_cur_pos_ = read_data_["present_position"]->at(PAN_MOTOR);
   tilt_cur_pos_ = read_data_["present_position"]->at(TILT_MOTOR);
 
-  pan_torque_ = PROPORTION_GAIN * (pan_des_pos_ - pan_cur_pos_) + DIFFERENTIAL_GAIN * ((pan_pre_pos_ - pan_cur_pos_) / 0.004);
-  tilt_torque_ = PROPORTION_GAIN * (tilt_des_pos_ - tilt_cur_pos_) + DIFFERENTIAL_GAIN * ((tilt_pre_pos_ - tilt_cur_pos_) / 0.004)
+  pan_torque_ = p_gain_ * (pan_des_pos_ - pan_cur_pos_) + d_gain_ * ((pan_pre_pos_ - pan_cur_pos_) / 0.004);
+  tilt_torque_ = p_gain_ * (tilt_des_pos_ - tilt_cur_pos_) + d_gain_ * ((tilt_pre_pos_ - tilt_cur_pos_) / 0.004)
                  + TILT_MOTOR_MASS * GRAVITY * LINK_LENGTH * cos(convertValue2Radian(tilt_cur_pos_));
 
   writeCurrent(convertTorque2Value(pan_torque_), convertTorque2Value(tilt_torque_));

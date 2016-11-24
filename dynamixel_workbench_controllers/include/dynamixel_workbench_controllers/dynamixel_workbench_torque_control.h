@@ -47,9 +47,6 @@
 #define PAN_MOTOR      0
 #define TILT_MOTOR     1
 
-#define PROPORTION_GAIN   0.001
-#define DIFFERENTIAL_GAIN 0.00002
-
 #define TILT_MOTOR_MASS 0.082
 #define GRAVITY         9.8
 #define LINK_LENGTH     0.018
@@ -65,6 +62,7 @@ class DynamixelWorkbenchTorqueControl
  private:
   // ROS NodeHandle
   ros::NodeHandle nh_;
+  ros::NodeHandle nh_priv_;
   // ROS Parameters
   bool is_debug_;
   // ROS Topic Publisher
@@ -79,6 +77,8 @@ class DynamixelWorkbenchTorqueControl
   int motor_id_;
   float protocol_version_;
   int baud_rate_;
+  float p_gain_;
+  float d_gain_;
 
   int64_t pan_des_pos_;
   int64_t tilt_des_pos_;

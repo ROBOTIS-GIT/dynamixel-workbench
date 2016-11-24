@@ -47,9 +47,6 @@
 #define PAN_MOTOR      0
 #define TILT_MOTOR     1
 
-#define VELOCITY      100
-#define ACCELERATION  10
-
 namespace dynamixel_workbench_position_control
 {
 class DynamixelWorkbenchPositionControl
@@ -61,6 +58,7 @@ class DynamixelWorkbenchPositionControl
  private:
   // ROS NodeHandle
   ros::NodeHandle nh_;
+  ros::NodeHandle nh_priv_;
   // ROS Parameters
   bool is_debug_;
   // ROS Topic Publisher
@@ -75,6 +73,8 @@ class DynamixelWorkbenchPositionControl
   int motor_id_;
   float protocol_version_;
   int baud_rate_;
+  int profile_velocity_;
+  int profile_acceleration_;
 
   std::map<std::string, std::vector<int64_t> *> read_data_;
  public:

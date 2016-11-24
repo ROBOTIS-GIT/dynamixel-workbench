@@ -35,19 +35,24 @@
 using namespace dynamixel_workbench_position_control;
 
 DynamixelWorkbenchPositionControl::DynamixelWorkbenchPositionControl()
-    :is_debug_(false),
+    :nh_priv_("~"),
+     is_debug_(false),
      device_name_(""),
      baud_rate_(0),
      motor_model_(""),
      motor_id_(0),
-     protocol_version_(0.0)
+     protocol_version_(0.0),
+     profile_velocity_(0),
+     profile_acceleration_(0)
 {
   // Init parameter
-  nh_.param("is_debug", is_debug_, is_debug_);
-  nh_.getParam("device_name_", device_name_);
-  nh_.getParam("baud_rate_", baud_rate_);
-  nh_.getParam("motor_model_", motor_model_);
-  nh_.getParam("protocol_version_", protocol_version_);
+  nh_priv_.param("is_debug", is_debug_, is_debug_);
+  nh_priv_.getParam("device_name", device_name_);
+  nh_priv_.getParam("baud_rate", baud_rate_);
+  nh_priv_.getParam("motor_model", motor_model_);
+  nh_priv_.getParam("protocol_version", protocol_version_);
+  nh_priv_.getParam("profile_velocity", profile_velocity_);
+  nh_priv_.getParam("profile_acceleration", profile_acceleration_);
 
   // Init target name
   ROS_ASSERT(initDynamixelWorkbenchPositionControl());
@@ -88,21 +93,20 @@ DynamixelWorkbenchPositionControl::DynamixelWorkbenchPositionControl()
     ROS_ERROR("Failed to change the baudrate!");
   }
 
-  nh_.getParam("pan_motor_/motor_id_", motor_id_);
+  nh_priv_.getParam("pan_motor/motor_id", motor_id_);
   ROS_INFO("pan_motor_id: %d", motor_id_);
   ROS_INFO("pan_motor_model: %s", motor_model_.c_str());
   ROS_INFO("pan_motor_protocol_version_: %.1f\n", protocol_version_);
 
   initMotor(motor_model_, motor_id_, protocol_version_);
 
-  nh_.getParam("tilt_motor_/motor_id_", motor_id_);
+  nh_priv_.getParam("tilt_motor/motor_id", motor_id_);
   ROS_INFO("tilt_motor_id: %d", motor_id_);
   ROS_INFO("tilt_motor_model: %s", motor_model_.c_str());
   ROS_INFO("tilt_motor_protocol_version_: %.1f", protocol_version_);
 
   initMotor(motor_model_, motor_id_, protocol_version_);
   writeTorque(true);
-  writeProfile();
 }
 
 DynamixelWorkbenchPositionControl::~DynamixelWorkbenchPositionControl()
@@ -135,6 +139,7 @@ bool DynamixelWorkbenchPositionControl::syncWriteDynamixels(uint16_t addr, uint8
   bool dynamixel_addparam_result_;
   int8_t dynamixel_comm_result_;
 
+  // Initialize GroupSyncWrite instance
   dynamixel::GroupSyncWrite groupSyncWrite(portHandler_, packetHandler_, addr,length);
 
   dynamixel_addparam_result_ = groupSyncWrite.addParam(dynamixel_[PAN_MOTOR]->id_, (uint8_t*)&pan_motor_value);
@@ -232,28 +237,28 @@ bool DynamixelWorkbenchPositionControl::writeProfile()
   if (!strncmp(motor_model_.c_str(), "AX", 2) || !strncmp(motor_model_.c_str(), "RX", 2) || !strncmp(motor_model_.c_str(), "EX", 2))
   {
     dynamixel_[PAN_TILT_MOTOR]->item_ = dynamixel_[PAN_TILT_MOTOR]->ctrl_table_["moving_speed"];
-    syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, VELOCITY, VELOCITY);
+    syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, profile_velocity_, profile_velocity_);
   }
   else if (!strncmp(motor_model_.c_str(), "MX", 2))
   {
     dynamixel_[PAN_TILT_MOTOR]->item_ = dynamixel_[PAN_TILT_MOTOR]->ctrl_table_["moving_speed"];
-    syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, VELOCITY, VELOCITY);
+    syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, profile_velocity_, profile_velocity_);
     dynamixel_[PAN_TILT_MOTOR]->item_ = dynamixel_[PAN_TILT_MOTOR]->ctrl_table_["goal_acceleration"];
-    syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, ACCELERATION, ACCELERATION);
+    syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, profile_acceleration_, profile_acceleration_);
   }
   else if (!strncmp(motor_model_.c_str(), "PRO", 3))
   {
     dynamixel_[PAN_TILT_MOTOR]->item_ = dynamixel_[PAN_TILT_MOTOR]->ctrl_table_["goal_velocity"];
-    syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, VELOCITY, VELOCITY);
+    syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, profile_velocity_, profile_velocity_);
     dynamixel_[PAN_TILT_MOTOR]->item_ = dynamixel_[PAN_TILT_MOTOR]->ctrl_table_["goal_acceleration"];
-    syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, ACCELERATION, ACCELERATION);
+    syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, profile_acceleration_, profile_acceleration_);
   }
   else
   {
     dynamixel_[PAN_TILT_MOTOR]->item_ = dynamixel_[PAN_TILT_MOTOR]->ctrl_table_["profile_velocity"];
-    syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, VELOCITY, VELOCITY);
+    syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, profile_velocity_, profile_velocity_);
     dynamixel_[PAN_TILT_MOTOR]->item_ = dynamixel_[PAN_TILT_MOTOR]->ctrl_table_["profile_acceleration"];
-    syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, ACCELERATION, ACCELERATION);
+    syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, profile_acceleration_, profile_acceleration_);
   }
 }
 
@@ -354,6 +359,11 @@ int64_t DynamixelWorkbenchPositionControl::convertRadian2Value(double radian)
 bool DynamixelWorkbenchPositionControl::dynamixelControlLoop(void)
 {
   getPublishedMsg();
+
+  nh_priv_.getParam("profile_velocity", profile_velocity_);
+  nh_priv_.getParam("profile_acceleration", profile_acceleration_);
+
+  writeProfile();
 
   dynamixel_workbench_msgs::MotorState dynamixel_response[dynamixel_.size()];
   dynamixel_workbench_msgs::MotorStateList dynamixel_response_list;

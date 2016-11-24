@@ -1,6 +1,8 @@
 <launch>
   <node name="dynamixel_workbench_multi_port" pkg="dynamixel_workbench_controllers" type="dynamixel_workbench_multi_port" required="true" output="screen">
     <rosparam>
+      profile_velocity: 100
+      profile_acceleration: 20
       pan_motor_:
         device_name_: "/dev/ttyUSB0"
         baud_rate_: 1000000

@@ -46,9 +46,6 @@
 #define PAN_MOTOR      0
 #define TILT_MOTOR     1
 
-#define VELOCITY      100
-#define ACCELERATION  20
-
 namespace dynamixel_workbench_multi_port
 {
 class DynamixelWorkbenchMultiPort
@@ -62,6 +59,7 @@ class DynamixelWorkbenchMultiPort
  private:
   // ROS NodeHandle
   ros::NodeHandle nh_;
+  ros::NodeHandle nh_priv_;
   // ROS Parameters
   bool is_debug_;
   // ROS Topic Publisher
@@ -70,6 +68,9 @@ class DynamixelWorkbenchMultiPort
   ros::ServiceServer multi_port_control_server;
   // Parameters
   std::vector<dynamixel_tool::DynamixelTool *> dynamixel_;
+
+  int profile_velocity_;
+  int profile_acceleration_;
 
   std::string pan_motor_device_name_;
   std::string pan_motor_model_;
