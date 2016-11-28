@@ -5,7 +5,7 @@
       baud_rate: 1000000
       motor_model: "XM430_W350_R"
       protocol_version: 2.0
-      p_gain: 0.0007
+      p_gain: 0.0009
       d_gain: 0.00001
       pan_motor:
         motor_id: 1

@@ -83,11 +83,11 @@ class DynamixelWorkbenchTorqueControl
   int64_t pan_des_pos_;
   int64_t tilt_des_pos_;
 
-  int64_t pan_pre_pos_;
-  int64_t tilt_pre_pos_;
+  int64_t pan_pos_error_;
+  int64_t tilt_pos_error_;
 
-  int64_t pan_cur_pos_;
-  int64_t tilt_cur_pos_;
+  int64_t pan_pos_pre_error_;
+  int64_t tilt_pos_pre_error_;
 
   double pan_torque_;
   double tilt_torque_;

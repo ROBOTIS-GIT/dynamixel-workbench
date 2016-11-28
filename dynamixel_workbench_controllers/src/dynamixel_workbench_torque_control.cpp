@@ -43,10 +43,12 @@ DynamixelWorkbenchTorqueControl::DynamixelWorkbenchTorqueControl()
      motor_id_(0),
      protocol_version_(0.0),
      pan_des_pos_(0),
-     pan_pre_pos_(0),
+     pan_pos_error_(0),
+     pan_pos_pre_error_(0),
      pan_torque_(0.0),
      tilt_des_pos_(0),
-     tilt_pre_pos_(0),
+     tilt_pos_error_(0),
+     tilt_pos_pre_error_(0),
      tilt_torque_(0.0),
      p_gain_(0.0),
      d_gain_(0.0)
@@ -118,8 +120,6 @@ DynamixelWorkbenchTorqueControl::DynamixelWorkbenchTorqueControl()
   readMotorState("present_position");
   pan_des_pos_ = read_data_["present_position"]->at(PAN_MOTOR);
   tilt_des_pos_ = read_data_["present_position"]->at(TILT_MOTOR);
-  pan_pre_pos_ = read_data_["present_position"]->at(PAN_MOTOR);
-  tilt_pre_pos_ = read_data_["present_position"]->at(TILT_MOTOR);
 }
 
 DynamixelWorkbenchTorqueControl::~DynamixelWorkbenchTorqueControl()
@@ -378,17 +378,22 @@ bool DynamixelWorkbenchTorqueControl::dynamixelControlLoop(void)
   }
   dynamixel_state_pub_.publish(dynamixel_response_list);
 
-  pan_cur_pos_ = read_data_["present_position"]->at(PAN_MOTOR);
-  tilt_cur_pos_ = read_data_["present_position"]->at(TILT_MOTOR);
+  int64_t pan_cur_pos = read_data_["present_position"]->at(PAN_MOTOR);
+  int64_t tilt_cur_pos = read_data_["present_position"]->at(TILT_MOTOR);
 
-  pan_torque_ = p_gain_ * (pan_des_pos_ - pan_cur_pos_) + d_gain_ * ((pan_pre_pos_ - pan_cur_pos_) / 0.004);
-  tilt_torque_ = p_gain_ * (tilt_des_pos_ - tilt_cur_pos_) + d_gain_ * ((tilt_pre_pos_ - tilt_cur_pos_) / 0.004)
-                 + TILT_MOTOR_MASS * GRAVITY * LINK_LENGTH * cos(convertValue2Radian(tilt_cur_pos_));
+  pan_pos_error_ = pan_des_pos_ - pan_cur_pos;
+  tilt_pos_error_ = tilt_des_pos_ - tilt_cur_pos;
+
+  pan_torque_ = p_gain_ * pan_pos_error_ +
+                d_gain_ * ((pan_pos_error_ - pan_pos_pre_error_) / 0.004);
+  tilt_torque_ = p_gain_ * tilt_pos_error_ +
+                 d_gain_ * ((tilt_pos_error_ - tilt_pos_pre_error_) / 0.004)
+                 + TILT_MOTOR_MASS * GRAVITY * LINK_LENGTH * cos(convertValue2Radian(tilt_cur_pos));
 
   writeCurrent(convertTorque2Value(pan_torque_), convertTorque2Value(tilt_torque_));
 
-  pan_pre_pos_ = read_data_["present_position"]->at(PAN_MOTOR);
-  tilt_pre_pos_ = read_data_["present_position"]->at(TILT_MOTOR);
+  pan_pos_pre_error_ = pan_pos_error_;
+  tilt_pos_pre_error_ = tilt_pos_error_;
 }
 
 bool DynamixelWorkbenchTorqueControl::controlPanTiltMotorCallback(dynamixel_workbench_msgs::SetPosition::Request &req,
