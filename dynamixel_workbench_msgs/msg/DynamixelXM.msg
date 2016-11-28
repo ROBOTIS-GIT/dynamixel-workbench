@@ -8,6 +8,7 @@ int64 version_of_firmware
 int8  id
 int64 baud_rate
 int64 return_delay_time
+int64 drive_mode
 int64 operating_mode
 int64 protocol_version
 int64 homing_offset

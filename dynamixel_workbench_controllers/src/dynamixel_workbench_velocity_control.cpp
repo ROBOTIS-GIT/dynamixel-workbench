@@ -61,7 +61,7 @@ DynamixelWorkbenchVelocityControl::DynamixelWorkbenchVelocityControl()
      left_motor_velocity_(0.0)
 {
   // Init parameter
-  nh_priv_.param("is_debug", is_debug_, is_debug_);
+  nh_.param("is_debug", is_debug_, is_debug_);
   nh_priv_.getParam("device_name_", device_name_);
   nh_priv_.getParam("baud_rate_", baud_rate_);
   nh_priv_.getParam("motor_model_", motor_model_);

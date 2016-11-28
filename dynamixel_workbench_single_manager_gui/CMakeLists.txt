@@ -32,8 +32,7 @@ find_package(catkin REQUIRED COMPONENTS
 include_directories(${catkin_INCLUDE_DIRS})
 catkin_package(
     INCLUDE_DIRS include
-    CATKIN_DEPENDS
-    roscpp
+    CATKIN_DEPENDS roscpp
 )
 
 ################################################################################
@@ -67,6 +66,4 @@ install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 )
 
-################################################################################
-# Test
-################################################################################
+

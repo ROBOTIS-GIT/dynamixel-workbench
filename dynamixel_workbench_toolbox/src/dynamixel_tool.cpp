@@ -92,7 +92,7 @@ DynamixelTool::~DynamixelTool(){}
 
 bool DynamixelTool::getModelName(uint16_t model_number)
 {
-  dynamixel_name_path_  = ros::package::getPath("dynamixel_workbench_toolbox") + "/dynamixel/model_info.list";
+  dynamixel_name_path_  = ros::package::getPath("dynamixel_workbench_toolbox") + "/dynamixel/models/model_info.list";
 
   std::ifstream file(dynamixel_name_path_.c_str());
   if (file.is_open())
@@ -134,9 +134,9 @@ bool DynamixelTool::getModelPath()
   std::string dynamixel_series = "";
   dynamixel_series = model_name_.substr(0,2);
 
-  item_path_  = ros::package::getPath("dynamixel_workbench_toolbox");
+  item_path_  = ros::package::getPath("dynamixel_workbench_toolbox") + "/dynamixel";
 
-  item_path_ = item_path_ + "/dynamixel" + "/" + dynamixel_series + "/" + model_name_ + ".device";
+  item_path_ = item_path_ + "/models" + "/" + dynamixel_series + "/" + model_name_ + ".device";
 }
 
 bool DynamixelTool::getModelItem()
