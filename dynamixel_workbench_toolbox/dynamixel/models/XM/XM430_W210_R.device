@@ -30,6 +30,7 @@ max_radian                      =  3.14159265
    7   | id                       | 1      | RW     | EEPROM
    8   | baud_rate                | 1      | RW     | EEPROM
    9   | return_delay_time        | 1      | RW     | EEPROM
+   10  | drive_mode               | 1      | RW     | EEPROM
    11  | operating_mode           | 1      | RW     | EEPROM
    13  | protocol_version         | 1      | RW     | EEPROM
    20  | homing_offset            | 4      | RW     | EEPROM

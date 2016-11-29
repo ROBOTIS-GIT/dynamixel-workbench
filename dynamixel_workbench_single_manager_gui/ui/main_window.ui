@@ -26,7 +26,7 @@
    <string>Dynamixel Workbench Single Manager</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../resources/images.qrc">
+   <iconset resource="../../../ROBOTIS-MANIPULATOR-X/manipulator_x_position_ctrl_module_gui/resources/images.qrc">
     <normaloff>:/images/icon.png</normaloff>:/images/icon.png</iconset>
   </property>
   <property name="locale">
@@ -461,10 +461,10 @@
               <bool>true</bool>
              </property>
              <property name="minimum">
-              <number>-1023</number>
+              <number>-2048</number>
              </property>
              <property name="maximum">
-              <number>1023</number>
+              <number>2048</number>
              </property>
             </widget>
            </item>
@@ -715,7 +715,7 @@
   <tabstop>view_logging</tabstop>
  </tabstops>
  <resources>
-  <include location="../resources/images.qrc"/>
+  <include location="../../../ROBOTIS-MANIPULATOR-X/manipulator_x_position_ctrl_module_gui/resources/images.qrc"/>
  </resources>
  <connections>
   <connection>
