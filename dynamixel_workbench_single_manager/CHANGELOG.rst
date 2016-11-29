@@ -2,6 +2,13 @@
 Changelog for package dynamixel_workbench_single_manager
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.3 (2016-11-29)
+-----------
+* add drive_mode in XM series
+* update single manager and GUI
+* modified msgs files
+* Contributors: Darby Lim
+
 0.1.2 (2016-10-31)
 -----------
 * add comment in msgs file
