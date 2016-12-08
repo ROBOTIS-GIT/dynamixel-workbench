@@ -30,11 +30,11 @@
 
 /* Author: Taehoon Lim (Darby) */
 
-#include "dynamixel_workbench_controllers/dynamixel_workbench_torque_control.h"
+#include "dynamixel_workbench_controllers/dynamixel_workbench_current_control.h"
 
-using namespace dynamixel_workbench_torque_control;
+using namespace dynamixel_workbench_current_control;
 
-DynamixelWorkbenchTorqueControl::DynamixelWorkbenchTorqueControl()
+DynamixelWorkbenchCurrentControl::DynamixelWorkbenchCurrentControl()
     :nh_priv_("~"),
      is_debug_(false),
      device_name_(""),
@@ -45,11 +45,11 @@ DynamixelWorkbenchTorqueControl::DynamixelWorkbenchTorqueControl()
      pan_des_pos_(0),
      pan_pos_error_(0),
      pan_pos_pre_error_(0),
-     pan_torque_(0.0),
+     pan_current_(0.0),
      tilt_des_pos_(0),
      tilt_pos_error_(0),
      tilt_pos_pre_error_(0),
-     tilt_torque_(0.0),
+     tilt_current_(0.0),
      p_gain_(0.0),
      d_gain_(0.0)
 {
@@ -63,7 +63,7 @@ DynamixelWorkbenchTorqueControl::DynamixelWorkbenchTorqueControl()
   nh_priv_.getParam("d_gain", d_gain_);
 
   // Init target name
-  ROS_ASSERT(initDynamixelWorkbenchTorqueControl());
+  ROS_ASSERT(initDynamixelWorkbenchCurrentControl());
 
   // Initialize PortHandler instance
   // Set the port path
@@ -76,10 +76,10 @@ DynamixelWorkbenchTorqueControl::DynamixelWorkbenchTorqueControl()
   packetHandler_ = dynamixel::PacketHandler::getPacketHandler(protocol_version_);
 
   // init ROS Publish
-  dynamixel_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::MotorStateList>("/dynamixel_workbench_torque_control/motor_state",10);
+  dynamixel_state_pub_ = nh_.advertise<dynamixel_workbench_msgs::MotorStateList>("/dynamixel_workbench_current_control/motor_state",10);
 
   // init ROS Server
-  position_control_server = nh_.advertiseService("/dynamixel_workbench_tutorials/pan_tilt", &DynamixelWorkbenchTorqueControl::controlPanTiltMotorCallback, this);
+  position_control_server = nh_.advertiseService("/dynamixel_workbench_tutorials/pan_tilt", &DynamixelWorkbenchCurrentControl::controlPanTiltMotorCallback, this);
 
   // Open port
   if (portHandler_->openPort())
@@ -122,18 +122,18 @@ DynamixelWorkbenchTorqueControl::DynamixelWorkbenchTorqueControl()
   tilt_des_pos_ = read_data_["present_position"]->at(TILT_MOTOR);
 }
 
-DynamixelWorkbenchTorqueControl::~DynamixelWorkbenchTorqueControl()
+DynamixelWorkbenchCurrentControl::~DynamixelWorkbenchCurrentControl()
 {
-  ROS_ASSERT(shutdownDynamixelWorkbenchTorqueControl());
+  ROS_ASSERT(shutdownDynamixelWorkbenchCurrentControl());
 }
 
-bool DynamixelWorkbenchTorqueControl::initDynamixelWorkbenchTorqueControl(void)
+bool DynamixelWorkbenchCurrentControl::initDynamixelWorkbenchCurrentControl(void)
 {
-  ROS_INFO("dynamixel_workbench_torque_control : Init OK!");
+  ROS_INFO("dynamixel_workbench_current_control : Init OK!");
   return true;
 }
 
-bool DynamixelWorkbenchTorqueControl::shutdownDynamixelWorkbenchTorqueControl(void)
+bool DynamixelWorkbenchCurrentControl::shutdownDynamixelWorkbenchCurrentControl(void)
 {
   writeTorque(false);
   portHandler_->closePort();
@@ -141,13 +141,13 @@ bool DynamixelWorkbenchTorqueControl::shutdownDynamixelWorkbenchTorqueControl(vo
   return true;
 }
 
-bool DynamixelWorkbenchTorqueControl::initMotor(std::string motor_model, uint8_t motor_id, float protocol_version)
+bool DynamixelWorkbenchCurrentControl::initMotor(std::string motor_model, uint8_t motor_id, float protocol_version)
 {
   dynamixel_tool::DynamixelTool *dynamixel_motor = new dynamixel_tool::DynamixelTool(motor_id, motor_model, protocol_version);
   dynamixel_.push_back(dynamixel_motor);
 }
 
-bool DynamixelWorkbenchTorqueControl::syncWriteDynamixels(uint16_t addr, uint8_t length, int64_t pan_motor_value, int64_t tilt_motor_value)
+bool DynamixelWorkbenchCurrentControl::syncWriteDynamixels(uint16_t addr, uint8_t length, int64_t pan_motor_value, int64_t tilt_motor_value)
 {
   bool dynamixel_addparam_result_;
   int8_t dynamixel_comm_result_;
@@ -178,7 +178,7 @@ bool DynamixelWorkbenchTorqueControl::syncWriteDynamixels(uint16_t addr, uint8_t
   return true;
 }
 
-bool DynamixelWorkbenchTorqueControl::readDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, int64_t *value)
+bool DynamixelWorkbenchCurrentControl::readDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, int64_t *value)
 {
   uint8_t dynamixel_error = 0;
   int8_t dynamixel_comm_result_;
@@ -231,7 +231,7 @@ bool DynamixelWorkbenchTorqueControl::readDynamixelRegister(uint8_t id, uint16_t
   }
 }
 
-bool DynamixelWorkbenchTorqueControl::writeTorque(bool onoff)
+bool DynamixelWorkbenchCurrentControl::writeTorque(bool onoff)
 {
   dynamixel_[PAN_TILT_MOTOR]->item_ = dynamixel_[PAN_TILT_MOTOR]->ctrl_table_["torque_enable"];
   if (onoff == true)
@@ -244,13 +244,13 @@ bool DynamixelWorkbenchTorqueControl::writeTorque(bool onoff)
   }
 }
 
-bool DynamixelWorkbenchTorqueControl::writeCurrent(int64_t pan_cur, int64_t tilt_cur)
+bool DynamixelWorkbenchCurrentControl::writeCurrent(int64_t pan_cur, int64_t tilt_cur)
 {
   dynamixel_[PAN_TILT_MOTOR]->item_ = dynamixel_[PAN_TILT_MOTOR]->ctrl_table_["goal_current"];
   syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, pan_cur, tilt_cur);
 }
 
-bool DynamixelWorkbenchTorqueControl::readMotorState(std::string addr_name)
+bool DynamixelWorkbenchCurrentControl::readMotorState(std::string addr_name)
 {
   std::vector<int64_t> *read_data = new std::vector<int64_t>;
   int64_t read_value;
@@ -268,7 +268,7 @@ bool DynamixelWorkbenchTorqueControl::readMotorState(std::string addr_name)
   return true;
 }
 
-bool DynamixelWorkbenchTorqueControl::getPublishedMsg(void)
+bool DynamixelWorkbenchCurrentControl::getPublishedMsg(void)
 {
   readMotorState("torque_enable");
   readMotorState("moving");
@@ -284,7 +284,7 @@ bool DynamixelWorkbenchTorqueControl::getPublishedMsg(void)
   readMotorState("max_position_limit");
 }
 
-int64_t DynamixelWorkbenchTorqueControl::convertRadian2Value(double radian)
+int64_t DynamixelWorkbenchCurrentControl::convertRadian2Value(double radian)
 {
   int64_t value = 0;
   if (radian > 0)
@@ -314,7 +314,7 @@ int64_t DynamixelWorkbenchTorqueControl::convertRadian2Value(double radian)
   return value;
 }
 
-double DynamixelWorkbenchTorqueControl::convertValue2Radian(int32_t value)
+double DynamixelWorkbenchCurrentControl::convertValue2Radian(int32_t value)
 {
   double radian = 0.0;
   if (value > dynamixel_[PAN_TILT_MOTOR]->value_of_0_radian_position_)
@@ -342,12 +342,12 @@ double DynamixelWorkbenchTorqueControl::convertValue2Radian(int32_t value)
   return radian;
 }
 
-int16_t DynamixelWorkbenchTorqueControl::convertTorque2Value(double torque)
+int16_t DynamixelWorkbenchCurrentControl::convertCurrent2Value(double current)
 {
-  return (int16_t) (torque * dynamixel_[PAN_TILT_MOTOR]->torque_to_current_value_ratio_);
+  return (int16_t) (current * dynamixel_[PAN_TILT_MOTOR]->current_value_ratio_);
 }
 
-bool DynamixelWorkbenchTorqueControl::dynamixelControlLoop(void)
+bool DynamixelWorkbenchCurrentControl::dynamixelControlLoop(void)
 {
   getPublishedMsg();
 
@@ -384,19 +384,19 @@ bool DynamixelWorkbenchTorqueControl::dynamixelControlLoop(void)
   pan_pos_error_ = pan_des_pos_ - pan_cur_pos;
   tilt_pos_error_ = tilt_des_pos_ - tilt_cur_pos;
 
-  pan_torque_ = p_gain_ * pan_pos_error_ +
+  pan_current_ = p_gain_ * pan_pos_error_ +
                 d_gain_ * ((pan_pos_error_ - pan_pos_pre_error_) / 0.004);
-  tilt_torque_ = p_gain_ * tilt_pos_error_ +
+  tilt_current_ = p_gain_ * tilt_pos_error_ +
                  d_gain_ * ((tilt_pos_error_ - tilt_pos_pre_error_) / 0.004)
                  + TILT_MOTOR_MASS * GRAVITY * LINK_LENGTH * cos(convertValue2Radian(tilt_cur_pos));
 
-  writeCurrent(convertTorque2Value(pan_torque_), convertTorque2Value(tilt_torque_));
+  writeCurrent(convertCurrent2Value(pan_current_), convertCurrent2Value(tilt_current_));
 
   pan_pos_pre_error_ = pan_pos_error_;
   tilt_pos_pre_error_ = tilt_pos_error_;
 }
 
-bool DynamixelWorkbenchTorqueControl::controlPanTiltMotorCallback(dynamixel_workbench_msgs::SetPosition::Request &req,
+bool DynamixelWorkbenchCurrentControl::controlPanTiltMotorCallback(dynamixel_workbench_msgs::SetPosition::Request &req,
                                                                     dynamixel_workbench_msgs::SetPosition::Response &res)
 {
   if (req.unit == "rad")
@@ -422,13 +422,13 @@ bool DynamixelWorkbenchTorqueControl::controlPanTiltMotorCallback(dynamixel_work
 int main(int argc, char **argv)
 {
   // Init ROS node
-  ros::init(argc, argv, "dynamixel_workbench_torque_control");
-  DynamixelWorkbenchTorqueControl dynamixel_torque_ctrl;
+  ros::init(argc, argv, "dynamixel_workbench_current_control");
+  DynamixelWorkbenchCurrentControl dynamixel_current_ctrl;
   ros::Rate loop_rate(250);
 
   while (ros::ok())
   {
-    dynamixel_torque_ctrl.dynamixelControlLoop();
+    dynamixel_current_ctrl.dynamixelControlLoop();
     ros::spinOnce();
     loop_rate.sleep();
   }

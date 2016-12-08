@@ -52,9 +52,9 @@ add_executable(dynamixel_workbench_multi_port src/dynamixel_workbench_multi_port
 add_dependencies(dynamixel_workbench_multi_port ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(dynamixel_workbench_multi_port ${catkin_LIBRARIES})
 
-add_executable(dynamixel_workbench_torque_control src/dynamixel_workbench_torque_control.cpp)
-add_dependencies(dynamixel_workbench_torque_control ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(dynamixel_workbench_torque_control ${catkin_LIBRARIES})
+add_executable(dynamixel_workbench_current_control src/dynamixel_workbench_current_control.cpp)
+add_dependencies(dynamixel_workbench_current_control ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(dynamixel_workbench_current_control ${catkin_LIBRARIES})
 
 ################################################################################
 # Install
@@ -77,7 +77,7 @@ install(TARGETS dynamixel_workbench_multi_port
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-install(TARGETS dynamixel_workbench_torque_control
+install(TARGETS dynamixel_workbench_current_control
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

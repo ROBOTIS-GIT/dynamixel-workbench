@@ -1,5 +1,5 @@
 <launch>
-  <node name="dynamixel_workbench_torque_controllers" pkg="dynamixel_workbench_controllers" type="dynamixel_workbench_torque_control" required="true" output="screen">
+  <node name="dynamixel_workbench_current_controllers" pkg="dynamixel_workbench_controllers" type="dynamixel_workbench_current_control" required="true" output="screen">
     <rosparam>
       device_name: "/dev/ttyUSB0"
       baud_rate: 1000000

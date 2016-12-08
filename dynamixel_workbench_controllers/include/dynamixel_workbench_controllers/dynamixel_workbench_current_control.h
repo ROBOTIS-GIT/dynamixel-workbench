@@ -30,8 +30,8 @@
 
 /* Author: Taehoon Lim (Darby) */
 
-#ifndef DYNAMIXEL_WORKBENCH_TORQUE_CONTROL_H
-#define DYNAMIXEL_WORKBENCH_TORQUE_CONTROL_H
+#ifndef DYNAMIXEL_WORKBENCH_CURRENT_CONTROL_H
+#define DYNAMIXEL_WORKBENCH_CURRENT_CONTROL_H
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -51,9 +51,9 @@
 #define GRAVITY         9.8
 #define LINK_LENGTH     0.018
 
-namespace dynamixel_workbench_torque_control
+namespace dynamixel_workbench_current_control
 {
-class DynamixelWorkbenchTorqueControl
+class DynamixelWorkbenchCurrentControl
 {
  public:
   dynamixel::PortHandler *portHandler_;
@@ -89,19 +89,19 @@ class DynamixelWorkbenchTorqueControl
   int64_t pan_pos_pre_error_;
   int64_t tilt_pos_pre_error_;
 
-  double pan_torque_;
-  double tilt_torque_;
+  double pan_current_;
+  double tilt_current_;
 
   std::map<std::string, std::vector<int64_t> *> read_data_;
 
  public:
-  DynamixelWorkbenchTorqueControl();
-  ~DynamixelWorkbenchTorqueControl();
+  DynamixelWorkbenchCurrentControl();
+  ~DynamixelWorkbenchCurrentControl();
   bool dynamixelControlLoop(void);
 
  private:
-  bool initDynamixelWorkbenchTorqueControl(void);
-  bool shutdownDynamixelWorkbenchTorqueControl(void);
+  bool initDynamixelWorkbenchCurrentControl(void);
+  bool shutdownDynamixelWorkbenchCurrentControl(void);
 
   bool initMotor(std::string motor_model, uint8_t motor_id, float protocol_version);
 
@@ -112,7 +112,7 @@ class DynamixelWorkbenchTorqueControl
   bool writeTorque(bool onoff);
   bool writeCurrent(int64_t pan_cur, int64_t tilt_cur);
 
-  int16_t convertTorque2Value(double torque);
+  int16_t convertCurrent2Value(double current);
   int64_t convertRadian2Value(double radian);
   double convertValue2Radian(int32_t value);
 
@@ -122,4 +122,4 @@ class DynamixelWorkbenchTorqueControl
 };
 }
 
-#endif //DYNAMIXEL_WORKBENCH_TORQUE_CONTROL_H
+#endif //DYNAMIXEL_WORKBENCH_CURRENT_CONTROL_H

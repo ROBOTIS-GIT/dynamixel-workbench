@@ -180,8 +180,8 @@ bool DynamixelTool::getModelItem()
         if (tokens.size() != 2)
           continue;
 
-        if (tokens[0] == "torque_to_current_value_ratio")
-          torque_to_current_value_ratio_ = std::atof(tokens[1].c_str());
+        if (tokens[0] == "current_value_ratio")
+          current_value_ratio_ = std::atof(tokens[1].c_str());
         else if (tokens[0] == "velocity_to_value_ratio")
           velocity_to_value_ratio_ = std::atof(tokens[1].c_str());
         else if (tokens[0] == "value_of_0_radian_position")
