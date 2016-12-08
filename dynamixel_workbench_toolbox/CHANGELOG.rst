@@ -2,6 +2,12 @@
 Changelog for package dynamixel_workbench_toolbox
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.3 (2016-11-29)
+-----------
+* modifiy folder path
+* add drive_mode in XM series
+* Contributors: Darby Lim
+
 0.1.2 (2016-10-31)
 -----------
 * modify beta test feedback

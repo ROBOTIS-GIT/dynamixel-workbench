@@ -2,6 +2,13 @@
 Changelog for package dynamixel_workbench
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.3 (2016-11-29)
+-----------
+* update torque controller
+* add control parameters
+* modified ros nodehandle
+* Contributors: Darby Lim
+
 0.1.2 (2016-10-31)
 -----------
 * add stop sign in velocity controller
