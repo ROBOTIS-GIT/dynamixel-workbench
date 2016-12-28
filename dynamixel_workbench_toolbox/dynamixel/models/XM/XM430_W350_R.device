@@ -3,7 +3,7 @@ model_number = 1020
 model_name  = XM430_W350_R
 
 [type info]
-current_value_ratio   = 149.795386991
+torque_to_current_value_ratio   = 149.795386991
 velocity_to_value_ratio 	= 41.71
 
 value_of_0_radian_position      = 2048
