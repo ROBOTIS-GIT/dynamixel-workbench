@@ -81,6 +81,7 @@ DynamixelWorkbenchPositionControl::DynamixelWorkbenchPositionControl()
   else
   {
     ROS_ERROR("Failed to open the port!");
+    ROS_ASSERT(shutdownDynamixelWorkbenchPositionControl());
   }
 
   // Set port baudrate
@@ -91,6 +92,7 @@ DynamixelWorkbenchPositionControl::DynamixelWorkbenchPositionControl()
   else
   {
     ROS_ERROR("Failed to change the baudrate!");
+    ROS_ASSERT(shutdownDynamixelWorkbenchPositionControl());
   }
 
   nh_priv_.getParam("pan_motor/motor_id", motor_id_);
@@ -162,7 +164,7 @@ bool DynamixelWorkbenchPositionControl::syncWriteDynamixels(uint16_t addr, uint8
     packetHandler_->printTxRxResult(dynamixel_comm_result_);
     return false;
   }
-  groupSyncWrite.clearParam();
+  groupSyncWrite.clearParam();  
   return true;
 }
 
@@ -232,33 +234,35 @@ bool DynamixelWorkbenchPositionControl::writeTorque(bool onoff)
   }
 }
 
-bool DynamixelWorkbenchPositionControl::writeProfile()
+bool DynamixelWorkbenchPositionControl::writeProfile(int velocity, int acceleration)
 {
   if (!strncmp(motor_model_.c_str(), "AX", 2) || !strncmp(motor_model_.c_str(), "RX", 2) || !strncmp(motor_model_.c_str(), "EX", 2))
   {
     dynamixel_[PAN_TILT_MOTOR]->item_ = dynamixel_[PAN_TILT_MOTOR]->ctrl_table_["moving_speed"];
-    syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, profile_velocity_, profile_velocity_);
+    syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, velocity, velocity);
   }
   else if (!strncmp(motor_model_.c_str(), "MX", 2))
   {
     dynamixel_[PAN_TILT_MOTOR]->item_ = dynamixel_[PAN_TILT_MOTOR]->ctrl_table_["moving_speed"];
-    syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, profile_velocity_, profile_velocity_);
+    syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, velocity, velocity);
     dynamixel_[PAN_TILT_MOTOR]->item_ = dynamixel_[PAN_TILT_MOTOR]->ctrl_table_["goal_acceleration"];
-    syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, profile_acceleration_, profile_acceleration_);
+    syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, acceleration, acceleration);
   }
   else if (!strncmp(motor_model_.c_str(), "PRO", 3))
   {
     dynamixel_[PAN_TILT_MOTOR]->item_ = dynamixel_[PAN_TILT_MOTOR]->ctrl_table_["goal_velocity"];
-    syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, profile_velocity_, profile_velocity_);
+    syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, velocity, velocity);
     dynamixel_[PAN_TILT_MOTOR]->item_ = dynamixel_[PAN_TILT_MOTOR]->ctrl_table_["goal_acceleration"];
-    syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, profile_acceleration_, profile_acceleration_);
+    syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, acceleration, acceleration);
   }
   else
   {
     dynamixel_[PAN_TILT_MOTOR]->item_ = dynamixel_[PAN_TILT_MOTOR]->ctrl_table_["profile_velocity"];
-    syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, profile_velocity_, profile_velocity_);
+    syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, velocity, velocity);
+    sleep(1);
     dynamixel_[PAN_TILT_MOTOR]->item_ = dynamixel_[PAN_TILT_MOTOR]->ctrl_table_["profile_acceleration"];
-    syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, profile_acceleration_, profile_acceleration_);
+    syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, acceleration, acceleration);
+    sleep(1);
   }
 }
 
@@ -363,7 +367,7 @@ bool DynamixelWorkbenchPositionControl::dynamixelControlLoop(void)
   nh_priv_.getParam("profile_velocity", profile_velocity_);
   nh_priv_.getParam("profile_acceleration", profile_acceleration_);
 
-  writeProfile();
+  writeProfile(profile_velocity_, profile_acceleration_);
 
   dynamixel_workbench_msgs::MotorState dynamixel_response[dynamixel_.size()];
   dynamixel_workbench_msgs::MotorStateList dynamixel_response_list;
