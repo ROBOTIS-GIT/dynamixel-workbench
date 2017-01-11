@@ -109,6 +109,7 @@ DynamixelWorkbenchPositionControl::DynamixelWorkbenchPositionControl()
 
   initMotor(motor_model_, motor_id_, protocol_version_);
   writeTorque(true);
+  writeProfile(profile_velocity_, profile_acceleration_);
 }
 
 DynamixelWorkbenchPositionControl::~DynamixelWorkbenchPositionControl()
@@ -245,15 +246,19 @@ bool DynamixelWorkbenchPositionControl::writeProfile(int velocity, int accelerat
   {
     dynamixel_[PAN_TILT_MOTOR]->item_ = dynamixel_[PAN_TILT_MOTOR]->ctrl_table_["moving_speed"];
     syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, velocity, velocity);
+    sleep(1);
     dynamixel_[PAN_TILT_MOTOR]->item_ = dynamixel_[PAN_TILT_MOTOR]->ctrl_table_["goal_acceleration"];
     syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, acceleration, acceleration);
+    sleep(1);
   }
   else if (!strncmp(motor_model_.c_str(), "PRO", 3))
   {
     dynamixel_[PAN_TILT_MOTOR]->item_ = dynamixel_[PAN_TILT_MOTOR]->ctrl_table_["goal_velocity"];
     syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, velocity, velocity);
+    sleep(1);
     dynamixel_[PAN_TILT_MOTOR]->item_ = dynamixel_[PAN_TILT_MOTOR]->ctrl_table_["goal_acceleration"];
     syncWriteDynamixels(dynamixel_[PAN_TILT_MOTOR]->item_->address, dynamixel_[PAN_TILT_MOTOR]->item_->data_length, acceleration, acceleration);
+    sleep(1);
   }
   else
   {
@@ -363,11 +368,6 @@ int64_t DynamixelWorkbenchPositionControl::convertRadian2Value(double radian)
 bool DynamixelWorkbenchPositionControl::dynamixelControlLoop(void)
 {
   getPublishedMsg();
-
-  nh_priv_.getParam("profile_velocity", profile_velocity_);
-  nh_priv_.getParam("profile_acceleration", profile_acceleration_);
-
-  writeProfile(profile_velocity_, profile_acceleration_);
 
   dynamixel_workbench_msgs::MotorState dynamixel_response[dynamixel_.size()];
   dynamixel_workbench_msgs::MotorStateList dynamixel_response_list;

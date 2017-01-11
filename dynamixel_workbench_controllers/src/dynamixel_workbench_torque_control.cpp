@@ -89,6 +89,7 @@ DynamixelWorkbenchTorqueControl::DynamixelWorkbenchTorqueControl()
   else
   {
     ROS_ERROR("Failed to open the port!");
+    ROS_ASSERT(shutdownDynamixelWorkbenchTorqueControl());
   }
 
   // Set port baudrate
@@ -99,6 +100,7 @@ DynamixelWorkbenchTorqueControl::DynamixelWorkbenchTorqueControl()
   else
   {
     ROS_ERROR("Failed to change the baudrate!");
+    ROS_ASSERT(shutdownDynamixelWorkbenchTorqueControl());
   }
 
   nh_priv_.getParam("pan_motor/motor_id", motor_id_);

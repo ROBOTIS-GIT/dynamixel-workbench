@@ -94,6 +94,7 @@ DynamixelWorkbenchVelocityControl::DynamixelWorkbenchVelocityControl()
   else
   {
     ROS_ERROR("Failed to open the port!");
+    ROS_ASSERT(shutdownDynamixelWorkbenchVelocityControl());
   }
 
   // Set port baudrate
@@ -104,6 +105,7 @@ DynamixelWorkbenchVelocityControl::DynamixelWorkbenchVelocityControl()
   else
   {
     ROS_ERROR("Failed to change the baudrate!");
+    ROS_ASSERT(shutdownDynamixelWorkbenchVelocityControl());
   }
 
   nh_priv_.getParam("left_motor/motor_id", motor_id_);
