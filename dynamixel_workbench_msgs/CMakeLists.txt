@@ -25,6 +25,7 @@ add_message_files(
   DynamixelEX.msg
   DynamixelXL.msg
   DynamixelXM.msg
+  DynamixelXH.msg
   DynamixelPro.msg
   DynamixelProL42.msg
   MotorState.msg

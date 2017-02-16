@@ -3,7 +3,7 @@
     <rosparam>
       device_name: "/dev/ttyUSB0"
       baud_rate: 1000000
-      motor_model: "XM430_W350_R"
+      motor_model: "XM430_W350"
       protocol_version: 2.0
       p_gain: 0.0009
       d_gain: 0.00001

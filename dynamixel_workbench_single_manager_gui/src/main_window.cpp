@@ -315,7 +315,7 @@ void MainWindow::makeUI()
     ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
     ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
   }
-  else if (!strncmp(dynamixel_->model_name_.c_str(), "XM", 2))
+  else if (!strncmp(dynamixel_->model_name_.c_str(), "XM", 2) || !strncmp(dynamixel_->model_name_.c_str(), "XH", 2))
   {
     ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
     ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
@@ -375,7 +375,7 @@ void MainWindow::makeUI()
     ui_.set_baud_rate_combo_box->addItem(QString("57600"));
     ui_.set_baud_rate_combo_box->addItem(QString("9600"));
   }
-  else if (!strncmp(dynamixel_->model_name_.c_str(), "XM", 2))
+  else if (!strncmp(dynamixel_->model_name_.c_str(), "XM", 2) || !strncmp(dynamixel_->model_name_.c_str(), "XH", 2))
   {
     ui_.set_baud_rate_combo_box->addItem(QString("9600"));
     ui_.set_baud_rate_combo_box->addItem(QString("57600"));
