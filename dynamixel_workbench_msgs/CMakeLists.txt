@@ -24,6 +24,7 @@ add_message_files(
   DynamixelMX106.msg
   DynamixelEX.msg
   DynamixelXL.msg
+  DynamixelXL320.msg
   DynamixelXM.msg
   DynamixelXH.msg
   DynamixelPro.msg
