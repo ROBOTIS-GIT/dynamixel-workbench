@@ -317,13 +317,13 @@ bool DynamixelWorkbenchPositionControl::getPublishedMsg(void)
     readMotorState("goal_acceleration");
   }
 
-  if (!strncmp(motor_model_.c_str(), "XM", 2) || !strncmp(motor_model_.c_str(), "XH", 2))
+  if (!strncmp(motor_model_.c_str(), "XL", 2) || !strncmp(motor_model_.c_str(), "XM", 2) || !strncmp(motor_model_.c_str(), "XH", 2))
   {
     readMotorState("profile_velocity");
     readMotorState("profile_acceleration");
   }
 
-  if (!strncmp(motor_model_.c_str(), "XM", 2)  || !strncmp(motor_model_.c_str(), "XH", 2) || !strncmp(motor_model_.c_str(), "PRO", 3))
+  if (!strncmp(motor_model_.c_str(), "XL", 2) || !strncmp(motor_model_.c_str(), "XM", 2)  || !strncmp(motor_model_.c_str(), "XH", 2) || !strncmp(motor_model_.c_str(), "PRO", 3))
   {
     readMotorState("min_position_limit");
     readMotorState("max_position_limit");
@@ -376,7 +376,7 @@ bool DynamixelWorkbenchPositionControl::dynamixelControlLoop(void)
   {
     dynamixel_response[i].motor_model = dynamixel_[i]->model_name_;
     dynamixel_response[i].id = dynamixel_[i]->id_;
-    dynamixel_response[i].torque_enable = read_data_[i, "torque_enable"]->at(i);
+    dynamixel_response[i].torque_enable = read_data_["torque_enable"]->at(i);
     dynamixel_response[i].present_position = read_data_["present_position"]->at(i);
     dynamixel_response[i].present_velocity = read_data_["present_velocity"]->at(i);
     dynamixel_response[i].goal_position = read_data_["goal_position"]->at(i);
@@ -396,13 +396,13 @@ bool DynamixelWorkbenchPositionControl::dynamixelControlLoop(void)
       dynamixel_response[i].goal_acceleration = read_data_["goal_acceleration"]->at(i);
     }
 
-    if (!strncmp(motor_model_.c_str(), "XM", 2)  || !strncmp(motor_model_.c_str(), "XH", 2))
+    if (!strncmp(motor_model_.c_str(), "XL", 2) || !strncmp(motor_model_.c_str(), "XM", 2)  || !strncmp(motor_model_.c_str(), "XH", 2))
     {
       dynamixel_response[i].profile_velocity = read_data_["profile_velocity"]->at(i);
       dynamixel_response[i].profile_acceleration = read_data_["profile_acceleration"]->at(i);
     }
 
-    if (!strncmp(motor_model_.c_str(), "XM", 2)  || !strncmp(motor_model_.c_str(), "XH", 2) || !strncmp(motor_model_.c_str(), "PRO", 3))
+    if (!strncmp(motor_model_.c_str(), "XL", 2) || !strncmp(motor_model_.c_str(), "XM", 2)  || !strncmp(motor_model_.c_str(), "XH", 2) || !strncmp(motor_model_.c_str(), "PRO", 3))
     {
       dynamixel_response[i].max_position_limit = read_data_["max_position_limit"]->at(i);
       dynamixel_response[i].min_position_limit = read_data_["min_position_limit"]->at(i);

@@ -363,7 +363,7 @@ bool DynamixelWorkbenchTorqueControl::dynamixelControlLoop(void)
   {
     dynamixel_response[i].motor_model = dynamixel_[i]->model_name_;
     dynamixel_response[i].id = dynamixel_[i]->id_;
-    dynamixel_response[i].torque_enable = read_data_[i, "torque_enable"]->at(i);
+    dynamixel_response[i].torque_enable = read_data_["torque_enable"]->at(i);
     dynamixel_response[i].moving = read_data_["moving"]->at(i);
     dynamixel_response[i].goal_position = read_data_["goal_position"]->at(i);
     dynamixel_response[i].goal_velocity = read_data_["goal_velocity"]->at(i);
