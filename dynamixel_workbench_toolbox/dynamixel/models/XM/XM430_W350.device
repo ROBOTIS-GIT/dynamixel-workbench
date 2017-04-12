@@ -1,6 +1,6 @@
 [device info]
 model_number = 1020
-model_name  = XM430_W350_R
+model_name  = XM430_W350
 
 [type info]
 torque_to_current_value_ratio   = 149.795386991

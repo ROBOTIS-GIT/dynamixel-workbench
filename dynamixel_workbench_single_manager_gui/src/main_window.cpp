@@ -279,14 +279,14 @@ void MainWindow::makeUI()
   }
   else if (!strncmp(dynamixel_->model_name_.c_str(), "MX", 2))
   {
-    if (dynamixel_->model_number_ == 310) // MX-64
+    if (!strncmp(dynamixel_->model_name_.c_str(), "MX_64", 5)) // MX-64
     {
       ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
       ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
       ui_.set_operating_mode_combo_box->addItem(QString("extended_position_control"));
       ui_.set_operating_mode_combo_box->addItem(QString("torque_control"));
     }
-    else if (dynamixel_->model_number_ == 320) // MX-106
+    else if (!strncmp(dynamixel_->model_name_.c_str(), "MX_106", 6)) // MX-106
     {
       ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
       ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
@@ -312,10 +312,22 @@ void MainWindow::makeUI()
   }
   else if (!strncmp(dynamixel_->model_name_.c_str(), "XL", 2))
   {
-    ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
-    ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
+    if (!strncmp(dynamixel_->model_name_.c_str(), "XL_320", 5))
+    {
+      ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
+      ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
+    }
+    else
+    {
+      ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
+      ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
+      ui_.set_operating_mode_combo_box->addItem(QString("current_control"));
+      ui_.set_operating_mode_combo_box->addItem(QString("extended_position_control"));
+      ui_.set_operating_mode_combo_box->addItem(QString("position_control_based_on_current"));
+      ui_.set_operating_mode_combo_box->addItem(QString("pwm_control"));
+    }
   }
-  else if (!strncmp(dynamixel_->model_name_.c_str(), "XM", 2))
+  else if (!strncmp(dynamixel_->model_name_.c_str(), "XM", 2) || !strncmp(dynamixel_->model_name_.c_str(), "XH", 2))
   {
     ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
     ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
@@ -326,7 +338,7 @@ void MainWindow::makeUI()
   }
   else if (!strncmp(dynamixel_->model_name_.c_str(), "PRO", 3))
   {
-    if (dynamixel_->model_number_ == 35072) // PRO_L42_10_S300_R
+    if (!strncmp(dynamixel_->model_name_.c_str(), "PRO_L42", 7)) // PRO_L42_10_S300_R
     {
       ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
       ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
@@ -368,14 +380,25 @@ void MainWindow::makeUI()
 //    ui_.set_baud_rate_combo_box->addItem(QString("2500000"));
 //    ui_.set_baud_rate_combo_box->addItem(QString("3000000"));
   }
-  else if (!strncmp(dynamixel_->model_name_.c_str(), "XL", 2))
+  else if (!strncmp(dynamixel_->model_name_.c_str(), "XL_320", 6))
   {
     ui_.set_baud_rate_combo_box->addItem(QString("1000000"));
     ui_.set_baud_rate_combo_box->addItem(QString("115200"));
     ui_.set_baud_rate_combo_box->addItem(QString("57600"));
     ui_.set_baud_rate_combo_box->addItem(QString("9600"));
   }
-  else if (!strncmp(dynamixel_->model_name_.c_str(), "XM", 2))
+  else if (!strncmp(dynamixel_->model_name_.c_str(), "XL430", 5))
+  {
+    ui_.set_baud_rate_combo_box->addItem(QString("9600"));
+    ui_.set_baud_rate_combo_box->addItem(QString("57600"));
+    ui_.set_baud_rate_combo_box->addItem(QString("115200"));
+    ui_.set_baud_rate_combo_box->addItem(QString("1000000"));
+    ui_.set_baud_rate_combo_box->addItem(QString("2000000"));
+//    ui_.set_baud_rate_combo_box->addItem(QString("3000000"));
+//    ui_.set_baud_rate_combo_box->addItem(QString("4000000"));
+//    ui_.set_baud_rate_combo_box->addItem(QString("4500000"));
+  }
+  else if (!strncmp(dynamixel_->model_name_.c_str(), "XM", 2) || !strncmp(dynamixel_->model_name_.c_str(), "XH", 2))
   {
     ui_.set_baud_rate_combo_box->addItem(QString("9600"));
     ui_.set_baud_rate_combo_box->addItem(QString("57600"));

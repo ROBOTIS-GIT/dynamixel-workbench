@@ -53,17 +53,17 @@ DynamixelWorkbenchMultiPort::DynamixelWorkbenchMultiPort()
   // Init parameter
   nh_.param("is_debug", is_debug_, is_debug_);
 
-  nh_priv_.getParam("pan_motor_/device_name_", pan_motor_device_name_);
-  nh_priv_.getParam("pan_motor_/baud_rate_", pan_motor_baud_rate_);
-  nh_priv_.getParam("pan_motor_/motor_model_", pan_motor_model_);
-  nh_priv_.getParam("pan_motor_/protocol_version_", pan_motor_protocol_version_);
-  nh_priv_.getParam("pan_motor_/motor_id_", pan_motor_id_);
+  nh_priv_.getParam("pan_motor/device_name", pan_motor_device_name_);
+  nh_priv_.getParam("pan_motor/baud_rate", pan_motor_baud_rate_);
+  nh_priv_.getParam("pan_motor/motor_model", pan_motor_model_);
+  nh_priv_.getParam("pan_motor/protocol_version", pan_motor_protocol_version_);
+  nh_priv_.getParam("pan_motor/motor_id", pan_motor_id_);
 
-  nh_priv_.getParam("tilt_motor_/device_name_", tilt_motor_device_name_);
-  nh_priv_.getParam("tilt_motor_/baud_rate_", tilt_motor_baud_rate_);
-  nh_priv_.getParam("tilt_motor_/motor_model_", tilt_motor_model_);
-  nh_priv_.getParam("tilt_motor_/protocol_version_", tilt_motor_protocol_version_);
-  nh_priv_.getParam("tilt_motor_/motor_id_", tilt_motor_id_);
+  nh_priv_.getParam("tilt_motor/device_name", tilt_motor_device_name_);
+  nh_priv_.getParam("tilt_motor/baud_rate", tilt_motor_baud_rate_);
+  nh_priv_.getParam("tilt_motor/motor_model", tilt_motor_model_);
+  nh_priv_.getParam("tilt_motor/protocol_version", tilt_motor_protocol_version_);
+  nh_priv_.getParam("tilt_motor/motor_id", tilt_motor_id_);
 
   nh_priv_.getParam("profile_velocity", profile_velocity_);
   nh_priv_.getParam("profile_acceleration", profile_acceleration_);
@@ -97,6 +97,7 @@ DynamixelWorkbenchMultiPort::DynamixelWorkbenchMultiPort()
   else
   {
     ROS_ERROR("Failed to open the pan_motor_port!");
+    ROS_ASSERT(shutdownDynamixelWorkbenchMultiPort());
   }
 
   // Set port baudrate
@@ -107,6 +108,7 @@ DynamixelWorkbenchMultiPort::DynamixelWorkbenchMultiPort()
   else
   {
     ROS_ERROR("Failed to change the pan_motor_baudrate!");
+    ROS_ASSERT(shutdownDynamixelWorkbenchMultiPort());
   }
 
   ROS_INFO("pan_motor_device_name: %s", pan_motor_device_name_.c_str());
@@ -125,6 +127,7 @@ DynamixelWorkbenchMultiPort::DynamixelWorkbenchMultiPort()
   else
   {
     ROS_ERROR("Failed to open the tilt_motor_port!");
+    ROS_ASSERT(shutdownDynamixelWorkbenchMultiPort());
   }
 
   // Set port baudrate
@@ -135,6 +138,7 @@ DynamixelWorkbenchMultiPort::DynamixelWorkbenchMultiPort()
   else
   {
     ROS_ERROR("Failed to change the tilt_motor_baudrate!");
+    ROS_ASSERT(shutdownDynamixelWorkbenchMultiPort());
   }
 
   ROS_INFO("tilt_motor_device_name: %s", tilt_motor_device_name_.c_str());
@@ -144,8 +148,8 @@ DynamixelWorkbenchMultiPort::DynamixelWorkbenchMultiPort()
   ROS_INFO("tilt_motor_model: %s\n", tilt_motor_model_.c_str());
 
   initMotor(tilt_motor_model_, tilt_motor_id_, tilt_motor_protocol_version_);
-
   writeTorque(true);
+  writeProfile(profile_velocity_, profile_acceleration_);
 }
 
 DynamixelWorkbenchMultiPort::~DynamixelWorkbenchMultiPort()
@@ -278,80 +282,80 @@ bool DynamixelWorkbenchMultiPort::writeTorque(bool onoff)
   }
 }
 
-bool DynamixelWorkbenchMultiPort::writeProfile()
+bool DynamixelWorkbenchMultiPort::writeProfile(int velocity, int acceleration)
 {
   if (!strncmp(pan_motor_model_.c_str(), "AX", 2) || !strncmp(pan_motor_model_.c_str(), "RX", 2) || !strncmp(pan_motor_model_.c_str(), "EX", 2))
   {
     dynamixel_[PAN_MOTOR]->item_ = dynamixel_[PAN_MOTOR]->ctrl_table_["moving_speed"];
 
-    writeDynamixelRegister(pan_motor_portHandler_, pan_motor_packetHandler_, pan_motor_id_, dynamixel_[PAN_MOTOR]->item_->address, dynamixel_[PAN_MOTOR]->item_->data_length, profile_velocity_);
+    writeDynamixelRegister(pan_motor_portHandler_, pan_motor_packetHandler_, pan_motor_id_, dynamixel_[PAN_MOTOR]->item_->address, dynamixel_[PAN_MOTOR]->item_->data_length, velocity);
   }
   else if (!strncmp(pan_motor_model_.c_str(), "MX", 2))
   {
     dynamixel_[PAN_MOTOR]->item_ = dynamixel_[PAN_MOTOR]->ctrl_table_["moving_speed"];
 
-    writeDynamixelRegister(pan_motor_portHandler_, pan_motor_packetHandler_, pan_motor_id_, dynamixel_[PAN_MOTOR]->item_->address, dynamixel_[PAN_MOTOR]->item_->data_length, profile_velocity_);
+    writeDynamixelRegister(pan_motor_portHandler_, pan_motor_packetHandler_, pan_motor_id_, dynamixel_[PAN_MOTOR]->item_->address, dynamixel_[PAN_MOTOR]->item_->data_length, velocity);
 
     dynamixel_[PAN_MOTOR]->item_ = dynamixel_[PAN_MOTOR]->ctrl_table_["goal_acceleration"];
 
-    writeDynamixelRegister(pan_motor_portHandler_, pan_motor_packetHandler_, pan_motor_id_, dynamixel_[PAN_MOTOR]->item_->address, dynamixel_[PAN_MOTOR]->item_->data_length, profile_acceleration_);
+    writeDynamixelRegister(pan_motor_portHandler_, pan_motor_packetHandler_, pan_motor_id_, dynamixel_[PAN_MOTOR]->item_->address, dynamixel_[PAN_MOTOR]->item_->data_length, acceleration);
   }
   else if (!strncmp(pan_motor_model_.c_str(), "PRO", 3))
   {
     dynamixel_[PAN_MOTOR]->item_ = dynamixel_[PAN_MOTOR]->ctrl_table_["goal_velocity"];
 
-    writeDynamixelRegister(pan_motor_portHandler_, pan_motor_packetHandler_, pan_motor_id_, dynamixel_[PAN_MOTOR]->item_->address, dynamixel_[PAN_MOTOR]->item_->data_length, profile_velocity_);
+    writeDynamixelRegister(pan_motor_portHandler_, pan_motor_packetHandler_, pan_motor_id_, dynamixel_[PAN_MOTOR]->item_->address, dynamixel_[PAN_MOTOR]->item_->data_length, velocity);
 
     dynamixel_[PAN_MOTOR]->item_ = dynamixel_[PAN_MOTOR]->ctrl_table_["goal_acceleration"];
 
-    writeDynamixelRegister(pan_motor_portHandler_, pan_motor_packetHandler_, pan_motor_id_, dynamixel_[PAN_MOTOR]->item_->address, dynamixel_[PAN_MOTOR]->item_->data_length, profile_acceleration_);
+    writeDynamixelRegister(pan_motor_portHandler_, pan_motor_packetHandler_, pan_motor_id_, dynamixel_[PAN_MOTOR]->item_->address, dynamixel_[PAN_MOTOR]->item_->data_length, acceleration);
   }
   else
   {
     dynamixel_[PAN_MOTOR]->item_ = dynamixel_[PAN_MOTOR]->ctrl_table_["profile_velocity"];
 
-    writeDynamixelRegister(pan_motor_portHandler_, pan_motor_packetHandler_, pan_motor_id_, dynamixel_[PAN_MOTOR]->item_->address, dynamixel_[PAN_MOTOR]->item_->data_length, profile_velocity_);
+    writeDynamixelRegister(pan_motor_portHandler_, pan_motor_packetHandler_, pan_motor_id_, dynamixel_[PAN_MOTOR]->item_->address, dynamixel_[PAN_MOTOR]->item_->data_length, velocity);
 
     dynamixel_[PAN_MOTOR]->item_ = dynamixel_[PAN_MOTOR]->ctrl_table_["profile_acceleration"];
 
-    writeDynamixelRegister(pan_motor_portHandler_, pan_motor_packetHandler_, pan_motor_id_, dynamixel_[PAN_MOTOR]->item_->address, dynamixel_[PAN_MOTOR]->item_->data_length, profile_acceleration_);
+    writeDynamixelRegister(pan_motor_portHandler_, pan_motor_packetHandler_, pan_motor_id_, dynamixel_[PAN_MOTOR]->item_->address, dynamixel_[PAN_MOTOR]->item_->data_length, acceleration);
   }
 
   if (!strncmp(tilt_motor_model_.c_str(), "AX", 2) || !strncmp(tilt_motor_model_.c_str(), "RX", 2) || !strncmp(tilt_motor_model_.c_str(), "EX", 2))
   {
     dynamixel_[TILT_MOTOR]->item_ = dynamixel_[TILT_MOTOR]->ctrl_table_["moving_speed"];
 
-    writeDynamixelRegister(tilt_motor_portHandler_, tilt_motor_packetHandler_, tilt_motor_id_, dynamixel_[TILT_MOTOR]->item_->address, dynamixel_[TILT_MOTOR]->item_->data_length, profile_velocity_);
+    writeDynamixelRegister(tilt_motor_portHandler_, tilt_motor_packetHandler_, tilt_motor_id_, dynamixel_[TILT_MOTOR]->item_->address, dynamixel_[TILT_MOTOR]->item_->data_length, velocity);
   }
   else if (!strncmp(tilt_motor_model_.c_str(), "MX", 2))
   {
     dynamixel_[TILT_MOTOR]->item_ = dynamixel_[TILT_MOTOR]->ctrl_table_["moving_speed"];
 
-    writeDynamixelRegister(tilt_motor_portHandler_, tilt_motor_packetHandler_, tilt_motor_id_, dynamixel_[TILT_MOTOR]->item_->address, dynamixel_[TILT_MOTOR]->item_->data_length, profile_velocity_);
+    writeDynamixelRegister(tilt_motor_portHandler_, tilt_motor_packetHandler_, tilt_motor_id_, dynamixel_[TILT_MOTOR]->item_->address, dynamixel_[TILT_MOTOR]->item_->data_length, velocity);
 
     dynamixel_[TILT_MOTOR]->item_ = dynamixel_[TILT_MOTOR]->ctrl_table_["goal_acceleration"];
 
-    writeDynamixelRegister(tilt_motor_portHandler_, tilt_motor_packetHandler_, tilt_motor_id_, dynamixel_[TILT_MOTOR]->item_->address, dynamixel_[TILT_MOTOR]->item_->data_length, profile_acceleration_);
+    writeDynamixelRegister(tilt_motor_portHandler_, tilt_motor_packetHandler_, tilt_motor_id_, dynamixel_[TILT_MOTOR]->item_->address, dynamixel_[TILT_MOTOR]->item_->data_length, acceleration);
   }
   else if (!strncmp(tilt_motor_model_.c_str(), "PRO", 3))
   {
     dynamixel_[TILT_MOTOR]->item_ = dynamixel_[TILT_MOTOR]->ctrl_table_["goal_velocity"];
 
-    writeDynamixelRegister(tilt_motor_portHandler_, tilt_motor_packetHandler_, tilt_motor_id_, dynamixel_[TILT_MOTOR]->item_->address, dynamixel_[TILT_MOTOR]->item_->data_length, profile_velocity_);
+    writeDynamixelRegister(tilt_motor_portHandler_, tilt_motor_packetHandler_, tilt_motor_id_, dynamixel_[TILT_MOTOR]->item_->address, dynamixel_[TILT_MOTOR]->item_->data_length, velocity);
 
     dynamixel_[TILT_MOTOR]->item_ = dynamixel_[TILT_MOTOR]->ctrl_table_["goal_acceleration"];
 
-    writeDynamixelRegister(tilt_motor_portHandler_, tilt_motor_packetHandler_, tilt_motor_id_, dynamixel_[TILT_MOTOR]->item_->address, dynamixel_[TILT_MOTOR]->item_->data_length, profile_acceleration_);
+    writeDynamixelRegister(tilt_motor_portHandler_, tilt_motor_packetHandler_, tilt_motor_id_, dynamixel_[TILT_MOTOR]->item_->address, dynamixel_[TILT_MOTOR]->item_->data_length, acceleration);
   }
   else
   {
     dynamixel_[TILT_MOTOR]->item_ = dynamixel_[TILT_MOTOR]->ctrl_table_["profile_velocity"];
 
-    writeDynamixelRegister(tilt_motor_portHandler_, tilt_motor_packetHandler_, tilt_motor_id_, dynamixel_[TILT_MOTOR]->item_->address, dynamixel_[TILT_MOTOR]->item_->data_length, profile_velocity_);
+    writeDynamixelRegister(tilt_motor_portHandler_, tilt_motor_packetHandler_, tilt_motor_id_, dynamixel_[TILT_MOTOR]->item_->address, dynamixel_[TILT_MOTOR]->item_->data_length, velocity);
 
     dynamixel_[TILT_MOTOR]->item_ = dynamixel_[TILT_MOTOR]->ctrl_table_["profile_acceleration"];
 
-    writeDynamixelRegister(tilt_motor_portHandler_, tilt_motor_packetHandler_, tilt_motor_id_, dynamixel_[TILT_MOTOR]->item_->address, dynamixel_[TILT_MOTOR]->item_->data_length, profile_acceleration_);
+    writeDynamixelRegister(tilt_motor_portHandler_, tilt_motor_packetHandler_, tilt_motor_id_, dynamixel_[TILT_MOTOR]->item_->address, dynamixel_[TILT_MOTOR]->item_->data_length, acceleration);
  }
 }
 
@@ -410,13 +414,13 @@ bool DynamixelWorkbenchMultiPort::getPublishedMsg(void)
     readMotorState(PAN_MOTOR, "goal_acceleration");
   }
 
-  if (!strncmp(pan_motor_model_.c_str(), "XM", 2))
+  if (!strncmp(pan_motor_model_.c_str(), "XL", 2) || !strncmp(pan_motor_model_.c_str(), "XM", 2) || !strncmp(pan_motor_model_.c_str(), "XH", 2))
   {
     readMotorState(PAN_MOTOR, "profile_velocity");
     readMotorState(PAN_MOTOR, "profile_acceleration");
   }
 
-  if (!strncmp(pan_motor_model_.c_str(), "XM", 2) || !strncmp(pan_motor_model_.c_str(), "PRO", 3))
+  if (!strncmp(pan_motor_model_.c_str(), "XL", 2) || !strncmp(pan_motor_model_.c_str(), "XM", 2) || !strncmp(pan_motor_model_.c_str(), "XH", 2) || !strncmp(pan_motor_model_.c_str(), "PRO", 3))
   {
     readMotorState(PAN_MOTOR, "min_position_limit");
     readMotorState(PAN_MOTOR, "max_position_limit");
@@ -447,13 +451,13 @@ bool DynamixelWorkbenchMultiPort::getPublishedMsg(void)
     readMotorState(TILT_MOTOR, "goal_acceleration");
   }
 
-  if (!strncmp(tilt_motor_model_.c_str(), "XM", 2))
+  if (!strncmp(pan_motor_model_.c_str(), "XL", 2) || !strncmp(tilt_motor_model_.c_str(), "XM", 2) || !strncmp(pan_motor_model_.c_str(), "XH", 2))
   {
     readMotorState(TILT_MOTOR, "profile_velocity");
     readMotorState(TILT_MOTOR, "profile_acceleration");
   }
 
-  if (!strncmp(tilt_motor_model_.c_str(), "XM", 2) || !strncmp(tilt_motor_model_.c_str(), "PRO", 3))
+  if (!strncmp(pan_motor_model_.c_str(), "XL", 2) || !strncmp(tilt_motor_model_.c_str(), "XM", 2) || !strncmp(pan_motor_model_.c_str(), "XH", 2) || !strncmp(tilt_motor_model_.c_str(), "PRO", 3))
   {
     readMotorState(TILT_MOTOR, "min_position_limit");
     readMotorState(TILT_MOTOR, "max_position_limit");
@@ -499,11 +503,6 @@ bool DynamixelWorkbenchMultiPort::dynamixelControlLoop(void)
 {
   getPublishedMsg();
 
-  nh_priv_.getParam("profile_velocity", profile_velocity_);
-  nh_priv_.getParam("profile_acceleration", profile_acceleration_);
-
-  writeProfile();
-
   dynamixel_workbench_msgs::MotorState dynamixel_response[dynamixel_.size()];
   dynamixel_workbench_msgs::MotorStateList dynamixel_response_list;
 
@@ -529,13 +528,13 @@ bool DynamixelWorkbenchMultiPort::dynamixelControlLoop(void)
     dynamixel_response[PAN_MOTOR].goal_acceleration = read_pan_motor_data_["goal_acceleration"];
   }
 
-  if (!strncmp(pan_motor_model_.c_str(), "XM", 2))
+  if (!strncmp(pan_motor_model_.c_str(), "XL", 2) || !strncmp(pan_motor_model_.c_str(), "XM", 2) || !strncmp(pan_motor_model_.c_str(), "XH", 2))
   {
     dynamixel_response[PAN_MOTOR].profile_velocity = read_pan_motor_data_["profile_velocity"];
     dynamixel_response[PAN_MOTOR].profile_acceleration = read_pan_motor_data_["profile_acceleration"];
   }
 
-  if (!strncmp(pan_motor_model_.c_str(), "XM", 2) || !strncmp(pan_motor_model_.c_str(), "PRO", 3))
+  if (!strncmp(pan_motor_model_.c_str(), "XL", 2) || !strncmp(pan_motor_model_.c_str(), "XM", 2)  || !strncmp(pan_motor_model_.c_str(), "XH", 2) || !strncmp(pan_motor_model_.c_str(), "PRO", 3))
   {
     dynamixel_response[PAN_MOTOR].max_position_limit = read_pan_motor_data_["max_position_limit"];
     dynamixel_response[PAN_MOTOR].min_position_limit = read_pan_motor_data_["min_position_limit"];
@@ -570,13 +569,13 @@ bool DynamixelWorkbenchMultiPort::dynamixelControlLoop(void)
     dynamixel_response[TILT_MOTOR].goal_acceleration = read_tilt_motor_data_["goal_acceleration"];
   }
 
-  if (!strncmp(tilt_motor_model_.c_str(), "XM", 2))
+  if (!strncmp(pan_motor_model_.c_str(), "XL", 2) || !strncmp(tilt_motor_model_.c_str(), "XM", 2) || !strncmp(pan_motor_model_.c_str(), "XH", 2))
   {
     dynamixel_response[TILT_MOTOR].profile_velocity = read_tilt_motor_data_["profile_velocity"];
     dynamixel_response[TILT_MOTOR].profile_acceleration = read_tilt_motor_data_["profile_acceleration"];
   }
 
-  if (!strncmp(tilt_motor_model_.c_str(), "XM", 2) || !strncmp(tilt_motor_model_.c_str(), "PRO", 3))
+  if (!strncmp(pan_motor_model_.c_str(), "XL", 2) || !strncmp(tilt_motor_model_.c_str(), "XM", 2)  || !strncmp(pan_motor_model_.c_str(), "XH", 2) || !strncmp(tilt_motor_model_.c_str(), "PRO", 3))
   {
     dynamixel_response[TILT_MOTOR].max_position_limit = read_tilt_motor_data_["max_position_limit"];
     dynamixel_response[TILT_MOTOR].min_position_limit = read_tilt_motor_data_["min_position_limit"];

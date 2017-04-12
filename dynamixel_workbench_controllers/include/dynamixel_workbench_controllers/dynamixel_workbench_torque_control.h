@@ -112,7 +112,7 @@ class DynamixelWorkbenchTorqueControl
   bool writeTorque(bool onoff);
   bool writeCurrent(int64_t pan_cur, int64_t tilt_cur);
 
-  int16_t convertTorque2Value(double torque);
+  int16_t convertTorque2Value(double current);
   int64_t convertRadian2Value(double radian);
   double convertValue2Radian(int32_t value);
 

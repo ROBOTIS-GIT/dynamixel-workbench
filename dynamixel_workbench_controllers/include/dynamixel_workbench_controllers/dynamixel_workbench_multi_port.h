@@ -103,7 +103,7 @@ class DynamixelWorkbenchMultiPort
 
   bool writeDynamixelRegister(dynamixel::PortHandler *portHandler, dynamixel::PacketHandler *packetHandler, uint8_t id, uint16_t addr, uint8_t length, int64_t value);
   bool writeTorque(bool onoff);
-  bool writeProfile();
+  bool writeProfile(int velocity, int acceleration);
   bool writePosition(int64_t pan_pos, int64_t tilt_pos);
 
   int64_t convertRadian2Value(int8_t motor, double radian);
