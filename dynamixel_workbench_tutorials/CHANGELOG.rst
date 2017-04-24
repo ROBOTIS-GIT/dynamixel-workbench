@@ -2,16 +2,21 @@
 Changelog for package dynamixel_workbench_tutorials
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.4 (2017-04-24)
+-----------
+* updated for other packages
+* Contributors: Darby Lim
+
 0.1.3 (2016-11-29)
 -----------
-* update torque controller
-* add control parameters
+* updated torque controller
+* added control parameters
 * modified ros nodehandle
 * Contributors: Darby Lim
 
 0.1.2 (2016-10-31)
 -----------
-* add stop sign in velocity controller
+* added stop sign in velocity controller
 * modify beta test feedback
 * Contributors: Darby Lim
 
@@ -20,16 +25,16 @@ Changelog for package dynamixel_workbench_tutorials
 * modified baudrate, factory reset, reboot and velocity controller
 * Revert "add baudrate combobox and modify velocity controller"
   This reverts commit f4f83761d687c40660a2c864aa4fcbebe1df4ea4.
-* add baudrate combobox and modify velocity controller
+* added baudrate combobox and modify velocity controller
 * Contributors: Darby Lim
 
 0.1.0 (2016-09-23)
 ------------------
-* edit cmake and xml files
-* modify message
-* add multiport controller and torque controller
-* add position, velocity controller and pan-tilt, wheel tutorials
-* add GUI package and modify position controller
-* add pan tilt and wheel node in tutorial package
-* add tutorial package
+* edited cmake and xml files
+* modified message
+* added multiport controller and torque controller
+* added position, velocity controller and pan-tilt, wheel tutorials
+* added GUI package and modify position controller
+* added pan tilt and wheel node in tutorial package
+* added tutorial package
 * Contributors: Darby Lim

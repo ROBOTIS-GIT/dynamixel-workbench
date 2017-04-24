@@ -1,6 +1,6 @@
 # Published by dynamixel_workbench_single_manager and Subscribed by dynamixel_workbench_single_manager_gui
-# This message is compatible with control table of Dynamixel XM Series (XL430-S210-T/R, XL430-W350-T/R)
-# and it is linked to XL430_W210.device and XL430_S350.device in dynamixel_workbench_toolbox/dynamixel/models/XM folder
+# This message is compatible with control table of Dynamixel XH Series (XH430-S210-T/R, XH430-W350-T/R)
+# and it is linked to XH430_W210.device and XH430_S350.device in dynamixel_workbench_toolbox/dynamixel/models/XH folder
 # If you want to specific information about control table, please follow the link (http://support.robotis.com/en/)
 
 int64 model_number

@@ -47,7 +47,9 @@
 #include <dynamixel_workbench_msgs/DynamixelMX106.h>
 #include <dynamixel_workbench_msgs/DynamixelEX.h>
 #include <dynamixel_workbench_msgs/DynamixelXL.h>
+#include <dynamixel_workbench_msgs/DynamixelXL320.h>
 #include <dynamixel_workbench_msgs/DynamixelXM.h>
+#include <dynamixel_workbench_msgs/DynamixelXH.h>
 #include <dynamixel_workbench_msgs/DynamixelPro.h>
 #include <dynamixel_workbench_msgs/DynamixelProL42.h>
 
@@ -79,8 +81,10 @@ class QNode : public QThread
   void dynamixelMX64StatusMsgCallback(const dynamixel_workbench_msgs::DynamixelMX64::ConstPtr &msg);
   void dynamixelMX106StatusMsgCallback(const dynamixel_workbench_msgs::DynamixelMX106::ConstPtr &msg);
   void dynamixelEXStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelEX::ConstPtr &msg);
+  void dynamixelXL320StatusMsgCallback(const dynamixel_workbench_msgs::DynamixelXL320::ConstPtr &msg);
   void dynamixelXLStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelXL::ConstPtr &msg);
   void dynamixelXMStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelXM::ConstPtr &msg);
+  void dynamixelXHStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelXH::ConstPtr &msg);
   void dynamixelProStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelPro::ConstPtr &msg);
   void dynamixelProL42StatusMsgCallback(const dynamixel_workbench_msgs::DynamixelProL42::ConstPtr &msg);
 
