@@ -1,4 +1,5 @@
-# dynamixel-workbench
-dynamixel-workbench GIT REP MAIN
+# Dynamixel workbench packages
 
-Documents : [dynamixel-workbench WIKI](http://wiki.ros.org/dynamixel_workbench)
+For more information, please check the document below.
+
+[ROS Wiki for Dynamixel workbench](http://wiki.ros.org/dynamixel_workbench)

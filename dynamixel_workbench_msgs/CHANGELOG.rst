@@ -2,6 +2,12 @@
 Changelog for package dynamixel_workbench_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.4 (2017-04-24)
+-----------
+* added dynamixel new model: XL430_W250
+* added dynamixel new model: XH
+* Contributors: Darby Lim
+
 0.1.3 (2016-11-29)
 -----------
 * add drive_mode in XM series
