@@ -2,6 +2,13 @@
 Changelog for package dynamixel_workbench_controllers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.4 (2017-04-24)
+-----------
+* added dynamixel new model: XL430_W250
+* added dynamixel new model: XH
+* renamed current controller -> torque controller
+* Contributors: Darby Lim, Dardy Lim
+
 0.1.3 (2016-11-29)
 -----------
 * update torque controller
