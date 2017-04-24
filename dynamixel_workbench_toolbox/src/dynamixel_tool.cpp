@@ -92,7 +92,7 @@ DynamixelTool::~DynamixelTool(){}
 
 bool DynamixelTool::getModelName(uint16_t model_number)
 {
-  dynamixel_name_path_  = ros::package::getPath("dynamixel_workbench_toolbox") + "/dynamixel/models/model_info.list";
+  dynamixel_name_path_  = ros::package::getPath("dynamixel_workbench_toolbox") + "/dynamixel/model_info.list";
 
   std::ifstream file(dynamixel_name_path_.c_str());
   if (file.is_open())
