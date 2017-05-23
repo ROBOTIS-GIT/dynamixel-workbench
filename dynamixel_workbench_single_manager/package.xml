@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>dynamixel_workbench_single_manager</name>
-  <version>0.1.4</version>
+  <version>0.1.5</version>
   <description>
     This package is single manager for a Dynamixel.
     Before operating Dynamixels, it can be used to check states of a Dynamixel and change address value with terminal window.

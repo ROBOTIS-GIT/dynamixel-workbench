@@ -2,6 +2,11 @@
 Changelog for package dynamixel_workbench_tutorials
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.5 (2017-05-23)
+-----------
+* modified the cmake of toolbox
+* Contributors: Darby Lim
+
 0.1.4 (2017-04-24)
 -----------
 * updated for other packages

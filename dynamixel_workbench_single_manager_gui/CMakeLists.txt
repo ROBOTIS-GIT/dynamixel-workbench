@@ -30,6 +30,7 @@ find_package(catkin REQUIRED COMPONENTS
 # Build
 ################################################################################
 include_directories(${catkin_INCLUDE_DIRS})
+
 catkin_package(
     INCLUDE_DIRS include
     CATKIN_DEPENDS roscpp
@@ -65,5 +66,3 @@ install(TARGETS dynamixel_workbench_single_manager_gui
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 )
-
-
