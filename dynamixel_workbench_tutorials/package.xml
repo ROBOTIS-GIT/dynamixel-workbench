@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>dynamixel_workbench_tutorials</name>
-  <version>0.1.4</version>
+  <version>0.1.5</version>
   <description>
     This package provides two tutorials based on ROS communication.
     It is connected with each controllers to give an order.

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>dynamixel_workbench</name>
-  <version>0.1.4</version>
+  <version>0.1.5</version>
   <description>
     Dynamixel-workbench is dynamixel solution for ROS.
     This metapackage can help change each address in Dynamixel included id, baudrate and operating mode in command line or GUI.
