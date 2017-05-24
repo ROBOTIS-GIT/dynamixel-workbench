@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>dynamixel_workbench_toolbox</name>
-  <version>0.1.4</version>
+  <version>0.1.5</version>
   <description>
     This library is used to search dynamixel information when it saved in '.device'.
   </description>

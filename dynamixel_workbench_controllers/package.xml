@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>dynamixel_workbench_controllers</name>
-  <version>0.1.4</version>
+  <version>0.1.5</version>
   <description>
     This package provides four controllers based on operating mode and Dynamixel SDK.
     It introdues how to operating Dynamixels at each mode and has an example multi port.
