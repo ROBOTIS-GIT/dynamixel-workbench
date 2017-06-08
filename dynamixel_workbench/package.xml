@@ -16,7 +16,6 @@
   <buildtool_depend>catkin</buildtool_depend>
   <run_depend>dynamixel_workbench_single_manager</run_depend>
   <run_depend>dynamixel_workbench_single_manager_gui</run_depend>
-  <run_depend>dynamixel_workbench_msgs</run_depend>
   <run_depend>dynamixel_workbench_controllers</run_depend>
   <run_depend>dynamixel_workbench_tutorials</run_depend>
   <run_depend>dynamixel_workbench_toolbox</run_depend>

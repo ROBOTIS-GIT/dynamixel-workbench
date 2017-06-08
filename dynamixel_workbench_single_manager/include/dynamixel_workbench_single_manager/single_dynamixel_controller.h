@@ -40,75 +40,77 @@
 #include <stdio.h>
 #include <ros/ros.h>
 
-#include <dynamixel_workbench_msgs/DynamixelAX.h>
-#include <dynamixel_workbench_msgs/DynamixelRX.h>
-#include <dynamixel_workbench_msgs/DynamixelMX.h>
-#include <dynamixel_workbench_msgs/DynamixelMX64.h>
-#include <dynamixel_workbench_msgs/DynamixelMX106.h>
-#include <dynamixel_workbench_msgs/DynamixelEX.h>
-#include <dynamixel_workbench_msgs/DynamixelXL320.h>
-#include <dynamixel_workbench_msgs/DynamixelXL.h>
-#include <dynamixel_workbench_msgs/DynamixelXM.h>
-#include <dynamixel_workbench_msgs/DynamixelXH.h>
-#include <dynamixel_workbench_msgs/DynamixelPro.h>
-#include <dynamixel_workbench_msgs/DynamixelProL42.h>
-#include <dynamixel_workbench_msgs/DynamixelCommand.h>
-#include <dynamixel_workbench_msgs/WorkbenchParam.h>
-#include <dynamixel_workbench_msgs/GetWorkbenchParam.h>
+#include "dynamixel_workbench_single_manager/message_header.h"
+#include "dynamixel_workbench_toolbox//dynamixel_driver.h"
 
-#include <dynamixel_workbench_toolbox/dynamixel_tool.h>
-
-#include <dynamixel_sdk/dynamixel_sdk.h>
-
+namespace single_manager
+{
 #define ESC_ASCII_VALUE             0x1b
 #define SPACEBAR_ASCII_VALUE        0x20
 
-namespace dynamixel_workbench_single_manager
+struct DynamixelLoad
 {
-class DynamixelWorkbenchSingleManager
-{
- public:
-  dynamixel::PortHandler *portHandler_;
-  dynamixel::PacketHandler *packetHandler_;
-  dynamixel::PacketHandler *packetHandler1_;
-  dynamixel::PacketHandler *packetHandler2_;
+  std::string device_name;
+  int baud_rate;
+  float protocol_version;
+};
 
+struct DyanmixelInfo
+{
+  int16_t mode_number;
+  int8_t model_id;
+  int8_t torque_status;
+};
+
+struct DyanmixelAddrValue
+{
+  std::string addr_name;
+  int8_t addr_length;
+  int8_t value_8_bit;
+  int16_t value_16_bit;
+  int32_t value_32_bit;
+};
+
+class SingleManager
+{
  private:
   // ROS NodeHandle
-  ros::NodeHandle nh_;
+  ros::NodeHandle node_handle_;
+
   // ROS Parameters
-  bool is_debug_;
+
   // ROS Topic Publisher
   ros::Publisher dynamixel_state_pub_;
+
   // ROS Topic Subscriber
   ros::Subscriber dynamixel_command_sub_;
+
   // ROS Server
   ros::ServiceServer workbench_param_server_;
-  // Parameters
-  std::string device_name_;
-  //uint64_t baud_rate_list_[BAUD_RATE_NUM];
-  int baud_rate_;
-  float protocol_version_;
-  uint16_t dynamixel_model_number_;
-  uint8_t dynamixel_model_id_;
-  bool dynamixel_torque_status_;
-  dynamixel_tool::DynamixelTool *dynamixel_;
-  int64_t read_value_;
+
+  // Dynamixel Workbench Parameters
+  bool use_ping_;
+  int ping_id_;
+
+  DynamixelLoad *dynamixel_load_;
+  DyanmixelInfo *dynamixel_info_;
+  DyanmixelAddrValue *dynamixel_addr_value_;
+
+  dynamixel_driver::DynamixelDriver *dynamixel_driver_;
 
  public:
-  DynamixelWorkbenchSingleManager();
-  ~DynamixelWorkbenchSingleManager();
+  SingleManager();
+  ~SingleManager();
   void viewManagerMenu(void);
-  bool dynamixelSingleManagerLoop(void);
+  bool controlLoop(void);
 
  private:
-  bool initDynamixelWorkbenchSingleManager(void);
-  bool shutdownDynamixelWorkbenchSingleManager(void);
+  bool initSingleManager(void);
+  bool shutdownSingleManager(void);
 
   int getch(void);
   int kbhit(void);
 
-  bool scanDynamixelID();
   void showControlTable(void);
   bool rebootDynamixel();
   bool resetDynamixel();

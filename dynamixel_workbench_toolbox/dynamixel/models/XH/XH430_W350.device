@@ -31,6 +31,7 @@ max_radian                      =  3.14159265
    9   | return_delay_time        | 1      | RW     | EEPROM
    10  | drive_mode               | 1      | RW     | EEPROM
    11  | operating_mode           | 1      | RW     | EEPROM
+   12  | secondary_id             | 1      | RW     | EEPROM
    13  | protocol_version         | 1      | RW     | EEPROM
    20  | homing_offset            | 4      | RW     | EEPROM
    24  | moving_threshold         | 4      | RW     | EEPROM
