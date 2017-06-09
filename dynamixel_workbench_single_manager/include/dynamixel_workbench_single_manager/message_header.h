@@ -52,8 +52,4 @@
 #include "dynamixel_workbench_msgs/DynamixelPro.h"
 #include "dynamixel_workbench_msgs/DynamixelProL42.h"
 
-#include "dynamixel_workbench_msgs/DynamixelCommand.h"
-#include "dynamixel_workbench_msgs/WorkbenchParam.h"
-#include "dynamixel_workbench_msgs/GetWorkbenchParam.h"
-
 #endif //DYNAMIXEL_WORKBENCH_MESSAGE_HEADER_H

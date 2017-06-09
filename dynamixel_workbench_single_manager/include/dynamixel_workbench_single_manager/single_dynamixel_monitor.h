@@ -30,24 +30,44 @@
 
 /* Author: Taehoon Lim (Darby) */
 
-#ifndef DYNAMIXEL_WORKBENCH_SINGLE_DYNAMIXEL_CONTROLLER_H
-#define DYNAMIXEL_WORKBENCH_SINGLE_DYNAMIXEL_CONTROLLER_H
+#ifndef DYNAMIXEL_WORKBENCH_SINGLE_DYNAMIXEL_MONITOR_H
+#define DYNAMIXEL_WORKBENCH_SINGLE_DYNAMIXEL_MONITOR_H
 
 #include <unistd.h>
-#include <fcntl.h>          // FILE control
-#include <termios.h>        // Terminal IO
 #include <stdlib.h>
 #include <stdio.h>
 #include <ros/ros.h>
 
-#include "dynamixel_workbench_toolbox/dynamixel_tool.h"
+#include "dynamixel_workbench_toolbox/dynamixel_driver.h"
+#include "dynamixel_workbench_single_manager/message_header.h"
 
-namespace single_dynamixel_controller
+namespace single_dynamixel_monitor
 {
-#define ESC_ASCII_VALUE             0x1b
-#define SPACEBAR_ASCII_VALUE        0x20
 
-class SingleDynamixelController
+struct DynamixelLoad
+{
+  std::string device_name;
+  int baud_rate;
+  float protocol_version;
+};
+
+struct DyanmixelInfo
+{
+  int16_t mode_number;
+  int8_t model_id;
+  int8_t torque_status;
+};
+
+struct DyanmixelAddrValue
+{
+  std::string addr_name;
+  int8_t addr_length;
+  int8_t value_8_bit;
+  int16_t value_16_bit;
+  int32_t value_32_bit;
+};
+
+class SingleDynamixelMonitor
 {
  private:
   // ROS NodeHandle
@@ -56,40 +76,35 @@ class SingleDynamixelController
   // ROS Parameters
 
   // ROS Topic Publisher
+  ros::Publisher dynamixel_state_pub_;
 
   // ROS Topic Subscriber
-  ros::Subscriber dynamixel_state_pub_;
-  ros::Subscriber dynamixel_command_sub_;
 
-  // ROS Server
-  ros::ServiceServer workbench_param_server_;
+  // Dynamixel Monitor variable
+  bool use_ping_;
+  int ping_id_;
 
-  // Dynamixel Workbench Parameters
+  DynamixelLoad *dynamixel_load_;
+  DyanmixelInfo *dynamixel_info_;
+  DyanmixelAddrValue *dynamixel_addr_value_;
+
+  dynamixel_driver::DynamixelDriver *dynamixel_driver_;
 
  public:
-  SingleDynamixelController();
-  ~SingleDynamixelController();
-  void viewManagerMenu(void);
+  SingleDynamixelMonitor();
+  ~SingleDynamixelMonitor();
   bool controlLoop(void);
 
  private:
-  bool initSingleDynamixelController();
-  bool shutdownSingleDynamixelController();
+  bool initSingleDynamixelMonitor();
+  bool shutdownSingleDynamixelMonitor();
 
-  int getch(void);
-  int kbhit(void);
+  bool initDynamixelStatePublisher();
+  bool dynamixelStatePublish();
 
-//  void showControlTable(void);
-//  void checkValidationCommand(bool *valid_cmd, char *cmd);
-
-//  void setSubscriber(void);
-//  void setPublishedMsg(void);
-//  void setServer(void);
-
-//  void dynamixelCommandMsgCallback(const dynamixel_workbench_msgs::DynamixelCommand::ConstPtr &msg);
-//  bool getWorkbenchParamCallback(dynamixel_workbench_msgs::GetWorkbenchParam::Request &req, dynamixel_workbench_msgs::GetWorkbenchParam::Response &res);
+  bool AX();
 
 };
 }
 
-#endif //DYNAMIXEL_WORKBENCH_SINGLE_DYNAMIXEL_CONTROLLER_H
+#endif //DYNAMIXEL_WORKBENCH_SINGLE_DYNAMIXEL_MONITOR_H

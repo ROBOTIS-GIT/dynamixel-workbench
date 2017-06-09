@@ -4,7 +4,7 @@
 
   <arg name="device_name"      default="/dev/ttyUSB0"/>
   <arg name="baud_rate"        default="1000000"/>
-  <arg name="protocol_version" default="2.0"/>
+  <arg name="protocol_version" default="1.0"/>
 
   <param name="ping"             value="$(arg use_ping)"  type="bool"/>
   <param name="ping_id"          value="$(arg id)"/>
@@ -14,5 +14,5 @@
   <param name="protocol_version" value="$(arg protocol_version)"/>
 
   <node name="single_manager_command_line" pkg="dynamixel_workbench_single_manager"
-        type="single_dynamixel_controller" required="true" output="screen"/>
+        type="single_dynamixel_monitor" required="true" output="screen"/>
 </launch>
