@@ -61,8 +61,14 @@ class DynamixelDriver
   DynamixelDriver(std::string device_name, int baud_rate, float protocol_version);
   ~DynamixelDriver();
 
-  bool scanDynamixel();
-  bool pingDynamixel(uint8_t id);
+  bool scan();
+  bool ping(uint8_t id);
+
+  bool reboot();
+  bool reset();
+
+  bool writeRegister(std::string addr_name, uint32_t value);
+  bool readRegister(std::string addr_name, uint32_t *value);
 };
 }
 
