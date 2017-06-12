@@ -15,7 +15,4 @@
 
   <node name="single_dynamixel_monitor" pkg="dynamixel_workbench_single_manager"
         type="single_dynamixel_monitor" required="true" output="screen"/>
-
-  <node name="single_dynamixel_controller" pkg="dynamixel_workbench_single_manager"
-        type="single_dynamixel_controller" required="true" output="screen"/>
 </launch>

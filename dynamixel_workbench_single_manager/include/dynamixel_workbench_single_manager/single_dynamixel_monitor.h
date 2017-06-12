@@ -39,6 +39,9 @@
 #include <ros/ros.h>
 
 #include "dynamixel_workbench_toolbox/dynamixel_driver.h"
+
+#include "dynamixel_workbench_msgs/DynamixelCommand.h"
+#include "dynamixel_workbench_msgs/GetDynamixelInfo.h"
 #include "dynamixel_workbench_single_manager/message_header.h"
 
 namespace single_dynamixel_monitor
@@ -80,6 +83,10 @@ class SingleDynamixelMonitor
 
   // ROS Topic Subscriber
 
+  // ROS Service Server
+  ros::ServiceServer dynamixel_info_server_;
+  ros::ServiceServer dynamixel_command_server_;
+
   // Dynamixel Monitor variable
   bool use_ping_;
   int ping_id_;
@@ -100,10 +107,35 @@ class SingleDynamixelMonitor
   bool shutdownSingleDynamixelMonitor();
 
   bool initDynamixelStatePublisher();
+  bool initDynamixelInfoServer();
+  bool initDynamixelCommandServer();
   bool dynamixelStatePublish();
 
-  bool AX();
+  bool showDynamixelControlTable();
+  bool checkValidationCommand(std::string cmd);
+  bool checkValidAccess(std::string cmd);
+  bool changeId(uint8_t id);
+  bool changeBaudrate(uint64_t baud_rate);
+  bool changeProtocolVersion(float ver);
 
+  bool dynamixelInfoCallback(dynamixel_workbench_msgs::GetDynamixelInfo::Request &req,
+                             dynamixel_workbench_msgs::GetDynamixelInfo::Response &res);
+
+  bool dynamixelCommandCallback(dynamixel_workbench_msgs::DynamixelCommand::Request &req,
+                                dynamixel_workbench_msgs::DynamixelCommand::Response &res);
+
+  bool AX();
+  bool RX();
+  bool EX();
+  bool MX();
+  bool MX64();
+  bool MX106();
+  bool XL320();
+  bool XL();
+  bool XM();
+  bool XH();
+  bool PRO();
+  bool PROL42();
 };
 }
 

@@ -93,13 +93,15 @@ SingleDynamixelMonitor::SingleDynamixelMonitor()
   }
 
   initDynamixelStatePublisher();
+  initDynamixelInfoServer();
+  initDynamixelCommandServer();
 
   ROS_INFO("dynamixel_workbench_single_manager : Init Success!");
 }
 
 SingleDynamixelMonitor::~SingleDynamixelMonitor()
 {
-  ROS_ASSERT(shutdownSingleDynamixelMonitor());
+
 }
 
 bool SingleDynamixelMonitor::initSingleDynamixelMonitor()
@@ -109,6 +111,8 @@ bool SingleDynamixelMonitor::initSingleDynamixelMonitor()
 
 bool SingleDynamixelMonitor::shutdownSingleDynamixelMonitor()
 {
+  dynamixel_driver_->writeRegister("torque_enable", 0);
+
   ros::shutdown();
   return true;
 }
@@ -125,6 +129,217 @@ bool SingleDynamixelMonitor::initDynamixelStatePublisher()
   {
     dynamixel_state_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::DynamixelXM>("dynamixel/" + dynamixel->model_name_ + "_state", 10);
   }
+
+  return true;
+}
+
+bool SingleDynamixelMonitor::initDynamixelInfoServer()
+{
+  dynamixel_info_server_ = node_handle_.advertiseService("dynamixel/info", &SingleDynamixelMonitor::dynamixelInfoCallback, this);
+
+  return true;
+}
+
+bool SingleDynamixelMonitor::initDynamixelCommandServer()
+{
+  dynamixel_command_server_ = node_handle_.advertiseService("dynamixel/command", &SingleDynamixelMonitor::dynamixelCommandCallback, this);
+
+  return true;
+}
+
+bool SingleDynamixelMonitor::showDynamixelControlTable()
+{
+  dynamixel_tool::DynamixelTool *dynamixel = dynamixel_driver_->dynamixel_;
+  uint32_t torque_status = 0;
+
+  dynamixel_driver_->readRegister("torque_enable", &torque_status);
+
+  for (dynamixel->it_ctrl_ = dynamixel->ctrl_table_.begin();
+       dynamixel->it_ctrl_ != dynamixel->ctrl_table_.end();
+       dynamixel->it_ctrl_++)
+  {
+    dynamixel->item_ = dynamixel->ctrl_table_[dynamixel->it_ctrl_->first.c_str()];
+
+    if (torque_status)
+    {
+      if ((dynamixel->item_->access_type == dynamixel_tool::READ_WRITE) && (dynamixel->item_->memory_type == dynamixel_tool::RAM))
+      {
+        ROS_INFO("%s", dynamixel->item_->item_name.c_str());
+      }
+    }
+    else
+    {
+      if (dynamixel->item_->access_type == dynamixel_tool::READ_WRITE)
+      {
+        ROS_INFO("%s", dynamixel->item_->item_name.c_str());
+      }
+    }
+  }
+
+  return true;
+}
+
+bool SingleDynamixelMonitor::checkValidationCommand(std::string cmd)
+{
+  dynamixel_tool::DynamixelTool *dynamixel = dynamixel_driver_->dynamixel_;
+
+  for (dynamixel->it_ctrl_ = dynamixel->ctrl_table_.begin();
+       dynamixel->it_ctrl_ != dynamixel->ctrl_table_.end();
+       dynamixel->it_ctrl_++)
+  {
+    dynamixel->item_ = dynamixel->ctrl_table_[dynamixel->it_ctrl_->first.c_str()];
+
+    if (cmd == dynamixel->item_->item_name)
+      return true;
+  }
+
+  ROS_WARN("Please Check DYNAMXEL Address Name");
+  return false;
+}
+
+bool SingleDynamixelMonitor::checkValidAccess(std::string cmd)
+{
+  dynamixel_tool::DynamixelTool *dynamixel = dynamixel_driver_->dynamixel_;
+  uint32_t torque_status = 0;
+
+  dynamixel_driver_->readRegister("torque_enable", &torque_status);
+
+  dynamixel->item_ = dynamixel->ctrl_table_[cmd];
+  if (dynamixel->item_->access_type == dynamixel_tool::READ_WRITE)
+  {
+    if ((torque_status == true) && (dynamixel->item_->memory_type == dynamixel_tool::EEPROM))
+    {
+      ROS_WARN("address in EEPROM can't be accessed when torque is on");
+      ROS_WARN("Check a ""table""");
+
+      return false;
+    }
+    else if ((torque_status == false) && (dynamixel->item_->item_name != "torque_enable") && dynamixel->item_->memory_type == dynamixel_tool::RAM)
+    {
+      ROS_WARN("address in RAM can't be accessed when torque is off");
+      ROS_WARN("Check a ""table""");
+
+      return false;
+    }
+    else
+    {
+      return true;
+    }
+  }
+  else
+  {
+    return false;
+  }
+}
+
+bool SingleDynamixelMonitor::changeId(uint8_t id)
+{
+  if (id > 0 && id < 254)
+  {
+    dynamixel_tool::DynamixelTool *dynamixel = dynamixel_driver_->dynamixel_;
+    dynamixel->item_ = dynamixel->ctrl_table_["id"];
+
+    dynamixel_driver_->writeRegister("id", id);
+    usleep(dynamixel->item_->data_length * 55 * 1000 * 10);
+
+    dynamixel_driver_->ping(id);
+
+    ROS_INFO("...Succeeded to set dynamixel id [%u]", dynamixel_driver_->dynamixel_->id_);
+    return true;
+  }
+  else
+  {
+    ROS_WARN("Dynamixel ID can be set 1~253");
+    return false;
+  }
+}
+
+bool SingleDynamixelMonitor::changeBaudrate(uint64_t baud_rate)
+{
+  dynamixel_tool::DynamixelTool *dynamixel = dynamixel_driver_->dynamixel_;
+
+  if (dynamixel->baud_rate_table_.find(baud_rate)->second == dynamixel->baud_rate_table_.end()->second)
+  {
+    ROS_ERROR(" Failed to change [ BAUD RATE: %ld ]", baud_rate);
+    ROS_WARN(" Please check a valid baud rate at E-MANUAL");
+
+    if (dynamixel_driver_->getProtocolVersion() == 2.0)
+    {
+      dynamixel_driver_->writeRegister("baud_rate", dynamixel->baud_rate_table_.find(57600)->second);
+      usleep(dynamixel->item_->data_length* 55 * 1000 *10);
+
+      if (dynamixel_driver_->setBaudrate(57600) == false)
+      {
+        ROS_ERROR(" Failed to change default baudrate(57600)!");
+      }
+      else
+      {
+        ROS_INFO(" Success to change default baudrate! [ BAUD RATE: 57600 ]");
+      }
+    }
+    else if (dynamixel_driver_->getProtocolVersion() == 1.0)
+    {
+      dynamixel_driver_->writeRegister("baud_rate", dynamixel->baud_rate_table_.find(1000000)->second);
+      usleep(dynamixel->item_->data_length* 55 * 1000 *10);
+
+      if (dynamixel_driver_->setBaudrate(1000000) == false)
+      {
+        ROS_ERROR(" Failed to change default baudrate(1000000)!");
+      }
+      else
+      {
+        ROS_INFO(" Success to change default baudrate! [ BAUD RATE: 1000000 ]");
+      }
+    }
+
+    return false;
+  }
+  else
+  {
+    if (baud_rate < 2250000)
+    {
+      dynamixel_driver_->writeRegister("baud_rate", dynamixel->baud_rate_table_.find(baud_rate)->second);
+      usleep(dynamixel->item_->data_length* 55 * 1000 *10);
+
+      if (dynamixel_driver_->setBaudrate(baud_rate) == false)
+      {
+        ROS_INFO(" Failed to change baudrate!");
+        return false;
+      }
+      else
+      {
+        ROS_INFO(" Success to change baudrate! [ BAUD RATE: %d ]", dynamixel->baud_rate_table_.find(baud_rate)->first);
+        return true;
+      }
+    }
+    else
+    {
+      ROS_ERROR(" USB2Dynamixel supports baudrate under '2250000'");
+      return false;
+    }
+  }
+}
+
+bool SingleDynamixelMonitor::changeProtocolVersion(float ver)
+{
+  dynamixel_tool::DynamixelTool *dynamixel = dynamixel_driver_->dynamixel_;
+
+  if (ver == 1.0 || ver == 2.0)
+  {
+    // TODO
+    dynamixel_driver_->writeRegister("protocol_version", ver);
+    usleep(dynamixel->item_->data_length* 55 * 1000 *10);
+
+    dynamixel_driver_->setPacketHandler(ver);
+
+    ROS_INFO(" Success to change protocol version [ PROTOCOL VERSION: %.2f]", dynamixel_driver_->getProtocolVersion());
+    return true;
+  }
+  else
+  {
+    ROS_ERROR(" Dynamixel has '1.0' or '2.0' protocol version");
+    return false;
+  }
 }
 
 bool SingleDynamixelMonitor::dynamixelStatePublish()
@@ -137,8 +352,140 @@ bool SingleDynamixelMonitor::dynamixelStatePublish()
   }
   else if (dynamixel->model_name_.find("XM") != std::string::npos)
   {
-    //XM();
+    XM();
   }
+
+  return true;
+}
+
+bool SingleDynamixelMonitor::controlLoop()
+{
+  dynamixelStatePublish();
+
+  return true;
+}
+
+bool SingleDynamixelMonitor::dynamixelInfoCallback(dynamixel_workbench_msgs::GetDynamixelInfo::Request &req,
+                                                   dynamixel_workbench_msgs::GetDynamixelInfo::Response &res)
+{
+  const char *portName = dynamixel_driver_->getPortName();
+  std::string get_port_name(portName);
+
+  res.dynamixel_info.device_name      = get_port_name;
+  res.dynamixel_info.baud_rate        = dynamixel_driver_->getBaudrate();
+  res.dynamixel_info.protocol_version = dynamixel_driver_->getProtocolVersion();
+
+  res.dynamixel_info.model_id         = dynamixel_driver_->dynamixel_->id_;
+  res.dynamixel_info.model_name       = dynamixel_driver_->dynamixel_->model_name_;
+  res.dynamixel_info.model_number     = dynamixel_driver_->dynamixel_->model_number_;
+
+  return true;
+}
+
+bool SingleDynamixelMonitor::dynamixelCommandCallback(dynamixel_workbench_msgs::DynamixelCommand::Request &req,
+                                                      dynamixel_workbench_msgs::DynamixelCommand::Response &res)
+{
+  if (req.command == "table")
+  {
+    if (showDynamixelControlTable())
+      res.comm_result = true;
+  }
+  else if (req.command == "reboot")
+  {
+    if (dynamixel_driver_->reboot())
+      res.comm_result = true;
+    else
+      res.comm_result = false;
+  }
+  else if (req.command == "factory_reset")
+  {
+    if (dynamixel_driver_->reset())
+      res.comm_result = true;
+    else
+      res.comm_result = false;
+  }
+  else if (req.command == "exit")
+  {
+    if (shutdownSingleDynamixelMonitor())
+      res.comm_result = true;
+    else
+      res.comm_result = false;
+  }
+  else if (req.command == "addr")
+  {
+    std::string addr = req.addr_name;
+    int64_t value    = req.value;
+
+    if (!checkValidationCommand(addr))
+    {
+      res.comm_result = false;
+      return false;
+    }
+
+    if (!checkValidAccess(addr))
+    {
+      res.comm_result = false;
+      return false;
+    }
+
+    if (addr == "id")
+    {
+      if (!changeId(value))
+      {
+        res.comm_result = false;
+        return false;
+      }
+    }
+    else if (addr == "baud_rate")
+    {
+      if (!changeBaudrate(value))
+      {
+        res.comm_result = false;
+        return false;
+      }
+    }
+    else if (addr == "protocol_version")
+    {
+      if (!changeProtocolVersion(value))
+      {
+        res.comm_result = false;
+        return false;
+      }
+    }
+    else
+    {
+      if (!dynamixel_driver_->writeRegister(addr, value))
+        res.comm_result = false;
+      else
+        res.comm_result = true;
+    }
+  }
+  else
+  {
+    ROS_ERROR("Invalid command. Please check menu[help, h, ?]");
+    return false;
+  }
+
+  return true;
+}
+
+int main(int argc, char **argv)
+{
+  // Init ROS node
+  ros::init(argc, argv, "single_dynamixel_monitor");
+
+  SingleDynamixelMonitor single_dynamixel_monitor;
+  ros::Rate loop_rate(1000);
+
+  while (ros::ok())
+  {
+    single_dynamixel_monitor.controlLoop();
+
+    ros::spinOnce();
+    loop_rate.sleep();
+  }
+
+  return 0;
 }
 
 bool SingleDynamixelMonitor::AX()
@@ -222,30 +569,123 @@ bool SingleDynamixelMonitor::AX()
   }
 
   dynamixel_state_pub_.publish(ax_state);
+
+  return true;
 }
 
-bool SingleDynamixelMonitor::controlLoop()
+bool SingleDynamixelMonitor::XM()
 {
-  dynamixelStatePublish();
-}
+  uint32_t read_value = 0;
 
-int main(int argc, char **argv)
-{
-  // Init ROS node
-  ros::init(argc, argv, "single_dynamixel_monitor");
+  dynamixel_workbench_msgs::DynamixelXM xm_state;
+  dynamixel_tool::DynamixelTool *dynamixel = dynamixel_driver_->dynamixel_;
 
-  SingleDynamixelMonitor single_dynamixel_monitor;
-  ros::Rate loop_rate(250);
-
-  while (ros::ok())
+  for (dynamixel->it_ctrl_ = dynamixel->ctrl_table_.begin();
+       dynamixel->it_ctrl_ != dynamixel->ctrl_table_.end();
+       dynamixel->it_ctrl_++)
   {
-    single_dynamixel_monitor.controlLoop();
+    dynamixel->item_ = dynamixel->ctrl_table_[dynamixel->it_ctrl_->first.c_str()];
+    dynamixel_driver_->readRegister(dynamixel->item_->item_name ,&read_value);
 
-    ros::spinOnce();
-    loop_rate.sleep();
+    if ("model_number" == dynamixel->item_->item_name)
+      xm_state.model_number = read_value;
+    else if ("version_of_firmware" == dynamixel->item_->item_name)
+      xm_state.version_of_firmware = read_value;
+    else if ("id" == dynamixel->item_->item_name)
+      xm_state.id = read_value;
+    else if ("baud_rate" == dynamixel->item_->item_name)
+      xm_state.baud_rate = read_value;
+    else if ("return_delay_time" == dynamixel->item_->item_name)
+      xm_state.return_delay_time = read_value;
+    else if ("drive_mode" == dynamixel->item_->item_name)
+      xm_state.drive_mode = read_value;
+    else if ("operating_mode" == dynamixel->item_->item_name)
+      xm_state.operating_mode = read_value;
+    else if ("protocol_version" == dynamixel->item_->item_name)
+      xm_state.protocol_version = read_value;
+    else if ("homing_offset" == dynamixel->item_->item_name)
+      xm_state.homing_offset = read_value;
+    else if ("moving_threshold" == dynamixel->item_->item_name)
+      xm_state.moving_threshold = read_value;
+    else if ("max_temperature_limit" == dynamixel->item_->item_name)
+      xm_state.temperature_limit = read_value;
+    else if ("max_voltage_limit" == dynamixel->item_->item_name)
+      xm_state.max_voltage_limit = read_value;
+    else if ("min_voltage_limit" == dynamixel->item_->item_name)
+      xm_state.min_voltage_limit = read_value;
+    else if ("pwm_limit" == dynamixel->item_->item_name)
+      xm_state.pwm_limit = read_value;
+    else if ("current_limit" == dynamixel->item_->item_name)
+      xm_state.current_limit = read_value;
+    else if ("acceleration_limit" == dynamixel->item_->item_name)
+      xm_state.acceleration_limit = read_value;
+    else if ("velocity_limit" == dynamixel->item_->item_name)
+      xm_state.velocity_limit = read_value;
+    else if ("max_position_limit" == dynamixel->item_->item_name)
+      xm_state.max_position_limit = read_value;
+    else if ("min_position_limit" == dynamixel->item_->item_name)
+      xm_state.min_position_limit = read_value;
+    else if ("shutdown" == dynamixel->item_->item_name)
+      xm_state.shutdown = read_value;
+    else if ("torque_enable" == dynamixel->item_->item_name)
+      xm_state.torque_enable = read_value;
+    else if ("led" == dynamixel->item_->item_name)
+      xm_state.led = read_value;
+    else if ("status_return_level" == dynamixel->item_->item_name)
+      xm_state.status_return_level = read_value;
+    else if ("registered_instruction" == dynamixel->item_->item_name)
+      xm_state.registered_instruction = read_value;
+    else if ("hardware_error_status" == dynamixel->item_->item_name)
+      xm_state.hardware_error_status = read_value;
+    else if ("velocity_i_gain" == dynamixel->item_->item_name)
+      xm_state.velocity_i_gain = read_value;
+    else if ("velocity_p_gain" == dynamixel->item_->item_name)
+      xm_state.velocity_p_gain = read_value;
+    else if ("position_d_gain" == dynamixel->item_->item_name)
+      xm_state.position_d_gain = read_value;
+    else if ("position_i_gain" == dynamixel->item_->item_name)
+      xm_state.position_i_gain = read_value;
+    else if ("position_p_gain" == dynamixel->item_->item_name)
+      xm_state.position_p_gain = read_value;
+    else if ("feedforward_2nd_gain" == dynamixel->item_->item_name)
+      xm_state.feedforward_2nd_gain = read_value;
+    else if ("feedforward_1st_gain" == dynamixel->item_->item_name)
+      xm_state.feedforward_1st_gain = read_value;
+    else if ("goal_pwm" == dynamixel->item_->item_name)
+      xm_state.goal_pwm = read_value;
+    else if ("goal_current" == dynamixel->item_->item_name)
+      xm_state.goal_current = read_value;
+    else if ("goal_velocity" == dynamixel->item_->item_name)
+      xm_state.goal_velocity = read_value;
+    else if ("profile_acceleration" == dynamixel->item_->item_name)
+      xm_state.profile_acceleration = read_value;
+    else if ("profile_velocity" == dynamixel->item_->item_name)
+      xm_state.profile_velocity = read_value;
+    else if ("goal_position" == dynamixel->item_->item_name)
+      xm_state.goal_position = read_value;
+    else if ("realtime_tick" == dynamixel->item_->item_name)
+      xm_state.realtime_tick = read_value;
+    else if ("moving" == dynamixel->item_->item_name)
+      xm_state.moving = read_value;
+    else if ("moving_status" == dynamixel->item_->item_name)
+      xm_state.moving_status = read_value;
+    else if ("present_pwm" == dynamixel->item_->item_name)
+      xm_state.present_pwm = read_value;
+    else if ("present_current" == dynamixel->item_->item_name)
+      xm_state.present_current = read_value;
+    else if ("present_velocity" == dynamixel->item_->item_name)
+      xm_state.present_velocity = read_value;
+    else if ("present_position" == dynamixel->item_->item_name)
+      xm_state.present_position = read_value;
+    else if ("velocity_trajectory" == dynamixel->item_->item_name)
+      xm_state.velocity_trajectory = read_value;
+    else if ("position_trajectory" == dynamixel->item_->item_name)
+      xm_state.position_trajectory = read_value;
+    else if ("present_input_voltage" == dynamixel->item_->item_name)
+      xm_state.present_input_voltage = read_value;
+    else if ("present_temperature" == dynamixel->item_->item_name)
+      xm_state.present_temperature = read_value;
   }
 
-  return 0;
+  dynamixel_state_pub_.publish(xm_state);
 }
-
-

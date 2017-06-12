@@ -36,12 +36,14 @@ using namespace single_dynamixel_controller;
 
 SingleDynamixelController::SingleDynamixelController()
 {
-  ROS_ASSERT(initSingleDynamixelController());
+  // init Service Client
+  dynamixel_info_client_    = node_handle_.serviceClient<dynamixel_workbench_msgs::GetDynamixelInfo>("dynamixel/info");
+  dynamixel_command_client_ = node_handle_.serviceClient<dynamixel_workbench_msgs::DynamixelCommand>("dynamixel/command");
 }
 
 SingleDynamixelController::~SingleDynamixelController()
 {
-  ROS_ASSERT(shutdownSingleDynamixelController());
+
 }
 
 bool SingleDynamixelController::initSingleDynamixelController()
@@ -98,61 +100,22 @@ int SingleDynamixelController::kbhit()
   return 0;
 }
 
-void SingleDynamixelController::viewManagerMenu(void)
+void SingleDynamixelController::viewManagerMenu()
 {
   ROS_INFO("----------------------------------------------------------------------");
   ROS_INFO("Single Manager supports GUI (dynamixel_workbench_single_manager_gui)  ");
   ROS_INFO("----------------------------------------------------------------------");
   ROS_INFO("Command list :");
-  ROS_INFO("[help|h|?]................: display this menu");
-  ROS_INFO("[status]..................: status of a Dynamixel");
-  ROS_INFO("[table]...................: check a control table of a dynamixel");
-  ROS_INFO("[reboot]..................: reboot a Dynamixel(only protocol version 2.0)");
-  ROS_INFO("[factory_reset]...........: command for all data back to the factory settings values");
-  ROS_INFO("[[table_item] [value].....: change address value of a dynamixel");
-  ROS_INFO("[exit]....................: shutdown");
+  ROS_INFO("[help|h|?]...........: display this menu");
+  ROS_INFO("[info]...............: information of a Dynamixel");
+  ROS_INFO("[table]..............: check a control table of a dynamixel");
+  ROS_INFO("[reboot].............: reboot a Dynamixel(only protocol version 2.0)");
+  ROS_INFO("[factory_reset]......: command for all data back to factory settings values");
+  ROS_INFO("[[table_item] [value]: change address value of a dynamixel");
+  ROS_INFO("[exit]...............: shutdown");
   ROS_INFO("----------------------------------------------------------------------");
-  ROS_INFO("Press SpaceBar to command a Dynamixel");
+  ROS_INFO("Press Enter Key To Command A DYNAMIXEL");
 }
-
-//void SingleManager::showControlTable(void)
-//{
-//  for (dynamixel_->it_ctrl_ = dynamixel_->ctrl_table_.begin(); dynamixel_->it_ctrl_ != dynamixel_->ctrl_table_.end(); dynamixel_->it_ctrl_++)
-//  {
-//    dynamixel_->item_ = dynamixel_->ctrl_table_[dynamixel_->it_ctrl_->first.c_str()];
-//    if (dynamixel_torque_status_)
-//    {
-//      if ((dynamixel_->item_->access_type == dynamixel_tool::READ_WRITE) && (dynamixel_->item_->memory_type == dynamixel_tool::RAM))
-//      {
-//        ROS_INFO("%s", dynamixel_->item_->item_name.c_str());
-//      }
-//    }
-//    else
-//    {
-//      if (dynamixel_->item_->access_type == dynamixel_tool::READ_WRITE)
-//      {
-//        ROS_INFO("%s", dynamixel_->item_->item_name.c_str());
-//      }
-//    }
-//  }
-//}
-
-//void SingleManager::checkValidationCommand(bool *valid_cmd, char *cmd)
-//{
-//  for (dynamixel_->it_ctrl_ = dynamixel_->ctrl_table_.begin(); dynamixel_->it_ctrl_ != dynamixel_->ctrl_table_.end(); dynamixel_->it_ctrl_++)
-//  {
-//    dynamixel_->item_ = dynamixel_->ctrl_table_[dynamixel_->it_ctrl_->first.c_str()];
-//    if (cmd == dynamixel_->item_->item_name)
-//    {
-//      *valid_cmd = true;
-//      break;
-//    }
-//    else
-//    {
-//      *valid_cmd = false;
-//    }
-//  }
-//}
 
 //bool SingleManager::getWorkbenchParamCallback(dynamixel_workbench_msgs::GetWorkbenchParam::Request &req, dynamixel_workbench_msgs::GetWorkbenchParam::Response &res)
 //{
@@ -215,199 +178,140 @@ void SingleDynamixelController::viewManagerMenu(void)
 //  }
 //}
 
-//bool SingleManager::dynamixelSingleManagerLoop(void)
-//{
-//  char input[128];
-//  char cmd[80];
-//  char param[20][30];
-//  int num_param = 0;
-//  char *token;
-//  bool valid_cmd = false;
+bool SingleDynamixelController::controlLoop()
+{
+  char input[128];
+  char cmd[80];
+  char param[20][30];
+  int num_param = 0;
+  char *token;
+  bool valid_cmd = false;
 
-//  setPublishedMsg();
+  if (kbhit())
+  {
+    if (getchar() == ENTER_ASCII_VALUE)
+    {
+      viewManagerMenu();
+      printf("[CMD]");
+      fgets(input, sizeof(input), stdin);
 
-//  if (kbhit())
-//  {
-//    if (getchar() == SPACEBAR_ASCII_VALUE)
-//    {
-//      printf("[CMD]");
-//      fgets(input, sizeof(input), stdin);
+      char *p;
+      if ((p = strchr(input, '\n'))!= NULL) *p = '\0';
+      fflush(stdin);
 
-//      char *p;
-//      if ((p = strchr(input, '\n'))!= NULL) *p = '\0';
-//      fflush(stdin);
+      if (strlen(input) == 0) return false;
 
-//      if (strlen(input) == 0) return false;
+      token = strtok(input, " ");
 
-//      token = strtok(input, " ");
+      if (token == 0) return false;
 
-//      if (token == 0) return false;
+      strcpy(cmd, token);
+      token = strtok(0, " ");
+      num_param = 0;
 
-//      strcpy(cmd, token);
-//      token = strtok(0, " ");
-//      num_param = 0;
+      while (token != 0)
+      {
+        strcpy(param[num_param++], token);
+        token = strtok(0, " ");
+      }
 
-//      while (token != 0)
-//      {
-//        strcpy(param[num_param++], token);
-//        token = strtok(0, " ");
-//      }
+      if (strcmp(cmd, "help") == 0 || strcmp(cmd, "h") == 0 || strcmp(cmd, "?") == 0)
+      {
+        viewManagerMenu();
+      }
+      else if (strcmp(cmd, "info") == 0)
+      {
+        dynamixel_workbench_msgs::GetDynamixelInfo get_dynamixel_info;
 
-//      checkValidationCommand(&valid_cmd, cmd);
+        if (dynamixel_info_client_.call(get_dynamixel_info))
+        {
+          ROS_INFO("[ID] %u, [Model Name] %s, [BAUD RATE] %ld", get_dynamixel_info.response.dynamixel_info.model_id,
+                                                                get_dynamixel_info.response.dynamixel_info.model_name.c_str(),
+                                                                get_dynamixel_info.response.dynamixel_info.baud_rate);
+        }
+      }
+      else if (strcmp(cmd, "exit") == 0)
+      {
+        dynamixel_workbench_msgs::DynamixelCommand set_dynamixel_command;
 
-//      if (strcmp(cmd, "help") == 0 || strcmp(cmd, "h") == 0 || strcmp(cmd, "?") == 0)
-//      {
-//          viewManagerMenu();
-//      }
-//      else if (strcmp(cmd, "status") == 0)
-//      {
-//        ROS_INFO("[ID] %u, [Model Name] %s, [BAUD RATE] %d", dynamixel_->id_, dynamixel_->model_name_.c_str(), portHandler_->getBaudRate());
-//      }
-//      else if (strcmp(cmd, "exit") == 0)
-//      {
-//        shutdownDynamixelWorkbenchSingleManager();
-//        return true;
-//      }
-//      else if (strcmp(cmd, "table") == 0)
-//      {
-//        showControlTable();
-//      }
-//      else if (strcmp(cmd, "reboot") == 0)
-//      {
-//        rebootDynamixel();
-//      }
-//      else if (strcmp(cmd, "factory_reset") == 0)
-//      {
-//        resetDynamixel();
-//      }
-//      else if (valid_cmd == true)
-//      {
-//        if (num_param == 1)
-//        {
-//          dynamixel_->item_ = dynamixel_->ctrl_table_[cmd];
-//          if (dynamixel_->item_->access_type == dynamixel_tool::READ_WRITE)
-//          {
-//            if((dynamixel_torque_status_ == true) && dynamixel_->item_->memory_type == dynamixel_tool::EEPROM)
-//            {
-//              ROS_ERROR("address in EEPROM is not accessed when motor is torque on");
-//              ROS_ERROR("Check a ""table""");
-//            }
-//            else if ((dynamixel_torque_status_ == false) && (dynamixel_->item_->item_name != "torque_enable") && dynamixel_->item_->memory_type == dynamixel_tool::RAM)
-//            {
-//              ROS_ERROR("address in RAM is accessed when motor is torque on");
-//            }
-//            else
-//            {
-//              if (dynamixel_->item_->item_name == "id")
-//              {
-//                if (atoi(param[0]) > 0 && atoi(param[0]) < 253)
-//                {
-//                  writeDynamixelRegister(dynamixel_->id_, dynamixel_->item_->address, dynamixel_->item_->data_length, atoi(param[0]));
-//                  usleep(dynamixel_->item_->data_length* 55 * 1000 * 10);
+        set_dynamixel_command.request.command = "exit";
 
-//                  dynamixel_ = new dynamixel_tool::DynamixelTool(atoi(param[0]), dynamixel_->model_number_, packetHandler_->getProtocolVersion());
-//                  ROS_INFO("...Succeeded to set dynamixel id [%u]", dynamixel_->id_);
-//                }
-//                else
-//                {
-//                  ROS_ERROR(" Dynamixel ID can be set 1~252");
-//                }
-//              }
-//              else if (dynamixel_->item_->item_name == "baud_rate")
-//              {
-//                if (dynamixel_->baud_rate_table_.find(atoi(param[0]))->second == dynamixel_->baud_rate_table_.end()->second)
-//                {
-//                  ROS_ERROR(" Failed to change [ BAUD RATE: %d ]", atoi(param[0]));
-//                  ROS_ERROR(" Please check the valid baud rate at dynamixel_tool packages or E-MANUAL");
+        if (dynamixel_command_client_.call(set_dynamixel_command))
+        {
+          if (set_dynamixel_command.response.comm_result)
+            shutdownSingleDynamixelController();
+        }
+        return true;
+      }
+      else if (strcmp(cmd, "table") == 0)
+      {
+        dynamixel_workbench_msgs::DynamixelCommand set_dynamixel_command;
 
-//                  writeDynamixelRegister(dynamixel_->id_, dynamixel_->item_->address, dynamixel_->item_->data_length, dynamixel_->baud_rate_table_.find(57600)->second);
-//                  usleep(dynamixel_->item_->data_length* 55 * 1000 *10);
+        set_dynamixel_command.request.command = "table";
 
-//                  if (portHandler_->setBaudRate(dynamixel_->baud_rate_table_.find(57600)->first) == false)
-//                  {
-//               //     sleep(1);
-//                    ROS_INFO(" Failed to change default baudrate(57600)!");
-//                  }
-//                  else
-//                  {
-//                //    sleep(1);
-//                    ROS_INFO(" Success to change default baudrate! [ BAUD RATE: 57600 ]");
-//                  }
-//                }
-//                else
-//                {
-//                  if (atoi(param[0]) < 2250000)
-//                  {
-//                    writeDynamixelRegister(dynamixel_->id_, dynamixel_->item_->address, dynamixel_->item_->data_length, dynamixel_->baud_rate_table_.find(atoi(param[0]))->second);
-//                    usleep(dynamixel_->item_->data_length* 55 * 1000 *10);
+        if (dynamixel_command_client_.call(set_dynamixel_command))
+        {
+          if (!set_dynamixel_command.response.comm_result)
+            ROS_ERROR("It didn't load DYNAMIXEL Control Table");
+        }
+      }
+      else if (strcmp(cmd, "reboot") == 0)
+      {
+        dynamixel_workbench_msgs::DynamixelCommand set_dynamixel_command;
 
-//                    if (portHandler_->setBaudRate(dynamixel_->baud_rate_table_.find(atoi(param[0]))->first) == false)
-//                    {
-//                      ROS_INFO(" Failed to change baudrate!");
-//                    }
-//                    else
-//                    {
-//                      ROS_INFO(" Success to change baudrate! [ BAUD RATE: %d ]", dynamixel_->baud_rate_table_.find(atoi(param[0]))->first);
-//                    }
-//                  }
-//                  else
-//                  {
-//                    ROS_ERROR(" USB2Dynamixel supports baudrate under '2250000'");
-//                  }
-//                }
-//              }
-//              else if (dynamixel_->item_->item_name == "protocol_version")
-//              {
-//                if (atoi(param[0]) == 1.0 || atoi(param[0]) == 2.0)
-//                {
-//                  // TODO: Find restriced access address in protocol_version 1.0 of XM430
-//                  writeDynamixelRegister(dynamixel_->id_, dynamixel_->item_->address, dynamixel_->item_->data_length, atof(param[0]));
-//                  usleep(dynamixel_->item_->data_length* 55 * 1000 *10);
+        set_dynamixel_command.request.command = "reboot";
 
-//                  packetHandler_->getPacketHandler(atof(param[0]));
+        if (dynamixel_command_client_.call(set_dynamixel_command))
+        {
+          if (!set_dynamixel_command.response.comm_result)
+            ROS_ERROR("It didn't reboot to DYNAMIXEL");
+        }
+      }
+      else if (strcmp(cmd, "factory_reset") == 0)
+      {
+        dynamixel_workbench_msgs::DynamixelCommand set_dynamixel_command;
 
-//                  ROS_INFO(" Success to change protocol version [ PROTOCOL VERSION: %.2f]", packetHandler_->getProtocolVersion());
-//                }
-//                else
-//                {
-//                  ROS_ERROR(" Dynamixel has '1.0' or '2.0' protocol version");
-//                }
-//              }
-//              else
-//              {
-//                writeDynamixelRegister(dynamixel_->id_, dynamixel_->item_->address, dynamixel_->item_->data_length, atoi(param[0]));
-//                if (dynamixel_->item_->memory_type == dynamixel_tool::EEPROM)
-//                {
-//                  usleep(dynamixel_->item_->data_length* 55 * 1000 *10);
-//                }
-//              }
-//            }
-//          }
-//        }
-//        else
-//        {
-//          ROS_ERROR("Invalid parameters! Please check control table [-table]");
-//        }
-//      }
-//      else
-//      {
-//        ROS_ERROR("Invalid command. Please check menu[help, ?]");
-//      }
-//    }
-//  }
-//}
+        set_dynamixel_command.request.command = "factory_reset";
+
+        if (dynamixel_command_client_.call(set_dynamixel_command))
+        {
+          if (!set_dynamixel_command.response.comm_result)
+            ROS_ERROR("It didn't factory reset to DYNAMIXEL");
+        }
+      }
+      else if (num_param == 1)
+      {
+        dynamixel_workbench_msgs::DynamixelCommand set_dynamixel_command;
+
+        set_dynamixel_command.request.command = "addr";
+        set_dynamixel_command.request.addr_name = cmd;
+        set_dynamixel_command.request.value = atoi(param[0]);
+
+        if (!dynamixel_command_client_.call(set_dynamixel_command))
+        {
+          if (!set_dynamixel_command.response.comm_result)
+            ROS_ERROR("It didn't works!!");
+        }
+        else
+        {
+          if (set_dynamixel_command.response.comm_result)
+            ROS_INFO("It works!!");
+        }
+      }
+    }
+  }
+}
 
 int main(int argc, char **argv)
 {
   // Init ROS node
   ros::init(argc, argv, "single_dynamixel_controller");
   SingleDynamixelController single_dynamixel_controller;
-  ros::Rate loop_rate(125);
-  single_dynamixel_controller.viewManagerMenu();
+  ros::Rate loop_rate(250);
 
   while (ros::ok())
   {
-    //single_manager.dynamixelSingleManagerLoop();
+    single_dynamixel_controller.controlLoop();
     ros::spinOnce();
     loop_rate.sleep();
   }

@@ -40,12 +40,16 @@
 #include <stdio.h>
 #include <ros/ros.h>
 
+#include "dynamixel_workbench_msgs/DynamixelCommand.h"
+#include "dynamixel_workbench_msgs/GetDynamixelInfo.h"
+
 #include "dynamixel_workbench_toolbox/dynamixel_tool.h"
 
 namespace single_dynamixel_controller
 {
 #define ESC_ASCII_VALUE             0x1b
 #define SPACEBAR_ASCII_VALUE        0x20
+#define ENTER_ASCII_VALUE           0x0a
 
 class SingleDynamixelController
 {
@@ -58,11 +62,12 @@ class SingleDynamixelController
   // ROS Topic Publisher
 
   // ROS Topic Subscriber
-  ros::Subscriber dynamixel_state_pub_;
-  ros::Subscriber dynamixel_command_sub_;
 
-  // ROS Server
-  ros::ServiceServer workbench_param_server_;
+  // ROS Service Server
+
+  // ROS Service Client
+  ros::ServiceClient dynamixel_info_client_;
+  ros::ServiceClient dynamixel_command_client_;
 
   // Dynamixel Workbench Parameters
 
