@@ -106,6 +106,58 @@ bool DynamixelDriver::ping(uint8_t id)
   return false;
 }
 
+bool DynamixelDriver::setPortHandler(std::string device_name)
+{
+  portHandler_ = dynamixel::PortHandler::getPortHandler(device_name.c_str());
+
+  if (portHandler_->openPort())
+  {
+    ROS_INFO("Succeeded to open the port(%s)!", device_name_.c_str());
+    return true;
+  }
+  else
+  {
+    ROS_ERROR("Failed to open the port!");
+    return false;
+  }
+}
+
+bool DynamixelDriver::setPacketHandler(float protocol_version)
+{
+  packetHandler_ = dynamixel::PacketHandler::getPacketHandler(protocol_version);
+
+  return true;
+}
+
+bool DynamixelDriver::setBaudrate(uint32_t baud_rate)
+{
+  if (portHandler_->setBaudRate(baud_rate))
+  {
+    ROS_INFO("Succeeded to change the baudrate(%d)!", portHandler_->getBaudRate());
+    return true;
+  }
+  else
+  {
+    ROS_ERROR("Failed to change the baudrate!");
+    return false;
+  }
+}
+
+char* DynamixelDriver::getPortName()
+{
+  return portHandler_->getPortName();
+}
+
+float DynamixelDriver::getProtocolVersion()
+{
+  return packetHandler_->getProtocolVersion();
+}
+
+uint32_t DynamixelDriver::getBaudrate()
+{
+  return portHandler_->getBaudRate();
+}
+
 bool DynamixelDriver::writeRegister(std::string addr_name, uint32_t value)
 {
   uint8_t error = 0;
@@ -132,6 +184,7 @@ bool DynamixelDriver::writeRegister(std::string addr_name, uint32_t value)
     if (error != 0)
     {
       packetHandler_->printRxPacketError(error);
+      return false;
     }
     return true;
   }
@@ -142,6 +195,8 @@ bool DynamixelDriver::writeRegister(std::string addr_name, uint32_t value)
     ROS_ERROR("[ID] %u, Fail to write!", dynamixel_->id_);
     return false;
   }
+
+  return true;
 }
 
 bool DynamixelDriver::readRegister(std::string addr_name, uint32_t *value)
@@ -206,7 +261,7 @@ bool DynamixelDriver::reboot()
 {
   if (protocol_version_ != 2.0)
   {
-    ROS_ERROR("reboot command only can support in protocol version 2.0");
+    ROS_WARN("reboot command only can support in protocol version 2.0");
   }
   else
   {
@@ -228,11 +283,15 @@ bool DynamixelDriver::reboot()
 
       //dynamixel_ = new dynamixel_tool::DynamixelTool(dynamixel_->id_, dynamixel_->model_number_, packetHandler_->getProtocolVersion());
       ROS_INFO("[ID] %u, [Model Name] %s, [BAUD RATE] %d", dynamixel_->id_, dynamixel_->model_name_.c_str(), portHandler_->getBaudRate());
+
+      return true;
     }
     else
     {
       packetHandler_->printTxRxResult(comm_result);
-      ROS_INFO("Fail to reboot!");
+      ROS_ERROR("Fail to reboot!");
+
+      return false;
     }
   }
 }
@@ -258,22 +317,28 @@ bool DynamixelDriver::reset()
       }
       ROS_INFO("Success to reset!");
 
-      if (portHandler_->setBaudRate(57600) == false)
+      if (portHandler_->setBaudRate(1000000) == false)
       {
         sleep(1);
-        ROS_INFO(" Failed to change baudrate!");
+        ROS_ERROR(" Failed to change baudrate!");
+
+        return false;
       }
       else
       {
         sleep(1);
         dynamixel_ = new dynamixel_tool::DynamixelTool(1, dynamixel_->model_number_, packetHandler_->getProtocolVersion());
         ROS_INFO("[ID] %u, [Model Name] %s, [BAUD RATE] %d", dynamixel_->id_, dynamixel_->model_name_.c_str(), portHandler_->getBaudRate());
+
+        return true;
       }
     }
     else
     {
       packetHandler_->printTxRxResult(comm_result);
       ROS_ERROR("Fail to reset!");
+
+      return false;
     }
   }
   else if (packetHandler_->getProtocolVersion() == 2.0)
@@ -292,19 +357,25 @@ bool DynamixelDriver::reset()
       if (portHandler_->setBaudRate(57600) == false)
       {
         sleep(1);
-        ROS_INFO(" Failed to change baudrate!");
+        ROS_ERROR(" Failed to change baudrate!");
+
+        return false;
       }
       else
       {
         sleep(1);
         dynamixel_ = new dynamixel_tool::DynamixelTool(1, dynamixel_->model_number_, packetHandler_->getProtocolVersion());
         ROS_INFO("[ID] %u, [Model Name] %s, [BAUD RATE] %d", dynamixel_->id_, dynamixel_->model_name_.c_str(), portHandler_->getBaudRate());
+
+        return true;
       }
     }
     else
     {
       packetHandler_->printTxRxResult(comm_result);
       ROS_ERROR("Fail to reset!");
+
+      return false;
     }
   }
 }

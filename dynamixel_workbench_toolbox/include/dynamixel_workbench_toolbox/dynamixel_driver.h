@@ -67,6 +67,14 @@ class DynamixelDriver
   bool reboot();
   bool reset();
 
+  bool setPortHandler(std::string device_name);
+  bool setPacketHandler(float protocol_version);
+  bool setBaudrate(uint32_t baud_rate);
+
+  char* getPortName();
+  float getProtocolVersion();
+  uint32_t getBaudrate();
+
   bool writeRegister(std::string addr_name, uint32_t value);
   bool readRegister(std::string addr_name, uint32_t *value);
 };
