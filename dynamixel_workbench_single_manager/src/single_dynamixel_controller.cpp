@@ -117,67 +117,6 @@ void SingleDynamixelController::viewManagerMenu()
   ROS_INFO("Press Enter Key To Command A DYNAMIXEL");
 }
 
-//bool SingleManager::getWorkbenchParamCallback(dynamixel_workbench_msgs::GetWorkbenchParam::Request &req, dynamixel_workbench_msgs::GetWorkbenchParam::Response &res)
-//{
-//  res.workbench_parameter.device_name = device_name_;
-//  res.workbench_parameter.baud_rate = portHandler_->getBaudRate();
-//  res.workbench_parameter.protocol_version = packetHandler_->getProtocolVersion();
-//  res.workbench_parameter.model_name = dynamixel_->model_name_;
-//  res.workbench_parameter.model_id = dynamixel_->id_;
-//  res.workbench_parameter.model_number = dynamixel_->model_number_;
-
-//  return true;
-//}
-
-//void SingleManager::dynamixelCommandMsgCallback(const dynamixel_workbench_msgs::DynamixelCommand::ConstPtr &msg)
-//{
-//  if (msg->addr_name == "reboot")
-//  {
-//    rebootDynamixel();
-//  }
-//  else if (msg->addr_name == "factory_reset")
-//  {
-//    resetDynamixel();
-//  }
-//  else if (msg->addr_name == "baud_rate")
-//  {
-//    dynamixel_->item_ = dynamixel_->ctrl_table_[msg->addr_name];
-//    writeDynamixelRegister(dynamixel_->id_, dynamixel_->item_->address, dynamixel_->item_->data_length, dynamixel_->baud_rate_table_.find(msg->value)->second);
-
-//    usleep(dynamixel_->item_->data_length* 55 * 1000 *10);
-
-//    if (portHandler_->setBaudRate(dynamixel_->baud_rate_table_.find(msg->value)->first) == false)
-//    {
-//      ROS_INFO(" Failed to change baudrate!");
-//    }
-//    else
-//    {
-//      ROS_INFO(" Success to change baudrate! [ BAUD RATE: %d ]", dynamixel_->baud_rate_table_.find(msg->value)->first);
-//    }
-//  }
-//  else if (msg->addr_name == "id")
-//  {
-//    dynamixel_->item_ = dynamixel_->ctrl_table_[msg->addr_name];
-//    writeDynamixelRegister(dynamixel_->id_, dynamixel_->item_->address, dynamixel_->item_->data_length, msg->value);
-
-//    usleep(dynamixel_->item_->data_length* 55 * 1000 *10);
-
-//    dynamixel_ = new dynamixel_tool::DynamixelTool(msg->value, dynamixel_model_number_, protocol_version_);
-//    ROS_INFO("...Succeeded to set dynamixel id");
-//    ROS_INFO("[ID] %u, [Model Name] %s", dynamixel_->id_, dynamixel_->model_name_.c_str());
-//  }
-//  else
-//  {
-//    dynamixel_->item_ = dynamixel_->ctrl_table_[msg->addr_name];
-//    writeDynamixelRegister(dynamixel_->id_, dynamixel_->item_->address, dynamixel_->item_->data_length, msg->value);
-
-//    if (dynamixel_->item_->memory_type == dynamixel_tool::EEPROM)
-//    {
-//      usleep(dynamixel_->item_->data_length* 55 * 1000 *10);
-//    }
-//  }
-//}
-
 bool SingleDynamixelController::controlLoop()
 {
   char input[128];

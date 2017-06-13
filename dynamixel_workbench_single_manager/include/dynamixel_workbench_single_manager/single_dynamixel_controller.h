@@ -84,16 +84,6 @@ class SingleDynamixelController
   int getch(void);
   int kbhit(void);
 
-//  void showControlTable(void);
-//  void checkValidationCommand(bool *valid_cmd, char *cmd);
-
-//  void setSubscriber(void);
-//  void setPublishedMsg(void);
-//  void setServer(void);
-
-//  void dynamixelCommandMsgCallback(const dynamixel_workbench_msgs::DynamixelCommand::ConstPtr &msg);
-//  bool getWorkbenchParamCallback(dynamixel_workbench_msgs::GetWorkbenchParam::Request &req, dynamixel_workbench_msgs::GetWorkbenchParam::Response &res);
-
 };
 }
 

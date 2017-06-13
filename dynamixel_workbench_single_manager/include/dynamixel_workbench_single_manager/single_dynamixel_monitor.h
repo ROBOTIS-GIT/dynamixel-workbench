@@ -42,7 +42,7 @@
 
 #include "dynamixel_workbench_msgs/DynamixelCommand.h"
 #include "dynamixel_workbench_msgs/GetDynamixelInfo.h"
-#include "dynamixel_workbench_single_manager/message_header.h"
+#include "dynamixel_workbench_toolbox//message_header.h"
 
 namespace single_dynamixel_monitor
 {
@@ -79,7 +79,7 @@ class SingleDynamixelMonitor
   // ROS Parameters
 
   // ROS Topic Publisher
-  ros::Publisher dynamixel_state_pub_;
+  ros::Publisher dynamixel_status_pub_;
 
   // ROS Topic Subscriber
 
@@ -118,11 +118,11 @@ class SingleDynamixelMonitor
   bool changeBaudrate(uint64_t baud_rate);
   bool changeProtocolVersion(float ver);
 
-  bool dynamixelInfoCallback(dynamixel_workbench_msgs::GetDynamixelInfo::Request &req,
-                             dynamixel_workbench_msgs::GetDynamixelInfo::Response &res);
+  bool dynamixelInfoMsgCallback(dynamixel_workbench_msgs::GetDynamixelInfo::Request &req,
+                                dynamixel_workbench_msgs::GetDynamixelInfo::Response &res);
 
-  bool dynamixelCommandCallback(dynamixel_workbench_msgs::DynamixelCommand::Request &req,
-                                dynamixel_workbench_msgs::DynamixelCommand::Response &res);
+  bool dynamixelCommandMsgCallback(dynamixel_workbench_msgs::DynamixelCommand::Request &req,
+                                   dynamixel_workbench_msgs::DynamixelCommand::Response &res);
 
   bool AX();
   bool RX();

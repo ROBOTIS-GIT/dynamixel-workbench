@@ -67,7 +67,9 @@ SingleDynamixelMonitor::SingleDynamixelMonitor()
     }
     else
     {
-      ROS_ERROR("...Failed to find dynamixel!");
+      ROS_WARN("Please Check DYNAMIXEL Firmware Version,");
+      ROS_WARN("Baudrate [57600, 115200, 1000000, 3000000]");
+      ROS_ERROR("...Failed to find dynamixel!");      
       shutdownSingleDynamixelMonitor();
     }
   }
@@ -87,6 +89,8 @@ SingleDynamixelMonitor::SingleDynamixelMonitor()
     }
     else
     {
+      ROS_WARN("Please Check DYNAMIXEL Firmware Version,");
+      ROS_WARN("Baudrate [57600, 115200, 1000000, 3000000]");
       ROS_ERROR("...Failed to find dynamixel!");
       shutdownSingleDynamixelMonitor();
     }
@@ -123,11 +127,11 @@ bool SingleDynamixelMonitor::initDynamixelStatePublisher()
 
   if (dynamixel->model_name_.find("AX") != std::string::npos)
   {
-    dynamixel_state_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::DynamixelAX>("dynamixel/" + dynamixel->model_name_ + "_state", 10);
+    dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::DynamixelAX>("dynamixel/" + dynamixel->model_name_ + "_state", 10);
   }
   else if (dynamixel->model_name_.find("XM") != std::string::npos)
   {
-    dynamixel_state_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::DynamixelXM>("dynamixel/" + dynamixel->model_name_ + "_state", 10);
+    dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::DynamixelXM>("dynamixel/" + dynamixel->model_name_ + "_state", 10);
   }
 
   return true;
@@ -135,14 +139,14 @@ bool SingleDynamixelMonitor::initDynamixelStatePublisher()
 
 bool SingleDynamixelMonitor::initDynamixelInfoServer()
 {
-  dynamixel_info_server_ = node_handle_.advertiseService("dynamixel/info", &SingleDynamixelMonitor::dynamixelInfoCallback, this);
+  dynamixel_info_server_ = node_handle_.advertiseService("dynamixel/info", &SingleDynamixelMonitor::dynamixelInfoMsgCallback, this);
 
   return true;
 }
 
 bool SingleDynamixelMonitor::initDynamixelCommandServer()
 {
-  dynamixel_command_server_ = node_handle_.advertiseService("dynamixel/command", &SingleDynamixelMonitor::dynamixelCommandCallback, this);
+  dynamixel_command_server_ = node_handle_.advertiseService("dynamixel/command", &SingleDynamixelMonitor::dynamixelCommandMsgCallback, this);
 
   return true;
 }
@@ -342,22 +346,6 @@ bool SingleDynamixelMonitor::changeProtocolVersion(float ver)
   }
 }
 
-bool SingleDynamixelMonitor::dynamixelStatePublish()
-{
-  dynamixel_tool::DynamixelTool *dynamixel = dynamixel_driver_->dynamixel_;
-
-  if (dynamixel->model_name_.find("AX") != std::string::npos)
-  {
-    AX();
-  }
-  else if (dynamixel->model_name_.find("XM") != std::string::npos)
-  {
-    XM();
-  }
-
-  return true;
-}
-
 bool SingleDynamixelMonitor::controlLoop()
 {
   dynamixelStatePublish();
@@ -365,7 +353,7 @@ bool SingleDynamixelMonitor::controlLoop()
   return true;
 }
 
-bool SingleDynamixelMonitor::dynamixelInfoCallback(dynamixel_workbench_msgs::GetDynamixelInfo::Request &req,
+bool SingleDynamixelMonitor::dynamixelInfoMsgCallback(dynamixel_workbench_msgs::GetDynamixelInfo::Request &req,
                                                    dynamixel_workbench_msgs::GetDynamixelInfo::Response &res)
 {
   const char *portName = dynamixel_driver_->getPortName();
@@ -382,7 +370,7 @@ bool SingleDynamixelMonitor::dynamixelInfoCallback(dynamixel_workbench_msgs::Get
   return true;
 }
 
-bool SingleDynamixelMonitor::dynamixelCommandCallback(dynamixel_workbench_msgs::DynamixelCommand::Request &req,
+bool SingleDynamixelMonitor::dynamixelCommandMsgCallback(dynamixel_workbench_msgs::DynamixelCommand::Request &req,
                                                       dynamixel_workbench_msgs::DynamixelCommand::Response &res)
 {
   if (req.command == "table")
@@ -488,6 +476,23 @@ int main(int argc, char **argv)
   return 0;
 }
 
+
+bool SingleDynamixelMonitor::dynamixelStatePublish()
+{
+  dynamixel_tool::DynamixelTool *dynamixel = dynamixel_driver_->dynamixel_;
+
+  if (dynamixel->model_name_.find("AX") != std::string::npos)
+  {
+    AX();
+  }
+  else if (dynamixel->model_name_.find("XM") != std::string::npos)
+  {
+    XM();
+  }
+
+  return true;
+}
+
 bool SingleDynamixelMonitor::AX()
 {
   uint32_t read_value = 0;
@@ -568,7 +573,7 @@ bool SingleDynamixelMonitor::AX()
       ax_state.punch = read_value;
   }
 
-  dynamixel_state_pub_.publish(ax_state);
+  dynamixel_status_pub_.publish(ax_state);
 
   return true;
 }
@@ -687,5 +692,5 @@ bool SingleDynamixelMonitor::XM()
       xm_state.present_temperature = read_value;
   }
 
-  dynamixel_state_pub_.publish(xm_state);
+  dynamixel_status_pub_.publish(xm_state);
 }
