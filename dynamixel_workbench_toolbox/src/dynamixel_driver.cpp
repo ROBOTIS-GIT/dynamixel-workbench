@@ -30,7 +30,7 @@
 
 /* Author: Taehoon Lim (Darby) */
 
-#include "dynamixel_workbench_toolbox//dynamixel_driver.h"
+#include "dynamixel_workbench_toolbox/dynamixel_driver.h"
 
 using namespace dynamixel_driver;
 
