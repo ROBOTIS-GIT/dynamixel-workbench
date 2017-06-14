@@ -67,209 +67,166 @@ bool QNode::init()
   ros::NodeHandle node_handle;
 
   // Init Service Client
-  dynamixel_info_client_  = node_handle.serviceClient<dynamixel_workbench_msgs::GetDynamixelInfo>("dynamixel/info");
+  dynamixel_info_client_    = node_handle.serviceClient<dynamixel_workbench_msgs::GetDynamixelInfo>("dynamixel/info");
+  dynamixel_command_client_ = node_handle.serviceClient<dynamixel_workbench_msgs::DynamixelCommand>("dynamixel/command");
   getDynamixelInfo();
 
   // Init Message Subscriber
   initDynamixelStateSubscriber();
 
-//  // Add your ros communications here.
-//  set_workbench_param_msg_pub_ = node_handle.advertise<dynamixel_workbench_msgs::WorkbenchParam>("/dynamixel_workbench_single_manager/set_workbench_parameter", 10);
-//  get_workbench_param_client_  = node_handle.serviceClient<dynamixel_workbench_msgs::GetWorkbenchParam>("/dynamixel_workbench_single_manager/get_workbench_parameter", 10);
-//  getWorkbenchParam();
-
-//  setSubscriber();
-//  dynamixel_command_msg_pub_ = nh.advertise<dynamixel_workbench_msgs::DynamixelCommand>("/dynamixel_workbench_single_manager/motor_command", 10);
-
   start();
   return true;
 }
 
-//void QNode::sendTorqueMsg(std::string addr_name, int64_t onoff)
-//{
-//  dynamixel_workbench_msgs::DynamixelCommand msg;
+bool QNode::sendCommandMsg(std::string cmd, std::string addr, int64_t value)
+{
+  dynamixel_workbench_msgs::DynamixelCommand set_dynamixel_command;
 
-//  msg.addr_name = addr_name;
-//  msg.value = onoff;
+  set_dynamixel_command.request.command   = cmd;
+  set_dynamixel_command.request.addr_name = addr;
+  set_dynamixel_command.request.value     = value;
 
-//  dynamixel_command_msg_pub_.publish(msg);
-//}
+  if (dynamixel_command_client_.call(set_dynamixel_command))
+  {
+    if (!set_dynamixel_command.response.comm_result)
+      return false;
+    else
+      return true;
+  }
+}
 
-//void QNode::sendRebootMsg(void)
-//{
-//  dynamixel_workbench_msgs::DynamixelCommand msg;
+bool QNode::sendSetIdMsg(uint8_t set_id)
+{
+  if (sendCommandMsg("addr", "id", set_id))
+    return true;
+  else
+    return false;
+}
 
-//  msg.addr_name = std::string("reboot");
+bool QNode::sendSetBaudrateMsg(int64_t baud_rate)
+{
+  if (sendCommandMsg("addr", "baud_rate", baud_rate))
+    return true;
+  else
+    return false;
+}
 
-//  dynamixel_command_msg_pub_.publish(msg);
-//}
+bool QNode::sendSetOperatingModeMsg(std::string index, std::string model_name)
+{
+  dynamixel_workbench_msgs::DynamixelCommand set_dynamixel_command;
 
-//void QNode::sendResetMsg(void)
-//{
-//  dynamixel_workbench_msgs::DynamixelCommand msg;
+  if (model_name.find("AX") != std::string::npos)
+  {
+    if (index == "position_control")
+    {
+      if (sendCommandMsg("addr", "cw_angle_limit", 0) && sendCommandMsg("addr", "ccw_angle_limit", 1023))
+        return true;
+      else if (!sendCommandMsg("addr", "cw_angle_limit", 0))
+        return false;
+      else if (!sendCommandMsg("addr", "ccw_angle_limit", 1023))
+        return false;
+    }
+    else if (index == "velocity_control")
+    {
+      if (sendCommandMsg("addr", "cw_angle_limit", 0) && sendCommandMsg("addr", "ccw_angle_limit", 0))
+        return true;
+      else if (!sendCommandMsg("addr", "cw_angle_limit", 0))
+        return false;
+      else if (!sendCommandMsg("addr", "ccw_angle_limit", 0))
+        return false;
+    }
+  }
+  else if (model_name.find("RX") != std::string::npos)
+  {
 
-//  msg.addr_name = std::string("factory_reset");
+  }
+  else if (model_name.find("MX") != std::string::npos)
+  {
 
-//  dynamixel_command_msg_pub_.publish(msg);
-//}
+  }
+  else if (model_name.find("EX") != std::string::npos)
+  {
 
-//void QNode::sendSetIdMsg(int64_t id)
-//{
-//  dynamixel_workbench_msgs::DynamixelCommand msg;
+  }
+  else if (model_name.find("XL") != std::string::npos)
+  {
 
-//  msg.addr_name = std::string("id");
-//  msg.value = id;
+  }
+  else if (model_name.find("XM") != std::string::npos)
+  {
+    if (index == "position_control")
+    {
+      if (sendCommandMsg("addr", "operating_mode", 3))
+        return true;
+      else
+        return false;
+    }
+    else if (index == "velocity_control")
+    {
+      if (sendCommandMsg("addr", "operating_mode", 1))
+        return true;
+      else
+        return false;
+    }
+    else if (index == "current_control")
+    {
+      if (sendCommandMsg("addr", "operating_mode", 0))
+        return true;
+      else
+        return false;
+    }
+    else if (index == "extended_position_control")
+    {
+      if (sendCommandMsg("addr", "operating_mode", 4))
+        return true;
+      else
+        return false;
+    }
+    else if (index == "position_control_based_on_current")
+    {
+      if (sendCommandMsg("addr", "operating_mode", 5))
+        return true;
+      else
+        return false;
+    }
+    else if (index == "pwm_control")
+    {
+      if (sendCommandMsg("addr", "operating_mode", 16))
+        return true;
+      else
+        return false;
+    }
+  }
+}
 
-//  dynamixel_command_msg_pub_.publish(msg);
-//}
+bool QNode::sendTorqueMsg(int64_t onoff)
+{
+  if (sendCommandMsg("addr", "torque_enable", onoff))
+    return true;
+  else
+    return false;
+}
 
-//void QNode::sendSetOperatingModeMsg(std::string index)
-//{
-//  dynamixel_workbench_msgs::DynamixelCommand msg;
+bool QNode::sendRebootMsg(void)
+{
+  if (sendCommandMsg("reboot"))
+    return true;
+  else
+    return false;
+}
 
-//  if (index == "position_control")
-//  {
-//    if((!strncmp(dynamixel_model_name_.c_str(), "XM", 2)) || (!strncmp(dynamixel_model_name_.c_str(), "XH", 2))
-//       || (!strncmp(dynamixel_model_name_.c_str(), "XL430", 5)) || (!strncmp(dynamixel_model_name_.c_str(), "PRO", 3)))
-//    {
-//      msg.addr_name = std::string("operating_mode");
-//      msg.value = 3;
-
-//      dynamixel_command_msg_pub_.publish(msg);
-//    }
-//    else if(!strncmp(dynamixel_model_name_.c_str(), "XL_320", 6))
-//    {
-//      msg.addr_name = std::string("control_mode");
-//      msg.value = 2;
-
-//      dynamixel_command_msg_pub_.publish(msg);
-//    }
-//    else if ((!strncmp(dynamixel_model_name_.c_str(), "AX", 2)) || (!strncmp(dynamixel_model_name_.c_str(), "RX", 2)))
-//    {
-//      msg.addr_name = std::string("cw_angle_limit");
-//      msg.value = 0;
-
-//      dynamixel_command_msg_pub_.publish(msg);
-
-//      msg.addr_name = std::string("ccw_angle_limit");
-//      msg.value = 1023;
-
-//      dynamixel_command_msg_pub_.publish(msg);
-//    }
-//    else if ((!strncmp(dynamixel_model_name_.c_str(), "MX", 2)) || (!strncmp(dynamixel_model_name_.c_str(), "EX", 2)))
-//    {
-//      msg.addr_name = std::string("cw_angle_limit");
-//      msg.value = 0;
-
-//      dynamixel_command_msg_pub_.publish(msg);
-
-//      msg.addr_name = std::string("ccw_angle_limit");
-//      msg.value = 4095;
-
-//      dynamixel_command_msg_pub_.publish(msg);
-//    }
-//  }
-//  else if (index == "velocity_control")
-//  {
-//    if((!strncmp(dynamixel_model_name_.c_str(), "XM", 2)) || (!strncmp(dynamixel_model_name_.c_str(), "XH", 2))
-//       || (!strncmp(dynamixel_model_name_.c_str(), "XL430", 5)) || (!strncmp(dynamixel_model_name_.c_str(), "PRO", 3)))
-//    {
-//      msg.addr_name = std::string("operating_mode");
-//      msg.value = 1;
-
-//      dynamixel_command_msg_pub_.publish(msg);
-//    }
-//    else if(!strncmp(dynamixel_model_name_.c_str(), "XL_320", 6))
-//    {
-//      msg.addr_name = std::string("control_mode");
-//      msg.value = 1;
-
-//      dynamixel_command_msg_pub_.publish(msg);
-//    }
-//    else
-//    {
-//      msg.addr_name = std::string("cw_angle_limit");
-//      msg.value = 0;
-
-//      dynamixel_command_msg_pub_.publish(msg);
-
-//      msg.addr_name = std::string("ccw_angle_limit");
-//      msg.value = 0;
-
-//      dynamixel_command_msg_pub_.publish(msg);
-//    }
-//  }
-//  else if (index == "extended_position_control")
-//  {
-//    if(!strncmp(dynamixel_model_name_.c_str(), "MX", 2))
-//    {
-//      msg.addr_name = std::string("cw_angle_limit");
-//      msg.value = 4095;
-
-//      dynamixel_command_msg_pub_.publish(msg);
-
-//      msg.addr_name = std::string("ccw_angle_limit");
-//      msg.value = 4095;
-
-//      dynamixel_command_msg_pub_.publish(msg);
-//    }
-//    else
-//    {
-//      msg.addr_name = std::string("operating_mode");
-//      msg.value = 4;
-
-//      dynamixel_command_msg_pub_.publish(msg);
-//    }
-//  }
-//  else if (index == "torque_control")
-//  {
-//    if(!strncmp(dynamixel_model_name_.c_str(), "MX", 2))
-//    {
-//      msg.addr_name = std::string("torque_control_mode_enable");
-//      msg.value = 1;
-
-//      dynamixel_command_msg_pub_.publish(msg);
-//    }
-//    else
-//    {
-//      msg.addr_name = std::string("operating_mode");
-//      msg.value = 0;
-
-//      dynamixel_command_msg_pub_.publish(msg);
-//    }
-//  }
-//  else if (index == "current_control")
-//  {
-//    msg.addr_name = std::string("operating_mode");
-//    msg.value = 0;
-
-//    dynamixel_command_msg_pub_.publish(msg);
-//  }
-//  else if (index == "position_control_based_on_current")
-//  {
-//    msg.addr_name = std::string("operating_mode");
-//    msg.value = 5;
-
-//    dynamixel_command_msg_pub_.publish(msg);
-//  }
-//  else if (index == "pwm_control")
-//  {
-//    msg.addr_name = std::string("operating_mode");
-//    msg.value = 16;
-
-//    dynamixel_command_msg_pub_.publish(msg);
-//  }
-//}
-
-//void QNode::sendSetBaudrateMsg(float baud_rate)
-//{
-//  dynamixel_workbench_msgs::DynamixelCommand msg;
-
-//  msg.addr_name = std::string("baud_rate");
-//  msg.value = baud_rate;
-
-//  dynamixel_command_msg_pub_.publish(msg);
-//}
+bool QNode::sendResetMsg(void)
+{
+  if (sendCommandMsg("factory_reset"))
+  {
+    getDynamixelInfo();
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
 
 //void QNode::setPositionZeroMsg(int32_t zero_position)
 //{
@@ -281,15 +238,13 @@ bool QNode::init()
 //  dynamixel_command_msg_pub_.publish(msg);
 //}
 
-//void QNode::sendControlTableValueMsg(QString table_item, int64_t value)
-//{
-//  dynamixel_workbench_msgs::DynamixelCommand msg;
-
-//  msg.addr_name = table_item.toStdString();
-//  msg.value = value;
-
-//  dynamixel_command_msg_pub_.publish(msg);
-//}
+bool QNode::sendAddressValueMsg(std::string addr_name, int64_t value)
+{
+  if (sendCommandMsg("addr", addr_name, value))
+    return true;
+  else
+    return false;
+}
 
 void QNode::getDynamixelInfo()
 {
@@ -297,9 +252,9 @@ void QNode::getDynamixelInfo()
 
   if (dynamixel_info_client_.call(get_dynamixel_info))
   {
-    dynamixel_info_.device_name      = get_dynamixel_info.response.dynamixel_info.device_name;
-    dynamixel_info_.baud_rate        = get_dynamixel_info.response.dynamixel_info.baud_rate;
-    dynamixel_info_.protocol_version = get_dynamixel_info.response.dynamixel_info.protocol_version;
+    dynamixel_info_.load_info.device_name      = get_dynamixel_info.response.dynamixel_info.load_info.device_name;
+    dynamixel_info_.load_info.baud_rate        = get_dynamixel_info.response.dynamixel_info.load_info.baud_rate;
+    dynamixel_info_.load_info.protocol_version = get_dynamixel_info.response.dynamixel_info.load_info.protocol_version;
 
     dynamixel_info_.model_id         = get_dynamixel_info.response.dynamixel_info.model_id;
     dynamixel_info_.model_name       = get_dynamixel_info.response.dynamixel_info.model_name;

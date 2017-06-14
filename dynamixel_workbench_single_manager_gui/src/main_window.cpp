@@ -67,83 +67,62 @@ void MainWindow::showNoMasterMessage()
   close();
 }
 
-//void MainWindow::on_torque_enable_toggle_button_toggled(bool check)
-//{
-//  if(ui_.torque_enable_toggle_button->isChecked())
-//  {
-//    ui_.torque_enable_toggle_button->setText("Torque_Disable");
-//    qnode_.sendTorqueMsg(std::string("torque_enable"), true);
+void MainWindow::on_torque_enable_toggle_button_toggled(bool check)
+{
+  if(ui_.torque_enable_toggle_button->isChecked())  // Torque ON!!!!
+  {
+    ui_.torque_enable_toggle_button->setText("Torque_Disable");
+    qnode_.sendTorqueMsg(true);
 
-//    ui_.set_id_combo_box->setEnabled(false);
-//    ui_.set_operating_mode_combo_box->setEnabled(false);
-//    ui_.set_baud_rate_combo_box->setEnabled(false);
-//    ui_.set_position_zero_push_button->setVisible(false);
-//    ui_.set_address_value_dial->setEnabled(false);
-//  }
-//  else
-//  {
-//    ui_.torque_enable_toggle_button->setText("Torque_Enable");
-//    qnode_.sendTorqueMsg(std::string("torque_enable"), false);
+    ui_.set_id_combo_box->setEnabled(false);
+    ui_.set_operating_mode_combo_box->setEnabled(false);
+    ui_.set_baud_rate_combo_box->setEnabled(false);
 
-//    ui_.set_id_combo_box->setEnabled(true);
-//    ui_.set_operating_mode_combo_box->setEnabled(true);
-//    ui_.set_baud_rate_combo_box->setEnabled(true);
-//    ui_.set_position_zero_push_button->setVisible(false);
-//    ui_.set_address_value_dial->setEnabled(false);
-//  }
+    ui_.set_position_zero_push_button->setVisible(false);
+    ui_.set_address_value_dial->setEnabled(false);
+  }
+  else                                              // Torque OFF!!!
+  {
+    ui_.torque_enable_toggle_button->setText("Torque_Enable");
+    qnode_.sendTorqueMsg(false);
 
-//  uint8_t index_num = ui_.set_address_name_combo_box->count();
-//  for (uint8_t combo_box_index = 0; combo_box_index < index_num; combo_box_index++)
-//  {
-//    ui_.set_address_name_combo_box->removeItem(0);
-//  }
+    ui_.set_id_combo_box->setEnabled(true);
+    ui_.set_operating_mode_combo_box->setEnabled(true);
+    ui_.set_baud_rate_combo_box->setEnabled(true);
 
-//  for (dynamixel_->it_ctrl_ = dynamixel_->ctrl_table_.begin(); dynamixel_->it_ctrl_ != dynamixel_->ctrl_table_.end(); dynamixel_->it_ctrl_++)
-//  {
-//    dynamixel_->item_ = dynamixel_->ctrl_table_[dynamixel_->it_ctrl_->first.c_str()];
-//    if (ui_.torque_enable_toggle_button->isChecked())
-//    {
-//      if ((dynamixel_->item_->access_type == dynamixel_tool::READ_WRITE) && (dynamixel_->item_->memory_type == dynamixel_tool::RAM))
-//      {
-//        ui_.set_address_name_combo_box->addItem(QString::fromStdString(dynamixel_->item_->item_name));
-//      }
-//    }
-//    else
-//    {
-//      if (dynamixel_->item_->access_type == dynamixel_tool::READ_WRITE)
-//      {
-//        ui_.set_address_name_combo_box->addItem(QString::fromStdString(dynamixel_->item_->item_name));
-//      }
-//    }
-//  }
-//}
+    ui_.set_position_zero_push_button->setVisible(false);
+    ui_.set_address_value_dial->setEnabled(false);
+  }
 
-//void MainWindow::on_reboot_push_button_clicked(bool check)
-//{
-//  qnode_.sendRebootMsg();
-//}
+  setAddressComboBox(ui_.torque_enable_toggle_button->isChecked());
+}
 
-//void MainWindow::on_factory_reset_push_button_clicked(bool check)
-//{
-//  qnode_.sendResetMsg();
+void MainWindow::on_reboot_push_button_clicked(bool check)
+{
+  if (!qnode_.sendRebootMsg())
+    errorMsg();
+  else
+    rightMsg();
+}
 
-//  ui_.get_baud_rate_line_edit->setText(QString::number(57600));
-//  int index = ui_.set_baud_rate_combo_box->findText("Select Baudrate");
+void MainWindow::on_factory_reset_push_button_clicked(bool check)
+{
+  if (!qnode_.sendResetMsg())
+  {
+    errorMsg();
+  }
+  else
+  {
+    ui_.set_id_combo_box->setCurrentIndex(0);
+    ui_.set_baud_rate_combo_box->setCurrentIndex(0);
+    ui_.set_operating_mode_combo_box->setCurrentIndex(0);
 
-//  if ( index != -1 )
-//  {
-//     ui_.set_baud_rate_combo_box->setCurrentIndex(index);
-//  }
+    if (ui_.torque_enable_toggle_button->isChecked())
+        ui_.torque_enable_toggle_button->setChecked(false);
 
-//  index = ui_.set_id_combo_box->findText("Select ID");
-
-//  if ( index != -1 )
-//  {
-//     ui_.set_id_combo_box->setCurrentIndex(index);
-//  }
-
-//  ui_.get_id_line_edit->setText(QString::number(1));
-//}
+    rightMsg();
+  }
+}
 
 //void MainWindow::on_set_position_zero_push_button_clicked(bool check)
 //{
@@ -152,46 +131,56 @@ void MainWindow::showNoMasterMessage()
 //  ui_.set_address_value_dial->setValue(dynamixel_->value_of_0_radian_position_);
 //}
 
-//void MainWindow::changeDynamixelID()
-//{
-//  if (ui_.set_id_combo_box->currentText().toStdString() != "Select ID")
-//  {
-//    qnode_.sendSetIdMsg(ui_.set_id_combo_box->currentText().toInt());
-//    ui_.get_id_line_edit->setText(QString::number(ui_.set_id_combo_box->currentText().toInt()));
-//  }
-//}
+void MainWindow::changeID()
+{
+  if (ui_.set_id_combo_box->currentText().toStdString() != "Select ID")
+  {
+    if (!qnode_.sendSetIdMsg(ui_.set_id_combo_box->currentText().toInt()))
+      errorMsg();
+    else
+      rightMsg();
 
-//void MainWindow::changeOperatingMode()
-//{
-//  if (ui_.set_operating_mode_combo_box->currentText().toStdString() != "Select Mode")
-//    qnode_.sendSetOperatingModeMsg(ui_.set_operating_mode_combo_box->currentText().toStdString());
-//}
+    ui_.get_id_line_edit->setText(QString::number(ui_.set_id_combo_box->currentText().toInt()));
+  }
+}
 
-//void MainWindow::changeBaudrate()
-//{
-//  if (ui_.set_baud_rate_combo_box->currentText().toStdString() != "Select Baudrate")
-//  {
-//    qnode_.sendSetBaudrateMsg(ui_.set_baud_rate_combo_box->currentText().toFloat());
-//    ui_.get_baud_rate_line_edit->setText(QString::number(ui_.set_baud_rate_combo_box->currentText().toLongLong()));
-//  }
-//}
+void MainWindow::changeBaudrate()
+{
+  if (ui_.set_baud_rate_combo_box->currentText().toStdString() != "Select Baudrate")
+  {
+    if (!qnode_.sendSetBaudrateMsg(ui_.set_baud_rate_combo_box->currentText().toLongLong()))
+      errorMsg();
+    else
+      rightMsg();
 
-//void MainWindow::changeControlTableValue()
-//{
-//  if (ui_.set_address_name_combo_box->currentText().toStdString() == "torque_enable")
-//  {
-//    if (ui_.set_address_value_spin_box->value() == 1)
-//    {
-//      ui_.torque_enable_toggle_button->setChecked(true);
-//    }
-//    else if ((ui_.set_address_value_spin_box->value() == 0))
-//    {
-//      ui_.torque_enable_toggle_button->setChecked(false);
-//    }
-//  }
+    ui_.get_baud_rate_line_edit->setText(QString::number(ui_.set_baud_rate_combo_box->currentText().toLongLong()));
+  }
+}
 
-//  qnode_.sendControlTableValueMsg(ui_.set_address_name_combo_box->currentText(), ui_.set_address_value_dial->value());
-//}
+void MainWindow::changeOperatingMode()
+{
+  if (ui_.set_operating_mode_combo_box->currentText().toStdString() != "Select Mode")
+  {
+    if (!qnode_.sendSetOperatingModeMsg(ui_.set_operating_mode_combo_box->currentText().toStdString(), dynamixel_info_->model_name))
+      errorMsg();
+    else
+      rightMsg();
+  }
+}
+
+void MainWindow::changeControlTableValue()
+{
+  if (ui_.set_address_name_combo_box->currentText().toStdString() == "torque_enable")
+  {
+    if (ui_.set_address_value_spin_box->value() == true)
+      ui_.torque_enable_toggle_button->setChecked(true);
+    else if (ui_.set_address_value_spin_box->value() == false)
+      ui_.torque_enable_toggle_button->setChecked(false);
+  }
+
+  if (!qnode_.sendAddressValueMsg(ui_.set_address_name_combo_box->currentText().toStdString(), ui_.set_address_value_dial->value()))
+    errorMsg();
+}
 
 //void MainWindow::showHideButton(QString index)
 //{
@@ -211,13 +200,24 @@ void MainWindow::showNoMasterMessage()
 
 void MainWindow::updateDynamixelInfoLineEdit(dynamixel_workbench_msgs::DynamixelInfo dynamixel_info)
 {
-  ui_.get_device_name_line_edit->setText(QString::fromStdString(dynamixel_info.device_name));
-  ui_.get_id_line_edit->setText(QString::number(dynamixel_info.model_id));
-  ui_.get_baud_rate_line_edit->setText(QString::number(dynamixel_info.baud_rate));
-  ui_.get_protocol_version_line_edit->setText(QString::number(dynamixel_info.protocol_version));
-  ui_.get_model_name_line_edit->setText(QString::fromStdString(dynamixel_info.model_name));
+  dynamixel_info_ = new DyanmixelInfo;
 
-  //dynamixel_ = new dynamixel_tool::DynamixelTool(msg.model_id, msg.model_number, msg.protocol_version);
+  dynamixel_info_->lode_info.device_name      = dynamixel_info.load_info.device_name;
+  dynamixel_info_->lode_info.baud_rate        = dynamixel_info.load_info.baud_rate;
+  dynamixel_info_->lode_info.protocol_version = dynamixel_info.load_info.protocol_version;
+
+  dynamixel_info_->model_id     = dynamixel_info.model_id;
+  dynamixel_info_->model_number = dynamixel_info.model_number;
+  dynamixel_info_->model_name   = dynamixel_info.model_name;
+
+  dynamixel_ = new dynamixel_tool::DynamixelTool(dynamixel_info_->model_id,
+                                                 dynamixel_info_->model_number);
+
+  ui_.get_device_name_line_edit->setText(QString::fromStdString(dynamixel_info_->lode_info.device_name));
+  ui_.get_id_line_edit->setText(QString::number(dynamixel_info_->model_id));
+  ui_.get_baud_rate_line_edit->setText(QString::number(dynamixel_info_->lode_info.baud_rate));
+  ui_.get_protocol_version_line_edit->setText(QString::number(dynamixel_info_->lode_info.protocol_version));
+  ui_.get_model_name_line_edit->setText(QString::fromStdString(dynamixel_info_->model_name));
 }
 
 void MainWindow::InitConnect()
@@ -229,67 +229,89 @@ void MainWindow::InitConnect()
   qRegisterMetaType<dynamixel_workbench_msgs::DynamixelInfo>("dynamixel_workbench_msgs::DynamixelInfo");
   QObject::connect(&qnode_, SIGNAL(updateDynamixelInfo(dynamixel_workbench_msgs::DynamixelInfo)), this, SLOT(updateDynamixelInfoLineEdit(dynamixel_workbench_msgs::DynamixelInfo)));
 
-//  QObject::connect(ui_.set_id_combo_box, SIGNAL(currentIndexChanged(int)), this, SLOT(changeDynamixelID()));
-//  QObject::connect(ui_.set_baud_rate_combo_box, SIGNAL(currentIndexChanged(int)), this, SLOT(changeBaudrate()));
-//  QObject::connect(ui_.set_operating_mode_combo_box, SIGNAL(currentIndexChanged(int)), this, SLOT(changeOperatingMode()));
-//  QObject::connect(ui_.set_address_name_combo_box, SIGNAL(activated(QString)), this, SLOT(showHideButton(QString)));
-//  QObject::connect(ui_.set_address_value_spin_box, SIGNAL(valueChanged(int)), ui_.set_address_value_dial, SLOT(setValue(int)));
-//  QObject::connect(ui_.set_address_value_dial, SIGNAL(valueChanged(int)), ui_.set_address_value_spin_box, SLOT(setValue(int)));
-//  QObject::connect(ui_.set_address_value_spin_box, SIGNAL(valueChanged(int)), this, SLOT(changeControlTableValue()));
-//  QObject::connect(ui_.set_address_value_dial, SIGNAL(valueChanged(int)), this, SLOT(changeControlTableValue()));
+  QObject::connect(ui_.set_id_combo_box, SIGNAL(currentIndexChanged(int)), this, SLOT(changeID()));
+  QObject::connect(ui_.set_baud_rate_combo_box, SIGNAL(currentIndexChanged(int)), this, SLOT(changeBaudrate()));
+  QObject::connect(ui_.set_operating_mode_combo_box, SIGNAL(currentIndexChanged(int)), this, SLOT(changeOperatingMode()));
+
+  QObject::connect(ui_.set_address_value_spin_box, SIGNAL(valueChanged(int)), ui_.set_address_value_dial, SLOT(setValue(int)));
+  QObject::connect(ui_.set_address_value_dial, SIGNAL(valueChanged(int)), ui_.set_address_value_spin_box, SLOT(setValue(int)));
+  QObject::connect(ui_.set_address_value_spin_box, SIGNAL(valueChanged(int)), this, SLOT(changeControlTableValue()));
+  QObject::connect(ui_.set_address_value_dial, SIGNAL(valueChanged(int)), this, SLOT(changeControlTableValue()));
+
+  //  QObject::connect(ui_.set_address_name_combo_box, SIGNAL(activated(QString)), this, SLOT(showHideButton(QString)));
 }
 
-void MainWindow::InitUserInterface()
+void MainWindow::setIdComboBox()
 {
+  int id = 0;
+
   ui_.set_id_combo_box->addItem((QString("Select ID")));
-  ui_.set_baud_rate_combo_box->addItem((QString("Select Baudrate")));
-  ui_.set_operating_mode_combo_box->addItem((QString("Select Mode")));
-  ui_.set_address_value_spin_box->setRange(-2048, 2048);
-  ui_.set_position_zero_push_button->setVisible(false);
-  ui_.set_address_value_dial->setEnabled(false);
 
-  // Reboot Button Init
-  if (ui_.get_protocol_version_line_edit->text().toFloat() == 2.0)
-  {
-    ui_.reboot_push_button->setEnabled(true);
-  }
-  else
-  {
-    ui_.reboot_push_button->setEnabled(false);
-  }
-
-  // Address Combobox Init
-  for (dynamixel_->it_ctrl_ = dynamixel_->ctrl_table_.begin(); dynamixel_->it_ctrl_ != dynamixel_->ctrl_table_.end(); dynamixel_->it_ctrl_++)
-  {
-    dynamixel_->item_ = dynamixel_->ctrl_table_[dynamixel_->it_ctrl_->first.c_str()];
-    if ((dynamixel_->item_->access_type == dynamixel_tool::READ_WRITE))
-    {
-      ui_.set_address_name_combo_box->addItem(QString::fromStdString(dynamixel_->item_->item_name));
-    }
-  }
-
-  // ID Combobox Init
-  for (int id = 1; id < 253; id++)
+  for (id = 1; id < 254; id++)
   {
     ui_.set_id_combo_box->addItem(QString::number(id));
   }
 
-  // Operating mode Combobox Init
-  if(!strncmp(dynamixel_->model_name_.c_str(), "AX", 2))
+  // TODO  : add scroll bar
+
+  //  QAbstractItemView* view = ui_.set_id_combo_box->view();
+  //  view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+  //  view->setAutoScroll(true);
+  //  view->setFixedHeight(70);
+}
+
+void MainWindow::setBaudRateComboBox()
+{
+  std::vector<uint32_t> baud_rate;
+
+  baud_rate.push_back(19200);
+  baud_rate.push_back(57600);
+  baud_rate.push_back(115200);
+  baud_rate.push_back(200000);
+  baud_rate.push_back(250000);
+  baud_rate.push_back(400000);
+  baud_rate.push_back(500000);
+  baud_rate.push_back(1000000);
+  baud_rate.push_back(2000000);
+  baud_rate.push_back(3000000);
+  baud_rate.push_back(4000000);
+  baud_rate.push_back(4500000);
+  baud_rate.push_back(2500000);
+  baud_rate.push_back(2250000);
+  baud_rate.push_back(10500000);
+
+  ui_.set_baud_rate_combo_box->addItem((QString("Select Baudrate")));
+
+  for (std::vector<uint32_t>::size_type num = 0; num < baud_rate.size(); ++num)
+  {
+    if (dynamixel_->baud_rate_table_.find(baud_rate[num])->second != 0)
+    {
+      ui_.set_baud_rate_combo_box->addItem(QString::number(baud_rate[num]));
+    }
+  }
+}
+
+void MainWindow::setOperatingModeComboBox()
+{
+  ui_.set_operating_mode_combo_box->addItem((QString("Select Mode")));
+
+  if(dynamixel_info_->model_name.find("AX") != std::string::npos ||
+     dynamixel_info_->model_name.find("RX") != std::string::npos ||
+     dynamixel_info_->model_name.find("EX") != std::string::npos)
   {
     ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
     ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
   }
-  else if (!strncmp(dynamixel_->model_name_.c_str(), "MX", 2))
+  else if (dynamixel_info_->model_name.find("MX") != std::string::npos)
   {
-    if (!strncmp(dynamixel_->model_name_.c_str(), "MX_64", 5)) // MX-64
+    if (dynamixel_info_->model_name.find("MX_64") != std::string::npos)
     {
       ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
       ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
       ui_.set_operating_mode_combo_box->addItem(QString("extended_position_control"));
       ui_.set_operating_mode_combo_box->addItem(QString("torque_control"));
     }
-    else if (!strncmp(dynamixel_->model_name_.c_str(), "MX_106", 6)) // MX-106
+    else if (dynamixel_info_->model_name.find("MX_106") != std::string::npos)
     {
       ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
       ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
@@ -303,19 +325,9 @@ void MainWindow::InitUserInterface()
       ui_.set_operating_mode_combo_box->addItem(QString("extended_position_control"));
     }
   }
-  else if (!strncmp(dynamixel_->model_name_.c_str(), "RX", 2))
+  else if (dynamixel_info_->model_name.find("XL") != std::string::npos)
   {
-    ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
-    ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
-  }
-  else if (!strncmp(dynamixel_->model_name_.c_str(), "EX", 2))
-  {
-    ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
-    ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
-  }
-  else if (!strncmp(dynamixel_->model_name_.c_str(), "XL", 2))
-  {
-    if (!strncmp(dynamixel_->model_name_.c_str(), "XL_320", 5))
+    if (dynamixel_info_->model_name.find("XL_320") != std::string::npos)
     {
       ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
       ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
@@ -330,7 +342,8 @@ void MainWindow::InitUserInterface()
       ui_.set_operating_mode_combo_box->addItem(QString("pwm_control"));
     }
   }
-  else if (!strncmp(dynamixel_->model_name_.c_str(), "XM", 2) || !strncmp(dynamixel_->model_name_.c_str(), "XH", 2))
+  else if (dynamixel_info_->model_name.find("XM") != std::string::npos ||
+           dynamixel_info_->model_name.find("XH") != std::string::npos)
   {
     ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
     ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
@@ -339,9 +352,9 @@ void MainWindow::InitUserInterface()
     ui_.set_operating_mode_combo_box->addItem(QString("position_control_based_on_current"));
     ui_.set_operating_mode_combo_box->addItem(QString("pwm_control"));
   }
-  else if (!strncmp(dynamixel_->model_name_.c_str(), "PRO", 3))
+  else if (dynamixel_info_->model_name.find("PRO") != std::string::npos)
   {
-    if (!strncmp(dynamixel_->model_name_.c_str(), "PRO_L42", 7)) // PRO_L42_10_S300_R
+    if (dynamixel_info_->model_name.find("PRO_L42") != std::string::npos)
     {
       ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
       ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
@@ -354,81 +367,76 @@ void MainWindow::InitUserInterface()
       ui_.set_operating_mode_combo_box->addItem(QString("extended_position_control"));
     }
   }
+}
 
-  // Baud rate Combobox Init
-  if(!strncmp(dynamixel_->model_name_.c_str(), "AX", 2) || !strncmp(dynamixel_->model_name_.c_str(), "RX", 2) || !strncmp(dynamixel_->model_name_.c_str(), "EX", 2))
+void MainWindow::setRebootButton()
+{
+  if (ui_.get_protocol_version_line_edit->text().toFloat() == 2.0)
   {
-    ui_.set_baud_rate_combo_box->addItem(QString("1000000"));
-    ui_.set_baud_rate_combo_box->addItem(QString("500000"));
-    ui_.set_baud_rate_combo_box->addItem(QString("400000"));
-    ui_.set_baud_rate_combo_box->addItem(QString("250000"));
-    ui_.set_baud_rate_combo_box->addItem(QString("200000"));
-    ui_.set_baud_rate_combo_box->addItem(QString("115200"));
-    ui_.set_baud_rate_combo_box->addItem(QString("57600"));
-    ui_.set_baud_rate_combo_box->addItem(QString("19200"));
-    ui_.set_baud_rate_combo_box->addItem(QString("9600"));
+    ui_.reboot_push_button->setEnabled(true);
   }
-  else if (!strncmp(dynamixel_->model_name_.c_str(), "MX", 2))
+  else
   {
-    ui_.set_baud_rate_combo_box->addItem(QString("1000000"));
-    ui_.set_baud_rate_combo_box->addItem(QString("500000"));
-    ui_.set_baud_rate_combo_box->addItem(QString("400000"));
-    ui_.set_baud_rate_combo_box->addItem(QString("250000"));
-    ui_.set_baud_rate_combo_box->addItem(QString("200000"));
-    ui_.set_baud_rate_combo_box->addItem(QString("115200"));
-    ui_.set_baud_rate_combo_box->addItem(QString("57600"));
-    ui_.set_baud_rate_combo_box->addItem(QString("19200"));
-    ui_.set_baud_rate_combo_box->addItem(QString("9600"));
-//    ui_.set_baud_rate_combo_box->addItem(QString("2250000"));
-//    ui_.set_baud_rate_combo_box->addItem(QString("2500000"));
-//    ui_.set_baud_rate_combo_box->addItem(QString("3000000"));
+    ui_.reboot_push_button->setEnabled(false);
   }
-  else if (!strncmp(dynamixel_->model_name_.c_str(), "XL_320", 6))
+}
+
+void MainWindow::setAddressComboBox(bool torque_enable)
+{
+  uint8_t index_num = ui_.set_address_name_combo_box->count();
+  for (uint8_t combo_box_index = 0; combo_box_index < index_num; combo_box_index++)
   {
-    ui_.set_baud_rate_combo_box->addItem(QString("1000000"));
-    ui_.set_baud_rate_combo_box->addItem(QString("115200"));
-    ui_.set_baud_rate_combo_box->addItem(QString("57600"));
-    ui_.set_baud_rate_combo_box->addItem(QString("9600"));
+    ui_.set_address_name_combo_box->removeItem(combo_box_index);
   }
-  else if (!strncmp(dynamixel_->model_name_.c_str(), "XL430", 5))
+
+  for (dynamixel_->it_ctrl_ = dynamixel_->ctrl_table_.begin();
+       dynamixel_->it_ctrl_ != dynamixel_->ctrl_table_.end();
+       dynamixel_->it_ctrl_++)
   {
-    ui_.set_baud_rate_combo_box->addItem(QString("9600"));
-    ui_.set_baud_rate_combo_box->addItem(QString("57600"));
-    ui_.set_baud_rate_combo_box->addItem(QString("115200"));
-    ui_.set_baud_rate_combo_box->addItem(QString("1000000"));
-    ui_.set_baud_rate_combo_box->addItem(QString("2000000"));
-//    ui_.set_baud_rate_combo_box->addItem(QString("3000000"));
-//    ui_.set_baud_rate_combo_box->addItem(QString("4000000"));
-//    ui_.set_baud_rate_combo_box->addItem(QString("4500000"));
+    dynamixel_->item_ = dynamixel_->ctrl_table_[dynamixel_->it_ctrl_->first.c_str()];
+    if (torque_enable)
+    {
+      if ((dynamixel_->item_->access_type == dynamixel_tool::READ_WRITE) && (dynamixel_->item_->memory_type == dynamixel_tool::RAM))
+      {
+        ui_.set_address_name_combo_box->addItem(QString::fromStdString(dynamixel_->item_->item_name));
+      }
+    }
+    else
+    {
+      if (dynamixel_->item_->access_type == dynamixel_tool::READ_WRITE)
+      {
+        ui_.set_address_name_combo_box->addItem(QString::fromStdString(dynamixel_->item_->item_name));
+      }
+    }
   }
-  else if (!strncmp(dynamixel_->model_name_.c_str(), "XM", 2) || !strncmp(dynamixel_->model_name_.c_str(), "XH", 2))
-  {
-    ui_.set_baud_rate_combo_box->addItem(QString("9600"));
-    ui_.set_baud_rate_combo_box->addItem(QString("57600"));
-    ui_.set_baud_rate_combo_box->addItem(QString("115200"));
-    ui_.set_baud_rate_combo_box->addItem(QString("1000000"));
-    ui_.set_baud_rate_combo_box->addItem(QString("2000000"));
-//    ui_.set_baud_rate_combo_box->addItem(QString("3000000"));
-//    ui_.set_baud_rate_combo_box->addItem(QString("4000000"));
-//    ui_.set_baud_rate_combo_box->addItem(QString("4500000"));
-  }
-  else if (!strncmp(dynamixel_->model_name_.c_str(), "PRO", 3))
-  {
-    ui_.set_baud_rate_combo_box->addItem(QString("9600"));
-    ui_.set_baud_rate_combo_box->addItem(QString("57600"));
-    ui_.set_baud_rate_combo_box->addItem(QString("115200"));
-    ui_.set_baud_rate_combo_box->addItem(QString("1000000"));
-    ui_.set_baud_rate_combo_box->addItem(QString("2000000"));
-//    ui_.set_baud_rate_combo_box->addItem(QString("3000000"));
-//    ui_.set_baud_rate_combo_box->addItem(QString("4000000"));
-//    ui_.set_baud_rate_combo_box->addItem(QString("4500000"));
-//    ui_.set_baud_rate_combo_box->addItem(QString("10500000"));
-  }
+}
+
+void MainWindow::InitUserInterface()
+{
+  setIdComboBox();
+  setBaudRateComboBox();
+  setOperatingModeComboBox();
+  setRebootButton();
+  setAddressComboBox(false);
+
+  ui_.set_address_value_spin_box->setRange(-2048, 2048);
+  ui_.set_position_zero_push_button->setVisible(false);
+  ui_.set_address_value_dial->setEnabled(false);
 }
 
 void MainWindow::on_actionAbout_triggered()
 {
   QMessageBox::about(this, tr("About ..."),tr("<h2>Dynamixel workbench 1.0</h2><p>Copyright Robotis</p>"));
+}
+
+void MainWindow::errorMsg()
+{
+  QMessageBox::about(this, tr("Error ..."),tr("<h2>Error!!!!!</h2><p>It didn't works!!</p>"));
+}
+
+void MainWindow::rightMsg()
+{
+  QMessageBox::about(this, tr("Right ..."),tr("<h2>Complete!!</h2><p>It works!!</p>"));
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

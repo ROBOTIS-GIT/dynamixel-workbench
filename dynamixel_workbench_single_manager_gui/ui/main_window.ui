@@ -26,7 +26,7 @@
    <string>Dynamixel Workbench Single Manager</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../../../ROBOTIS-MANIPULATOR-X/manipulator_x_position_ctrl_module_gui/resources/images.qrc">
+   <iconset resource="../resources/images.qrc">
     <normaloff>:/images/icon.png</normaloff>:/images/icon.png</iconset>
   </property>
   <property name="locale">
@@ -359,6 +359,9 @@
              <property name="editable">
               <bool>false</bool>
              </property>
+             <property name="maxCount">
+              <number>10</number>
+             </property>
             </widget>
            </item>
            <item row="7" column="1">
@@ -501,6 +504,9 @@
                <height>16777215</height>
               </size>
              </property>
+             <property name="maxCount">
+              <number>10</number>
+             </property>
             </widget>
            </item>
            <item row="0" column="1">
@@ -517,14 +523,29 @@
                <height>16777215</height>
               </size>
              </property>
+             <property name="cursor">
+              <cursorShape>ArrowCursor</cursorShape>
+             </property>
+             <property name="acceptDrops">
+              <bool>false</bool>
+             </property>
+             <property name="accessibleDescription">
+              <string/>
+             </property>
              <property name="editable">
               <bool>false</bool>
              </property>
              <property name="maxVisibleItems">
-              <number>5</number>
+              <number>10</number>
              </property>
              <property name="maxCount">
-              <number>200</number>
+              <number>254</number>
+             </property>
+             <property name="sizeAdjustPolicy">
+              <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
+             </property>
+             <property name="minimumContentsLength">
+              <number>10</number>
              </property>
             </widget>
            </item>
@@ -715,7 +736,7 @@
   <tabstop>view_logging</tabstop>
  </tabstops>
  <resources>
-  <include location="../../../ROBOTIS-MANIPULATOR-X/manipulator_x_position_ctrl_module_gui/resources/images.qrc"/>
+  <include location="../resources/images.qrc"/>
  </resources>
  <connections>
   <connection>

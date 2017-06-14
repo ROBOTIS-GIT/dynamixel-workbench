@@ -40,8 +40,9 @@
 #include <QThread>
 #include <QStringListModel>
 
-#include "dynamixel_workbench_toolbox//message_header.h"
+#include "dynamixel_workbench_toolbox/message_header.h"
 
+#include "dynamixel_workbench_msgs/DynamixelCommand.h"
 #include "dynamixel_workbench_msgs/GetDynamixelInfo.h"
 #include "dynamixel_workbench_msgs/DynamixelInfo.h"
 
@@ -77,17 +78,19 @@ class QNode : public QThread
 //  void dynamixelProStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelPro::ConstPtr &msg);
 //  void dynamixelProL42StatusMsgCallback(const dynamixel_workbench_msgs::DynamixelProL42::ConstPtr &msg);
 
-//  void sendTorqueMsg(std::string addr_name, int64_t onoff);
-//  void sendRebootMsg(void);
-//  void sendResetMsg(void);
-//  void sendSetIdMsg(int64_t id);
-//  void sendSetOperatingModeMsg(std::__cxx11::string index);
-//  void sendSetBaudrateMsg(float baud_rate);
-//  void sendControlTableValueMsg(QString table_item, int64_t value);
+  bool sendSetIdMsg(uint8_t set_id);
+  bool sendSetOperatingModeMsg(std::string index, std::string model_name);
+  bool sendSetBaudrateMsg(int64_t baud_rate);
+
+  bool sendTorqueMsg(int64_t onoff);
+  bool sendRebootMsg(void);
+  bool sendResetMsg(void);
+  bool sendAddressValueMsg(std::string addr_name, int64_t value);
 //  void setPositionZeroMsg(int32_t zero_position);
 
   void getDynamixelInfo();
   void initDynamixelStateSubscriber();
+  bool sendCommandMsg(std::string cmd, std::string addr = "", int64_t value = 0);
 
  Q_SIGNALS:
   void loggingUpdated();
@@ -110,6 +113,7 @@ class QNode : public QThread
 
   // ROS Service Client
   ros::ServiceClient dynamixel_info_client_;
+  ros::ServiceClient dynamixel_command_client_;
 
   // Single Manager GUI variable
   int64_t row_count_;
