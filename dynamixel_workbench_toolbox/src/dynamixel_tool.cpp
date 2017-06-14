@@ -58,32 +58,28 @@ static inline std::vector<std::string> split(const std::string &text, char sep) 
     return tokens;
 }
 
-DynamixelTool::DynamixelTool(uint8_t id, uint16_t model_number, float protocol_version)
+DynamixelTool::DynamixelTool(uint8_t id, uint16_t model_number)
     :id_(0),
      model_number_(0),
-     protocol_version_(0.0),
      model_name_(""),
      item_path_(""),
-     dynamixel_name_path_("")
+     name_path_("")
 {
   id_ = id;
-  protocol_version_ = protocol_version;
 
   getModelName(model_number);
   getModelItem();
 }
 
-DynamixelTool::DynamixelTool(uint8_t id, std::string model_name, float protocol_version)
+DynamixelTool::DynamixelTool(uint8_t id, std::string model_name)
     :id_(0),
      model_number_(0),
-     protocol_version_(0.0),
      model_name_(""),
      item_path_(""),
-     dynamixel_name_path_("")
+     name_path_("")
 {
-  id_ = id;
+  id_         = id;
   model_name_ = model_name;
-  protocol_version_ = protocol_version;
 
   getModelItem();
 }
@@ -92,9 +88,9 @@ DynamixelTool::~DynamixelTool(){}
 
 bool DynamixelTool::getModelName(uint16_t model_number)
 {
-  dynamixel_name_path_  = ros::package::getPath("dynamixel_workbench_toolbox") + "/dynamixel/model_info.list";
+  name_path_  = ros::package::getPath("dynamixel_workbench_toolbox") + "/dynamixel/model_info.list";
 
-  std::ifstream file(dynamixel_name_path_.c_str());
+  std::ifstream file(name_path_.c_str());
   if (file.is_open())
   {
     std::string input_str;
@@ -124,7 +120,7 @@ bool DynamixelTool::getModelName(uint16_t model_number)
   }
   else
   {
-    ROS_ERROR("Unable to open model_info file : %s", dynamixel_name_path_.c_str());
+    ROS_ERROR("Unable to open model_info file : %s", name_path_.c_str());
     ros::shutdown();
   }
 }

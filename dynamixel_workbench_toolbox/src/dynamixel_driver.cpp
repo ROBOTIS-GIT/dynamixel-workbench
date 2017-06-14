@@ -36,24 +36,20 @@ using namespace dynamixel_driver;
 
 DynamixelDriver::DynamixelDriver(std::string device_name, int baud_rate, float protocol_version)
 {
-  device_name_      = device_name;
-  protocol_version_ = protocol_version;
-  baud_rate_        = baud_rate;
-
   // Initialize PortHandler instance
   // Set the port path
   // Get methods and members of PortHandlerLinux
-  portHandler_ = dynamixel::PortHandler::getPortHandler(device_name_.c_str());
+  portHandler_ = dynamixel::PortHandler::getPortHandler(device_name.c_str());
 
   // Initialize PacketHandler instance
   // Set the protocol version
   // Get methods and members of Protocol 1.0 PacketHandler and Protocol 2.0 PacketHandler
-  packetHandler_ = dynamixel::PacketHandler::getPacketHandler(protocol_version_);
+  packetHandler_ = dynamixel::PacketHandler::getPacketHandler(protocol_version);
 
   // Open port
   if (portHandler_->openPort())
   {
-    ROS_INFO("Succeeded to open the port(%s)!", device_name_.c_str());
+    ROS_INFO("Succeeded to open the port(%s)!", device_name.c_str());
   }
   else
   {
@@ -61,7 +57,7 @@ DynamixelDriver::DynamixelDriver(std::string device_name, int baud_rate, float p
   }
 
   // Set port baudrate
-  if (portHandler_->setBaudRate(baud_rate_))
+  if (portHandler_->setBaudRate(baud_rate))
   {
     ROS_INFO("Succeeded to change the baudrate(%d)!", portHandler_->getBaudRate());
   }
@@ -78,14 +74,16 @@ DynamixelDriver::~DynamixelDriver()
 
 bool DynamixelDriver::scan()
 {
-  uint8_t error = 0;
+  uint8_t error      = 0;
+  uint8_t id         = 0;
+  uint16_t model_num = 0;
 
   ROS_INFO("...wait for seconds");
-  for (id_ = 1; id_ < 254; id_++)
+  for (id = 1; id < 254; id++)
   {
-    if (packetHandler_->ping(portHandler_, id_, &model_num_, &error) == COMM_SUCCESS)
+    if (packetHandler_->ping(portHandler_, id, &model_num, &error) == COMM_SUCCESS)
     {
-      dynamixel_ = new dynamixel_tool::DynamixelTool(id_, model_num_, protocol_version_);
+      dynamixel_ = new dynamixel_tool::DynamixelTool(id, model_num);
       return true;
     }
   }
@@ -95,11 +93,12 @@ bool DynamixelDriver::scan()
 
 bool DynamixelDriver::ping(uint8_t id)
 {
-  uint8_t error = 0;
+  uint8_t error      = 0;
+  uint16_t model_num = 0;
 
-  if (packetHandler_->ping(portHandler_, id, &model_num_, &error) == COMM_SUCCESS)
+  if (packetHandler_->ping(portHandler_, id, &model_num, &error) == COMM_SUCCESS)
   {
-    dynamixel_ = new dynamixel_tool::DynamixelTool(id, model_num_, protocol_version_);
+    dynamixel_ = new dynamixel_tool::DynamixelTool(id, model_num);
     return true;
   }
 
@@ -112,7 +111,7 @@ bool DynamixelDriver::setPortHandler(std::string device_name)
 
   if (portHandler_->openPort())
   {
-    ROS_INFO("Succeeded to open the port(%s)!", device_name_.c_str());
+    ROS_INFO("Succeeded to open the port(%s)!", device_name.c_str());
     return true;
   }
   else
@@ -259,7 +258,7 @@ bool DynamixelDriver::readRegister(std::string addr_name, uint32_t *value)
 
 bool DynamixelDriver::reboot()
 {
-  if (protocol_version_ != 2.0)
+  if (getProtocolVersion() != 2.0)
   {
     ROS_WARN("reboot command only can support in protocol version 2.0");
   }
@@ -280,8 +279,6 @@ bool DynamixelDriver::reboot()
         packetHandler_->printRxPacketError(error);
       }
       ROS_INFO("Success to reboot!");
-
-      //dynamixel_ = new dynamixel_tool::DynamixelTool(dynamixel_->id_, dynamixel_->model_number_, packetHandler_->getProtocolVersion());
       ROS_INFO("[ID] %u, [Model Name] %s, [BAUD RATE] %d", dynamixel_->id_, dynamixel_->model_name_.c_str(), portHandler_->getBaudRate());
 
       return true;
@@ -327,7 +324,7 @@ bool DynamixelDriver::reset()
       else
       {
         sleep(1);
-        dynamixel_ = new dynamixel_tool::DynamixelTool(1, dynamixel_->model_number_, packetHandler_->getProtocolVersion());
+        dynamixel_ = new dynamixel_tool::DynamixelTool(1, dynamixel_->model_number_);
         ROS_INFO("[ID] %u, [Model Name] %s, [BAUD RATE] %d", dynamixel_->id_, dynamixel_->model_name_.c_str(), portHandler_->getBaudRate());
 
         return true;
@@ -364,7 +361,7 @@ bool DynamixelDriver::reset()
       else
       {
         sleep(1);
-        dynamixel_ = new dynamixel_tool::DynamixelTool(1, dynamixel_->model_number_, packetHandler_->getProtocolVersion());
+        dynamixel_ = new dynamixel_tool::DynamixelTool(1, dynamixel_->model_number_);
         ROS_INFO("[ID] %u, [Model Name] %s, [BAUD RATE] %d", dynamixel_->id_, dynamixel_->model_name_.c_str(), portHandler_->getBaudRate());
 
         return true;

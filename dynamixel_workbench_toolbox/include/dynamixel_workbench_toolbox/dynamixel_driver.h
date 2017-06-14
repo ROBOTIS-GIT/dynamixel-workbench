@@ -47,14 +47,7 @@ class DynamixelDriver
   dynamixel::PortHandler   *portHandler_;
   dynamixel::PacketHandler *packetHandler_;
 
-  std::string device_name_;
-  int baud_rate_;
-  float protocol_version_;
-
  public:
-  uint8_t  id_;
-  uint16_t model_num_;
-
   dynamixel_tool::DynamixelTool *dynamixel_;
 
  public:
