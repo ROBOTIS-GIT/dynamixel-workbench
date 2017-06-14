@@ -117,6 +117,23 @@ void SingleDynamixelController::viewManagerMenu()
   ROS_INFO("Press Enter Key To Command A DYNAMIXEL");
 }
 
+bool SingleDynamixelController::sendCommandMsg(std::string cmd, std::string addr, int64_t value)
+{
+  dynamixel_workbench_msgs::DynamixelCommand set_dynamixel_command;
+
+  set_dynamixel_command.request.command   = cmd;
+  set_dynamixel_command.request.addr_name = addr;
+  set_dynamixel_command.request.value     = value;
+
+  if (dynamixel_command_client_.call(set_dynamixel_command))
+  {
+    if (!set_dynamixel_command.response.comm_result)
+      return false;
+    else
+      return true;
+  }
+}
+
 bool SingleDynamixelController::controlLoop()
 {
   char input[128];
@@ -131,7 +148,7 @@ bool SingleDynamixelController::controlLoop()
     if (getchar() == ENTER_ASCII_VALUE)
     {
       viewManagerMenu();
-      printf("[CMD]");
+      printf("[ CMD ]");
       fgets(input, sizeof(input), stdin);
 
       char *p;
@@ -166,76 +183,41 @@ bool SingleDynamixelController::controlLoop()
         {
           ROS_INFO("[ID] %u, [Model Name] %s, [BAUD RATE] %ld", get_dynamixel_info.response.dynamixel_info.model_id,
                                                                 get_dynamixel_info.response.dynamixel_info.model_name.c_str(),
-                                                                get_dynamixel_info.response.dynamixel_info.baud_rate);
+                                                                get_dynamixel_info.response.dynamixel_info.load_info.baud_rate);
         }
       }
       else if (strcmp(cmd, "exit") == 0)
       {
-        dynamixel_workbench_msgs::DynamixelCommand set_dynamixel_command;
+        if (sendCommandMsg("exit"))
+          shutdownSingleDynamixelController();
 
-        set_dynamixel_command.request.command = "exit";
-
-        if (dynamixel_command_client_.call(set_dynamixel_command))
-        {
-          if (set_dynamixel_command.response.comm_result)
-            shutdownSingleDynamixelController();
-        }
         return true;
       }
       else if (strcmp(cmd, "table") == 0)
       {
-        dynamixel_workbench_msgs::DynamixelCommand set_dynamixel_command;
-
-        set_dynamixel_command.request.command = "table";
-
-        if (dynamixel_command_client_.call(set_dynamixel_command))
-        {
-          if (!set_dynamixel_command.response.comm_result)
-            ROS_ERROR("It didn't load DYNAMIXEL Control Table");
-        }
+        if (!sendCommandMsg("table"))
+          ROS_ERROR("It didn't load DYNAMIXEL Control Table");
       }
       else if (strcmp(cmd, "reboot") == 0)
       {
-        dynamixel_workbench_msgs::DynamixelCommand set_dynamixel_command;
-
-        set_dynamixel_command.request.command = "reboot";
-
-        if (dynamixel_command_client_.call(set_dynamixel_command))
-        {
-          if (!set_dynamixel_command.response.comm_result)
-            ROS_ERROR("It didn't reboot to DYNAMIXEL");
-        }
+        if (!sendCommandMsg("reboot"))
+          ROS_ERROR("It didn't reboot to DYNAMIXEL");
       }
       else if (strcmp(cmd, "factory_reset") == 0)
       {
-        dynamixel_workbench_msgs::DynamixelCommand set_dynamixel_command;
-
-        set_dynamixel_command.request.command = "factory_reset";
-
-        if (dynamixel_command_client_.call(set_dynamixel_command))
-        {
-          if (!set_dynamixel_command.response.comm_result)
-            ROS_ERROR("It didn't factory reset to DYNAMIXEL");
-        }
+        if (!sendCommandMsg("factory_reset"))
+          ROS_ERROR("It didn't factory reset to DYNAMIXEL");
       }
       else if (num_param == 1)
       {
-        dynamixel_workbench_msgs::DynamixelCommand set_dynamixel_command;
-
-        set_dynamixel_command.request.command = "addr";
-        set_dynamixel_command.request.addr_name = cmd;
-        set_dynamixel_command.request.value = atoi(param[0]);
-
-        if (!dynamixel_command_client_.call(set_dynamixel_command))
-        {
-          if (!set_dynamixel_command.response.comm_result)
-            ROS_ERROR("It didn't works!!");
-        }
+        if (sendCommandMsg("addr", cmd, atoi(param[0])))
+          ROS_INFO("It works!!");
         else
-        {
-          if (set_dynamixel_command.response.comm_result)
-            ROS_INFO("It works!!");
-        }
+          ROS_ERROR("It didn't works!!");
+      }
+      else
+      {
+        ROS_ERROR("Invalid command. Please check menu[help, h, ?]");
       }
     }
   }

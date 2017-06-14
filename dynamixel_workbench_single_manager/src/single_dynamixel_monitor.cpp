@@ -41,29 +41,29 @@ SingleDynamixelMonitor::SingleDynamixelMonitor()
   ping_id_  = node_handle_.param<int>("ping_id", 1);
 
   // Load Paramameter For Connection
-  dynamixel_load_ = new DynamixelLoad;
+  dynamixel_info_ = new DyanmixelInfo;
 
-  dynamixel_load_->device_name      = node_handle_.param<std::string>("device_name", "/dev/ttyUSB0");
-  dynamixel_load_->baud_rate        = node_handle_.param<int>("baud_rate", 57600);
-  dynamixel_load_->protocol_version = node_handle_.param<float>("protocol_version", 2.0);
+  dynamixel_info_->lode_info.device_name      = node_handle_.param<std::string>("device_name", "/dev/ttyUSB0");
+  dynamixel_info_->lode_info.baud_rate        = node_handle_.param<int>("baud_rate", 57600);
+  dynamixel_info_->lode_info.protocol_version = node_handle_.param<float>("protocol_version", 2.0);
 
-  dynamixel_driver_ = new dynamixel_driver::DynamixelDriver(dynamixel_load_->device_name,
-                                                            dynamixel_load_->baud_rate,
-                                                            dynamixel_load_->protocol_version);
+  dynamixel_driver_ = new dynamixel_driver::DynamixelDriver(dynamixel_info_->lode_info.device_name,
+                                                            dynamixel_info_->lode_info.baud_rate,
+                                                            dynamixel_info_->lode_info.protocol_version);
 
   if(!use_ping_)
   {
     // Get Connected Single Dynamixel State
-    if (dynamixel_load_->protocol_version == 1.0)
+    if (dynamixel_info_->lode_info.protocol_version == 1.0)
       ROS_INFO("Scan Dynamixel(ID: 1~253) Using Protocol 1.0\n");
-    else if (dynamixel_load_->protocol_version == 2.0)
+    else if (dynamixel_info_->lode_info.protocol_version == 2.0)
       ROS_INFO("Scan Dynamixel(ID: 1~253) Using Protocol 2.0\n");
 
     if (dynamixel_driver_->scan())
     {
       ROS_INFO("...Succeeded to find dynamixel\n");
       ROS_INFO("[ID] %u, [Model Name] %s, [BAUD RATE] %d",
-               dynamixel_driver_->dynamixel_->id_, dynamixel_driver_->dynamixel_->model_name_.c_str(), dynamixel_load_->baud_rate);
+               dynamixel_driver_->dynamixel_->id_, dynamixel_driver_->dynamixel_->model_name_.c_str(), dynamixel_info_->lode_info.baud_rate);
     }
     else
     {
@@ -76,16 +76,16 @@ SingleDynamixelMonitor::SingleDynamixelMonitor()
   else
   {
     // Ping Connected Single Dynamixel State
-    if (dynamixel_load_->protocol_version == 1.0)
+    if (dynamixel_info_->lode_info.protocol_version == 1.0)
       ROS_INFO("Ping(ID: %d) Dynamixel Using Protocol 1.0\n", ping_id_);
-    else if (dynamixel_load_->protocol_version == 2.0)
+    else if (dynamixel_info_->lode_info.protocol_version == 2.0)
       ROS_INFO("Ping(ID: %d) Dynamixel Using Protocol 2.0\n", ping_id_);
 
     if (dynamixel_driver_->ping(ping_id_))
     {
       ROS_INFO("...Succeeded to ping dynamixel\n");
       ROS_INFO("[ID] %u, [Model Name] %s, [BAUD RATE] %d",
-               dynamixel_driver_->dynamixel_->id_, dynamixel_driver_->dynamixel_->model_name_.c_str(), dynamixel_load_->baud_rate);
+               dynamixel_driver_->dynamixel_->id_, dynamixel_driver_->dynamixel_->model_name_.c_str(), dynamixel_info_->lode_info.baud_rate);
     }
     else
     {
@@ -197,7 +197,7 @@ bool SingleDynamixelMonitor::checkValidationCommand(std::string cmd)
       return true;
   }
 
-  ROS_WARN("Please Check DYNAMXEL Address Name");
+  ROS_WARN("Please Check DYNAMXEL Address Name('table')");
   return false;
 }
 
@@ -214,14 +214,14 @@ bool SingleDynamixelMonitor::checkValidAccess(std::string cmd)
     if ((torque_status == true) && (dynamixel->item_->memory_type == dynamixel_tool::EEPROM))
     {
       ROS_WARN("address in EEPROM can't be accessed when torque is on");
-      ROS_WARN("Check a ""table""");
+      ROS_WARN("Check a 'table'");
 
       return false;
     }
     else if ((torque_status == false) && (dynamixel->item_->item_name != "torque_enable") && dynamixel->item_->memory_type == dynamixel_tool::RAM)
     {
       ROS_WARN("address in RAM can't be accessed when torque is off");
-      ROS_WARN("Check a ""table""");
+      ROS_WARN("Check a 'table'");
 
       return false;
     }
@@ -300,26 +300,18 @@ bool SingleDynamixelMonitor::changeBaudrate(uint64_t baud_rate)
   }
   else
   {
-    if (baud_rate < 2250000)
-    {
-      dynamixel_driver_->writeRegister("baud_rate", dynamixel->baud_rate_table_.find(baud_rate)->second);
-      usleep(dynamixel->item_->data_length* 55 * 1000 *10);
+    dynamixel_driver_->writeRegister("baud_rate", dynamixel->baud_rate_table_.find(baud_rate)->second);
+    usleep(dynamixel->item_->data_length* 55 * 1000 *10);
 
-      if (dynamixel_driver_->setBaudrate(baud_rate) == false)
-      {
-        ROS_INFO(" Failed to change baudrate!");
-        return false;
-      }
-      else
-      {
-        ROS_INFO(" Success to change baudrate! [ BAUD RATE: %d ]", dynamixel->baud_rate_table_.find(baud_rate)->first);
-        return true;
-      }
+    if (dynamixel_driver_->setBaudrate(baud_rate) == false)
+    {
+      ROS_INFO(" Failed to change baudrate!");
+      return false;
     }
     else
     {
-      ROS_ERROR(" USB2Dynamixel supports baudrate under '2250000'");
-      return false;
+      ROS_INFO(" Success to change baudrate! [ BAUD RATE: %d ]", dynamixel->baud_rate_table_.find(baud_rate)->first);
+      return true;
     }
   }
 }
@@ -359,9 +351,9 @@ bool SingleDynamixelMonitor::dynamixelInfoMsgCallback(dynamixel_workbench_msgs::
   const char *portName = dynamixel_driver_->getPortName();
   std::string get_port_name(portName);
 
-  res.dynamixel_info.device_name      = get_port_name;
-  res.dynamixel_info.baud_rate        = dynamixel_driver_->getBaudrate();
-  res.dynamixel_info.protocol_version = dynamixel_driver_->getProtocolVersion();
+  res.dynamixel_info.load_info.device_name      = get_port_name;
+  res.dynamixel_info.load_info.baud_rate        = dynamixel_driver_->getBaudrate();
+  res.dynamixel_info.load_info.protocol_version = dynamixel_driver_->getProtocolVersion();
 
   res.dynamixel_info.model_id         = dynamixel_driver_->dynamixel_->id_;
   res.dynamixel_info.model_name       = dynamixel_driver_->dynamixel_->model_name_;
@@ -371,12 +363,14 @@ bool SingleDynamixelMonitor::dynamixelInfoMsgCallback(dynamixel_workbench_msgs::
 }
 
 bool SingleDynamixelMonitor::dynamixelCommandMsgCallback(dynamixel_workbench_msgs::DynamixelCommand::Request &req,
-                                                      dynamixel_workbench_msgs::DynamixelCommand::Response &res)
+                                                         dynamixel_workbench_msgs::DynamixelCommand::Response &res)
 {
   if (req.command == "table")
   {
     if (showDynamixelControlTable())
       res.comm_result = true;
+    else
+      res.comm_result = false;
   }
   else if (req.command == "reboot")
   {
@@ -404,53 +398,57 @@ bool SingleDynamixelMonitor::dynamixelCommandMsgCallback(dynamixel_workbench_msg
     std::string addr = req.addr_name;
     int64_t value    = req.value;
 
-    if (!checkValidationCommand(addr))
+    if (checkValidationCommand(addr))
+    {
+      res.comm_result = true;
+    }
+    else
     {
       res.comm_result = false;
-      return false;
+      return true;
     }
 
-    if (!checkValidAccess(addr))
+    if (checkValidAccess(addr))
+    {
+      res.comm_result = true;
+    }
+    else
     {
       res.comm_result = false;
-      return false;
+      return true;
     }
 
     if (addr == "id")
     {
-      if (!changeId(value))
-      {
+      if (changeId(value))
+        res.comm_result = true;
+      else
         res.comm_result = false;
-        return false;
-      }
     }
     else if (addr == "baud_rate")
     {
-      if (!changeBaudrate(value))
-      {
+      if (changeBaudrate(value))
+        res.comm_result = true;
+      else
         res.comm_result = false;
-        return false;
-      }
     }
     else if (addr == "protocol_version")
     {
-      if (!changeProtocolVersion(value))
-      {
+      if (changeProtocolVersion(value))
+        res.comm_result = true;
+      else
         res.comm_result = false;
-        return false;
-      }
     }
     else
     {
-      if (!dynamixel_driver_->writeRegister(addr, value))
-        res.comm_result = false;
-      else
+      if (dynamixel_driver_->writeRegister(addr, value))
         res.comm_result = true;
+      else
+        res.comm_result = false;
     }
   }
   else
-  {
-    ROS_ERROR("Invalid command. Please check menu[help, h, ?]");
+  {    
     return false;
   }
 

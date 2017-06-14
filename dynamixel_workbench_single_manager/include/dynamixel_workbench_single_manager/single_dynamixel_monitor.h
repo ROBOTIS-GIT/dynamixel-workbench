@@ -47,7 +47,7 @@
 namespace single_dynamixel_monitor
 {
 
-struct DynamixelLoad
+struct DynamixelLoadInfo
 {
   std::string device_name;
   int baud_rate;
@@ -56,18 +56,10 @@ struct DynamixelLoad
 
 struct DyanmixelInfo
 {
-  int16_t mode_number;
+  int16_t model_number;
   int8_t model_id;
-  int8_t torque_status;
-};
-
-struct DyanmixelAddrValue
-{
-  std::string addr_name;
-  int8_t addr_length;
-  int8_t value_8_bit;
-  int16_t value_16_bit;
-  int32_t value_32_bit;
+  std::string model_name;
+  DynamixelLoadInfo lode_info;
 };
 
 class SingleDynamixelMonitor
@@ -91,16 +83,13 @@ class SingleDynamixelMonitor
   bool use_ping_;
   int ping_id_;
 
-  DynamixelLoad *dynamixel_load_;
   DyanmixelInfo *dynamixel_info_;
-  DyanmixelAddrValue *dynamixel_addr_value_;
-
   dynamixel_driver::DynamixelDriver *dynamixel_driver_;
 
  public:
   SingleDynamixelMonitor();
   ~SingleDynamixelMonitor();
-  bool controlLoop(void);
+  bool controlLoop();
 
  private:
   bool initSingleDynamixelMonitor();

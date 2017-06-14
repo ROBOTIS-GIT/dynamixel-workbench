@@ -84,6 +84,8 @@ class SingleDynamixelController
   int getch(void);
   int kbhit(void);
 
+  bool sendCommandMsg(std::string cmd, std::string addr = "", int64_t value = 0);
+
 };
 }
 
