@@ -228,15 +228,13 @@ bool QNode::sendResetMsg(void)
   }
 }
 
-//void QNode::setPositionZeroMsg(int32_t zero_position)
-//{
-//  dynamixel_workbench_msgs::DynamixelCommand msg;
-
-//  msg.addr_name = std::string("goal_position");
-//  msg.value = zero_position;
-
-//  dynamixel_command_msg_pub_.publish(msg);
-//}
+bool QNode::setPositionZeroMsg(int32_t zero_position)
+{
+  if (sendCommandMsg("addr", "goal_position", zero_position))
+    return true;
+  else
+    return false;
+}
 
 bool QNode::sendAddressValueMsg(std::string addr_name, int64_t value)
 {
@@ -324,7 +322,7 @@ void QNode::log(const std::string &msg)
 }
 
 
-void QNode::AXStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelAX::ConstPtr &msg)
+void QNode::AXStatusMsgCallback(const dynamixel_workbench_msgs::AX::ConstPtr &msg)
 {
   log(std::string("< EEPROM >"));
   log(std::string("model_number: "), msg->model_number);
@@ -365,7 +363,7 @@ void QNode::AXStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelAX::Con
   row_count_ = 0;
 }
 
-void QNode::XMStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelXM::ConstPtr &msg)
+void QNode::XMStatusMsgCallback(const dynamixel_workbench_msgs::XM::ConstPtr &msg)
 {
   log(std::string("< EEPROM >"));
   log(std::string("model_number: "), msg->model_number);

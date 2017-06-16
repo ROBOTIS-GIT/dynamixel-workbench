@@ -124,12 +124,12 @@ void MainWindow::on_factory_reset_push_button_clicked(bool check)
   }
 }
 
-//void MainWindow::on_set_position_zero_push_button_clicked(bool check)
-//{
-//  qnode_.setPositionZeroMsg(dynamixel_->value_of_0_radian_position_);
-//  ui_.set_address_value_spin_box->setValue(dynamixel_->value_of_0_radian_position_);
-//  ui_.set_address_value_dial->setValue(dynamixel_->value_of_0_radian_position_);
-//}
+void MainWindow::on_set_position_zero_push_button_clicked(bool check)
+{
+  qnode_.setPositionZeroMsg(dynamixel_->value_of_0_radian_position_);
+  ui_.set_address_value_spin_box->setValue(dynamixel_->value_of_0_radian_position_);
+  ui_.set_address_value_dial->setValue(dynamixel_->value_of_0_radian_position_);
+}
 
 void MainWindow::changeID()
 {
@@ -182,25 +182,27 @@ void MainWindow::changeControlTableValue()
     errorMsg();
 }
 
-//void MainWindow::showHideButton(QString index)
-//{
-//  if (index.toStdString() == "goal_position")
-//  {
-//    ui_.set_position_zero_push_button->setVisible(true);
-//    ui_.set_address_value_dial->setEnabled(true);
-//    ui_.set_address_value_dial->setRange(dynamixel_->value_of_min_radian_position_, dynamixel_->value_of_max_radian_position_);
-//  }
-//  else
-//  {
-//    ui_.set_position_zero_push_button->setVisible(false);
-//    ui_.set_address_value_dial->setEnabled(false);
-//    ui_.set_address_value_dial->setRange(-2048, 2048);
-//  }
-//}
+void MainWindow::setEachAddressFunction(QString index)
+{
+  if (index.toStdString() == "goal_position")
+  {
+    ui_.set_position_zero_push_button->setVisible(true);
+    ui_.set_address_value_dial->setEnabled(true);
+    ui_.set_address_value_dial->setRange(dynamixel_->value_of_min_radian_position_, dynamixel_->value_of_max_radian_position_);
+    ui_.set_address_value_spin_box->setRange(dynamixel_->value_of_min_radian_position_, dynamixel_->value_of_max_radian_position_);
+  }
+  else
+  {
+    ui_.set_position_zero_push_button->setVisible(false);
+    ui_.set_address_value_dial->setEnabled(false);
+    ui_.set_address_value_dial->setRange(-2048, 2048);
+    ui_.set_address_value_spin_box->setRange(-2048, 2048);
+  }
+}
 
 void MainWindow::updateDynamixelInfoLineEdit(dynamixel_workbench_msgs::DynamixelInfo dynamixel_info)
 {
-  dynamixel_info_ = new DyanmixelInfo;
+  dynamixel_info_ = new DynamixelInfo;
 
   dynamixel_info_->lode_info.device_name      = dynamixel_info.load_info.device_name;
   dynamixel_info_->lode_info.baud_rate        = dynamixel_info.load_info.baud_rate;
@@ -229,16 +231,16 @@ void MainWindow::InitConnect()
   qRegisterMetaType<dynamixel_workbench_msgs::DynamixelInfo>("dynamixel_workbench_msgs::DynamixelInfo");
   QObject::connect(&qnode_, SIGNAL(updateDynamixelInfo(dynamixel_workbench_msgs::DynamixelInfo)), this, SLOT(updateDynamixelInfoLineEdit(dynamixel_workbench_msgs::DynamixelInfo)));
 
-  QObject::connect(ui_.set_id_combo_box, SIGNAL(currentIndexChanged(int)), this, SLOT(changeID()));
-  QObject::connect(ui_.set_baud_rate_combo_box, SIGNAL(currentIndexChanged(int)), this, SLOT(changeBaudrate()));
+  QObject::connect(ui_.set_id_combo_box,             SIGNAL(currentIndexChanged(int)), this, SLOT(changeID()));
+  QObject::connect(ui_.set_baud_rate_combo_box,      SIGNAL(currentIndexChanged(int)), this, SLOT(changeBaudrate()));
   QObject::connect(ui_.set_operating_mode_combo_box, SIGNAL(currentIndexChanged(int)), this, SLOT(changeOperatingMode()));
 
-  QObject::connect(ui_.set_address_value_spin_box, SIGNAL(valueChanged(int)), ui_.set_address_value_dial, SLOT(setValue(int)));
-  QObject::connect(ui_.set_address_value_dial, SIGNAL(valueChanged(int)), ui_.set_address_value_spin_box, SLOT(setValue(int)));
-  QObject::connect(ui_.set_address_value_spin_box, SIGNAL(valueChanged(int)), this, SLOT(changeControlTableValue()));
-  QObject::connect(ui_.set_address_value_dial, SIGNAL(valueChanged(int)), this, SLOT(changeControlTableValue()));
+  QObject::connect(ui_.set_address_value_spin_box,   SIGNAL(valueChanged(int)), ui_.set_address_value_dial, SLOT(setValue(int)));
+  QObject::connect(ui_.set_address_value_dial,       SIGNAL(valueChanged(int)), ui_.set_address_value_spin_box, SLOT(setValue(int)));
+  QObject::connect(ui_.set_address_value_spin_box,   SIGNAL(valueChanged(int)), this, SLOT(changeControlTableValue()));
 
-  //  QObject::connect(ui_.set_address_name_combo_box, SIGNAL(activated(QString)), this, SLOT(showHideButton(QString)));
+  // Set Address function
+  QObject::connect(ui_.set_address_name_combo_box,   SIGNAL(activated(QString)), this, SLOT(setEachAddressFunction(QString)));
 }
 
 void MainWindow::setIdComboBox()
@@ -383,12 +385,14 @@ void MainWindow::setRebootButton()
 
 void MainWindow::setAddressComboBox(bool torque_enable)
 {
+  // Delete all Item on combo box
   uint8_t index_num = ui_.set_address_name_combo_box->count();
   for (uint8_t combo_box_index = 0; combo_box_index < index_num; combo_box_index++)
   {
-    ui_.set_address_name_combo_box->removeItem(combo_box_index);
+    ui_.set_address_name_combo_box->removeItem(0);
   }
 
+  // Add item on combo box
   for (dynamixel_->it_ctrl_ = dynamixel_->ctrl_table_.begin();
        dynamixel_->it_ctrl_ != dynamixel_->ctrl_table_.end();
        dynamixel_->it_ctrl_++)

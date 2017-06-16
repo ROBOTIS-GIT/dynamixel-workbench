@@ -65,7 +65,7 @@ class QNode : public QThread
   void log(const std::string &msg, int64_t sender);
   void log(const std::string &msg);
 
-  void AXStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelAX::ConstPtr &msg);
+  void AXStatusMsgCallback(const dynamixel_workbench_msgs::AX::ConstPtr &msg);
 //  void dynamixelRXStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelRX::ConstPtr &msg);
 //  void dynamixelMXStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelMX::ConstPtr &msg);
 //  void dynamixelMX64StatusMsgCallback(const dynamixel_workbench_msgs::DynamixelMX64::ConstPtr &msg);
@@ -73,7 +73,7 @@ class QNode : public QThread
 //  void dynamixelEXStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelEX::ConstPtr &msg);
 //  void dynamixelXL320StatusMsgCallback(const dynamixel_workbench_msgs::DynamixelXL320::ConstPtr &msg);
 //  void dynamixelXLStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelXL::ConstPtr &msg);
-  void XMStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelXM::ConstPtr &msg);
+  void XMStatusMsgCallback(const dynamixel_workbench_msgs::XM::ConstPtr &msg);
 //  void dynamixelXHStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelXH::ConstPtr &msg);
 //  void dynamixelProStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelPro::ConstPtr &msg);
 //  void dynamixelProL42StatusMsgCallback(const dynamixel_workbench_msgs::DynamixelProL42::ConstPtr &msg);
@@ -86,7 +86,7 @@ class QNode : public QThread
   bool sendRebootMsg(void);
   bool sendResetMsg(void);
   bool sendAddressValueMsg(std::string addr_name, int64_t value);
-//  void setPositionZeroMsg(int32_t zero_position);
+  bool setPositionZeroMsg(int32_t zero_position);
 
   void getDynamixelInfo();
   void initDynamixelStateSubscriber();

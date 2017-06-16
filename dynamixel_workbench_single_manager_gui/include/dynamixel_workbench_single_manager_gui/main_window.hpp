@@ -54,7 +54,7 @@ struct DynamixelLoadInfo
   float protocol_version;
 };
 
-struct DyanmixelInfo
+struct DynamixelInfo
 {
   int16_t model_number;
   int8_t model_id;
@@ -78,13 +78,13 @@ class MainWindow : public QMainWindow
   void on_torque_enable_toggle_button_toggled(bool check);
   void on_reboot_push_button_clicked(bool check);
   void on_factory_reset_push_button_clicked(bool check);
-//  void on_set_position_zero_push_button_clicked(bool check);
+  void on_set_position_zero_push_button_clicked(bool check);
 
   void changeID();
   void changeBaudrate();
   void changeOperatingMode();
   void changeControlTableValue();
-//  void showHideButton(QString index);
+  void setEachAddressFunction(QString index);
 
   void updateDynamixelInfoLineEdit(dynamixel_workbench_msgs::DynamixelInfo dynamixel_info);
 
@@ -92,7 +92,7 @@ class MainWindow : public QMainWindow
   Ui::MainWindowDesign ui_;
   qnode::QNode qnode_;
 
-  DyanmixelInfo *dynamixel_info_;
+  DynamixelInfo *dynamixel_info_;
   dynamixel_tool::DynamixelTool *dynamixel_;
 
   bool reboot_button_;
