@@ -43,6 +43,7 @@ include_directories(
 add_library(dynamixel_workbench_toolbox
     src/dynamixel_tool.cpp
     src/dynamixel_driver.cpp
+    src/dynamixel_multi_driver.cpp
 )
 add_dependencies(dynamixel_workbench_toolbox ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(dynamixel_workbench_toolbox ${catkin_LIBRARIES})

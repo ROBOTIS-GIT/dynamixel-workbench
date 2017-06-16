@@ -33,17 +33,30 @@
 #ifndef DYNAMIXEL_WORKBENCH_DYNAMIXEL_DRIVER_H
 #define DYNAMIXEL_WORKBENCH_DYNAMIXEL_DRIVER_H
 
-#include <stdlib.h>
-#include <unistd.h>
-
-#include "dynamixel_workbench_toolbox/dynamixel_tool.h"
+#include "dynamixel_tool.h"
 #include "dynamixel_sdk/dynamixel_sdk.h"
 
 namespace dynamixel_driver
 {
+
+struct DynamixelLoadInfo
+{
+  std::string device_name;
+  int baud_rate;
+  float protocol_version;
+};
+
+struct DynamixelInfo
+{
+  int16_t model_number;
+  int8_t model_id;
+  std::string model_name;
+  DynamixelLoadInfo lode_info;
+};
+
 class DynamixelDriver
 {
- private:
+ protected:
   dynamixel::PortHandler   *portHandler_;
   dynamixel::PacketHandler *packetHandler_;
 
@@ -54,15 +67,19 @@ class DynamixelDriver
   DynamixelDriver(std::string device_name, int baud_rate, float protocol_version);
   ~DynamixelDriver();
 
+  bool setPortHandler(std::string device_name);
+  bool setPacketHandler(float protocol_version);
+
   bool scan();
   bool ping(uint8_t id);
 
   bool reboot();
   bool reset();
 
-  bool setPortHandler(std::string device_name);
-  bool setPacketHandler(float protocol_version);
   bool setBaudrate(uint32_t baud_rate);
+
+  dynamixel::PortHandler* getPortHandler();
+  dynamixel::PacketHandler* getPacketHandler();
 
   char* getPortName();
   float getProtocolVersion();

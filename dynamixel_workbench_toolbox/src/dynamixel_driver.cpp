@@ -36,35 +36,9 @@ using namespace dynamixel_driver;
 
 DynamixelDriver::DynamixelDriver(std::string device_name, int baud_rate, float protocol_version)
 {
-  // Initialize PortHandler instance
-  // Set the port path
-  // Get methods and members of PortHandlerLinux
-  portHandler_ = dynamixel::PortHandler::getPortHandler(device_name.c_str());
-
-  // Initialize PacketHandler instance
-  // Set the protocol version
-  // Get methods and members of Protocol 1.0 PacketHandler and Protocol 2.0 PacketHandler
-  packetHandler_ = dynamixel::PacketHandler::getPacketHandler(protocol_version);
-
-  // Open port
-  if (portHandler_->openPort())
-  {
-    ROS_INFO("Succeeded to open the port(%s)!", device_name.c_str());
-  }
-  else
-  {
-    ROS_ERROR("Failed to open the port!");
-  }
-
-  // Set port baudrate
-  if (portHandler_->setBaudRate(baud_rate))
-  {
-    ROS_INFO("Succeeded to change the baudrate(%d)!", portHandler_->getBaudRate());
-  }
-  else
-  {
-    ROS_ERROR("Failed to change the baudrate!");
-  }
+  setPacketHandler(protocol_version);
+  setPortHandler(device_name);
+  setBaudrate(baud_rate);
 }
 
 DynamixelDriver::~DynamixelDriver()
@@ -142,6 +116,16 @@ bool DynamixelDriver::setBaudrate(uint32_t baud_rate)
   }
 }
 
+dynamixel::PortHandler* DynamixelDriver::getPortHandler()
+{
+  return portHandler_->getPortHandler(portHandler_->getPortName());
+}
+
+dynamixel::PacketHandler* DynamixelDriver::getPacketHandler()
+{
+  return packetHandler_->getPacketHandler(packetHandler_->getProtocolVersion());
+}
+
 char* DynamixelDriver::getPortName()
 {
   return portHandler_->getPortName();
@@ -165,7 +149,7 @@ bool DynamixelDriver::writeRegister(std::string addr_name, uint32_t value)
   dynamixel_->item_ = dynamixel_->ctrl_table_[addr_name];
   dynamixel_tool::ControlTableItem *addr_item = dynamixel_->item_;
 
-  if (addr_item->data_length == 1)
+  if (addr_item->data_length      == 1)
   {
     comm_result = packetHandler_->write1ByteTxRx(portHandler_, dynamixel_->id_, addr_item->address, (uint8_t)value, &error);
   }
@@ -183,7 +167,6 @@ bool DynamixelDriver::writeRegister(std::string addr_name, uint32_t value)
     if (error != 0)
     {
       packetHandler_->printRxPacketError(error);
-      return false;
     }
     return true;
   }
@@ -192,7 +175,6 @@ bool DynamixelDriver::writeRegister(std::string addr_name, uint32_t value)
     packetHandler_->printTxRxResult(comm_result);
 
     ROS_ERROR("[ID] %u, Fail to write!", dynamixel_->id_);
-    return false;
   }
 
   return true;

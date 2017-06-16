@@ -33,23 +33,23 @@
 #ifndef DYNAMIXEL_WORKBENCH_MESSAGE_HEADER_H
 #define DYNAMIXEL_WORKBENCH_MESSAGE_HEADER_H
 
-#include "dynamixel_workbench_msgs/DynamixelAX.h"
+#include "dynamixel_workbench_msgs/AX.h"
 
-#include "dynamixel_workbench_msgs/DynamixelRX.h"
+#include "dynamixel_workbench_msgs/RX.h"
 
-#include "dynamixel_workbench_msgs/DynamixelMX.h"
-#include "dynamixel_workbench_msgs/DynamixelMX64.h"
-#include "dynamixel_workbench_msgs/DynamixelMX106.h"
+#include "dynamixel_workbench_msgs/MX.h"
+#include "dynamixel_workbench_msgs/MX64.h"
+#include "dynamixel_workbench_msgs/MX106.h"
 
-#include "dynamixel_workbench_msgs/DynamixelEX.h"
+#include "dynamixel_workbench_msgs/EX.h"
 
-#include "dynamixel_workbench_msgs/DynamixelXL.h"
-#include "dynamixel_workbench_msgs/DynamixelXL320.h"
+#include "dynamixel_workbench_msgs/XL.h"
+#include "dynamixel_workbench_msgs/XL320.h"
 
-#include "dynamixel_workbench_msgs/DynamixelXM.h"
-#include "dynamixel_workbench_msgs/DynamixelXH.h"
+#include "dynamixel_workbench_msgs/XM.h"
+#include "dynamixel_workbench_msgs/XH.h"
 
-#include "dynamixel_workbench_msgs/DynamixelPro.h"
-#include "dynamixel_workbench_msgs/DynamixelProL42.h"
+#include "dynamixel_workbench_msgs/PRO.h"
+#include "dynamixel_workbench_msgs/PROL42.h"
 
 #endif //DYNAMIXEL_WORKBENCH_MESSAGE_HEADER_H
