@@ -33,11 +33,8 @@
 #ifndef DYNAMIXEL_WORKBENCH_SINGLE_DYNAMIXEL_CONTROLLER_H
 #define DYNAMIXEL_WORKBENCH_SINGLE_DYNAMIXEL_CONTROLLER_H
 
-#include <unistd.h>
 #include <fcntl.h>          // FILE control
 #include <termios.h>        // Terminal IO
-#include <stdlib.h>
-#include <stdio.h>
 #include <ros/ros.h>
 
 #include "dynamixel_workbench_msgs/DynamixelCommand.h"

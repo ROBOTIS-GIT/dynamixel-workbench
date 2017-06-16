@@ -33,9 +33,6 @@
 #ifndef DYNAMIXEL_WORKBENCH_SINGLE_DYNAMIXEL_MONITOR_H
 #define DYNAMIXEL_WORKBENCH_SINGLE_DYNAMIXEL_MONITOR_H
 
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <ros/ros.h>
 
 #include "dynamixel_workbench_toolbox/dynamixel_driver.h"
@@ -46,22 +43,6 @@
 
 namespace single_dynamixel_monitor
 {
-
-struct DynamixelLoadInfo
-{
-  std::string device_name;
-  int baud_rate;
-  float protocol_version;
-};
-
-struct DyanmixelInfo
-{
-  int16_t model_number;
-  int8_t model_id;
-  std::string model_name;
-  DynamixelLoadInfo lode_info;
-};
-
 class SingleDynamixelMonitor
 {
  private:
@@ -83,7 +64,7 @@ class SingleDynamixelMonitor
   bool use_ping_;
   int ping_id_;
 
-  DyanmixelInfo *dynamixel_info_;
+  dynamixel_driver::DynamixelInfo *dynamixel_info_;
   dynamixel_driver::DynamixelDriver *dynamixel_driver_;
 
  public:

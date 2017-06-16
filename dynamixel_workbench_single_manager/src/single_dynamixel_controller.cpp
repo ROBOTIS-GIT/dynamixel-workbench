@@ -106,15 +106,17 @@ void SingleDynamixelController::viewManagerMenu()
   ROS_INFO("Single Manager supports GUI (dynamixel_workbench_single_manager_gui)  ");
   ROS_INFO("----------------------------------------------------------------------");
   ROS_INFO("Command list :");
-  ROS_INFO("[help|h|?]...........: display this menu");
+  ROS_INFO("[help|h|?]...........: help");
   ROS_INFO("[info]...............: information of a Dynamixel");
-  ROS_INFO("[table]..............: check a control table of a dynamixel");
+  ROS_INFO("[table]..............: check a control table of a Dynamixel");
+  ROS_INFO("[torque_on]..........: torque on Dynamixel");
+  ROS_INFO("[torque_off].........: torque off Dynamixel");
   ROS_INFO("[reboot].............: reboot a Dynamixel(only protocol version 2.0)");
   ROS_INFO("[factory_reset]......: command for all data back to factory settings values");
-  ROS_INFO("[[table_item] [value]: change address value of a dynamixel");
+  ROS_INFO("[[table_item] [value]: change address value of a Dynamixel");
   ROS_INFO("[exit]...............: shutdown");
   ROS_INFO("----------------------------------------------------------------------");
-  ROS_INFO("Press Enter Key To Command A DYNAMIXEL");
+  ROS_INFO("Press Enter Key To Command A Dynamixel");
 }
 
 bool SingleDynamixelController::sendCommandMsg(std::string cmd, std::string addr, int64_t value)
@@ -207,6 +209,16 @@ bool SingleDynamixelController::controlLoop()
       {
         if (!sendCommandMsg("factory_reset"))
           ROS_ERROR("It didn't factory reset to DYNAMIXEL");
+      }
+      else if (strcmp(cmd, "torque_on") == 0)
+      {
+        if (!sendCommandMsg("addr", "torque_enable", 1))
+          ROS_ERROR("It didn't works");
+      }
+      else if (strcmp(cmd, "torque_off") == 0)
+      {
+        if (!sendCommandMsg("addr", "torque_enable", 0))
+          ROS_ERROR("It didn't works");
       }
       else if (num_param == 1)
       {

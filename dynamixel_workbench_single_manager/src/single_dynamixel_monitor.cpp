@@ -41,7 +41,7 @@ SingleDynamixelMonitor::SingleDynamixelMonitor()
   ping_id_  = node_handle_.param<int>("ping_id", 1);
 
   // Load Paramameter For Connection
-  dynamixel_info_ = new DyanmixelInfo;
+  dynamixel_info_ = new dynamixel_driver::DynamixelInfo;
 
   dynamixel_info_->lode_info.device_name      = node_handle_.param<std::string>("device_name", "/dev/ttyUSB0");
   dynamixel_info_->lode_info.baud_rate        = node_handle_.param<int>("baud_rate", 57600);
@@ -67,8 +67,8 @@ SingleDynamixelMonitor::SingleDynamixelMonitor()
     }
     else
     {
-      ROS_WARN("Please Check DYNAMIXEL Firmware Version,");
-      ROS_WARN("Baudrate [57600, 115200, 1000000, 3000000]");
+      ROS_WARN("Please Check USB Port authorization and");
+      ROS_WARN("Baudrate [ex : 57600, 115200, 1000000, 3000000]");
       ROS_ERROR("...Failed to find dynamixel!");      
       shutdownSingleDynamixelMonitor();
     }
@@ -89,8 +89,8 @@ SingleDynamixelMonitor::SingleDynamixelMonitor()
     }
     else
     {
-      ROS_WARN("Please Check DYNAMIXEL Firmware Version,");
-      ROS_WARN("Baudrate [57600, 115200, 1000000, 3000000]");
+      ROS_WARN("Please Check USB Port authorization and");
+      ROS_WARN("Baudrate [ex : 57600, 115200, 1000000, 3000000]");
       ROS_ERROR("...Failed to find dynamixel!");
       shutdownSingleDynamixelMonitor();
     }
@@ -127,11 +127,11 @@ bool SingleDynamixelMonitor::initDynamixelStatePublisher()
 
   if (dynamixel->model_name_.find("AX") != std::string::npos)
   {
-    dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::DynamixelAX>("dynamixel/" + dynamixel->model_name_ + "_state", 10);
+    dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::AX>("dynamixel/" + dynamixel->model_name_ + "_state", 10);
   }
   else if (dynamixel->model_name_.find("XM") != std::string::npos)
   {
-    dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::DynamixelXM>("dynamixel/" + dynamixel->model_name_ + "_state", 10);
+    dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::XM>("dynamixel/" + dynamixel->model_name_ + "_state", 10);
   }
 
   return true;
@@ -386,6 +386,26 @@ bool SingleDynamixelMonitor::dynamixelCommandMsgCallback(dynamixel_workbench_msg
     else
       res.comm_result = false;
   }
+  else if (req.command == "torque_on")
+  {
+    std::string addr = req.addr_name;
+    int64_t value    = req.value;
+
+    if (dynamixel_driver_->writeRegister(addr, value))
+      res.comm_result = true;
+    else
+      res.comm_result = false;
+  }
+  else if (req.command == "torque_off")
+  {
+    std::string addr = req.addr_name;
+    int64_t value    = req.value;
+
+    if (dynamixel_driver_->writeRegister(addr, value))
+      res.comm_result = true;
+    else
+      res.comm_result = false;
+  }
   else if (req.command == "exit")
   {
     if (shutdownSingleDynamixelMonitor())
@@ -495,7 +515,7 @@ bool SingleDynamixelMonitor::AX()
 {
   uint32_t read_value = 0;
 
-  dynamixel_workbench_msgs::DynamixelAX ax_state;
+  dynamixel_workbench_msgs::AX ax_state;
   dynamixel_tool::DynamixelTool *dynamixel = dynamixel_driver_->dynamixel_;
 
   for (dynamixel->it_ctrl_ = dynamixel->ctrl_table_.begin();
@@ -580,7 +600,7 @@ bool SingleDynamixelMonitor::XM()
 {
   uint32_t read_value = 0;
 
-  dynamixel_workbench_msgs::DynamixelXM xm_state;
+  dynamixel_workbench_msgs::XM xm_state;
   dynamixel_tool::DynamixelTool *dynamixel = dynamixel_driver_->dynamixel_;
 
   for (dynamixel->it_ctrl_ = dynamixel->ctrl_table_.begin();
