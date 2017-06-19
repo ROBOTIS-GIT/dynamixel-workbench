@@ -17,7 +17,7 @@
   <run_depend>dynamixel_workbench_single_manager</run_depend>
   <run_depend>dynamixel_workbench_single_manager_gui</run_depend>
   <run_depend>dynamixel_workbench_controllers</run_depend>
-  <run_depend>dynamixel_workbench_tutorials</run_depend>
+  <run_depend>dynamixel_workbench_operators</run_depend>
   <run_depend>dynamixel_workbench_toolbox</run_depend>
   <export><metapackage/></export>
 </package>
