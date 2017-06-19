@@ -39,20 +39,20 @@
 namespace dynamixel_driver
 {
 
-struct DynamixelLoadInfo
+typedef struct
 {
   std::string device_name;
   int baud_rate;
   float protocol_version;
-};
+}DynamixelLoadInfo;
 
-struct DynamixelInfo
+typedef struct
 {
   int16_t model_number;
   int8_t model_id;
   std::string model_name;
   DynamixelLoadInfo lode_info;
-};
+}DynamixelInfo;
 
 class DynamixelDriver
 {
@@ -78,15 +78,12 @@ class DynamixelDriver
 
   bool setBaudrate(uint32_t baud_rate);
 
-  dynamixel::PortHandler* getPortHandler();
-  dynamixel::PacketHandler* getPacketHandler();
-
   char* getPortName();
   float getProtocolVersion();
   uint32_t getBaudrate();
 
   bool writeRegister(std::string addr_name, uint32_t value);
-  bool readRegister(std::string addr_name, uint32_t *value);
+  bool readRegister(std::string addr_name, int32_t *value);
 };
 }
 

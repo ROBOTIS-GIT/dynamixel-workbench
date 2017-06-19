@@ -41,6 +41,7 @@ class DynamixelMultiDriver : public dynamixel_driver::DynamixelDriver
 {
  public:
   std::vector<dynamixel_tool::DynamixelTool *> multi_dynamixel_;
+  std::map<std::string, std::vector<int64_t> *> read_value_;
 
  private:
   dynamixel::PortHandler   *portHandler_;
@@ -57,15 +58,17 @@ class DynamixelMultiDriver : public dynamixel_driver::DynamixelDriver
   DynamixelMultiDriver(std::string device_name, int baud_rate, float protocol_version);
   ~DynamixelMultiDriver();
 
- bool loadDynamixel(std::vector<dynamixel_driver::DynamixelInfo *> dynamixel_info);
- bool initSyncWrite();
+  bool loadDynamixel(std::vector<dynamixel_driver::DynamixelInfo *> dynamixel_info);
+  bool initSyncWrite();
 
- bool syncWritePosition(std::vector<uint32_t> pos);
- bool syncWriteVelocity();
- bool syncWriteCurrent();
- bool syncWriteTorque(std::vector<uint8_t> &onoff);
- bool syncWriteProfileVelocity();
- bool syncWriteProfileAcceleration();
+  bool readMultiRegister(std::string addr_name);
+
+  bool syncWritePosition(std::vector<uint32_t> pos);
+  bool syncWriteVelocity();
+  bool syncWriteCurrent();
+  bool syncWriteTorque(std::vector<uint8_t> &onoff);
+  bool syncWriteProfileVelocity(std::vector<uint32_t> vel);
+  bool syncWriteProfileAcceleration(std::vector<uint32_t> acc);
 
 };
 }

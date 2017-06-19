@@ -93,6 +93,7 @@ class DynamixelTool
   DynamixelTool(uint8_t id, std::string model_name);
   ~DynamixelTool();
 
+ private:
   bool getModelPath(void);
   bool getModelName(uint16_t model_number);
   bool getModelItem();

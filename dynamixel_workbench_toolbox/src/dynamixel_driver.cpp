@@ -116,16 +116,6 @@ bool DynamixelDriver::setBaudrate(uint32_t baud_rate)
   }
 }
 
-dynamixel::PortHandler* DynamixelDriver::getPortHandler()
-{
-  return portHandler_->getPortHandler(portHandler_->getPortName());
-}
-
-dynamixel::PacketHandler* DynamixelDriver::getPacketHandler()
-{
-  return packetHandler_->getPacketHandler(packetHandler_->getProtocolVersion());
-}
-
 char* DynamixelDriver::getPortName()
 {
   return portHandler_->getPortName();
@@ -180,7 +170,7 @@ bool DynamixelDriver::writeRegister(std::string addr_name, uint32_t value)
   return true;
 }
 
-bool DynamixelDriver::readRegister(std::string addr_name, uint32_t *value)
+bool DynamixelDriver::readRegister(std::string addr_name, int32_t *value)
 {
   uint8_t error = 0;
   int comm_result = COMM_RX_FAIL;

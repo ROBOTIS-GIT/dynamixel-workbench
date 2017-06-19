@@ -37,8 +37,8 @@ using namespace dynamixel_multi_driver;
 DynamixelMultiDriver::DynamixelMultiDriver(std::string device_name, int baud_rate, float protocol_version)
   :dynamixel_driver::DynamixelDriver(device_name, baud_rate, protocol_version)
 {
-  portHandler_   = dynamixel_driver::DynamixelDriver::portHandler_;//dynamixel_driver::DynamixelDriver::getPortHandler();
-  packetHandler_ = dynamixel_driver::DynamixelDriver::packetHandler_; //dynamixel_driver::DynamixelDriver::getPacketHandler();
+  portHandler_   = dynamixel_driver::DynamixelDriver::portHandler_;
+  packetHandler_ = dynamixel_driver::DynamixelDriver::packetHandler_;
 }
 
 DynamixelMultiDriver::~DynamixelMultiDriver()
@@ -53,21 +53,18 @@ bool DynamixelMultiDriver::loadDynamixel(std::vector<dynamixel_driver::Dynamixel
 
   for (std::vector<dynamixel_driver::DynamixelInfo>::size_type num = 0; num < dynamixel_info.size(); ++num)
   {
-    //ROS_INFO("ID : %u", dynamixel_info[num]->model_id);
     if (packetHandler_->ping(portHandler_, dynamixel_info[num]->model_id, &model_num, &error) == COMM_SUCCESS)
     {
       dynamixel_tool::DynamixelTool *dynamixel = new dynamixel_tool::DynamixelTool(dynamixel_info[num]->model_id, model_num);
       multi_dynamixel_.push_back(dynamixel);
-      // ROS_INFO("IsD : %u", multi_dynamixel_[num]->id_);
     }
-//    else
-//    {
-//      ROS_WARN("aA");
-//    }
-//    return true;
+    else
+    {
+      return false;
+    }
   }
 
-//  return false;
+  return true;
 }
 
 bool DynamixelMultiDriver::initSyncWrite()
@@ -103,6 +100,26 @@ bool DynamixelMultiDriver::initSyncWrite()
   addr_item = dynamixel->item_;
 
   groupSyncWriteProfileAcceleration_ = new dynamixel::GroupSyncWrite(portHandler_, packetHandler_, addr_item->address, addr_item->data_length);
+}
+
+bool DynamixelMultiDriver::readMultiRegister(std::string addr_name)
+{
+  std::vector<int64_t> *read_data = new std::vector<int64_t>;
+  int32_t value;
+
+  for (std::vector<dynamixel_tool::DynamixelTool *>::size_type num = 0; num < multi_dynamixel_.size(); ++num)
+  {
+    dynamixel_= multi_dynamixel_[num];
+
+    if (readRegister(addr_name, &value))
+      read_data->push_back(value);
+    else
+      return false;
+  }
+
+  read_value_[addr_name] = read_data;
+
+  return true;
 }
 
 bool DynamixelMultiDriver::syncWritePosition(std::vector<uint32_t> pos)
@@ -142,16 +159,16 @@ bool DynamixelMultiDriver::syncWriteTorque(std::vector<uint8_t> &onoff)
   bool dynamixel_addparam_result_;
   int8_t dynamixel_comm_result_;
 
-  uint8_t param_goal_position[4];
+  uint8_t param_goal_torque[4];
 
   for (std::vector<dynamixel_tool::DynamixelTool *>::size_type num = 0; num < multi_dynamixel_.size(); ++num)
   {
-    param_goal_position[0] = DXL_LOBYTE(DXL_LOWORD(onoff[num]));
-    param_goal_position[1] = DXL_HIBYTE(DXL_LOWORD(onoff[num]));
-    param_goal_position[2] = DXL_LOBYTE(DXL_HIWORD(onoff[num]));
-    param_goal_position[3] = DXL_HIBYTE(DXL_HIWORD(onoff[num]));
+    param_goal_torque[0] = DXL_LOBYTE(DXL_LOWORD(onoff[num]));
+    param_goal_torque[1] = DXL_HIBYTE(DXL_LOWORD(onoff[num]));
+    param_goal_torque[2] = DXL_LOBYTE(DXL_HIWORD(onoff[num]));
+    param_goal_torque[3] = DXL_HIBYTE(DXL_HIWORD(onoff[num]));
 
-    dynamixel_addparam_result_ = groupSyncWriteTorque_->addParam(multi_dynamixel_[num]->id_, (uint8_t*)&param_goal_position);
+    dynamixel_addparam_result_ = groupSyncWriteTorque_->addParam(multi_dynamixel_[num]->id_, (uint8_t*)&param_goal_torque);
     if (dynamixel_addparam_result_ != true)
     {
       ROS_ERROR("[ID:%03d] groupSyncWrite addparam failed", multi_dynamixel_[num]->id_);
@@ -166,5 +183,69 @@ bool DynamixelMultiDriver::syncWriteTorque(std::vector<uint8_t> &onoff)
     return false;
   }
   groupSyncWriteTorque_->clearParam();
+  return true;
+}
+
+bool DynamixelMultiDriver::syncWriteProfileVelocity(std::vector<uint32_t> vel)
+{
+  bool dynamixel_addparam_result_;
+  int8_t dynamixel_comm_result_;
+
+  uint8_t param_goal_profile_velocity[4];
+
+  for (std::vector<dynamixel_tool::DynamixelTool *>::size_type num = 0; num < multi_dynamixel_.size(); ++num)
+  {
+    param_goal_profile_velocity[0] = DXL_LOBYTE(DXL_LOWORD(vel[num]));
+    param_goal_profile_velocity[1] = DXL_HIBYTE(DXL_LOWORD(vel[num]));
+    param_goal_profile_velocity[2] = DXL_LOBYTE(DXL_HIWORD(vel[num]));
+    param_goal_profile_velocity[3] = DXL_HIBYTE(DXL_HIWORD(vel[num]));
+
+    dynamixel_addparam_result_ = groupSyncWriteProfileVelocity_->addParam(multi_dynamixel_[num]->id_, (uint8_t*)&param_goal_profile_velocity);
+    if (dynamixel_addparam_result_ != true)
+    {
+      ROS_ERROR("[ID:%03d] groupSyncWrite addparam failed", multi_dynamixel_[num]->id_);
+      return false;
+    }
+  }
+
+  dynamixel_comm_result_ = groupSyncWriteProfileVelocity_->txPacket();
+  if (dynamixel_comm_result_ != COMM_SUCCESS)
+  {
+    packetHandler_->printTxRxResult(dynamixel_comm_result_);
+    return false;
+  }
+  groupSyncWriteProfileVelocity_->clearParam();
+  return true;
+}
+
+ bool DynamixelMultiDriver::syncWriteProfileAcceleration(std::vector<uint32_t> acc)
+{
+  bool dynamixel_addparam_result_;
+  int8_t dynamixel_comm_result_;
+
+  uint8_t param_goal_profile_acceleration[4];
+
+  for (std::vector<dynamixel_tool::DynamixelTool *>::size_type num = 0; num < multi_dynamixel_.size(); ++num)
+  {
+    param_goal_profile_acceleration[0] = DXL_LOBYTE(DXL_LOWORD(acc[num]));
+    param_goal_profile_acceleration[1] = DXL_HIBYTE(DXL_LOWORD(acc[num]));
+    param_goal_profile_acceleration[2] = DXL_LOBYTE(DXL_HIWORD(acc[num]));
+    param_goal_profile_acceleration[3] = DXL_HIBYTE(DXL_HIWORD(acc[num]));
+
+    dynamixel_addparam_result_ = groupSyncWriteProfileAcceleration_->addParam(multi_dynamixel_[num]->id_, (uint8_t*)&param_goal_profile_acceleration);
+    if (dynamixel_addparam_result_ != true)
+    {
+      ROS_ERROR("[ID:%03d] groupSyncWrite addparam failed", multi_dynamixel_[num]->id_);
+      return false;
+    }
+  }
+
+  dynamixel_comm_result_ = groupSyncWriteProfileAcceleration_->txPacket();
+  if (dynamixel_comm_result_ != COMM_SUCCESS)
+  {
+    packetHandler_->printTxRxResult(dynamixel_comm_result_);
+    return false;
+  }
+  groupSyncWriteProfileAcceleration_->clearParam();
   return true;
 }
