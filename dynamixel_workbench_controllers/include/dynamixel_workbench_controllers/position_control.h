@@ -47,11 +47,20 @@ namespace position_control
 #define PAN   0
 #define TILT  1
 
+typedef struct
+{
+  std::vector<uint8_t>  torque;
+  std::vector<uint32_t> pos;
+  std::vector<uint32_t> prof_vel;
+  std::vector<uint32_t> prof_acc;
+}WriteValue;
+
 class PositionControl
 {
  private:
   // ROS NodeHandle
   ros::NodeHandle node_handle_;
+  ros::NodeHandle node_handle_priv_;
 
   // ROS Parameters
 
@@ -71,14 +80,10 @@ class PositionControl
   std::vector<dynamixel_driver::DynamixelInfo*> dynamixel_info_;
   dynamixel_multi_driver::DynamixelMultiDriver *multi_driver_;
 
+  WriteValue *writeValue_;
+
   int profile_velocity_;
   int profile_acceleration_;
-
-//  std::map<std::string, std::vector<int64_t> *> read_data_;
-
-  std::vector<uint8_t> torque_;
-  std::vector<uint32_t> pos_;
-
 
  public:
   PositionControl();
@@ -86,21 +91,17 @@ class PositionControl
   bool controlLoop(void);
 
  private:
+  bool loadDynamixel();
+  bool checkLoadDynamixel();
   bool initDynamixelStatePublisher();
   bool initDynamixelInfoServer();
   bool initMotor(std::string motor_model, uint8_t motor_id, float protocol_version);
 
-//  bool readDynamixelRegister(uint8_t id, uint16_t addr, uint8_t length, int64_t *value);
-//  bool readMotorState(std::string addr_name);
+  bool readDynamixelState();
+  bool dynamixelStatePublish();
 
-//  bool syncWriteDynamixels(uint16_t addr, uint8_t length, int64_t pan_motor_value, int64_t tilt_motor_value);
-//  bool writeTorque(bool onoff);
-//  bool writeProfile(int velocity, int acceleration);
-//  bool writePosition(int64_t pan_pos, int64_t tilt_pos);
+  uint32_t convertRadian2Value(float radian);
 
-//  int64_t convertRadian2Value(double radian);
-
-//  bool getPublishedMsg(void);
   bool jointCommandMsgCallback(dynamixel_workbench_msgs::JointCommand::Request &req,
                                dynamixel_workbench_msgs::JointCommand::Response &res);
 };
