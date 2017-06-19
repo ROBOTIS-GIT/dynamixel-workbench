@@ -154,7 +154,7 @@ bool SingleDynamixelMonitor::initDynamixelCommandServer()
 bool SingleDynamixelMonitor::showDynamixelControlTable()
 {
   dynamixel_tool::DynamixelTool *dynamixel = dynamixel_driver_->dynamixel_;
-  uint32_t torque_status = 0;
+  int32_t torque_status = 0;
 
   dynamixel_driver_->readRegister("torque_enable", &torque_status);
 
@@ -204,7 +204,7 @@ bool SingleDynamixelMonitor::checkValidationCommand(std::string cmd)
 bool SingleDynamixelMonitor::checkValidAccess(std::string cmd)
 {
   dynamixel_tool::DynamixelTool *dynamixel = dynamixel_driver_->dynamixel_;
-  uint32_t torque_status = 0;
+  int32_t torque_status = 0;
 
   dynamixel_driver_->readRegister("torque_enable", &torque_status);
 
@@ -513,7 +513,7 @@ bool SingleDynamixelMonitor::dynamixelStatePublish()
 
 bool SingleDynamixelMonitor::AX()
 {
-  uint32_t read_value = 0;
+  int32_t read_value = 0;
 
   dynamixel_workbench_msgs::AX ax_state;
   dynamixel_tool::DynamixelTool *dynamixel = dynamixel_driver_->dynamixel_;
@@ -598,7 +598,7 @@ bool SingleDynamixelMonitor::AX()
 
 bool SingleDynamixelMonitor::XM()
 {
-  uint32_t read_value = 0;
+  int32_t read_value = 0;
 
   dynamixel_workbench_msgs::XM xm_state;
   dynamixel_tool::DynamixelTool *dynamixel = dynamixel_driver_->dynamixel_;

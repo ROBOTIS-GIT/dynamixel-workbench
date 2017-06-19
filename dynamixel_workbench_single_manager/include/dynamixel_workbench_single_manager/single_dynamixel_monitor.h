@@ -98,14 +98,11 @@ class SingleDynamixelMonitor
   bool RX();
   bool EX();
   bool MX();
-  bool MX64();
-  bool MX106();
   bool XL320();
   bool XL();
   bool XM();
   bool XH();
   bool PRO();
-  bool PROL42();
 };
 }
 
