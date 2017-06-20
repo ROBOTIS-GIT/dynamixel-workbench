@@ -119,38 +119,38 @@ int main(int argc, char **argv)
 
       if (c == FORWARD)
       {
-        wheel_command.request.right_wheel_velocity = 0.2;
-        wheel_command.request.left_wheel_velocity = 0.2;
+        wheel_command.request.right_vel = 0.2;
+        wheel_command.request.left_vel  = 0.2;
       }
       else if (c == BACKWARD)
       {
-        wheel_command.request.right_wheel_velocity = -0.2;
-        wheel_command.request.left_wheel_velocity = -0.2;
+        wheel_command.request.right_vel = -0.2;
+        wheel_command.request.left_vel  = -0.2;
       }
       else if (c == LEFT)
       {
-        wheel_command.request.right_wheel_velocity = 0.2;
-        wheel_command.request.left_wheel_velocity = -0.2;
+        wheel_command.request.right_vel = 0.2;
+        wheel_command.request.left_vel  = -0.2;
       }
       else if (c == RIGHT)
       {
-        wheel_command.request.right_wheel_velocity = -0.2;
-        wheel_command.request.left_wheel_velocity = 0.2;
+        wheel_command.request.right_vel = -0.2;
+        wheel_command.request.left_vel  = 0.2;
       }
       else if (c == STOPS)
       {
-        wheel_command.request.right_wheel_velocity = 0.0;
-        wheel_command.request.left_wheel_velocity = 0.0;
+        wheel_command.request.right_vel = 0.0;
+        wheel_command.request.left_vel  = 0.0;
       }
       else
       {
-        wheel_command.request.right_wheel_velocity = 0.2;
-        wheel_command.request.left_wheel_velocity = 0.2;
+        wheel_command.request.right_vel = 0.2;
+        wheel_command.request.left_vel  = 0.2;
       }
 
       if (wheel_command_client.call(wheel_command))
       {
-        ROS_INFO("[LEFT_WHEEL_VELOCITY]: %.2f, [RIGHT_WHEEL_VELOCITY]: %.2f", wheel_command.response.left_wheel_velocity, wheel_command.response.right_wheel_velocity);
+        ROS_INFO("[LEFT_VELOCITY]: %.2f, [RIGHT_VELOCITY]: %.2f", wheel_command.response.left_vel, wheel_command.response.right_vel);
       }
       else
       {
