@@ -30,31 +30,44 @@
 
 /* Author: Taehoon Lim (Darby) */
 
-#ifndef DYNAMIXEL_WORKBENCH_POSITION_CONTROL_H
-#define DYNAMIXEL_WORKBENCH_POSITION_CONTROL_H
+/*
+ *
+ *     |-----------|
+ *     |-----------|
+ *     |-----------|
+ *     |-----------|
+ *     |-----------|
+ *    O-------------O
+ *  left          right
+ *   1              2
+ *
+ *
+ * */
+
+#ifndef DYNAMIXEL_WORKBENCH_VELOCITY_CONTROL_H
+#define DYNAMIXEL_WORKBENCH_VELOCITY_CONTROL_H
 
 #include <ros/ros.h>
 
 #include <dynamixel_workbench_toolbox/dynamixel_multi_driver.h>
 
 #include <dynamixel_workbench_msgs/DynamixelStateList.h>
-#include <dynamixel_workbench_msgs/JointCommand.h>
+#include <dynamixel_workbench_msgs/WheelCommand.h>
 
-namespace position_control
+namespace velocity_control
 {
-#define MOTOR 0
-#define PAN   0
-#define TILT  1
+#define MOTOR  0
+#define LEFT   0
+#define RIGHT  1
 
 typedef struct
 {
-  std::vector<uint8_t>  torque;
-  std::vector<uint32_t> pos;
-  std::vector<uint32_t> prof_vel;
-  std::vector<uint32_t> prof_acc;
+  std::vector<uint8_t> torque;
+  std::vector<int32_t> vel;
+  std::vector<uint16_t> spd;
 }WriteValue;
 
-class PositionControl
+class VelocityControl
 {
  private:
   // ROS NodeHandle
@@ -62,14 +75,13 @@ class PositionControl
   ros::NodeHandle node_handle_priv_;
 
   // ROS Parameters
-  int profile_velocity_;
-  int profile_acceleration_;
+
   // ROS Topic Publisher
   ros::Publisher dynamixel_state_list_pub_;
   // ROS Topic Subscriber
 
   // ROS Service Server
-  ros::ServiceServer joint_command_server;
+  ros::ServiceServer wheel_command_server;
   // ROS Service Client
 
   // ROS Topic Publisher
@@ -83,8 +95,8 @@ class PositionControl
   WriteValue *writeValue_;
 
  public:
-  PositionControl();
-  ~PositionControl();
+  VelocityControl();
+  ~VelocityControl();
   bool controlLoop(void);
 
  private:
@@ -94,17 +106,17 @@ class PositionControl
   bool initDynamixelInfoServer();
 
   bool setTorque(bool onoff);
-  bool setProfileValue(uint32_t prof_vel, uint32_t prof_acc);
-  bool setPosition(uint32_t pan_pos, uint32_t tilt_pos);
+  bool setVelocity(int32_t left_vel, int32_t right_vel);
+  bool setMovingSpeed(uint16_t left_spd, uint16_t right_spd);
 
   bool readDynamixelState();
   bool dynamixelStatePublish();
 
-  uint32_t convertRadian2Value(float radian);
+  int32_t convertVelocity2Value(float velocity);
 
-  bool jointCommandMsgCallback(dynamixel_workbench_msgs::JointCommand::Request &req,
-                               dynamixel_workbench_msgs::JointCommand::Response &res);
+  bool wheelCommandMsgCallback(dynamixel_workbench_msgs::WheelCommand::Request &req,
+                               dynamixel_workbench_msgs::WheelCommand::Response &res);
 };
 }
 
-#endif //DYNAMIXEL_WORKBENCH_POSITION_CONTROL_H
+#endif //DYNAMIXEL_WORKBENCH_VELOCITY_CONTROL_H

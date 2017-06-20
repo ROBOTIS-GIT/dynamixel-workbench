@@ -30,8 +30,8 @@
 
 /* Author: Taehoon Lim (Darby) */
 
-#ifndef DYNAMIXEL_WORKBENCH_POSITION_CONTROL_H
-#define DYNAMIXEL_WORKBENCH_POSITION_CONTROL_H
+#ifndef DYNAMIXEL_WORKBENCH_TORQUE_CONTROL_H
+#define DYNAMIXEL_WORKBENCH_TORQUE_CONTROL_H
 
 #include <ros/ros.h>
 
@@ -40,21 +40,29 @@
 #include <dynamixel_workbench_msgs/DynamixelStateList.h>
 #include <dynamixel_workbench_msgs/JointCommand.h>
 
-namespace position_control
+namespace torque_control
 {
 #define MOTOR 0
 #define PAN   0
 #define TILT  1
 
+#define TILT_MOTOR_MASS 0.082
+#define GRAVITY         9.8
+#define LINK_LENGTH     0.018
+
 typedef struct
 {
   std::vector<uint8_t>  torque;
-  std::vector<uint32_t> pos;
-  std::vector<uint32_t> prof_vel;
-  std::vector<uint32_t> prof_acc;
+  std::vector<int16_t>  current;
 }WriteValue;
 
-class PositionControl
+typedef struct
+{
+  std::vector<uint32_t> cur_pos;
+  std::vector<uint32_t> des_pos;
+}MotorPos;
+
+class TorqueControl
 {
  private:
   // ROS NodeHandle
@@ -62,8 +70,9 @@ class PositionControl
   ros::NodeHandle node_handle_priv_;
 
   // ROS Parameters
-  int profile_velocity_;
-  int profile_acceleration_;
+  float p_gain_;
+  float d_gain_;
+
   // ROS Topic Publisher
   ros::Publisher dynamixel_state_list_pub_;
   // ROS Topic Subscriber
@@ -81,10 +90,11 @@ class PositionControl
   dynamixel_multi_driver::DynamixelMultiDriver *multi_driver_;
 
   WriteValue *writeValue_;
+  MotorPos   *motorPos_;
 
  public:
-  PositionControl();
-  ~PositionControl();
+  TorqueControl();
+  ~TorqueControl();
   bool controlLoop(void);
 
  private:
@@ -94,17 +104,22 @@ class PositionControl
   bool initDynamixelInfoServer();
 
   bool setTorque(bool onoff);
-  bool setProfileValue(uint32_t prof_vel, uint32_t prof_acc);
-  bool setPosition(uint32_t pan_pos, uint32_t tilt_pos);
+  bool setCurrent(int16_t pan_cur, int16_t tilt_cur);
 
   bool readDynamixelState();
   bool dynamixelStatePublish();
 
+  float  convertValue2Torque(int16_t value);
+  int16_t convertTorque2Value(float torque);
+
   uint32_t convertRadian2Value(float radian);
+  float convertValue2Radian(uint32_t value);
+
+  bool gravityCompensation();
 
   bool jointCommandMsgCallback(dynamixel_workbench_msgs::JointCommand::Request &req,
                                dynamixel_workbench_msgs::JointCommand::Response &res);
 };
 }
 
-#endif //DYNAMIXEL_WORKBENCH_POSITION_CONTROL_H
+#endif //DYNAMIXEL_WORKBENCH_TORQUE_CONTROL_H
