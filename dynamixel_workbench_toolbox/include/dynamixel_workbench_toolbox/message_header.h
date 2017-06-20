@@ -38,18 +38,14 @@
 #include "dynamixel_workbench_msgs/RX.h"
 
 #include "dynamixel_workbench_msgs/MX.h"
-#include "dynamixel_workbench_msgs/MX64.h"
-#include "dynamixel_workbench_msgs/MX106.h"
 
 #include "dynamixel_workbench_msgs/EX.h"
 
 #include "dynamixel_workbench_msgs/XL.h"
-#include "dynamixel_workbench_msgs/XL320.h"
 
 #include "dynamixel_workbench_msgs/XM.h"
 #include "dynamixel_workbench_msgs/XH.h"
 
 #include "dynamixel_workbench_msgs/PRO.h"
-#include "dynamixel_workbench_msgs/PROL42.h"
 
 #endif //DYNAMIXEL_WORKBENCH_MESSAGE_HEADER_H

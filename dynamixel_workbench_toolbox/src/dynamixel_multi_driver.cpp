@@ -67,39 +67,63 @@ bool DynamixelMultiDriver::loadDynamixel(std::vector<dynamixel_driver::Dynamixel
   return true;
 }
 
-bool DynamixelMultiDriver::initSyncWrite()
+dynamixel::GroupSyncWrite* DynamixelMultiDriver::setSyncWrite(std::string addr_name)
 {
   dynamixel_tool::DynamixelTool *dynamixel = multi_dynamixel_[0];
 
-  dynamixel->item_ = dynamixel->ctrl_table_["goal_position"];
+  dynamixel->item_ = dynamixel->ctrl_table_[addr_name];
   dynamixel_tool::ControlTableItem *addr_item = dynamixel->item_;
 
-  groupSyncWritePosition_ = new dynamixel::GroupSyncWrite(portHandler_, packetHandler_, addr_item->address, addr_item->data_length);
+  dynamixel::GroupSyncWrite * groupSyncWrite = new dynamixel::GroupSyncWrite(portHandler_, packetHandler_, addr_item->address, addr_item->data_length);
 
-  dynamixel->item_ = dynamixel->ctrl_table_["goal_velocity"];
-  addr_item = dynamixel->item_;
+  return groupSyncWrite;
+}
 
-  groupSyncWriteVelocity_ = new dynamixel::GroupSyncWrite(portHandler_, packetHandler_, addr_item->address, addr_item->data_length);
+dynamixel::GroupSyncRead* DynamixelMultiDriver::setSyncRead(std::string addr_name)
+{
+  dynamixel_tool::DynamixelTool *dynamixel = multi_dynamixel_[0];
 
-  dynamixel->item_ = dynamixel->ctrl_table_["goal_current"];
-  addr_item = dynamixel->item_;
+  dynamixel->item_ = dynamixel->ctrl_table_[addr_name];
+  dynamixel_tool::ControlTableItem *addr_item = dynamixel->item_;
 
-  groupSyncWriteCurrent_ = new dynamixel::GroupSyncWrite(portHandler_, packetHandler_, addr_item->address, addr_item->data_length);
+  dynamixel::GroupSyncRead* groupSyncRead = new dynamixel::GroupSyncRead(portHandler_, packetHandler_, addr_item->address, addr_item->data_length);
 
-  dynamixel->item_ = dynamixel->ctrl_table_["torque_enable"];
-  addr_item = dynamixel->item_;
+  return groupSyncRead;
+}
 
-  groupSyncWriteTorque_ = new dynamixel::GroupSyncWrite(portHandler_, packetHandler_, addr_item->address, addr_item->data_length);
+bool DynamixelMultiDriver::initSyncWrite()
+{
+  groupSyncWriteTorque_   = setSyncWrite("torque_enable");
+  groupSyncWritePosition_ = setSyncWrite("goal_position");
 
-  dynamixel->item_ = dynamixel->ctrl_table_["profile_velocity"];
-  addr_item = dynamixel->item_;
+  if (getProtocolVersion() == 2.0)
+  {
+    groupSyncWriteVelocity_ = setSyncWrite("goal_velocity");
 
-  groupSyncWriteProfileVelocity_ = new dynamixel::GroupSyncWrite(portHandler_, packetHandler_, addr_item->address, addr_item->data_length);
+    if (multi_dynamixel_[0]->model_name_.find("XM") != std::string::npos)
+    {
+      groupSyncWriteCurrent_ = setSyncWrite("goal_current");
+    }
 
-  dynamixel->item_ = dynamixel->ctrl_table_["profile_acceleration"];
-  addr_item = dynamixel->item_;
+    if (!(multi_dynamixel_[0]->model_name_.find("PRO") != std::string::npos))
+    {
+      groupSyncWriteProfileVelocity_     = setSyncWrite("profile_velocity");
+      groupSyncWriteProfileAcceleration_ = setSyncWrite("profile_acceleration");
+    }
+  }
+  else
+  {
+    groupSyncWriteMovingSpeed_ = setSyncWrite("moving_speed");
+  }
 
-  groupSyncWriteProfileAcceleration_ = new dynamixel::GroupSyncWrite(portHandler_, packetHandler_, addr_item->address, addr_item->data_length);
+  return true;
+}
+
+bool DynamixelMultiDriver::initSyncRead()
+{
+  groupSyncReadPosition_ = setSyncRead("present_position");
+
+  return true;
 }
 
 bool DynamixelMultiDriver::readMultiRegister(std::string addr_name)
@@ -151,6 +175,102 @@ bool DynamixelMultiDriver::syncWritePosition(std::vector<uint32_t> pos)
     return false;
   }
   groupSyncWritePosition_->clearParam();
+  return true;
+}
+
+bool DynamixelMultiDriver::syncWriteVelocity(std::vector<int32_t> vel)
+{
+  bool dynamixel_addparam_result_;
+  int8_t dynamixel_comm_result_;
+
+  uint8_t param_goal_velocity[4];
+
+  for (std::vector<dynamixel_tool::DynamixelTool *>::size_type num = 0; num < multi_dynamixel_.size(); ++num)
+  {
+    param_goal_velocity[0] = DXL_LOBYTE(DXL_LOWORD(vel[num]));
+    param_goal_velocity[1] = DXL_HIBYTE(DXL_LOWORD(vel[num]));
+    param_goal_velocity[2] = DXL_LOBYTE(DXL_HIWORD(vel[num]));
+    param_goal_velocity[3] = DXL_HIBYTE(DXL_HIWORD(vel[num]));
+
+    dynamixel_addparam_result_ = groupSyncWriteVelocity_->addParam(multi_dynamixel_[num]->id_, (uint8_t*)&param_goal_velocity);
+    if (dynamixel_addparam_result_ != true)
+    {
+      ROS_ERROR("[ID:%03d] groupSyncWrite addparam failed", multi_dynamixel_[num]->id_);
+      return false;
+    }
+  }
+
+  dynamixel_comm_result_ = groupSyncWriteVelocity_->txPacket();
+  if (dynamixel_comm_result_ != COMM_SUCCESS)
+  {
+    packetHandler_->printTxRxResult(dynamixel_comm_result_);
+    return false;
+  }
+  groupSyncWriteVelocity_->clearParam();
+  return true;
+}
+
+bool DynamixelMultiDriver::syncWriteMovingSpeed(std::vector<uint16_t> spd)
+{
+  bool dynamixel_addparam_result_;
+  int8_t dynamixel_comm_result_;
+
+  uint8_t param_goal_speed[4];
+
+  for (std::vector<dynamixel_tool::DynamixelTool *>::size_type num = 0; num < multi_dynamixel_.size(); ++num)
+  {
+    param_goal_speed[0] = DXL_LOBYTE(DXL_LOWORD(spd[num]));
+    param_goal_speed[1] = DXL_HIBYTE(DXL_LOWORD(spd[num]));
+    param_goal_speed[2] = DXL_LOBYTE(DXL_HIWORD(spd[num]));
+    param_goal_speed[3] = DXL_HIBYTE(DXL_HIWORD(spd[num]));
+
+    dynamixel_addparam_result_ = groupSyncWriteMovingSpeed_->addParam(multi_dynamixel_[num]->id_, (uint8_t*)&param_goal_speed);
+    if (dynamixel_addparam_result_ != true)
+    {
+      ROS_ERROR("[ID:%03d] groupSyncWrite addparam failed", multi_dynamixel_[num]->id_);
+      return false;
+    }
+  }
+
+  dynamixel_comm_result_ = groupSyncWriteMovingSpeed_->txPacket();
+  if (dynamixel_comm_result_ != COMM_SUCCESS)
+  {
+    packetHandler_->printTxRxResult(dynamixel_comm_result_);
+    return false;
+  }
+  groupSyncWriteMovingSpeed_->clearParam();
+  return true;
+}
+
+bool DynamixelMultiDriver::syncWriteCurrent(std::vector<int16_t> cur)
+{
+  bool dynamixel_addparam_result_;
+  int8_t dynamixel_comm_result_;
+
+  uint8_t param_goal_current[4];
+
+  for (std::vector<dynamixel_tool::DynamixelTool *>::size_type num = 0; num < multi_dynamixel_.size(); ++num)
+  {
+    param_goal_current[0] = DXL_LOBYTE(DXL_LOWORD(cur[num]));
+    param_goal_current[1] = DXL_HIBYTE(DXL_LOWORD(cur[num]));
+    param_goal_current[2] = DXL_LOBYTE(DXL_HIWORD(cur[num]));
+    param_goal_current[3] = DXL_HIBYTE(DXL_HIWORD(cur[num]));
+
+    dynamixel_addparam_result_ = groupSyncWriteCurrent_->addParam(multi_dynamixel_[num]->id_, (uint8_t*)&param_goal_current);
+    if (dynamixel_addparam_result_ != true)
+    {
+      ROS_ERROR("[ID:%03d] groupSyncWrite addparam failed", multi_dynamixel_[num]->id_);
+      return false;
+    }
+  }
+
+  dynamixel_comm_result_ = groupSyncWriteCurrent_->txPacket();
+  if (dynamixel_comm_result_ != COMM_SUCCESS)
+  {
+    packetHandler_->printTxRxResult(dynamixel_comm_result_);
+    return false;
+  }
+  groupSyncWriteCurrent_->clearParam();
   return true;
 }
 
@@ -247,5 +367,50 @@ bool DynamixelMultiDriver::syncWriteProfileVelocity(std::vector<uint32_t> vel)
     return false;
   }
   groupSyncWriteProfileAcceleration_->clearParam();
+  return true;
+}
+
+bool DynamixelMultiDriver::syncReadPosition(std::vector<uint32_t> &pos)
+{
+  int  dxl_comm_result = COMM_TX_FAIL;
+  bool dxl_addparam_result = false;
+  bool dxl_getdata_result = false;
+
+  uint32_t position;
+
+  dynamixel_= multi_dynamixel_[0];
+  dynamixel_->item_ = dynamixel_->ctrl_table_["present_position"];
+  dynamixel_tool::ControlTableItem *addr_item = dynamixel_->item_;
+
+  pos.clear();
+
+  for (std::vector<dynamixel_tool::DynamixelTool *>::size_type num = 0; num < multi_dynamixel_.size(); ++num)
+  {
+    dxl_addparam_result = groupSyncReadPosition_->addParam(multi_dynamixel_[num]->id_);
+    if (dxl_addparam_result != true)
+      return false;
+  }
+
+  dxl_comm_result = groupSyncReadPosition_->txRxPacket();
+  if (dxl_comm_result != COMM_SUCCESS)
+    packetHandler_->printTxRxResult(dxl_comm_result);
+
+  for (std::vector<dynamixel_tool::DynamixelTool *>::size_type num = 0; num < multi_dynamixel_.size(); ++num)
+  {
+    dxl_getdata_result = groupSyncReadPosition_->isAvailable(multi_dynamixel_[num]->id_, addr_item->address, addr_item->data_length);
+
+    if (dxl_getdata_result)
+    {
+      position  = groupSyncReadPosition_->getData(multi_dynamixel_[num]->id_, addr_item->address, addr_item->data_length);
+      pos.push_back(position);
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+  groupSyncReadPosition_->clearParam();
+
   return true;
 }
