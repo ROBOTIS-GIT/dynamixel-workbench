@@ -267,8 +267,9 @@ bool DynamixelDriver::reboot()
 
 bool DynamixelDriver::reset()
 {
-  uint8_t error = 0;
+  uint8_t  error = 0;
   uint16_t comm_result = COMM_RX_FAIL;
+  int baud = 0;
 
   if (packetHandler_->getProtocolVersion() == 1.0)
   {
@@ -286,7 +287,12 @@ bool DynamixelDriver::reset()
       }
       ROS_INFO("Success to reset!");
 
-      if (portHandler_->setBaudRate(1000000) == false)
+      if (dynamixel_->model_name_.find("AX") != std::string::npos)
+        baud = 1000000;
+      else
+        baud = 57600;
+
+      if(portHandler_->setBaudRate(baud) == false)
       {
         sleep(1);
         ROS_ERROR(" Failed to change baudrate!");
