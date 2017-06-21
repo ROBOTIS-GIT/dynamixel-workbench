@@ -314,9 +314,12 @@ bool TorqueControl::gravityCompensation()
   const float gravity         = 9.8;
   const float link_length     = 0.018;
 
-  uint32_t error[2] = {0, 0};
-  static uint32_t pre_error[2] = {0, 0};
+  int32_t error[2] = {0, 0};
+  static int32_t pre_error[2] = {0, 0};
   float torque[2] = {0.0, 0.0};
+
+  node_handle_priv_.getParam("p_gain", p_gain_);
+  node_handle_priv_.getParam("d_gain", d_gain_);
 
   motorPos_->cur_pos.clear();
   if (!multi_driver_->syncReadPosition(motorPos_->cur_pos))
@@ -324,9 +327,6 @@ bool TorqueControl::gravityCompensation()
 
   error[PAN]  = motorPos_->des_pos.at(PAN)  - motorPos_->cur_pos.at(PAN);
   error[TILT] = motorPos_->des_pos.at(TILT) - motorPos_->cur_pos.at(TILT);
-
-  node_handle_priv_.getParam("p_gain", p_gain_);
-  node_handle_priv_.getParam("d_gain", d_gain_);
 
   torque[PAN]  = p_gain_ * error[PAN] +
                  d_gain_ * ((error[PAN] - pre_error[PAN]) / 0.004);
@@ -338,23 +338,6 @@ bool TorqueControl::gravityCompensation()
 
   pre_error[PAN]  = error[PAN];
   pre_error[TILT] = error[TILT];
-
-//  int64_t pan_cur_pos = read_data_["present_position"]->at(PAN_MOTOR);
-//  int64_t tilt_cur_pos = read_data_["present_position"]->at(TILT_MOTOR);
-
-//  pan_pos_error_ = pan_des_pos_ - pan_cur_pos;
-//  tilt_pos_error_ = tilt_des_pos_ - tilt_cur_pos;
-
-//  pan_torque_ = p_gain_ * pan_pos_error_ +
-//                d_gain_ * ((pan_pos_error_ - pan_pos_pre_error_) / 0.004);
-//  tilt_torque_ = p_gain_ * tilt_pos_error_ +
-//                 d_gain_ * ((tilt_pos_error_ - tilt_pos_pre_error_) / 0.004)
-//                 + TILT_MOTOR_MASS * GRAVITY * LINK_LENGTH * cos(convertValue2Radian(tilt_cur_pos));
-
-//  writeCurrent(convertTorque2Value(pan_torque_), convertTorque2Value(tilt_torque_));
-
-//  pan_pos_pre_error_ = pan_pos_error_;
-//  tilt_pos_pre_error_ = tilt_pos_error_;
 }
 
 bool TorqueControl::jointCommandMsgCallback(dynamixel_workbench_msgs::JointCommand::Request &req,

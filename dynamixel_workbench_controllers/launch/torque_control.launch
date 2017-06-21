@@ -19,8 +19,8 @@
 
   <node name="torque_control_example" pkg="dynamixel_workbench_controllers" type="torque_control" required="true" output="screen">
     <rosparam>
-      p_gain: 2.0
-      d_gain: 0.0
+      p_gain: 0.003
+      d_gain: 0.00002
     </rosparam>
   </node>
 </launch>

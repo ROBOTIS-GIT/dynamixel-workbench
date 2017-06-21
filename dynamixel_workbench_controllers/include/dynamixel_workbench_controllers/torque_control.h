@@ -46,10 +46,6 @@ namespace torque_control
 #define PAN   0
 #define TILT  1
 
-#define TILT_MOTOR_MASS 0.082
-#define GRAVITY         9.8
-#define LINK_LENGTH     0.018
-
 typedef struct
 {
   std::vector<uint8_t>  torque;
