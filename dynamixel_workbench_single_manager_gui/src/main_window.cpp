@@ -161,7 +161,7 @@ void MainWindow::changeOperatingMode()
 {
   if (ui_.set_operating_mode_combo_box->currentText().toStdString() != "Select Mode")
   {
-    if (!qnode_.sendSetOperatingModeMsg(ui_.set_operating_mode_combo_box->currentText().toStdString(), dynamixel_info_->model_name))
+    if (!qnode_.sendSetOperatingModeMsg(ui_.set_operating_mode_combo_box->currentText().toStdString(), dynamixel_info_->lode_info.protocol_version, dynamixel_info_->model_name))
       errorMsg();
     else
       rightMsg();

@@ -111,11 +111,11 @@ bool QNode::sendSetBaudrateMsg(int64_t baud_rate)
     return false;
 }
 
-bool QNode::sendSetOperatingModeMsg(std::string index, std::string model_name)
+bool QNode::sendSetOperatingModeMsg(std::string index, float protocol_version, std::string model_name)
 {
   dynamixel_workbench_msgs::DynamixelCommand set_dynamixel_command;
 
-  if (model_name.find("AX") != std::string::npos)
+  if (protocol_version == 1.0)
   {
     if (index == "position_control")
     {
@@ -136,65 +136,52 @@ bool QNode::sendSetOperatingModeMsg(std::string index, std::string model_name)
         return false;
     }
   }
-  else if (model_name.find("RX") != std::string::npos)
+  else
   {
-
-  }
-  else if (model_name.find("MX") != std::string::npos)
-  {
-
-  }
-  else if (model_name.find("EX") != std::string::npos)
-  {
-
-  }
-  else if (model_name.find("XL") != std::string::npos)
-  {
-
-  }
-  else if (model_name.find("XM") != std::string::npos)
-  {
-    if (index == "position_control")
+    if (model_name.find("XM") != std::string::npos)
     {
-      if (sendCommandMsg("addr", "operating_mode", 3))
-        return true;
-      else
-        return false;
-    }
-    else if (index == "velocity_control")
-    {
-      if (sendCommandMsg("addr", "operating_mode", 1))
-        return true;
-      else
-        return false;
-    }
-    else if (index == "current_control")
-    {
-      if (sendCommandMsg("addr", "operating_mode", 0))
-        return true;
-      else
-        return false;
-    }
-    else if (index == "extended_position_control")
-    {
-      if (sendCommandMsg("addr", "operating_mode", 4))
-        return true;
-      else
-        return false;
-    }
-    else if (index == "position_control_based_on_current")
-    {
-      if (sendCommandMsg("addr", "operating_mode", 5))
-        return true;
-      else
-        return false;
-    }
-    else if (index == "pwm_control")
-    {
-      if (sendCommandMsg("addr", "operating_mode", 16))
-        return true;
-      else
-        return false;
+      if (index == "position_control")
+      {
+        if (sendCommandMsg("addr", "operating_mode", 3))
+          return true;
+        else
+          return false;
+      }
+      else if (index == "velocity_control")
+      {
+        if (sendCommandMsg("addr", "operating_mode", 1))
+          return true;
+        else
+          return false;
+      }
+      else if (index == "current_control")
+      {
+        if (sendCommandMsg("addr", "operating_mode", 0))
+          return true;
+        else
+          return false;
+      }
+      else if (index == "extended_position_control")
+      {
+        if (sendCommandMsg("addr", "operating_mode", 4))
+          return true;
+        else
+          return false;
+      }
+      else if (index == "position_control_based_on_current")
+      {
+        if (sendCommandMsg("addr", "operating_mode", 5))
+          return true;
+        else
+          return false;
+      }
+      else if (index == "pwm_control")
+      {
+        if (sendCommandMsg("addr", "operating_mode", 16))
+          return true;
+        else
+          return false;
+      }
     }
   }
 }
@@ -269,6 +256,10 @@ void QNode::initDynamixelStateSubscriber()
   if (dynamixel_info_.model_name.find("AX") != std::string::npos)
   {
     dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + dynamixel_info_.model_name + "_state", 10, &QNode::AXStatusMsgCallback, this);
+  }
+  else if (dynamixel_info_.model_name.find("RX") != std::string::npos)
+  {
+    dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + dynamixel_info_.model_name + "_state", 10, &QNode::RXStatusMsgCallback, this);
   }
   else if (dynamixel_info_.model_name.find("XM") != std::string::npos)
   {
@@ -351,7 +342,48 @@ void QNode::AXStatusMsgCallback(const dynamixel_workbench_msgs::AX::ConstPtr &ms
   log(std::string("moving_speed: "), msg->moving_speed);
   log(std::string("torque_limit: "), msg->torque_limit);
   log(std::string("present_position: "), msg->present_position);
-  log(std::string("present_velocity: "), msg->present_velocity);
+  log(std::string("present_speed: "), msg->present_speed);
+  log(std::string("present_load: "), msg->present_load);
+  log(std::string("present_voltage: "), msg->present_voltage);
+  log(std::string("present_temperature: "), msg->present_temperature);
+  log(std::string("registered: "), msg->registered);
+  log(std::string("moving: "), msg->moving);
+  log(std::string("lock: "), msg->lock);
+  log(std::string("punch: "), msg->punch);
+
+  row_count_ = 0;
+}
+
+void QNode::RXStatusMsgCallback(const dynamixel_workbench_msgs::RX::ConstPtr &msg)
+{
+  log(std::string("< EEPROM >"));
+  log(std::string("model_number: "), msg->model_number);
+  log(std::string("version_of_firmware: "), msg->version_of_firmware);
+  log(std::string("id: "), msg->id);
+  log(std::string("baud_rate: "), msg->baud_rate);
+  log(std::string("return_delay_tiem: "), msg->return_delay_time);
+  log(std::string("cw_angle_limit: "), msg->cw_angle_limit);
+  log(std::string("ccw_angle_limit: "), msg->ccw_angle_limit);
+  log(std::string("the_highest_limit_temperature: "), msg->the_highest_limit_temperature);
+  log(std::string("the_lowest_limit_voltage: "), msg->the_lowest_limit_voltage);
+  log(std::string("the_highest_limit_voltage: "), msg->the_highest_limit_voltage);
+  log(std::string("max_torque: "), msg->max_torque);
+  log(std::string("status_return_level: "), msg->status_return_level);
+  log(std::string("alarm_led: "), msg->alarm_led);
+  log(std::string("alarm_shutdown: "), msg->alarm_shutdown);
+
+  log(std::string("< RAM >"));
+  log(std::string("torque_enable: "), msg->torque_enable);
+  log(std::string("led: "), msg->led);
+  log(std::string("cw_compliance_margin: "), msg->cw_compliance_margin);
+  log(std::string("ccw_compliance_margin: "), msg->ccw_compliance_margin);
+  log(std::string("cw_compliance_slope: "), msg->cw_compliance_slope);
+  log(std::string("ccw_compliance_slope: "), msg->ccw_compliance_slope);
+  log(std::string("goal_position: "), msg->goal_position);
+  log(std::string("moving_speed: "), msg->moving_speed);
+  log(std::string("torque_limit: "), msg->torque_limit);
+  log(std::string("present_position: "), msg->present_position);
+  log(std::string("present_speed: "), msg->present_speed);
   log(std::string("present_load: "), msg->present_load);
   log(std::string("present_voltage: "), msg->present_voltage);
   log(std::string("present_temperature: "), msg->present_temperature);

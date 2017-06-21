@@ -2,7 +2,7 @@
   <arg name="use_ping"         default="false"/>
   <arg name="id"               default="1"/>
 
-  <arg name="device_name"      default="/dev/ttyUSB1"/>
+  <arg name="device_name"      default="/dev/ttyUSB0"/>
   <arg name="baud_rate"        default="1000000"/>
   <arg name="protocol_version" default="1.0"/>
 
