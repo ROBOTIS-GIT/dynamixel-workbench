@@ -182,10 +182,8 @@ bool VelocityControl::readDynamixelState()
   multi_driver_->readMultiRegister("torque_enable");
 
   multi_driver_->readMultiRegister("present_position");
+
   multi_driver_->readMultiRegister("goal_position");
-
-  multi_driver_->readMultiRegister("present_velocity");
-
   multi_driver_->readMultiRegister("moving");
 
   if (multi_driver_->getProtocolVersion() == 2.0)
@@ -196,14 +194,13 @@ bool VelocityControl::readDynamixelState()
 
       multi_driver_->readMultiRegister("present_current");
     }
-    else
-    {
-      multi_driver_->readMultiRegister("goal_velocity");
-    }
+    multi_driver_->readMultiRegister("goal_velocity");
+    multi_driver_->readMultiRegister("present_velocity");
   }
   else
   {
     multi_driver_->readMultiRegister("moving_speed");
+    multi_driver_->readMultiRegister("present_speed");
   }
 }
 
@@ -220,7 +217,6 @@ bool VelocityControl::dynamixelStatePublish()
     dynamixel_state[num].id                  = multi_driver_->multi_dynamixel_[num]->id_;
     dynamixel_state[num].torque_enable       = multi_driver_->read_value_["torque_enable"]      ->at(num);
     dynamixel_state[num].present_position    = multi_driver_->read_value_["present_position"]   ->at(num);
-    dynamixel_state[num].present_velocity    = multi_driver_->read_value_["present_velocity"]   ->at(num);
     dynamixel_state[num].goal_position       = multi_driver_->read_value_["goal_position"]      ->at(num);
     dynamixel_state[num].moving              = multi_driver_->read_value_["moving"]             ->at(num);
 
@@ -231,14 +227,13 @@ bool VelocityControl::dynamixelStatePublish()
         dynamixel_state[num].goal_current    = multi_driver_->read_value_["goal_current"]   ->at(num);
         dynamixel_state[num].present_current = multi_driver_->read_value_["present_current"]->at(num);
       }
-      else
-      {
-        dynamixel_state[num].goal_velocity = multi_driver_->read_value_["goal_velocity"]->at(num);
-      }
+      dynamixel_state[num].goal_velocity    = multi_driver_->read_value_["goal_velocity"]->at(num);
+      dynamixel_state[num].present_velocity = multi_driver_->read_value_["present_velocity"]->at(num);
     }
     else
     {
-      dynamixel_state[num].goal_velocity = multi_driver_->read_value_["moving_speed"]->at(num);
+      dynamixel_state[num].goal_velocity    = multi_driver_->read_value_["moving_speed"]->at(num);
+      dynamixel_state[num].present_velocity = multi_driver_->read_value_["present_speed"]->at(num);
     }
 
     dynamixel_state_list.dynamixel_state.push_back(dynamixel_state[num]);
