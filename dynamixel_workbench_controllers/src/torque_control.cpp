@@ -134,7 +134,13 @@ bool TorqueControl::setCurrent(int16_t pan_cur, int16_t tilt_cur)
   writeValue_->current.push_back(pan_cur);
   writeValue_->current.push_back(tilt_cur);
 
-  multi_driver_->syncWriteCurrent(writeValue_->current);
+  if (!multi_driver_->syncWriteCurrent(writeValue_->current))
+  {
+    ROS_ERROR("SyncWrite Current Failed!");
+    return false;
+  }
+
+  return true;
 }
 
 bool TorqueControl::checkLoadDynamixel()

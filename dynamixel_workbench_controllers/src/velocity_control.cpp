@@ -128,7 +128,13 @@ bool VelocityControl::setVelocity(int32_t left_vel, int32_t right_vel)
   writeValue_->vel.push_back(left_vel);
   writeValue_->vel.push_back(right_vel);
 
-  multi_driver_->syncWriteVelocity(writeValue_->vel);
+  if (!multi_driver_->syncWriteVelocity(writeValue_->vel))
+  {
+    ROS_ERROR("SyncWrite Velocity Failed!");
+    return false;
+  }
+
+  return true;
 }
 
 bool VelocityControl::setMovingSpeed(uint16_t left_spd, uint16_t right_spd)
@@ -137,7 +143,13 @@ bool VelocityControl::setMovingSpeed(uint16_t left_spd, uint16_t right_spd)
   writeValue_->spd.push_back(left_spd);
   writeValue_->spd.push_back(right_spd);
 
-  multi_driver_->syncWriteMovingSpeed(writeValue_->spd);
+  if (!multi_driver_->syncWriteMovingSpeed(writeValue_->spd))
+  {
+    ROS_ERROR("SyncWrite Moving Speed Failed!");
+    return false;
+  }
+
+  return true;
 }
 
 bool VelocityControl::checkLoadDynamixel()

@@ -159,7 +159,13 @@ bool PositionControl::setPosition(uint32_t pan_pos, uint32_t tilt_pos)
   writeValue_->pos.push_back(pan_pos);
   writeValue_->pos.push_back(tilt_pos);
 
-  multi_driver_->syncWritePosition(writeValue_->pos);
+  if (!multi_driver_->syncWritePosition(writeValue_->pos))
+  {
+    ROS_ERROR("SyncWrite Position Failed!");
+    return false;
+  }
+
+  return true;
 }
 
 bool PositionControl::checkLoadDynamixel()
