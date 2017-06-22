@@ -153,6 +153,10 @@ bool SingleDynamixelMonitor::initDynamixelStatePublisher()
   {
     dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::XH>("dynamixel/" + dynamixel->model_name_ + "_state", 10);
   }
+  else if (dynamixel->model_name_.find("PRO") != std::string::npos)
+  {
+    dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::PRO>("dynamixel/" + dynamixel->model_name_ + "_state", 10);
+  }
 
   return true;
 }
@@ -546,6 +550,10 @@ bool SingleDynamixelMonitor::dynamixelStatePublish()
   else if (dynamixel->model_name_.find("XH") != std::string::npos)
   {
     XH();
+  }
+  else if (dynamixel->model_name_.find("PRO") != std::string::npos)
+  {
+    PRO();
   }
 
   return true;
@@ -1260,4 +1268,117 @@ bool SingleDynamixelMonitor::XH()
   }
 
   dynamixel_status_pub_.publish(xh_state);
+}
+
+bool SingleDynamixelMonitor::PRO()
+{
+  int32_t read_value = 0;
+
+  dynamixel_workbench_msgs::PRO pro_state;
+  dynamixel_tool::DynamixelTool *dynamixel = dynamixel_driver_->dynamixel_;
+
+  for (dynamixel->it_ctrl_ = dynamixel->ctrl_table_.begin();
+       dynamixel->it_ctrl_ != dynamixel->ctrl_table_.end();
+       dynamixel->it_ctrl_++)
+  {
+    dynamixel->item_ = dynamixel->ctrl_table_[dynamixel->it_ctrl_->first.c_str()];
+    dynamixel_driver_->readRegister(dynamixel->item_->item_name ,&read_value);
+
+    if ("model_number" == dynamixel->item_->item_name)
+      pro_state.model_number = read_value;
+    else if ("version_of_firmware" == dynamixel->item_->item_name)
+      pro_state.version_of_firmware = read_value;
+    else if ("id" == dynamixel->item_->item_name)
+      pro_state.id = read_value;
+    else if ("baud_rate" == dynamixel->item_->item_name)
+      pro_state.baud_rate = read_value;
+    else if ("return_delay_time" == dynamixel->item_->item_name)
+      pro_state.return_delay_time = read_value;
+    else if ("operating_mode" == dynamixel->item_->item_name)
+      pro_state.operating_mode = read_value;
+    else if ("homing_offset" == dynamixel->item_->item_name)
+      pro_state.homing_offset = read_value;
+    else if ("moving_threshold" == dynamixel->item_->item_name)
+      pro_state.moving_threshold = read_value;
+    else if ("temperature_limit" == dynamixel->item_->item_name)
+      pro_state.temperature_limit = read_value;
+    else if ("max_voltage_limit" == dynamixel->item_->item_name)
+      pro_state.max_voltage_limit = read_value;
+    else if ("min_voltage_limit" == dynamixel->item_->item_name)
+      pro_state.min_voltage_limit = read_value;
+    else if ("acceleration_limit" == dynamixel->item_->item_name)
+      pro_state.acceleration_limit = read_value;
+    else if ("torque_limit" == dynamixel->item_->item_name)
+      pro_state.torque_limit = read_value;
+    else if ("velocity_limit" == dynamixel->item_->item_name)
+      pro_state.velocity_limit = read_value;
+    else if ("max_position_limit" == dynamixel->item_->item_name)
+      pro_state.max_position_limit = read_value;
+    else if ("min_position_limit" == dynamixel->item_->item_name)
+      pro_state.min_position_limit = read_value;
+    else if ("external_port_mod_1" == dynamixel->item_->item_name)
+      pro_state.external_port_mod_1 = read_value;
+    else if ("external_port_mod_2" == dynamixel->item_->item_name)
+      pro_state.external_port_mod_2 = read_value;
+    else if ("external_port_mod_3" == dynamixel->item_->item_name)
+      pro_state.external_port_mod_3 = read_value;
+    else if ("external_port_mod_4" == dynamixel->item_->item_name)
+      pro_state.external_port_mod_4 = read_value;
+    else if ("shutdown" == dynamixel->item_->item_name)
+      pro_state.shutdown = read_value;
+    else if ("indirect_address_1" == dynamixel->item_->item_name)
+      pro_state.indirect_address_1 = read_value;
+    else if ("torque_enable" == dynamixel->item_->item_name)
+      pro_state.torque_enable = read_value;
+    else if ("led_red" == dynamixel->item_->item_name)
+      pro_state.led_red = read_value;
+    else if ("led_green" == dynamixel->item_->item_name)
+      pro_state.led_green = read_value;
+    else if ("led_blue" == dynamixel->item_->item_name)
+      pro_state.led_blue = read_value;
+    else if ("velocity_i_gain" == dynamixel->item_->item_name)
+      pro_state.velocity_i_gain = read_value;
+    else if ("velocity_p_gain" == dynamixel->item_->item_name)
+      pro_state.velocity_p_gain = read_value;
+    else if ("position_p_gain" == dynamixel->item_->item_name)
+      pro_state.position_p_gain = read_value;
+    else if ("goal_position" == dynamixel->item_->item_name)
+      pro_state.goal_position = read_value;
+    else if ("goal_velocity" == dynamixel->item_->item_name)
+      pro_state.goal_velocity = read_value;
+    else if ("goal_torque" == dynamixel->item_->item_name)
+      pro_state.goal_torque = read_value;
+    else if ("goal_acceleration" == dynamixel->item_->item_name)
+      pro_state.goal_acceleration = read_value;
+    else if ("moving" == dynamixel->item_->item_name)
+      pro_state.moving = read_value;
+    else if ("present_position" == dynamixel->item_->item_name)
+      pro_state.present_position = read_value;
+    else if ("present_velocity" == dynamixel->item_->item_name)
+      pro_state.present_velocity = read_value;
+    else if ("present_current" == dynamixel->item_->item_name)
+      pro_state.present_current = read_value;
+    else if ("present_input_voltage" == dynamixel->item_->item_name)
+      pro_state.present_input_voltage = read_value;
+    else if ("present_temperature" == dynamixel->item_->item_name)
+      pro_state.present_temperature = read_value;
+    else if ("external_port_data_1" == dynamixel->item_->item_name)
+      pro_state.external_port_data_1 = read_value;
+    else if ("external_port_data_2" == dynamixel->item_->item_name)
+      pro_state.external_port_data_2 = read_value;
+    else if ("external_port_data_3" == dynamixel->item_->item_name)
+      pro_state.external_port_data_3 = read_value;
+    else if ("external_port_data_4" == dynamixel->item_->item_name)
+      pro_state.external_port_data_4 = read_value;
+    else if ("indirect_data_1" == dynamixel->item_->item_name)
+      pro_state.indirect_data_1 = read_value;
+    else if ("registered_instruction" == dynamixel->item_->item_name)
+      pro_state.registered_instruction = read_value;
+    else if ("status_return_level" == dynamixel->item_->item_name)
+      pro_state.status_return_level = read_value;
+    else if ("hardware_error_status" == dynamixel->item_->item_name)
+      pro_state.hardware_error_status = read_value;
+  }
+
+  dynamixel_status_pub_.publish(pro_state);
 }

@@ -25,15 +25,14 @@ max_radian                      =  3.14159265
 
 [control table]
 # addr | item name                | length | access | memory
-   0   | model_number             | 4      | R      | EEPROM
+   0   | model_number             | 2      | R      | EEPROM
    6   | version_of_firmware      | 1      | R      | EEPROM
    7   | id                       | 1      | RW     | EEPROM
    8   | baud_rate                | 1      | RW     | EEPROM
    9   | return_delay_time        | 1      | RW     | EEPROM
    11  | operating_mode           | 1      | RW     | EEPROM
-#  13  | homing_offset            | 4      | RW     | EEPROM
    17  | moving_threshold         | 4      | RW     | EEPROM
-   21  | max_temperature_limit    | 1      | RW     | EEPROM
+   21  | temperature_limit        | 1      | RW     | EEPROM
    22  | max_voltage_limit        | 2      | RW     | EEPROM
    24  | min_voltage_limit        | 2      | RW     | EEPROM
    26  | acceleration_limit       | 4      | RW     | EEPROM
@@ -62,7 +61,7 @@ max_radian                      =  3.14159265
    611 | present_position         | 4      | R      | RAM
    615 | present_velocity         | 4      | R      | RAM
    621 | present_current          | 2      | R      | RAM
-   623 | present_voltage          | 2      | R      | RAM
+   623 | present_input_voltage    | 2      | R      | RAM
    625 | present_temperature      | 1      | R      | RAM
    626 | external_port_data_1     | 2      | RW     | RAM
    628 | external_port_data_2     | 2      | RW     | RAM
@@ -71,4 +70,4 @@ max_radian                      =  3.14159265
    634 | indirect_data_1          | 1      | RW     | RAM
    890 | registered_instruction   | 1      | R      | RAM
    891 | status_return_level      | 1      | RW     | RAM
-   892 | hardware_error_status    | 2      | R      | RAM
+   892 | hardware_error_status    | 1      | R      | RAM
