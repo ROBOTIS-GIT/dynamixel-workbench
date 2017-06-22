@@ -48,8 +48,8 @@ typedef struct
 
 typedef struct
 {
-  int16_t model_number;
-  int8_t model_id;
+  uint16_t model_number;
+  uint8_t model_id;
   std::string model_name;
   DynamixelLoadInfo lode_info;
 }DynamixelInfo;

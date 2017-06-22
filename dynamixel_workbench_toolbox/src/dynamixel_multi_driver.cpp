@@ -48,15 +48,16 @@ DynamixelMultiDriver::~DynamixelMultiDriver()
 
 bool DynamixelMultiDriver::loadDynamixel(std::vector<dynamixel_driver::DynamixelInfo*> dynamixel_info)
 {
-  uint8_t error      = 0;
-  uint16_t model_num = 0;
+  uint8_t error = 0;
 
   for (std::vector<dynamixel_driver::DynamixelInfo>::size_type num = 0; num < dynamixel_info.size(); ++num)
   {
-    if (packetHandler_->ping(portHandler_, dynamixel_info[num]->model_id, &model_num, &error) == COMM_SUCCESS)
+    if (packetHandler_->ping(portHandler_, dynamixel_info[num]->model_id, &dynamixel_info[num]->model_number, &error) == COMM_SUCCESS)
     {
-      dynamixel_tool::DynamixelTool *dynamixel = new dynamixel_tool::DynamixelTool(dynamixel_info[num]->model_id, model_num);
+      dynamixel_tool::DynamixelTool *dynamixel = new dynamixel_tool::DynamixelTool(dynamixel_info[num]->model_id, dynamixel_info[num]->model_number);
       multi_dynamixel_.push_back(dynamixel);
+
+      dynamixel_info[num]->model_name = dynamixel->model_name_;
     }
     else
     {
