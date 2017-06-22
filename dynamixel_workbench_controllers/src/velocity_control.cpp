@@ -269,7 +269,10 @@ bool VelocityControl::wheelCommandMsgCallback(dynamixel_workbench_msgs::WheelCom
 
   if (multi_driver_->getProtocolVersion() == 2.0)
   {
-    setVelocity(convertVelocity2Value(left_vel), convertVelocity2Value(right_vel));
+    if (multi_driver_->multi_dynamixel_[MOTOR]->model_name_.find("PRO") != std::string::npos)
+      setVelocity(convertVelocity2Value(left_vel), convertVelocity2Value(-right_vel));
+    else
+      setVelocity(convertVelocity2Value(left_vel), convertVelocity2Value(right_vel));
   }
   else
   {
