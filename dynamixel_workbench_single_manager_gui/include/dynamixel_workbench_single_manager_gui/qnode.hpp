@@ -65,11 +65,10 @@ class QNode : public QThread
   void log(const std::string &msg, int64_t sender);
   void log(const std::string &msg);
 
+  // TODO : Add new Dynamixel
   void AXStatusMsgCallback(const dynamixel_workbench_msgs::AX::ConstPtr &msg);
   void RXStatusMsgCallback(const dynamixel_workbench_msgs::RX::ConstPtr &msg);
-//  void dynamixelMXStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelMX::ConstPtr &msg);
-//  void dynamixelMX64StatusMsgCallback(const dynamixel_workbench_msgs::DynamixelMX64::ConstPtr &msg);
-//  void dynamixelMX106StatusMsgCallback(const dynamixel_workbench_msgs::DynamixelMX106::ConstPtr &msg);
+  void MXStatusMsgCallback(const dynamixel_workbench_msgs::MX::ConstPtr &msg);
 //  void dynamixelEXStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelEX::ConstPtr &msg);
 //  void dynamixelXL320StatusMsgCallback(const dynamixel_workbench_msgs::DynamixelXL320::ConstPtr &msg);
 //  void dynamixelXLStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelXL::ConstPtr &msg);
@@ -79,7 +78,7 @@ class QNode : public QThread
 //  void dynamixelProL42StatusMsgCallback(const dynamixel_workbench_msgs::DynamixelProL42::ConstPtr &msg);
 
   bool sendSetIdMsg(uint8_t set_id);
-  bool sendSetOperatingModeMsg(std::string index, float protocol_version, std::string model_name);
+  bool sendSetOperatingModeMsg(std::string index, float protocol_version, std::string model_name, int32_t value_of_max_radian_position);
   bool sendSetBaudrateMsg(int64_t baud_rate);
 
   bool sendTorqueMsg(int64_t onoff);
@@ -89,6 +88,7 @@ class QNode : public QThread
   bool setPositionZeroMsg(int32_t zero_position);
 
   void getDynamixelInfo();
+  // TODO : Add new Dynamixel
   void initDynamixelStateSubscriber();
   bool sendCommandMsg(std::string cmd, std::string addr = "", int64_t value = 0);
 

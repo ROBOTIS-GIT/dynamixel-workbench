@@ -3,7 +3,7 @@
   <arg name="id"               default="1"/>
 
   <arg name="device_name"      default="/dev/ttyUSB0"/>
-  <arg name="baud_rate"        default="1000000"/>
+  <arg name="baud_rate"        default="57600"/>
   <arg name="protocol_version" default="1.0"/>
 
   <param name="ping"             value="$(arg use_ping)"  type="bool"/>

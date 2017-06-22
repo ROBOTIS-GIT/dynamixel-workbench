@@ -133,6 +133,10 @@ bool SingleDynamixelMonitor::initDynamixelStatePublisher()
   {
     dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::RX>("dynamixel/" + dynamixel->model_name_ + "_state", 10);
   }
+  else if (dynamixel->model_name_.find("MX") != std::string::npos)
+  {
+    dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::MX>("dynamixel/" + dynamixel->model_name_ + "_state", 10);
+  }
   else if (dynamixel->model_name_.find("XM") != std::string::npos)
   {
     dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::XM>("dynamixel/" + dynamixel->model_name_ + "_state", 10);
@@ -511,6 +515,10 @@ bool SingleDynamixelMonitor::dynamixelStatePublish()
   {
     RX();
   }
+  else if (dynamixel->model_name_.find("MX") != std::string::npos)
+  {
+    MX();
+  }
   else if (dynamixel->model_name_.find("XM") != std::string::npos)
   {
     XM();
@@ -685,6 +693,101 @@ bool SingleDynamixelMonitor::RX()
   }
 
   dynamixel_status_pub_.publish(rx_state);
+}
+
+bool SingleDynamixelMonitor::MX()
+{
+  int32_t read_value = 0;
+
+  dynamixel_workbench_msgs::MX mx_state;
+  dynamixel_tool::DynamixelTool *dynamixel = dynamixel_driver_->dynamixel_;
+
+  for (dynamixel->it_ctrl_ = dynamixel->ctrl_table_.begin();
+       dynamixel->it_ctrl_ != dynamixel->ctrl_table_.end();
+       dynamixel->it_ctrl_++)
+  {
+    dynamixel->item_ = dynamixel->ctrl_table_[dynamixel->it_ctrl_->first.c_str()];
+    dynamixel_driver_->readRegister(dynamixel->item_->item_name ,&read_value);
+
+    if ("model_number" == dynamixel->item_->item_name)
+      mx_state.model_number = read_value;
+    else if ("version_of_firmware" == dynamixel->item_->item_name)
+      mx_state.version_of_firmware = read_value;
+    else if ("id" == dynamixel->item_->item_name)
+      mx_state.id = read_value;
+    else if ("baud_rate" == dynamixel->item_->item_name)
+      mx_state.baud_rate = read_value;
+    else if ("return_delay_time" == dynamixel->item_->item_name)
+      mx_state.return_delay_time = read_value;
+    else if ("cw_angle_limit" == dynamixel->item_->item_name)
+      mx_state.cw_angle_limit = read_value;
+    else if ("ccw_angle_limit" == dynamixel->item_->item_name)
+      mx_state.ccw_angle_limit = read_value;
+    else if ("drive_mode" == dynamixel->item_->item_name)
+      mx_state.drive_mode = read_value;
+    else if ("the_highest_limit_temperature" == dynamixel->item_->item_name)
+      mx_state.the_highest_limit_temperature = read_value;
+    else if ("the_lowest_limit_voltage" == dynamixel->item_->item_name)
+      mx_state.the_lowest_limit_voltage = read_value;
+    else if ("the_highest_limit_voltage" == dynamixel->item_->item_name)
+      mx_state.the_highest_limit_voltage = read_value;
+    else if ("max_torque" == dynamixel->item_->item_name)
+      mx_state.max_torque = read_value;
+    else if ("status_return_level" == dynamixel->item_->item_name)
+      mx_state.status_return_level = read_value;
+    else if ("alarm_led" == dynamixel->item_->item_name)
+      mx_state.alarm_led = read_value;
+    else if ("alarm_shutdown" == dynamixel->item_->item_name)
+      mx_state.alarm_shutdown = read_value;
+    else if ("multi_turn_offset" == dynamixel->item_->item_name)
+      mx_state.multi_turn_offset = read_value;
+    else if ("resolution_divider" == dynamixel->item_->item_name)
+      mx_state.resolution_divider = read_value;
+    else if ("torque_enable" == dynamixel->item_->item_name)
+      mx_state.torque_enable = read_value;
+    else if ("led" == dynamixel->item_->item_name)
+      mx_state.led = read_value;
+    else if ("d_gain" == dynamixel->item_->item_name)
+      mx_state.d_gain = read_value;
+    else if ("i_gain" == dynamixel->item_->item_name)
+      mx_state.i_gain = read_value;
+    else if ("p_gain" == dynamixel->item_->item_name)
+      mx_state.p_gain = read_value;
+    else if ("goal_position" == dynamixel->item_->item_name)
+      mx_state.goal_position = read_value;
+    else if ("moving_speed" == dynamixel->item_->item_name)
+      mx_state.moving_speed = read_value;
+    else if ("torque_limit" == dynamixel->item_->item_name)
+      mx_state.torque_limit = read_value;
+    else if ("present_position" == dynamixel->item_->item_name)
+      mx_state.present_position = read_value;
+    else if ("present_speed" == dynamixel->item_->item_name)
+      mx_state.present_speed = read_value;
+    else if ("present_load" == dynamixel->item_->item_name)
+      mx_state.present_load = read_value;
+    else if ("present_voltage" == dynamixel->item_->item_name)
+      mx_state.present_voltage = read_value;
+    else if ("present_temperature" == dynamixel->item_->item_name)
+      mx_state.present_temperature = read_value;
+    else if ("registered" == dynamixel->item_->item_name)
+      mx_state.registered = read_value;
+    else if ("moving" == dynamixel->item_->item_name)
+      mx_state.moving = read_value;
+    else if ("lock" == dynamixel->item_->item_name)
+      mx_state.lock = read_value;
+    else if ("punch" == dynamixel->item_->item_name)
+      mx_state.punch = read_value;
+    else if ("current" == dynamixel->item_->item_name)
+      mx_state.current = read_value;
+    else if ("torque_control_mode_enable" == dynamixel->item_->item_name)
+      mx_state.torque_control_mode_enable = read_value;
+    else if ("goal_torque" == dynamixel->item_->item_name)
+      mx_state.goal_torque = read_value;
+    else if ("goal_acceleration" == dynamixel->item_->item_name)
+      mx_state.goal_acceleration = read_value;
+}
+
+  dynamixel_status_pub_.publish(mx_state);
 }
 
 bool SingleDynamixelMonitor::XM()

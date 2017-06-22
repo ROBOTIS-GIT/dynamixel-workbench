@@ -161,7 +161,9 @@ void MainWindow::changeOperatingMode()
 {
   if (ui_.set_operating_mode_combo_box->currentText().toStdString() != "Select Mode")
   {
-    if (!qnode_.sendSetOperatingModeMsg(ui_.set_operating_mode_combo_box->currentText().toStdString(), dynamixel_info_->lode_info.protocol_version, dynamixel_info_->model_name))
+    if (!qnode_.sendSetOperatingModeMsg(ui_.set_operating_mode_combo_box->currentText().toStdString(), dynamixel_info_->lode_info.protocol_version,
+                                                                                                       dynamixel_info_->model_name,
+                                                                                                       dynamixel_->value_of_max_radian_position_))
       errorMsg();
     else
       rightMsg();
@@ -306,26 +308,9 @@ void MainWindow::setOperatingModeComboBox()
   }
   else if (dynamixel_info_->model_name.find("MX") != std::string::npos)
   {
-    if (dynamixel_info_->model_name.find("MX_64") != std::string::npos)
-    {
-      ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
-      ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
-      ui_.set_operating_mode_combo_box->addItem(QString("extended_position_control"));
-      ui_.set_operating_mode_combo_box->addItem(QString("torque_control"));
-    }
-    else if (dynamixel_info_->model_name.find("MX_106") != std::string::npos)
-    {
-      ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
-      ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
-      ui_.set_operating_mode_combo_box->addItem(QString("extended_position_control"));
-      ui_.set_operating_mode_combo_box->addItem(QString("torque_control"));
-    }
-    else
-    {
-      ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
-      ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
-      ui_.set_operating_mode_combo_box->addItem(QString("extended_position_control"));
-    }
+    ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
+    ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
+    ui_.set_operating_mode_combo_box->addItem(QString("extended_position_control"));
   }
   else if (dynamixel_info_->model_name.find("XL") != std::string::npos)
   {

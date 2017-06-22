@@ -76,9 +76,11 @@ class SingleDynamixelMonitor
   bool initSingleDynamixelMonitor();
   bool shutdownSingleDynamixelMonitor();
 
+  // TODO : Add new Dynamixel
   bool initDynamixelStatePublisher();
   bool initDynamixelInfoServer();
   bool initDynamixelCommandServer();
+  // TODO : Add new Dynamixel
   bool dynamixelStatePublish();
 
   bool showDynamixelControlTable();
