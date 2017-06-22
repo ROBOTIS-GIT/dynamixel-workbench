@@ -4,7 +4,7 @@
   <version>0.1.5</version>
   <description>
     Dynamixel-workbench is dynamixel solution for ROS.
-    This metapackage allows you to easily change the ID, baudrate and operating mode of the dynamixel.
+    This metapackage allows you to easily change the ID, baudrate and operating mode of the Dynamixel.
     Furthermore, it supports various controllers based on operating mode and Dynamixel SDK.
     These controllers are commanded by operators.
   </description>
