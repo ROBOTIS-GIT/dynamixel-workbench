@@ -69,11 +69,12 @@ class QNode : public QThread
   void AXStatusMsgCallback(const dynamixel_workbench_msgs::AX::ConstPtr &msg);
   void RXStatusMsgCallback(const dynamixel_workbench_msgs::RX::ConstPtr &msg);
   void MXStatusMsgCallback(const dynamixel_workbench_msgs::MX::ConstPtr &msg);
-//  void dynamixelEXStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelEX::ConstPtr &msg);
-//  void dynamixelXL320StatusMsgCallback(const dynamixel_workbench_msgs::DynamixelXL320::ConstPtr &msg);
+  void EXStatusMsgCallback(const dynamixel_workbench_msgs::EX::ConstPtr &msg);
+
 //  void dynamixelXLStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelXL::ConstPtr &msg);
   void XMStatusMsgCallback(const dynamixel_workbench_msgs::XM::ConstPtr &msg);
 //  void dynamixelXHStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelXH::ConstPtr &msg);
+
 //  void dynamixelProStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelPro::ConstPtr &msg);
 //  void dynamixelProL42StatusMsgCallback(const dynamixel_workbench_msgs::DynamixelProL42::ConstPtr &msg);
 
