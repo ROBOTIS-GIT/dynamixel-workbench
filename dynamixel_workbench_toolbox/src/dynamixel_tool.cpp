@@ -128,7 +128,11 @@ bool DynamixelTool::getModelName(uint16_t model_number)
 bool DynamixelTool::getModelPath()
 {
   std::string dynamixel_series = "";
-  dynamixel_series = model_name_.substr(0,2);
+  dynamixel_series = model_name_.substr(0,3);
+
+  if (dynamixel_series.find("_") != std::string::npos)
+    dynamixel_series.erase(2,3);
+
 
   item_path_  = ros::package::getPath("dynamixel_workbench_toolbox") + "/dynamixel";
 
