@@ -3,16 +3,12 @@
   <arg name="baud_rate"        default="3000000"/>
   <arg name="protocol_version" default="2.0"/>
 
-  <arg name="model_name"      default="XM430_W350"/>
-
   <arg name="pan_id"           default="1"/>
   <arg name="tilt_id"          default="2"/>
 
   <param name="device_name"      value="$(arg device_name)"/>
   <param name="baud_rate"        value="$(arg baud_rate)"/>
   <param name="protocol_version" value="$(arg protocol_version)"/>
-
-  <param name="model_name"       value="$(arg model_name)"/>
 
   <param name="pan_id"           value="$(arg pan_id)"/>
   <param name="tilt_id"          value="$(arg tilt_id)"/>
