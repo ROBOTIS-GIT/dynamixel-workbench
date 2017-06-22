@@ -55,7 +55,12 @@ PositionControl::PositionControl()
   writeValue_ = new WriteValue;
 
   setTorque(true);
-  setProfileValue(profile_velocity_, profile_acceleration_);
+
+  if (multi_driver_->getProtocolVersion() == 2.0 &&
+      !(multi_driver_->multi_dynamixel_[0]->model_name_.find("PRO") != std::string::npos))
+  {
+    setProfileValue(profile_velocity_, profile_acceleration_);
+  }
 
   initDynamixelStatePublisher();
   initDynamixelInfoServer();
@@ -128,26 +133,22 @@ bool PositionControl::setProfileValue(uint32_t prof_vel, uint32_t prof_acc)
   writeValue_->prof_vel.clear();
   writeValue_->prof_acc.clear();
 
-  if (multi_driver_->getProtocolVersion() == 2.0 &&
-      !(multi_driver_->multi_dynamixel_[0]->model_name_.find("PRO") != std::string::npos))
+  writeValue_->prof_vel.push_back(prof_vel);
+  writeValue_->prof_vel.push_back(prof_vel);
+
+  writeValue_->prof_acc.push_back(prof_acc);
+  writeValue_->prof_acc.push_back(prof_acc);
+
+  if (!multi_driver_->syncWriteProfileVelocity(writeValue_->prof_vel))
   {
-    writeValue_->prof_vel.push_back(prof_vel);
-    writeValue_->prof_vel.push_back(prof_vel);
+    ROS_ERROR("SyncWrite Profile Velocity Failed!");
+    return false;
+  }
 
-    writeValue_->prof_acc.push_back(prof_acc);
-    writeValue_->prof_acc.push_back(prof_acc);
-
-    if (!multi_driver_->syncWriteProfileVelocity(writeValue_->prof_vel))
-    {
-      ROS_ERROR("SyncWrite Profile Velocity Failed!");
-      return false;
-    }
-
-    if (!multi_driver_->syncWriteProfileAcceleration(writeValue_->prof_acc))
-    {
-      ROS_ERROR("SyncWrite Profile Acceleration Failed!");
-      return false;
-    }
+  if (!multi_driver_->syncWriteProfileAcceleration(writeValue_->prof_acc))
+  {
+    ROS_ERROR("SyncWrite Profile Acceleration Failed!");
+    return false;
   }
 
   return true;
@@ -180,9 +181,13 @@ bool PositionControl::checkLoadDynamixel()
   ROS_INFO("TILT MOTOR INFO");
   ROS_INFO("ID    : %d", dynamixel_info_[TILT]->model_id);
   ROS_INFO("MODEL : %s", dynamixel_info_[TILT]->model_name.c_str());
-  ROS_INFO(" ");
-  ROS_INFO("Profile Velocity     : %d", profile_velocity_);
-  ROS_INFO("Profile Acceleration : %d", profile_acceleration_);
+  if (multi_driver_->getProtocolVersion() == 2.0 &&
+      !(multi_driver_->multi_dynamixel_[0]->model_name_.find("PRO") != std::string::npos))
+  {
+    ROS_INFO(" ");
+    ROS_INFO("Profile Velocity     : %d", profile_velocity_);
+    ROS_INFO("Profile Acceleration : %d", profile_acceleration_);
+  }
   ROS_INFO("-----------------------------------------------------------------------");
 }
 

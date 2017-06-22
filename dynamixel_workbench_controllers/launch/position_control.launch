@@ -1,9 +1,9 @@
 <launch>
   <arg name="device_name"      default="/dev/ttyUSB0"/>
   <arg name="baud_rate"        default="57600"/>
-  <arg name="protocol_version" default="2.0"/>
+  <arg name="protocol_version" default="1.0"/>
 
-  <arg name="model_name"      default="XM430_W350"/>
+  <arg name="model_name"      default="RX_28"/>
 
   <arg name="pan_id"           default="1"/>
   <arg name="tilt_id"          default="2"/>
