@@ -314,20 +314,10 @@ void MainWindow::setOperatingModeComboBox()
   }
   else if (dynamixel_info_->model_name.find("XL") != std::string::npos)
   {
-    if (dynamixel_info_->model_name.find("XL_320") != std::string::npos)
-    {
-      ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
-      ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
-    }
-    else
-    {
-      ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
-      ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
-      ui_.set_operating_mode_combo_box->addItem(QString("current_control"));
-      ui_.set_operating_mode_combo_box->addItem(QString("extended_position_control"));
-      ui_.set_operating_mode_combo_box->addItem(QString("position_control_based_on_current"));
-      ui_.set_operating_mode_combo_box->addItem(QString("pwm_control"));
-    }
+    ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
+    ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
+    ui_.set_operating_mode_combo_box->addItem(QString("extended_position_control"));
+    ui_.set_operating_mode_combo_box->addItem(QString("pwm_control"));
   }
   else if (dynamixel_info_->model_name.find("XM") != std::string::npos ||
            dynamixel_info_->model_name.find("XH") != std::string::npos)

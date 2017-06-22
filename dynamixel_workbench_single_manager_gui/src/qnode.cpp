@@ -147,11 +147,12 @@ bool QNode::sendSetOperatingModeMsg(std::string index, float protocol_version, s
   }
   else
   {
-    if (model_name.find("XM") != std::string::npos)
+    if (model_name.find("XM") != std::string::npos ||
+        model_name.find("XH") != std::string::npos)
     {
-      if (index == "position_control")
+      if (index == "current_control")
       {
-        if (sendCommandMsg("addr", "operating_mode", 3))
+        if (sendCommandMsg("addr", "operating_mode", 0))
           return true;
         else
           return false;
@@ -163,9 +164,9 @@ bool QNode::sendSetOperatingModeMsg(std::string index, float protocol_version, s
         else
           return false;
       }
-      else if (index == "current_control")
+      else if (index == "position_control")
       {
-        if (sendCommandMsg("addr", "operating_mode", 0))
+        if (sendCommandMsg("addr", "operating_mode", 3))
           return true;
         else
           return false;
@@ -180,6 +181,37 @@ bool QNode::sendSetOperatingModeMsg(std::string index, float protocol_version, s
       else if (index == "position_control_based_on_current")
       {
         if (sendCommandMsg("addr", "operating_mode", 5))
+          return true;
+        else
+          return false;
+      }
+      else if (index == "pwm_control")
+      {
+        if (sendCommandMsg("addr", "operating_mode", 16))
+          return true;
+        else
+          return false;
+      }
+    }
+    else if (model_name.find("XL") != std::string::npos)
+    {
+      if (index == "velocity_control")
+      {
+        if (sendCommandMsg("addr", "operating_mode", 1))
+          return true;
+        else
+          return false;
+      }
+      else if (index == "position_control")
+      {
+        if (sendCommandMsg("addr", "operating_mode", 3))
+          return true;
+        else
+          return false;
+      }
+      else if (index == "extended_position_control")
+      {
+        if (sendCommandMsg("addr", "operating_mode", 4))
           return true;
         else
           return false;
@@ -278,11 +310,18 @@ void QNode::initDynamixelStateSubscriber()
   {
     dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + dynamixel_info_.model_name + "_state", 10, &QNode::EXStatusMsgCallback, this);
   }
+  else if (dynamixel_info_.model_name.find("XL") != std::string::npos)
+  {
+    dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + dynamixel_info_.model_name + "_state", 10, &QNode::XLStatusMsgCallback, this);
+  }
   else if (dynamixel_info_.model_name.find("XM") != std::string::npos)
   {
     dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + dynamixel_info_.model_name + "_state", 10, &QNode::XMStatusMsgCallback, this);
   }
-
+  else if (dynamixel_info_.model_name.find("XH") != std::string::npos)
+  {
+    dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + dynamixel_info_.model_name + "_state", 10, &QNode::XHStatusMsgCallback, this);
+  }
 }
 
 void QNode::run()
@@ -501,7 +540,123 @@ void QNode::EXStatusMsgCallback(const dynamixel_workbench_msgs::EX::ConstPtr &ms
   row_count_ = 0;
 }
 
+void QNode::XLStatusMsgCallback(const dynamixel_workbench_msgs::XL::ConstPtr &msg)
+{
+  log(std::string("< EEPROM >"));
+  log(std::string("model_number: "), msg->model_number);
+  log(std::string("version_of_firmware: "), msg->version_of_firmware);
+  log(std::string("id: "), msg->id);
+  log(std::string("baud_rate: "), msg->baud_rate);
+  log(std::string("return_delay_tiem: "), msg->return_delay_time);
+  log(std::string("drive_mode: "), msg->drive_mode);
+  log(std::string("operating_mode: "), msg->operating_mode);
+  log(std::string("secondary_id: "), msg->secondary_id);
+  log(std::string("protocol_version: "), msg->protocol_version);
+  log(std::string("homing_offset: "), msg->homing_offset);
+  log(std::string("moving_threshold: "), msg->moving_threshold);
+  log(std::string("temperature_limit: "), msg->temperature_limit);
+  log(std::string("max_voltage_limit: "), msg->max_voltage_limit);
+  log(std::string("min_voltage_limit: "), msg->min_voltage_limit);
+  log(std::string("pwm_limit: "), msg->pwm_limit);
+  log(std::string("acceleration_limit: "), msg->acceleration_limit);
+  log(std::string("velocity_limit: "), msg->velocity_limit);
+  log(std::string("max_position_limit: "), msg->max_position_limit);
+  log(std::string("min_position_limit: "), msg->min_position_limit);
+  log(std::string("shutdown: "), msg->shutdown);
+  log(std::string(""));
+  log(std::string("< RAM >"));
+  log(std::string("torque_enable: "), msg->torque_enable);
+  log(std::string("led: "), msg->led);
+  log(std::string("status_return_level: "), msg->status_return_level);
+  log(std::string("registered_instruction: "), msg->registered_instruction);
+  log(std::string("hardware_error_status: "), msg->hardware_error_status);
+  log(std::string("velocity_i_gain: "), msg->velocity_i_gain);
+  log(std::string("velocity_p_gain: "), msg->velocity_p_gain);
+  log(std::string("position_d_gain: "), msg->position_d_gain);
+  log(std::string("position_i_gain: "), msg->position_i_gain);
+  log(std::string("position_p_gain: "), msg->position_p_gain);
+  log(std::string("feedforward_2nd_gain: "), msg->feedforward_2nd_gain);
+  log(std::string("feedforward_1st_gain: "), msg->feedforward_1st_gain);
+  log(std::string("bus_watchdog: "), msg->bus_watchdog);
+  log(std::string("goal_pwm: "), msg->goal_pwm);
+  log(std::string("goal_velocity: "), msg->goal_velocity);
+  log(std::string("profile_acceleration: "), msg->profile_acceleration);
+  log(std::string("profile_velocity: "), msg->profile_velocity);
+  log(std::string("goal_position: "), msg->goal_position);
+  log(std::string("realtime_tick: "), msg->realtime_tick);
+  log(std::string("moving: "), msg->moving);
+  log(std::string("moving_status: "), msg->moving_status);
+  log(std::string("present_pwm: "), msg->present_pwm);
+  log(std::string("present_load: "), msg->present_load);
+  log(std::string("present_velocity: "), msg->present_velocity);
+  log(std::string("present_position: "), msg->present_position);
+  log(std::string("velocity_trajectory: "), msg->velocity_trajectory);
+  log(std::string("position_trajectory: "), msg->position_trajectory);
+  log(std::string("present_input_voltage: "), msg->present_input_voltage);
+  log(std::string("present_temperature: "), msg->present_temperature);
+
+  row_count_ = 0;
+}
+
 void QNode::XMStatusMsgCallback(const dynamixel_workbench_msgs::XM::ConstPtr &msg)
+{
+  log(std::string("< EEPROM >"));
+  log(std::string("model_number: "), msg->model_number);
+  log(std::string("version_of_firmware: "), msg->version_of_firmware);
+  log(std::string("id: "), msg->id);
+  log(std::string("baud_rate: "), msg->baud_rate);
+  log(std::string("return_delay_tiem: "), msg->return_delay_time);
+  log(std::string("drive_mode: "), msg->drive_mode);
+  log(std::string("operating_mode: "), msg->operating_mode);
+  log(std::string("protocol_version: "), msg->protocol_version);
+  log(std::string("homing_offset: "), msg->homing_offset);
+  log(std::string("moving_threshold: "), msg->moving_threshold);
+  log(std::string("temperature_limit: "), msg->temperature_limit);
+  log(std::string("max_voltage_limit: "), msg->max_voltage_limit);
+  log(std::string("min_voltage_limit: "), msg->min_voltage_limit);
+  log(std::string("pwm_limit: "), msg->pwm_limit);
+  log(std::string("current_limit: "), msg->current_limit);
+  log(std::string("acceleration_limit: "), msg->acceleration_limit);
+  log(std::string("velocity_limit: "), msg->velocity_limit);
+  log(std::string("max_position_limit: "), msg->max_position_limit);
+  log(std::string("min_position_limit: "), msg->min_position_limit);
+  log(std::string("shutdown: "), msg->shutdown);
+  log(std::string(""));
+  log(std::string("< RAM >"));
+  log(std::string("torque_enable: "), msg->torque_enable);
+  log(std::string("led: "), msg->led);
+  log(std::string("status_return_level: "), msg->status_return_level);
+  log(std::string("registered_instruction: "), msg->registered_instruction);
+  log(std::string("hardware_error_status: "), msg->hardware_error_status);
+  log(std::string("velocity_i_gain: "), msg->velocity_i_gain);
+  log(std::string("velocity_p_gain: "), msg->velocity_p_gain);
+  log(std::string("position_d_gain: "), msg->position_d_gain);
+  log(std::string("position_i_gain: "), msg->position_i_gain);
+  log(std::string("position_p_gain: "), msg->position_p_gain);
+  log(std::string("feedforward_2nd_gain: "), msg->feedforward_2nd_gain);
+  log(std::string("feedforward_1st_gain: "), msg->feedforward_1st_gain);
+  log(std::string("goal_pwm: "), msg->goal_pwm);
+  log(std::string("goal_current: "), msg->goal_current);
+  log(std::string("goal_velocity: "), msg->goal_velocity);
+  log(std::string("profile_acceleration: "), msg->profile_acceleration);
+  log(std::string("profile_velocity: "), msg->profile_velocity);
+  log(std::string("goal_position: "), msg->goal_position);
+  log(std::string("realtime_tick: "), msg->realtime_tick);
+  log(std::string("moving: "), msg->moving);
+  log(std::string("moving_status: "), msg->moving_status);
+  log(std::string("present_pwm: "), msg->present_pwm);
+  log(std::string("present_current: "), msg->present_current);
+  log(std::string("present_velocity: "), msg->present_velocity);
+  log(std::string("present_position: "), msg->present_position);
+  log(std::string("velocity_trajectory: "), msg->velocity_trajectory);
+  log(std::string("position_trajectory: "), msg->position_trajectory);
+  log(std::string("present_input_voltage: "), msg->present_input_voltage);
+  log(std::string("present_temperature: "), msg->present_temperature);
+
+  row_count_ = 0;
+}
+
+void QNode::XHStatusMsgCallback(const dynamixel_workbench_msgs::XH::ConstPtr &msg)
 {
   log(std::string("< EEPROM >"));
   log(std::string("model_number: "), msg->model_number);
