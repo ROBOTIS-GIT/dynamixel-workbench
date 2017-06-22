@@ -83,8 +83,6 @@ bool PositionControl::loadDynamixel()
   pan_info->lode_info.baud_rate        = node_handle_.param<int>("baud_rate", 57600);
   pan_info->lode_info.protocol_version = node_handle_.param<float>("protocol_version", 2.0);
 
-  pan_info->model_name                 = node_handle_.param<std::string>("model_name", "XM430_W210");
-
   pan_info->model_id                   = node_handle_.param<int>("pan_id", 1);
 
   dynamixel_info_.push_back(pan_info);
@@ -94,8 +92,6 @@ bool PositionControl::loadDynamixel()
   tilt_info->lode_info.device_name      = node_handle_.param<std::string>("device_name", "/dev/ttyUSB0");
   tilt_info->lode_info.baud_rate        = node_handle_.param<int>("baud_rate", 57600);
   tilt_info->lode_info.protocol_version = node_handle_.param<float>("protocol_version", 2.0);
-
-  tilt_info->model_name                 = node_handle_.param<std::string>("model_name", "XM430_W210");
 
   tilt_info->model_id                   = node_handle_.param<int>("tilt_id", 1);
 

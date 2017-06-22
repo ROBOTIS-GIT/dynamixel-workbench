@@ -80,8 +80,6 @@ bool VelocityControl::loadDynamixel()
   left_info->lode_info.baud_rate        = node_handle_.param<int>("baud_rate", 57600);
   left_info->lode_info.protocol_version = node_handle_.param<float>("protocol_version", 2.0);
 
-  left_info->model_name                 = node_handle_.param<std::string>("model_name", "XM430_W210");
-
   left_info->model_id                   = node_handle_.param<int>("left_id", 1);
 
   dynamixel_info_.push_back(left_info);
@@ -91,8 +89,6 @@ bool VelocityControl::loadDynamixel()
   right_info->lode_info.device_name      = node_handle_.param<std::string>("device_name", "/dev/ttyUSB0");
   right_info->lode_info.baud_rate        = node_handle_.param<int>("baud_rate", 57600);
   right_info->lode_info.protocol_version = node_handle_.param<float>("protocol_version", 2.0);
-
-  right_info->model_name                 = node_handle_.param<std::string>("model_name", "XM430_W210");
 
   right_info->model_id                   = node_handle_.param<int>("right_id", 1);
 

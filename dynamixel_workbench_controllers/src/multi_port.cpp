@@ -72,8 +72,6 @@ bool MultiPort::loadDynamixel()
   pan_info->lode_info.baud_rate        = node_handle_.param<int>("pan/baud_rate", 57600);
   pan_info->lode_info.protocol_version = node_handle_.param<float>("pan/protocol_version", 2.0);
 
-  pan_info->model_name                 = node_handle_.param<std::string>("pan/model_name", "XM430_W210");
-
   pan_info->model_id                   = node_handle_.param<int>("pan/id", 1);
 
   dynamixel_info_.push_back(pan_info);
@@ -83,8 +81,6 @@ bool MultiPort::loadDynamixel()
   tilt_info->lode_info.device_name      = node_handle_.param<std::string>("tilt/device_name", "/dev/ttyUSB1");
   tilt_info->lode_info.baud_rate        = node_handle_.param<int>("tilt/baud_rate", 57600);
   tilt_info->lode_info.protocol_version = node_handle_.param<float>("tilt/protocol_version", 1.0);
-
-  tilt_info->model_name                 = node_handle_.param<std::string>("tilt/model_name", "AX_12A");
 
   tilt_info->model_id                   = node_handle_.param<int>("tilt/id", 2);
 
