@@ -119,23 +119,23 @@ int main(int argc, char **argv)
 
       if (c == FORWARD)
       {
-        wheel_command.request.right_vel = 0.2;
-        wheel_command.request.left_vel  = 0.2;
+        wheel_command.request.right_vel += 0.2;
+        wheel_command.request.left_vel  += 0.2;
       }
       else if (c == BACKWARD)
       {
-        wheel_command.request.right_vel = -0.2;
-        wheel_command.request.left_vel  = -0.2;
+        wheel_command.request.right_vel += -0.2;
+        wheel_command.request.left_vel  += -0.2;
       }
       else if (c == LEFT)
       {
-        wheel_command.request.right_vel = 0.2;
-        wheel_command.request.left_vel  = -0.2;
+        wheel_command.request.right_vel += 0.2;
+        wheel_command.request.left_vel  += -0.2;
       }
       else if (c == RIGHT)
       {
-        wheel_command.request.right_vel = -0.2;
-        wheel_command.request.left_vel  = 0.2;
+        wheel_command.request.right_vel += -0.2;
+        wheel_command.request.left_vel  += 0.2;
       }
       else if (c == STOPS)
       {
@@ -144,8 +144,8 @@ int main(int argc, char **argv)
       }
       else
       {
-        wheel_command.request.right_vel = 0.2;
-        wheel_command.request.left_vel  = 0.2;
+        wheel_command.request.right_vel += 0.2;
+        wheel_command.request.left_vel  += 0.2;
       }
 
       if (wheel_command_client.call(wheel_command))
