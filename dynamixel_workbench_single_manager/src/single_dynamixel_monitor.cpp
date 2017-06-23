@@ -347,12 +347,12 @@ bool SingleDynamixelMonitor::changeProtocolVersion(float ver)
   if (ver == 1.0 || ver == 2.0)
   {
     // TODO
-    dynamixel_driver_->writeRegister("protocol_version", ver);
+    dynamixel_driver_->writeRegister("protocol_version", (int)(ver));
     usleep(dynamixel->item_->data_length* 55 * 1000 *10);
 
     dynamixel_driver_->setPacketHandler(ver);
 
-    ROS_INFO(" Success to change protocol version [ PROTOCOL VERSION: %.2f]", dynamixel_driver_->getProtocolVersion());
+    ROS_INFO(" Success to change protocol version [ PROTOCOL VERSION: %.1f]", dynamixel_driver_->getProtocolVersion());
     return true;
   }
   else
@@ -410,7 +410,7 @@ bool SingleDynamixelMonitor::dynamixelCommandMsgCallback(dynamixel_workbench_msg
     else
       res.comm_result = false;
   }
-  else if (req.command == "torque_on")
+  else if (req.command == "torque_enable")
   {
     std::string addr = req.addr_name;
     int64_t value    = req.value;
@@ -420,7 +420,7 @@ bool SingleDynamixelMonitor::dynamixelCommandMsgCallback(dynamixel_workbench_msg
     else
       res.comm_result = false;
   }
-  else if (req.command == "torque_off")
+  else if (req.command == "torque_disable")
   {
     std::string addr = req.addr_name;
     int64_t value    = req.value;
