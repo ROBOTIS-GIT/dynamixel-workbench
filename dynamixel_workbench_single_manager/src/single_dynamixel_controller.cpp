@@ -109,8 +109,8 @@ void SingleDynamixelController::viewManagerMenu()
   ROS_INFO("[help|h|?]...........: help");
   ROS_INFO("[info]...............: information of a Dynamixel");
   ROS_INFO("[table]..............: check a control table of a Dynamixel");
-  ROS_INFO("[torque_on]..........: torque on Dynamixel");
-  ROS_INFO("[torque_off].........: torque off Dynamixel");
+  ROS_INFO("[torque_enable]......: torque on Dynamixel");
+  ROS_INFO("[torque_disable].....: torque off Dynamixel");
   ROS_INFO("[reboot].............: reboot a Dynamixel(only protocol version 2.0)");
   ROS_INFO("[factory_reset]......: command for all data back to factory settings values");
   ROS_INFO("[[table_item] [value]: change address value of a Dynamixel");
@@ -210,12 +210,12 @@ bool SingleDynamixelController::controlLoop()
         if (!sendCommandMsg("factory_reset"))
           ROS_ERROR("It didn't factory reset to DYNAMIXEL");
       }
-      else if (strcmp(cmd, "torque_on") == 0)
+      else if (strcmp(cmd, "torque_enable") == 0)
       {
         if (!sendCommandMsg("addr", "torque_enable", 1))
           ROS_ERROR("It didn't works");
       }
-      else if (strcmp(cmd, "torque_off") == 0)
+      else if (strcmp(cmd, "torque_disable") == 0)
       {
         if (!sendCommandMsg("addr", "torque_enable", 0))
           ROS_ERROR("It didn't works");
