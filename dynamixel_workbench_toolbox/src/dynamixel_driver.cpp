@@ -223,7 +223,7 @@ bool DynamixelDriver::readRegister(std::string addr_name, int32_t *value)
   {
     packetHandler_->printTxRxResult(comm_result);
 
-    ROS_ERROR("[ID] %u, Fail to read!", dynamixel_->id_);
+    ROS_ERROR("[ID] %u, Fail to read!(%s)", dynamixel_->id_, addr_item->item_name.c_str());
     return false;
   }
 }
