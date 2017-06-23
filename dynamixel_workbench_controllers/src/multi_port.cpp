@@ -97,6 +97,12 @@ bool MultiPort::loadDynamixel()
   ret = pan_driver_ ->ping(dynamixel_info_[PAN]->model_id);
   ret = tilt_driver_->ping(dynamixel_info_[TILT]->model_id);
 
+  if (ret)
+  {
+    dynamixel_info_[PAN] ->model_name  = pan_driver_->dynamixel_->model_name_.c_str();
+    dynamixel_info_[TILT]->model_name  = tilt_driver_->dynamixel_->model_name_.c_str();
+  }
+
  return ret;
 }
 

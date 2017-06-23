@@ -253,19 +253,11 @@ bool VelocityControl::wheelCommandMsgCallback(dynamixel_workbench_msgs::WheelCom
 {
   sleep(0.01);
 
-  static float right_vel = 0.0;
-  static float left_vel  = 0.0;
+  float right_vel = 0.0;
+  float left_vel  = 0.0;
 
-  if (req.right_vel == 0.0 && req.left_vel == 0.0)
-  {
-    right_vel = 0.0;
-    left_vel  = 0.0;
-  }
-  else
-  {
-    right_vel += req.right_vel;
-    left_vel  += req.left_vel;
-  }
+  right_vel = req.right_vel;
+  left_vel  = req.left_vel;
 
   if (multi_driver_->getProtocolVersion() == 2.0)
   {
