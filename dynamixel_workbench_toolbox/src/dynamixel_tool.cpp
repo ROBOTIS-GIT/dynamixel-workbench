@@ -130,7 +130,8 @@ bool DynamixelTool::getModelPath()
   std::string dynamixel_series = "";
   dynamixel_series = model_name_.substr(0,3);
 
-  if (dynamixel_series.find("_") != std::string::npos)
+  if (dynamixel_series.find("_") != std::string::npos ||
+      dynamixel_series.find("4") != std::string::npos)
     dynamixel_series.erase(2,3);
 
 

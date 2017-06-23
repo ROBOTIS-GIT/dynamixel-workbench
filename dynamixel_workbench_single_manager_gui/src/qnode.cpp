@@ -327,35 +327,35 @@ void QNode::initDynamixelStateSubscriber()
 
   if (dynamixel_info_.model_name.find("AX") != std::string::npos)
   {
-    dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + dynamixel_info_.model_name + "_state", 10, &QNode::AXStatusMsgCallback, this);
+    dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + dynamixel_info_.model_name, 10, &QNode::AXStatusMsgCallback, this);
   }
   else if (dynamixel_info_.model_name.find("RX") != std::string::npos)
   {
-    dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + dynamixel_info_.model_name + "_state", 10, &QNode::RXStatusMsgCallback, this);
+    dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + dynamixel_info_.model_name, 10, &QNode::RXStatusMsgCallback, this);
   }
   else if (dynamixel_info_.model_name.find("MX") != std::string::npos)
   {
-    dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + dynamixel_info_.model_name + "_state", 10, &QNode::MXStatusMsgCallback, this);
+    dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + dynamixel_info_.model_name, 10, &QNode::MXStatusMsgCallback, this);
   }
   else if (dynamixel_info_.model_name.find("EX") != std::string::npos)
   {
-    dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + dynamixel_info_.model_name + "_state", 10, &QNode::EXStatusMsgCallback, this);
+    dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + dynamixel_info_.model_name, 10, &QNode::EXStatusMsgCallback, this);
   }
   else if (dynamixel_info_.model_name.find("XL") != std::string::npos)
   {
-    dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + dynamixel_info_.model_name + "_state", 10, &QNode::XLStatusMsgCallback, this);
+    dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + dynamixel_info_.model_name, 10, &QNode::XLStatusMsgCallback, this);
   }
   else if (dynamixel_info_.model_name.find("XM") != std::string::npos)
   {
-    dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + dynamixel_info_.model_name + "_state", 10, &QNode::XMStatusMsgCallback, this);
+    dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + dynamixel_info_.model_name, 10, &QNode::XMStatusMsgCallback, this);
   }
   else if (dynamixel_info_.model_name.find("XH") != std::string::npos)
   {
-    dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + dynamixel_info_.model_name + "_state", 10, &QNode::XHStatusMsgCallback, this);
+    dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + dynamixel_info_.model_name, 10, &QNode::XHStatusMsgCallback, this);
   }
   else if (dynamixel_info_.model_name.find("PRO") != std::string::npos)
   {
-    dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + dynamixel_info_.model_name + "_state", 10, &QNode::PROStatusMsgCallback, this);
+    dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + dynamixel_info_.model_name, 10, &QNode::PROStatusMsgCallback, this);
   }
 }
 

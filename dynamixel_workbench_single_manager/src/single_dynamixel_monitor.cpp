@@ -127,35 +127,35 @@ bool SingleDynamixelMonitor::initDynamixelStatePublisher()
 
   if (dynamixel->model_name_.find("AX") != std::string::npos)
   {
-    dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::AX>("dynamixel/" + dynamixel->model_name_ + "_state", 10);
+    dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::AX>("dynamixel/" + dynamixel->model_name_, 10);
   }
   else if (dynamixel->model_name_.find("RX") != std::string::npos)
   {
-    dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::RX>("dynamixel/" + dynamixel->model_name_ + "_state", 10);
+    dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::RX>("dynamixel/" + dynamixel->model_name_, 10);
   }
   else if (dynamixel->model_name_.find("MX") != std::string::npos)
   {
-    dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::MX>("dynamixel/" + dynamixel->model_name_ + "_state", 10);
+    dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::MX>("dynamixel/" + dynamixel->model_name_, 10);
   }
   else if (dynamixel->model_name_.find("EX") != std::string::npos)
   {
-    dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::EX>("dynamixel/" + dynamixel->model_name_ + "_state", 10);
+    dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::EX>("dynamixel/" + dynamixel->model_name_, 10);
   }
   else if (dynamixel->model_name_.find("XL") != std::string::npos)
   {
-    dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::XL>("dynamixel/" + dynamixel->model_name_ + "_state", 10);
+    dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::XL>("dynamixel/" + dynamixel->model_name_, 10);
   }
   else if (dynamixel->model_name_.find("XM") != std::string::npos)
   {
-    dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::XM>("dynamixel/" + dynamixel->model_name_ + "_state", 10);
+    dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::XM>("dynamixel/" + dynamixel->model_name_, 10);
   }
   else if (dynamixel->model_name_.find("XH") != std::string::npos)
   {
-    dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::XH>("dynamixel/" + dynamixel->model_name_ + "_state", 10);
+    dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::XH>("dynamixel/" + dynamixel->model_name_, 10);
   }
   else if (dynamixel->model_name_.find("PRO") != std::string::npos)
   {
-    dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::PRO>("dynamixel/" + dynamixel->model_name_ + "_state", 10);
+    dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::PRO>("dynamixel/" + dynamixel->model_name_, 10);
   }
 
   return true;
