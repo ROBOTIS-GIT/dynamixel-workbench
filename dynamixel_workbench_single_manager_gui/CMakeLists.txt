@@ -33,7 +33,7 @@ include_directories(${catkin_INCLUDE_DIRS})
 
 catkin_package(
     INCLUDE_DIRS include
-    CATKIN_DEPENDS roscpp
+    CATKIN_DEPENDS qt_build roscpp
 )
 
 ################################################################################

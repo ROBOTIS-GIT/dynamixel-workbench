@@ -3,9 +3,10 @@
   <name>dynamixel_workbench</name>
   <version>0.1.5</version>
   <description>
-    Dynamixel-workbench is dynamixel solution for ROS.
-    This metapackage can help change each address in Dynamixel included id, baudrate and operating mode in command line or GUI.
-    Furthermore, it supports various controllers based on operating mode and Dynamixel SDK. These controllers are remoted by a tutorial.
+    Dynamixel-Workbench is dynamixel solution for ROS.
+    This metapackage allows you to easily change the ID, baudrate and operating mode of the Dynamixel.
+    Furthermore, it supports various controllers based on operating mode and Dynamixel SDK.
+    These controllers are commanded by operators.
   </description>
   <license>BSD</license>
   <author email="thlim@robotis.com">Darby Lim</author>
@@ -16,9 +17,8 @@
   <buildtool_depend>catkin</buildtool_depend>
   <run_depend>dynamixel_workbench_single_manager</run_depend>
   <run_depend>dynamixel_workbench_single_manager_gui</run_depend>
-  <run_depend>dynamixel_workbench_msgs</run_depend>
   <run_depend>dynamixel_workbench_controllers</run_depend>
-  <run_depend>dynamixel_workbench_tutorials</run_depend>
+  <run_depend>dynamixel_workbench_operators</run_depend>
   <run_depend>dynamixel_workbench_toolbox</run_depend>
   <export><metapackage/></export>
 </package>

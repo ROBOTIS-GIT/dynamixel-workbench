@@ -39,12 +39,29 @@
 #include "ui_main_window.h"
 #include "qnode.hpp"
 
+#include "dynamixel_workbench_msgs/DynamixelCommand.h"
 #include "dynamixel_workbench_toolbox/dynamixel_tool.h"
 
 #endif
 
-namespace dynamixel_workbench_single_manager_gui
+namespace main_window
 {
+
+struct DynamixelLoadInfo
+{
+  std::string device_name;
+  int baud_rate;
+  float protocol_version;
+};
+
+struct DynamixelInfo
+{
+  int16_t model_number;
+  int8_t model_id;
+  std::string model_name;
+  DynamixelLoadInfo lode_info;
+};
+
 class MainWindow : public QMainWindow
 {
  Q_OBJECT
@@ -53,7 +70,7 @@ class MainWindow : public QMainWindow
 	MainWindow(int argc, char** argv, QWidget *parent = 0);
 	~MainWindow();
 
-	void closeEvent(QCloseEvent *event); // Overloaded function
+  void closeEvent(QCloseEvent *event);
 	void showNoMasterMessage();
 
  public Q_SLOTS:
@@ -63,23 +80,35 @@ class MainWindow : public QMainWindow
   void on_factory_reset_push_button_clicked(bool check);
   void on_set_position_zero_push_button_clicked(bool check);
 
-  void changeDynamixelID();
-  void changeOperatingMode();
+  void changeID();
   void changeBaudrate();
+  void changeOperatingMode();
   void changeControlTableValue();
-  void showHideButton(QString index);
+  void setEachAddressFunction(QString index);
 
-	void updateWorkbenchParamLineEdit(dynamixel_workbench_msgs::WorkbenchParam msg);
+  void updateDynamixelInfoLineEdit(dynamixel_workbench_msgs::DynamixelInfo dynamixel_info);
 
  private:
   Ui::MainWindowDesign ui_;
-  QNode qnode_;
-  dynamixel_tool::DynamixelTool * dynamixel_;
+  qnode::QNode qnode_;
+
+  DynamixelInfo *dynamixel_info_;
+  dynamixel_tool::DynamixelTool *dynamixel_;
 
   bool reboot_button_;
   bool operating_mode_spinbox_;
-  void makeUI();
-  void makeConnect();
+
+  void InitUserInterface();
+  void InitConnect();
+
+  void setIdComboBox();
+  void setBaudRateComboBox();
+  void setOperatingModeComboBox();
+  void setRebootButton();
+  void setAddressComboBox(bool torque_enable);
+
+  void errorMsg();
+  void rightMsg();
 };
 }
 

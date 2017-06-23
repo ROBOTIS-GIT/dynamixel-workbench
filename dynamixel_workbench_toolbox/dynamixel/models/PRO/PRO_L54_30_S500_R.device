@@ -1,0 +1,74 @@
+[device info]
+model_number = 37896
+model_name  = PRO_L54_30_S500_R
+
+[type info]
+velocity_to_value_ratio 	= 4792.8
+
+value_of_0_radian_position      = 0
+value_of_min_radian_position    = -180684
+value_of_max_radian_position    =  180684
+min_radian                      = -3.14159265
+max_radian                      =  3.14159265
+
+[baud rate]
+# baud rate | value
+9600        | 0
+57600       | 1
+115200      | 2
+1000000     | 3
+2000000     | 4
+3000000     | 5
+4000000     | 6
+4500000     | 7
+10500000    | 8
+
+[control table]
+# addr | item name                | length | access | memory
+   0   | model_number             | 2      | R      | EEPROM
+   6   | version_of_firmware      | 1      | R      | EEPROM
+   7   | id                       | 1      | RW     | EEPROM
+   8   | baud_rate                | 1      | RW     | EEPROM
+   9   | return_delay_time        | 1      | RW     | EEPROM
+   11  | operating_mode           | 1      | RW     | EEPROM
+   13  | homing_offset            | 4      | RW     | EEPROM
+   17  | moving_threshold         | 4      | RW     | EEPROM
+   21  | temperature_limit        | 1      | RW     | EEPROM
+   22  | max_voltage_limit        | 2      | RW     | EEPROM
+   24  | min_voltage_limit        | 2      | RW     | EEPROM
+   26  | acceleration_limit       | 4      | RW     | EEPROM
+   30  | torque_limit             | 2      | RW     | EEPROM
+   32  | velocity_limit           | 4      | RW     | EEPROM
+   36  | max_position_limit       | 4      | RW     | EEPROM
+   40  | min_position_limit       | 4      | RW     | EEPROM
+   44  | external_port_mod_1      | 1      | RW     | EEPROM
+   45  | external_port_mod_2      | 1      | RW     | EEPROM
+   46  | external_port_mod_3      | 1      | RW     | EEPROM
+   47  | external_port_mod_4      | 1      | RW     | EEPROM
+   48  | shutdown                 | 1      | RW     | EEPROM
+   49  | indirect_address_1       | 2      | RW     | EEPROM
+   562 | torque_enable            | 1      | RW     | RAM
+   563 | led_red                  | 1      | RW     | RAM
+   564 | led_green                | 1      | RW     | RAM
+   565 | led_blue                 | 1      | RW     | RAM
+   586 | velocity_i_gain          | 2      | RW     | RAM
+   588 | velocity_p_gain          | 2      | RW     | RAM
+   594 | position_p_gain          | 2      | RW     | RAM
+   596 | goal_position            | 4      | RW     | RAM
+   600 | goal_velocity            | 4      | RW     | RAM
+   604 | goal_torque              | 2      | RW     | RAM
+   606 | goal_acceleration        | 4      | RW     | RAM
+   610 | moving                   | 1      | R      | RAM
+   611 | present_position         | 4      | R      | RAM
+   615 | present_velocity         | 4      | R      | RAM
+   621 | present_current          | 2      | R      | RAM
+   623 | present_input_voltage    | 2      | R      | RAM
+   625 | present_temperature      | 1      | R      | RAM
+   626 | external_port_data_1     | 2      | RW     | RAM
+   628 | external_port_data_2     | 2      | RW     | RAM
+   630 | external_port_data_3     | 2      | RW     | RAM
+   632 | external_port_data_4     | 2      | RW     | RAM
+   634 | indirect_data_1          | 1      | RW     | RAM
+   890 | registered_instruction   | 1      | R      | RAM
+   891 | status_return_level      | 1      | RW     | RAM
+   892 | hardware_error_status    | 1      | R      | RAM

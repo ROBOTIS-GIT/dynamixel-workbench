@@ -40,34 +40,24 @@
 #include <QThread>
 #include <QStringListModel>
 
-#include <dynamixel_workbench_msgs/DynamixelAX.h>
-#include <dynamixel_workbench_msgs/DynamixelRX.h>
-#include <dynamixel_workbench_msgs/DynamixelMX.h>
-#include <dynamixel_workbench_msgs/DynamixelMX64.h>
-#include <dynamixel_workbench_msgs/DynamixelMX106.h>
-#include <dynamixel_workbench_msgs/DynamixelEX.h>
-#include <dynamixel_workbench_msgs/DynamixelXL.h>
-#include <dynamixel_workbench_msgs/DynamixelXL320.h>
-#include <dynamixel_workbench_msgs/DynamixelXM.h>
-#include <dynamixel_workbench_msgs/DynamixelXH.h>
-#include <dynamixel_workbench_msgs/DynamixelPro.h>
-#include <dynamixel_workbench_msgs/DynamixelProL42.h>
+#include "dynamixel_workbench_toolbox/message_header.h"
 
-#include "dynamixel_workbench_toolbox/dynamixel_tool.h"
 #include "dynamixel_workbench_msgs/DynamixelCommand.h"
-#include "dynamixel_workbench_msgs/WorkbenchParam.h"
-#include "dynamixel_workbench_msgs/GetWorkbenchParam.h"
+#include "dynamixel_workbench_msgs/GetDynamixelInfo.h"
+#include "dynamixel_workbench_msgs/DynamixelInfo.h"
 
 #endif
 
-namespace dynamixel_workbench_single_manager_gui
+namespace qnode
 {
 class QNode : public QThread
 {
  Q_OBJECT
+
  public:
   QNode(int argc, char** argv );
   virtual ~QNode();
+
   bool init();
   void run();
 
@@ -75,36 +65,37 @@ class QNode : public QThread
   void log(const std::string &msg, int64_t sender);
   void log(const std::string &msg);
 
-  void dynamixelAXStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelAX::ConstPtr &msg);
-  void dynamixelRXStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelRX::ConstPtr &msg);
-  void dynamixelMXStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelMX::ConstPtr &msg);
-  void dynamixelMX64StatusMsgCallback(const dynamixel_workbench_msgs::DynamixelMX64::ConstPtr &msg);
-  void dynamixelMX106StatusMsgCallback(const dynamixel_workbench_msgs::DynamixelMX106::ConstPtr &msg);
-  void dynamixelEXStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelEX::ConstPtr &msg);
-  void dynamixelXL320StatusMsgCallback(const dynamixel_workbench_msgs::DynamixelXL320::ConstPtr &msg);
-  void dynamixelXLStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelXL::ConstPtr &msg);
-  void dynamixelXMStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelXM::ConstPtr &msg);
-  void dynamixelXHStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelXH::ConstPtr &msg);
-  void dynamixelProStatusMsgCallback(const dynamixel_workbench_msgs::DynamixelPro::ConstPtr &msg);
-  void dynamixelProL42StatusMsgCallback(const dynamixel_workbench_msgs::DynamixelProL42::ConstPtr &msg);
+  // TODO : Add new Dynamixel
+  void AXStatusMsgCallback(const dynamixel_workbench_msgs::AX::ConstPtr &msg);
+  void RXStatusMsgCallback(const dynamixel_workbench_msgs::RX::ConstPtr &msg);
+  void MXStatusMsgCallback(const dynamixel_workbench_msgs::MX::ConstPtr &msg);
+  void EXStatusMsgCallback(const dynamixel_workbench_msgs::EX::ConstPtr &msg);
 
-  void sendTorqueMsg(std::string addr_name, int64_t onoff);
-  void sendRebootMsg(void);
-  void sendResetMsg(void);
-  void sendSetIdMsg(int64_t id);
-  void sendSetOperatingModeMsg(std::__cxx11::string index);
-  void sendSetBaudrateMsg(float baud_rate);
-  void sendControlTableValueMsg(QString table_item, int64_t value);
-  void setPositionZeroMsg(int32_t zero_position);
+  void XLStatusMsgCallback(const dynamixel_workbench_msgs::XL::ConstPtr &msg);
+  void XMStatusMsgCallback(const dynamixel_workbench_msgs::XM::ConstPtr &msg);
+  void XHStatusMsgCallback(const dynamixel_workbench_msgs::XH::ConstPtr &msg);
+  void PROStatusMsgCallback(const dynamixel_workbench_msgs::PRO::ConstPtr &msg);
 
-  void getWorkbenchParam(void);
-  void setSubscriber();
+  bool sendSetIdMsg(uint8_t set_id);
+  bool sendSetOperatingModeMsg(std::string index, float protocol_version, std::string model_name, int32_t value_of_max_radian_position);
+  bool sendSetBaudrateMsg(int64_t baud_rate);
+
+  bool sendTorqueMsg(int64_t onoff);
+  bool sendRebootMsg(void);
+  bool sendResetMsg(void);
+  bool sendAddressValueMsg(std::string addr_name, int64_t value);
+  bool setPositionZeroMsg(int32_t zero_position);
+
+  void getDynamixelInfo();
+  // TODO : Add new Dynamixel
+  void initDynamixelStateSubscriber();
+  bool sendCommandMsg(std::string cmd, std::string addr = "", int64_t value = 0);
 
  Q_SIGNALS:
   void loggingUpdated();
   void rosShutdown();
 
-  void updateWorkbenchParam(dynamixel_workbench_msgs::WorkbenchParam);
+  void updateDynamixelInfo(dynamixel_workbench_msgs::DynamixelInfo);
 
  private:
   int init_argc;
@@ -112,15 +103,21 @@ class QNode : public QThread
 
   QStringListModel logging_model_;
 
-  ros::Publisher dynamixel_command_msg_pub_;
-  ros::Publisher set_workbench_param_msg_pub_;
-  ros::Subscriber dynamixel_status_msg_sub_;
-  ros::ServiceClient get_workbench_param_client_;
+  // ROS Topic Publisher
 
+  // ROS Topic Subscriber
+  ros::Subscriber dynamixel_status_msg_sub_;
+
+  // ROS Service Server
+
+  // ROS Service Client
+  ros::ServiceClient dynamixel_info_client_;
+  ros::ServiceClient dynamixel_command_client_;
+
+  // Single Manager GUI variable
   int64_t row_count_;
 
-  std::string dynamixel_model_name_;
-  uint16_t dynamixel_model_number_;
+  dynamixel_workbench_msgs::DynamixelInfo dynamixel_info_;
 
 };
 }
