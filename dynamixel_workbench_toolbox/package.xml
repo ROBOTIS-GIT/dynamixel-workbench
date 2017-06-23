@@ -8,7 +8,7 @@
     The 'dynamixel_driver' class which is based on dynamixel_sdk provides functions to control an Dynamixel.
     The 'dynamixel_multi_driver' class which is inherited by 'dynamixel_driver' class provides functions to control Dynamixels.
   </description>
-  <license>BSD</license>
+  <license>Apache License 2.0</license>
   <author email="thlim@robotis.com">Darby Lim</author>
   <maintainer email="pyo@robotis.com">Pyo</maintainer>
   <url type="bugtracker">https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues</url>
