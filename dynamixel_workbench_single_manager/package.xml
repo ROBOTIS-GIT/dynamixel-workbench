@@ -6,7 +6,7 @@
     This package is single manager for a Dynamixel.
     It provides a terminal environment to check the status of Dynamixel and control it before using Dynamixel
   </description>
-  <license>BSD</license>
+  <license>Apache License 2.0</license>
   <author email="thlim@robotis.com">Darby Lim</author>
   <maintainer email="pyo@robotis.com">Pyo</maintainer>
   <url type="bugtracker">https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues</url>
