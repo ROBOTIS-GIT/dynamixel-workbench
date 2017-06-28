@@ -120,7 +120,6 @@ bool DynamixelTool::getModelPath()
       dynamixel_series.find("4") != std::string::npos)
     dynamixel_series.erase(2,3);
 
-
   item_path_  = ros::package::getPath("dynamixel_workbench_toolbox") + "/dynamixel";
 
   item_path_ = item_path_ + "/models" + "/" + dynamixel_series + "/" + model_name_ + ".device";

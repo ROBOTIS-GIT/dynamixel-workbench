@@ -273,7 +273,8 @@ bool DynamixelDriver::reset()
       }
       ROS_INFO("Success to reset!");
 
-      if (dynamixel_->model_name_.find("AX") != std::string::npos)
+      if (dynamixel_->model_name_.find("AX") != std::string::npos ||
+          dynamixel_->model_name_.find("MX_12W") != std::string::npos)
         baud = 1000000;
       else
         baud = 57600;
