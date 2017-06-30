@@ -56,7 +56,7 @@ bool DynamixelMultiDriver::loadDynamixel(std::vector<dynamixel_driver::Dynamixel
 
 dynamixel::GroupSyncWrite* DynamixelMultiDriver::setSyncWrite(std::string addr_name)
 {
-  dynamixel_tool::DynamixelTool *dynamixel = multi_dynamixel_[0];
+  dynamixel_tool::DynamixelTool *dynamixel = multi_dynamixel_[0]; // TODO fix adress only dependent on first joint
 
   dynamixel->item_ = dynamixel->ctrl_table_[addr_name];
   dynamixel_tool::ControlTableItem *addr_item = dynamixel->item_;
@@ -146,6 +146,39 @@ bool DynamixelMultiDriver::syncWritePosition(std::vector<uint32_t> pos)
     param_goal_position[1] = DXL_HIBYTE(DXL_LOWORD(pos[num]));
     param_goal_position[2] = DXL_LOBYTE(DXL_HIWORD(pos[num]));
     param_goal_position[3] = DXL_HIBYTE(DXL_HIWORD(pos[num]));
+
+    dynamixel_addparam_result_ = groupSyncWritePosition_->addParam(multi_dynamixel_[num]->id_, (uint8_t*)&param_goal_position);
+    if (dynamixel_addparam_result_ != true)
+    {
+      ROS_ERROR("[ID:%03d] groupSyncWrite addparam failed", multi_dynamixel_[num]->id_);
+      return false;
+    }
+  }
+
+  dynamixel_comm_result_ = groupSyncWritePosition_->txPacket();
+  if (dynamixel_comm_result_ != COMM_SUCCESS)
+  {
+    packetHandler_->printTxRxResult(dynamixel_comm_result_);
+    return false;
+  }
+  groupSyncWritePosition_->clearParam();
+  return true;
+}
+
+bool DynamixelMultiDriver::syncWritePosition(const std::vector<double>& pos)
+{
+  bool dynamixel_addparam_result_;
+  int8_t dynamixel_comm_result_;
+
+  uint8_t param_goal_position[4];
+
+  for (std::vector<dynamixel_tool::DynamixelTool *>::size_type num = 0; num < multi_dynamixel_.size(); ++num)
+  {
+    uint32_t pos_ticks = multi_dynamixel_[num]->convertRadian2Value(pos[num]);
+    param_goal_position[0] = DXL_LOBYTE(DXL_LOWORD(pos_ticks));
+    param_goal_position[1] = DXL_HIBYTE(DXL_LOWORD(pos_ticks));
+    param_goal_position[2] = DXL_LOBYTE(DXL_HIWORD(pos_ticks));
+    param_goal_position[3] = DXL_HIBYTE(DXL_HIWORD(pos_ticks));
 
     dynamixel_addparam_result_ = groupSyncWritePosition_->addParam(multi_dynamixel_[num]->id_, (uint8_t*)&param_goal_position);
     if (dynamixel_addparam_result_ != true)
@@ -369,7 +402,7 @@ bool DynamixelMultiDriver::syncReadPosition(std::vector<uint32_t> &pos)
   dynamixel_->item_ = dynamixel_->ctrl_table_["present_position"];
   dynamixel_tool::ControlTableItem *addr_item = dynamixel_->item_;
 
-  pos.clear();
+  pos.clear(); // TODO remove this
 
   for (std::vector<dynamixel_tool::DynamixelTool *>::size_type num = 0; num < multi_dynamixel_.size(); ++num)
   {
@@ -390,6 +423,51 @@ bool DynamixelMultiDriver::syncReadPosition(std::vector<uint32_t> &pos)
     {
       position  = groupSyncReadPosition_->getData(multi_dynamixel_[num]->id_, addr_item->address, addr_item->data_length);
       pos.push_back(position);
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+  groupSyncReadPosition_->clearParam();
+
+  return true;
+}
+
+bool DynamixelMultiDriver::syncReadPosition(std::vector<double> &pos)
+{
+  int  dxl_comm_result = COMM_TX_FAIL;
+  bool dxl_addparam_result = false;
+  bool dxl_getdata_result = false;
+
+  uint32_t position;
+
+  dynamixel_= multi_dynamixel_[0];
+  dynamixel_->item_ = dynamixel_->ctrl_table_["present_position"];
+  dynamixel_tool::ControlTableItem *addr_item = dynamixel_->item_;
+
+  pos.clear(); // TODO remove this, wtf
+
+  for (std::vector<dynamixel_tool::DynamixelTool *>::size_type num = 0; num < multi_dynamixel_.size(); ++num)
+  {
+    dxl_addparam_result = groupSyncReadPosition_->addParam(multi_dynamixel_[num]->id_);
+    if (dxl_addparam_result != true)
+      return false;
+  }
+
+  dxl_comm_result = groupSyncReadPosition_->txRxPacket();
+  if (dxl_comm_result != COMM_SUCCESS)
+    packetHandler_->printTxRxResult(dxl_comm_result);
+
+  for (std::vector<dynamixel_tool::DynamixelTool *>::size_type num = 0; num < multi_dynamixel_.size(); ++num)
+  {
+    dxl_getdata_result = groupSyncReadPosition_->isAvailable(multi_dynamixel_[num]->id_, addr_item->address, addr_item->data_length);
+
+    if (dxl_getdata_result)
+    {
+      position  = groupSyncReadPosition_->getData(multi_dynamixel_[num]->id_, addr_item->address, addr_item->data_length);
+      pos.push_back(multi_dynamixel_[num]->convertValue2Radian(position));
     }
     else
     {

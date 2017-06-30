@@ -111,6 +111,84 @@ bool DynamixelTool::getModelName(uint16_t model_number)
   }
 }
 
+double DynamixelTool::convertValue2Radian(int32_t value)
+{
+  double radian = 0.0;
+  if (value > value_of_0_radian_position_)
+  {
+    if (max_radian_ <= 0)
+      return max_radian_;
+
+    radian = (double) (value - value_of_0_radian_position_) * max_radian_
+               / (double) (value_of_max_radian_position_ - value_of_0_radian_position_);
+  }
+  else if (value < value_of_0_radian_position_)
+  {
+    if (min_radian_ >= 0)
+      return min_radian_;
+
+    radian = (double) (value - value_of_0_radian_position_) * min_radian_
+               / (double) (value_of_min_radian_position_ - value_of_0_radian_position_);
+  }
+
+//  if (radian > max_radian_)
+//    return max_radian_;
+//  else if (radian < min_radian_)
+//    return min_radian_;
+
+  return radian;
+}
+
+int32_t DynamixelTool::convertRadian2Value(double radian)
+{
+  int32_t value = 0;
+  if (radian > 0)
+  {
+    if (value_of_max_radian_position_ <= value_of_0_radian_position_)
+      return value_of_max_radian_position_;
+
+    value = (radian * (value_of_max_radian_position_ - value_of_0_radian_position_) / max_radian_)
+                + value_of_0_radian_position_;
+  }
+  else if (radian < 0)
+  {
+    if (value_of_min_radian_position_ >= value_of_0_radian_position_)
+      return value_of_min_radian_position_;
+
+    value = (radian * (value_of_min_radian_position_ - value_of_0_radian_position_) / min_radian_)
+                + value_of_0_radian_position_;
+  }
+  else
+    value = value_of_0_radian_position_;
+
+//  if (value > value_of_max_radian_position_)
+//    return value_of_max_radian_position_;
+//  else if (value < value_of_min_radian_position_)
+//    return value_of_min_radian_position_;
+
+  return value;
+}
+
+double DynamixelTool::convertValue2Velocity(int32_t value)
+{
+  return (double) value / velocity_to_value_ratio_;
+}
+
+int32_t DynamixelTool::convertVelocity2Value(double velocity)
+{
+  return (int32_t) (velocity * velocity_to_value_ratio_);;
+}
+
+double DynamixelTool::convertValue2Torque(int16_t value)
+{
+  return (double) value / torque_to_current_value_ratio_;
+}
+
+int16_t DynamixelTool::convertTorque2Value(double torque)
+{
+  return (int16_t) (torque * torque_to_current_value_ratio_);
+}
+
 bool DynamixelTool::getModelPath()
 {
   std::string dynamixel_series = "";

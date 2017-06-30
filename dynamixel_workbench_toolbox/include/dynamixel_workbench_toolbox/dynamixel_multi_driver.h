@@ -56,6 +56,8 @@ class DynamixelMultiDriver : public dynamixel_driver::DynamixelDriver
 
   bool syncWriteTorque(std::vector<uint8_t> &onoff);
   bool syncWritePosition(std::vector<uint32_t> pos);
+  bool syncWritePosition(const std::vector<double> &pos);
+
   bool syncWriteVelocity(std::vector<int32_t> vel);
   bool syncWriteMovingSpeed(std::vector<uint16_t> spd);
   bool syncWriteCurrent(std::vector<int16_t> cur);
@@ -63,6 +65,8 @@ class DynamixelMultiDriver : public dynamixel_driver::DynamixelDriver
   bool syncWriteProfileAcceleration(std::vector<uint32_t> acc);
 
   bool syncReadPosition(std::vector<uint32_t> &pos);
+  bool syncReadPosition(std::vector<double> &pos);
+
 };
 }
 

@@ -79,6 +79,13 @@ class DynamixelTool
   DynamixelTool(uint8_t id, std::string model_name);
   ~DynamixelTool();
 
+  double convertValue2Radian(int32_t value);
+  int32_t convertRadian2Value(double radian);
+  double convertValue2Velocity(int32_t value);
+  int32_t convertVelocity2Value(double velocity);
+  double convertValue2Torque(int16_t value);
+  int16_t convertTorque2Value(double torque);
+
  private:
   bool getModelPath();
   bool getModelName(uint16_t model_number);
