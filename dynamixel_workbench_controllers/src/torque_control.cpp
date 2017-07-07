@@ -258,7 +258,7 @@ uint32_t TorqueControl::convertRadian2Value(float radian)
   return value;
 }
 
-float TorqueControl::convertValue2Radian(uint32_t value)
+float TorqueControl::convertValue2Radian(int32_t value)
 {
   float radian = 0.0;
 
@@ -317,7 +317,7 @@ bool TorqueControl::gravityCompensation()
                  d_gain_ * ((error[PAN] - pre_error[PAN]) / 0.004);
   torque[TILT] = p_gain_ * error[TILT] +
                  d_gain_ * ((error[TILT] - pre_error[TILT]) / 0.004) +
-                 tilt_motor_mass * gravity * link_length * cos(convertValue2Radian(motorPos_->cur_pos.at(TILT)));
+                 tilt_motor_mass * gravity * link_length * cos(convertValue2Radian((int32_t)motorPos_->cur_pos.at(TILT)));
 
   setCurrent(convertTorque2Value(torque[PAN]), convertTorque2Value(torque[TILT]));
 

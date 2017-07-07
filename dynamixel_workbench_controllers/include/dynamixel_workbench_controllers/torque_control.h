@@ -95,7 +95,7 @@ class TorqueControl
   int16_t convertTorque2Value(float torque);
 
   uint32_t convertRadian2Value(float radian);
-  float convertValue2Radian(uint32_t value);
+  float convertValue2Radian(int32_t value);
 
   bool gravityCompensation();
 
