@@ -56,10 +56,6 @@ class MultiPort
   ros::ServiceServer joint_command_server;
   // ROS Service Client
 
-  // ROS Topic Publisher
-
-  // ROS Service Server
-
   // Dynamixel Workbench Parameters
   std::vector<dynamixel_driver::DynamixelInfo* > dynamixel_info_;
 

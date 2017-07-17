@@ -70,10 +70,6 @@ class VelocityControl
   ros::ServiceServer wheel_command_server;
   // ROS Service Client
 
-  // ROS Topic Publisher
-
-  // ROS Service Server
-
   // Dynamixel Workbench Parameters
   std::vector<dynamixel_driver::DynamixelInfo*> dynamixel_info_;
   dynamixel_multi_driver::DynamixelMultiDriver *multi_driver_;
