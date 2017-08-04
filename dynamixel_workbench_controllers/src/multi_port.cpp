@@ -30,7 +30,7 @@ MultiPort::MultiPort()
   }
   else
   {
-    ROS_ERROR("Cant' Load Dynamixel, Please check Parameter");
+    printf("Cant' Load Dynamixel, Please check Parameter\n");
   }
 
   writeValue_ = new WriteValue;
@@ -100,13 +100,13 @@ bool MultiPort::setTorque(bool onoff)
 
   if (!pan_driver_->writeRegister("torque_enable", writeValue_->torque.at(PAN)))
   {
-    ROS_ERROR("Write Pan Torque Failed!");
+    printf("Write Pan Torque Failed!\n");
     return false;
   }
 
   if (!tilt_driver_->writeRegister("torque_enable", writeValue_->torque.at(TILT)))
   {
-    ROS_ERROR("Write Tilt Torque Failed!");
+    printf("Write Tilt Torque Failed!\n");
     return false;
   }
 
@@ -121,13 +121,13 @@ bool MultiPort::setPosition(uint32_t pan_pos, uint32_t tilt_pos)
 
   if (!pan_driver_->writeRegister("goal_position", writeValue_->pos.at(PAN)))
   {
-    ROS_ERROR("Write Pan Position Failed!");
+    printf("Write Pan Position Failed!\n");
     return false;
   }
 
   if (!tilt_driver_->writeRegister("goal_position", writeValue_->pos.at(TILT)))
   {
-    ROS_ERROR("Write Tilt Position Failed!");
+    printf("Write Tilt Position Failed!\n");
     return false;
   }
 
@@ -136,19 +136,19 @@ bool MultiPort::setPosition(uint32_t pan_pos, uint32_t tilt_pos)
 
 bool MultiPort::checkLoadDynamixel()
 {
-  ROS_INFO("-----------------------------------------------------------------------");
-  ROS_INFO("  dynamixel_workbench controller; multi port example(Pan & Tilt)       ");
-  ROS_INFO("-----------------------------------------------------------------------");
-  ROS_INFO("PAN MOTOR INFO");
-  ROS_INFO("Device Name    : %s", dynamixel_info_[PAN]->lode_info.device_name.c_str());
-  ROS_INFO("ID             : %d", dynamixel_info_[PAN]->model_id);
-  ROS_INFO("MODEL          : %s", dynamixel_info_[PAN]->model_name.c_str());
-  ROS_INFO(" ");
-  ROS_INFO("TILT MOTOR INFO");
-  ROS_INFO("Device Name    : %s", dynamixel_info_[TILT]->lode_info.device_name.c_str());
-  ROS_INFO("ID             : %d", dynamixel_info_[TILT]->model_id);
-  ROS_INFO("MODEL          : %s", dynamixel_info_[TILT]->model_name.c_str());
-  ROS_INFO("-----------------------------------------------------------------------");
+  printf("-----------------------------------------------------------------------\n");
+  printf("  dynamixel_workbench controller; multi port example(Pan & Tilt)       \n");
+  printf("-----------------------------------------------------------------------\n");
+  printf("PAN MOTOR INFO\n");
+  printf("Device Name    : %s\n", dynamixel_info_[PAN]->lode_info.device_name.c_str());
+  printf("ID             : %d\n", dynamixel_info_[PAN]->model_id);
+  printf("MODEL          : %s\n", dynamixel_info_[PAN]->model_name.c_str());
+  printf("\n");
+  printf("TILT MOTOR INFO\n");
+  printf("Device Name    : %s\n", dynamixel_info_[TILT]->lode_info.device_name.c_str());
+  printf("ID             : %d\n", dynamixel_info_[TILT]->model_id);
+  printf("MODEL          : %s\n", dynamixel_info_[TILT]->model_name.c_str());
+  printf("-----------------------------------------------------------------------\n");
 }
 
 bool MultiPort::initDynamixelStatePublisher()

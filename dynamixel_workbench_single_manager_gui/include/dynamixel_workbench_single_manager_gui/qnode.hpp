@@ -26,7 +26,7 @@
 #include <QThread>
 #include <QStringListModel>
 
-#include "dynamixel_workbench_toolbox/message_header.h"
+#include "message_header.h"
 
 #include "dynamixel_workbench_msgs/DynamixelCommand.h"
 #include "dynamixel_workbench_msgs/GetDynamixelInfo.h"

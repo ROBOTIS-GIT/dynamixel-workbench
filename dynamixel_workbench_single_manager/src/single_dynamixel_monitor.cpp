@@ -41,21 +41,21 @@ SingleDynamixelMonitor::SingleDynamixelMonitor()
   {
     // Get Connected Single Dynamixel State
     if (dynamixel_info_->lode_info.protocol_version == 1.0)
-      ROS_INFO("Scan Dynamixel(ID: 1~253) Using Protocol 1.0\n");
+      printf("Scan Dynamixel(ID: 1~253) Using Protocol 1.0\n");
     else if (dynamixel_info_->lode_info.protocol_version == 2.0)
-      ROS_INFO("Scan Dynamixel(ID: 1~253) Using Protocol 2.0\n");
+      printf("Scan Dynamixel(ID: 1~253) Using Protocol 2.0\n");
 
     if (dynamixel_driver_->scan())
     {
-      ROS_INFO("...Succeeded to find dynamixel\n");
-      ROS_INFO("[ID] %u, [Model Name] %s, [BAUD RATE] %d",
+      printf("...Succeeded to find dynamixel\n");
+      printf("[ID] %u, [Model Name] %s, [BAUD RATE] %d\n",
                dynamixel_driver_->dynamixel_->id_, dynamixel_driver_->dynamixel_->model_name_.c_str(), dynamixel_info_->lode_info.baud_rate);
     }
     else
     {
-      ROS_WARN("Please Check USB Port authorization and");
-      ROS_WARN("Baudrate [ex : 57600, 115200, 1000000, 3000000]");
-      ROS_ERROR("...Failed to find dynamixel!");      
+      printf("Please Check USB Port authorization and\n");
+      printf("Baudrate [ex : 57600, 115200, 1000000, 3000000]\n");
+      printf("...Failed to find dynamixel!\n");
       shutdownSingleDynamixelMonitor();
     }
   }
@@ -63,21 +63,21 @@ SingleDynamixelMonitor::SingleDynamixelMonitor()
   {
     // Ping Connected Single Dynamixel State
     if (dynamixel_info_->lode_info.protocol_version == 1.0)
-      ROS_INFO("Ping(ID: %d) Dynamixel Using Protocol 1.0\n", ping_id_);
+      printf("Ping(ID: %d) Dynamixel Using Protocol 1.0\n", ping_id_);
     else if (dynamixel_info_->lode_info.protocol_version == 2.0)
-      ROS_INFO("Ping(ID: %d) Dynamixel Using Protocol 2.0\n", ping_id_);
+      printf("Ping(ID: %d) Dynamixel Using Protocol 2.0\n", ping_id_);
 
     if (dynamixel_driver_->ping(ping_id_))
     {
-      ROS_INFO("...Succeeded to ping dynamixel\n");
-      ROS_INFO("[ID] %u, [Model Name] %s, [BAUD RATE] %d",
+      printf("...Succeeded to ping dynamixel\n");
+      printf("[ID] %u, [Model Name] %s, [BAUD RATE] %d\n",
                dynamixel_driver_->dynamixel_->id_, dynamixel_driver_->dynamixel_->model_name_.c_str(), dynamixel_info_->lode_info.baud_rate);
     }
     else
     {
-      ROS_WARN("Please Check USB Port authorization and");
-      ROS_WARN("Baudrate [ex : 57600, 115200, 1000000, 3000000]");
-      ROS_ERROR("...Failed to find dynamixel!");
+      printf("Please Check USB Port authorization and\n");
+      printf("Baudrate [ex : 57600, 115200, 1000000, 3000000]\n");
+      printf("...Failed to find dynamixel!\n");
       shutdownSingleDynamixelMonitor();
     }
   }
@@ -86,7 +86,7 @@ SingleDynamixelMonitor::SingleDynamixelMonitor()
   initDynamixelInfoServer();
   initDynamixelCommandServer();
 
-  ROS_INFO("dynamixel_workbench_single_manager : Init Success!");
+  printf("dynamixel_workbench_single_manager : Init Success!\n");
 }
 
 SingleDynamixelMonitor::~SingleDynamixelMonitor()
@@ -178,14 +178,14 @@ bool SingleDynamixelMonitor::showDynamixelControlTable()
     {
       if ((dynamixel->item_->access_type == dynamixel_tool::READ_WRITE) && (dynamixel->item_->memory_type == dynamixel_tool::RAM))
       {
-        ROS_INFO("%s", dynamixel->item_->item_name.c_str());
+        printf("%s\n", dynamixel->item_->item_name.c_str());
       }
     }
     else
     {
       if (dynamixel->item_->access_type == dynamixel_tool::READ_WRITE)
       {
-        ROS_INFO("%s", dynamixel->item_->item_name.c_str());
+        printf("%s\n", dynamixel->item_->item_name.c_str());
       }
     }
   }
@@ -207,7 +207,7 @@ bool SingleDynamixelMonitor::checkValidationCommand(std::string cmd)
       return true;
   }
 
-  ROS_WARN("Please Check DYNAMXEL Address Name('table')");
+  printf("Please Check DYNAMXEL Address Name('table')\n");
   return false;
 }
 
@@ -223,15 +223,15 @@ bool SingleDynamixelMonitor::checkValidAccess(std::string cmd)
   {
     if ((torque_status == true) && (dynamixel->item_->memory_type == dynamixel_tool::EEPROM))
     {
-      ROS_WARN("address in EEPROM can't be accessed when torque is on");
-      ROS_WARN("Check a 'table'");
+      printf("address in EEPROM can't be accessed when torque is on\n");
+      printf("Check a 'table'");
 
       return false;
     }
     else if ((torque_status == false) && (dynamixel->item_->item_name != "torque_enable") && dynamixel->item_->memory_type == dynamixel_tool::RAM)
     {
-      ROS_WARN("address in RAM can't be accessed when torque is off");
-      ROS_WARN("Check a 'table'");
+      printf("address in RAM can't be accessed when torque is off\n");
+      printf("Check a 'table'\n");
 
       return false;
     }
@@ -258,12 +258,12 @@ bool SingleDynamixelMonitor::changeId(uint8_t id)
 
     dynamixel_driver_->ping(id);
 
-    ROS_INFO("...Succeeded to set dynamixel id [%u]", dynamixel_driver_->dynamixel_->id_);
+    printf("...Succeeded to set dynamixel id [%u]\n", dynamixel_driver_->dynamixel_->id_);
     return true;
   }
   else
   {
-    ROS_WARN("Dynamixel ID can be set 1~253");
+    printf("Dynamixel ID can be set 1~253\n");
     return false;
   }
 }
@@ -274,8 +274,8 @@ bool SingleDynamixelMonitor::changeBaudrate(uint64_t baud_rate)
 
   if (dynamixel->baud_rate_table_.find(baud_rate)->second == dynamixel->baud_rate_table_.end()->second)
   {
-    ROS_ERROR(" Failed to change [ BAUD RATE: %ld ]", baud_rate);
-    ROS_WARN(" Please check a valid baud rate at E-MANUAL");
+    printf(" Failed to change [ BAUD RATE: %ld ]\n", baud_rate);
+    printf(" Please check a valid baud rate at E-MANUAL\n");
 
     if (dynamixel_driver_->getProtocolVersion() == 2.0)
     {
@@ -284,11 +284,11 @@ bool SingleDynamixelMonitor::changeBaudrate(uint64_t baud_rate)
 
       if (dynamixel_driver_->setBaudrate(57600) == false)
       {
-        ROS_ERROR(" Failed to change default baudrate(57600)!");
+        printf(" Failed to change default baudrate(57600)!\n");
       }
       else
       {
-        ROS_INFO(" Success to change default baudrate! [ BAUD RATE: 57600 ]");
+        printf(" Success to change default baudrate! [ BAUD RATE: 57600 ]\n");
       }
     }
     else if (dynamixel_driver_->getProtocolVersion() == 1.0)
@@ -298,11 +298,11 @@ bool SingleDynamixelMonitor::changeBaudrate(uint64_t baud_rate)
 
       if (dynamixel_driver_->setBaudrate(1000000) == false)
       {
-        ROS_ERROR(" Failed to change default baudrate(1000000)!");
+        printf(" Failed to change default baudrate(1000000)!\n");
       }
       else
       {
-        ROS_INFO(" Success to change default baudrate! [ BAUD RATE: 1000000 ]");
+        printf(" Success to change default baudrate! [ BAUD RATE: 1000000 ]\n");
       }
     }
 
@@ -315,12 +315,12 @@ bool SingleDynamixelMonitor::changeBaudrate(uint64_t baud_rate)
 
     if (dynamixel_driver_->setBaudrate(baud_rate) == false)
     {
-      ROS_INFO(" Failed to change baudrate!");
+      printf(" Failed to change baudrate!\n");
       return false;
     }
     else
     {
-      ROS_INFO(" Success to change baudrate! [ BAUD RATE: %d ]", dynamixel->baud_rate_table_.find(baud_rate)->first);
+      printf(" Success to change baudrate! [ BAUD RATE: %d ]\n", dynamixel->baud_rate_table_.find(baud_rate)->first);
       return true;
     }
   }
@@ -338,12 +338,12 @@ bool SingleDynamixelMonitor::changeProtocolVersion(float ver)
 
     dynamixel_driver_->setPacketHandler(ver);
 
-    ROS_INFO(" Success to change protocol version [ PROTOCOL VERSION: %.1f]", dynamixel_driver_->getProtocolVersion());
+    printf(" Success to change protocol version [ PROTOCOL VERSION: %.1f]\n", dynamixel_driver_->getProtocolVersion());
     return true;
   }
   else
   {
-    ROS_ERROR(" Dynamixel has '1.0' or '2.0' protocol version");
+    printf(" Dynamixel has '1.0' or '2.0' protocol version\n");
     return false;
   }
 }

@@ -74,7 +74,9 @@ DynamixelTool::~DynamixelTool(){}
 
 bool DynamixelTool::getModelName(uint16_t model_number)
 {
-  name_path_  = ros::package::getPath("dynamixel_workbench_toolbox") + "/dynamixel/model_info.list";
+  name_path_  = "../../../dynamixel/model_info.list";
+
+//  name_path_  = ros::package::getPath("dynamixel_workbench_toolbox") + "/dynamixel/model_info.list";
 
   std::ifstream file(name_path_.c_str());
   if (file.is_open())
@@ -106,9 +108,11 @@ bool DynamixelTool::getModelName(uint16_t model_number)
   }
   else
   {
-    ROS_ERROR("Unable to open model_info file : %s", name_path_.c_str());
-    ros::shutdown();
+    printf("Unable to open model_info file : %s\n", name_path_.c_str());
+    exit(1);
+    return false;
   }
+  return true;
 }
 
 bool DynamixelTool::getModelPath()
@@ -120,9 +124,9 @@ bool DynamixelTool::getModelPath()
       dynamixel_series.find("4") != std::string::npos)
     dynamixel_series.erase(2,3);
 
-  item_path_  = ros::package::getPath("dynamixel_workbench_toolbox") + "/dynamixel";
-
-  item_path_ = item_path_ + "/models" + "/" + dynamixel_series + "/" + model_name_ + ".device";
+  item_path_ = "../../../dynamixel/models/"
+                + dynamixel_series + "/" + model_name_ + ".device";
+  return true;
 }
 
 bool DynamixelTool::getModelItem()
@@ -215,7 +219,9 @@ bool DynamixelTool::getModelItem()
   }
   else
   {
-    ROS_ERROR("Unable to open .device file : %s", item_path_.c_str());
-    ros::shutdown();
+    printf("Unable to open .device file : %s\n", item_path_.c_str());
+    exit(1);
+    return false;
   }
+  return true;
 }

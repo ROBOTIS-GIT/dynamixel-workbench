@@ -32,11 +32,11 @@ PositionControl::PositionControl()
   }
   else
   {
-    ROS_ERROR("Cant' Load Dynamixel, Please check Parameter");
+    printf("Cant' Load Dynamixel, Please check Parameter\n");
   }
 
   if (!multi_driver_->initSyncWrite())
-    ROS_ERROR("Init SyncWrite Failed!");
+    printf("Init SyncWrite Failed!\n");
 
   writeValue_ = new WriteValue;
 
@@ -103,7 +103,7 @@ bool PositionControl::setTorque(bool onoff)
 
   if (!multi_driver_->syncWriteTorque(writeValue_->torque))
   {
-    ROS_ERROR("SyncWrite Torque Failed!");
+    printf("SyncWrite Torque Failed!\n");
     return false;
   }
 
@@ -123,13 +123,13 @@ bool PositionControl::setProfileValue(uint32_t prof_vel, uint32_t prof_acc)
 
   if (!multi_driver_->syncWriteProfileVelocity(writeValue_->prof_vel))
   {
-    ROS_ERROR("SyncWrite Profile Velocity Failed!");
+    printf("SyncWrite Profile Velocity Failed!\n");
     return false;
   }
 
   if (!multi_driver_->syncWriteProfileAcceleration(writeValue_->prof_acc))
   {
-    ROS_ERROR("SyncWrite Profile Acceleration Failed!");
+    printf("SyncWrite Profile Acceleration Failed!\n");
     return false;
   }
 
@@ -144,7 +144,7 @@ bool PositionControl::setPosition(uint32_t pan_pos, uint32_t tilt_pos)
 
   if (!multi_driver_->syncWritePosition(writeValue_->pos))
   {
-    ROS_ERROR("SyncWrite Position Failed!");
+    printf("SyncWrite Position Failed!\n");
     return false;
   }
 
@@ -153,24 +153,24 @@ bool PositionControl::setPosition(uint32_t pan_pos, uint32_t tilt_pos)
 
 bool PositionControl::checkLoadDynamixel()
 {
-  ROS_INFO("-----------------------------------------------------------------------");
-  ROS_INFO("  dynamixel_workbench controller; position control example(Pan & Tilt) ");
-  ROS_INFO("-----------------------------------------------------------------------");
-  ROS_INFO("PAN MOTOR INFO");
-  ROS_INFO("ID    : %d", dynamixel_info_[PAN]->model_id);
-  ROS_INFO("MODEL : %s", dynamixel_info_[PAN]->model_name.c_str());
-  ROS_INFO(" ");
-  ROS_INFO("TILT MOTOR INFO");
-  ROS_INFO("ID    : %d", dynamixel_info_[TILT]->model_id);
-  ROS_INFO("MODEL : %s", dynamixel_info_[TILT]->model_name.c_str());
+  printf("-----------------------------------------------------------------------\n");
+  printf("  dynamixel_workbench controller; position control example(Pan & Tilt) \n");
+  printf("-----------------------------------------------------------------------\n");
+  printf("PAN MOTOR INFO\n");
+  printf("ID    : %d\n", dynamixel_info_[PAN]->model_id);
+  printf("MODEL : %s\n", dynamixel_info_[PAN]->model_name.c_str());
+  printf("\n");
+  printf("TILT MOTOR INFO\n");
+  printf("ID    : %d\n", dynamixel_info_[TILT]->model_id);
+  printf("MODEL : %s\n", dynamixel_info_[TILT]->model_name.c_str());
   if (multi_driver_->getProtocolVersion() == 2.0 &&
       !(multi_driver_->multi_dynamixel_[0]->model_name_.find("PRO") != std::string::npos))
   {
-    ROS_INFO(" ");
-    ROS_INFO("Profile Velocity     : %d", profile_velocity_);
-    ROS_INFO("Profile Acceleration : %d", profile_acceleration_);
+    printf("\n");
+    printf("Profile Velocity     : %d\n", profile_velocity_);
+    printf("Profile Acceleration : %d\n", profile_acceleration_);
   }
-  ROS_INFO("-----------------------------------------------------------------------");
+  printf("-----------------------------------------------------------------------\n");
 }
 
 bool PositionControl::initDynamixelStatePublisher()

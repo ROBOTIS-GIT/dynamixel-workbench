@@ -16,7 +16,7 @@
 
 /* Authors: Taehoon Lim (Darby) */
 
-#include "dynamixel_workbench_toolbox/dynamixel_driver.h"
+#include "../include/dynamixel_workbench_toolbox/dynamixel_driver.h"
 
 using namespace dynamixel_driver;
 
@@ -38,7 +38,8 @@ bool DynamixelDriver::scan()
   uint8_t id         = 0;
   uint16_t model_num = 0;
 
-  ROS_INFO("...wait for seconds");
+
+  printf("\n...wait for seconds\n\n");
   for (id = 1; id < 254; id++)
   {
     if (packetHandler_->ping(portHandler_, id, &model_num, &error) == COMM_SUCCESS)
@@ -71,12 +72,12 @@ bool DynamixelDriver::setPortHandler(std::string device_name)
 
   if (portHandler_->openPort())
   {
-    ROS_INFO("Succeeded to open the port(%s)!", device_name.c_str());
+    printf("\nSucceeded to open the port(%s)!\n", device_name.c_str());
     return true;
   }
   else
   {
-    ROS_ERROR("Failed to open the port!");
+    printf("Failed to open the port!\n");
     return false;
   }
 }
@@ -92,12 +93,12 @@ bool DynamixelDriver::setBaudrate(uint32_t baud_rate)
 {
   if (portHandler_->setBaudRate(baud_rate))
   {
-    ROS_INFO("Succeeded to change the baudrate(%d)!", portHandler_->getBaudRate());
+    printf("Succeeded to change the baudrate(%d)!\n", portHandler_->getBaudRate());
     return true;
   }
   else
   {
-    ROS_ERROR("Failed to change the baudrate!");
+    printf("Failed to change the baudrate!\n");
     return false;
   }
 }
@@ -143,16 +144,16 @@ bool DynamixelDriver::writeRegister(std::string addr_name, uint32_t value)
     if (error != 0)
     {
       packetHandler_->printRxPacketError(error);
+      return false;
     }
-    return true;
   }
   else
   {
     packetHandler_->printTxRxResult(comm_result);
 
-    ROS_ERROR("[ID] %u, Fail to write!", dynamixel_->id_);
+    printf("[ID] %u, Fail to write!\n", dynamixel_->id_);
+    return false;
   }
-
   return true;
 }
 
@@ -191,34 +192,31 @@ bool DynamixelDriver::readRegister(std::string addr_name, int32_t *value)
     if (addr_item->data_length == 1)
     {
       *value = value_8_bit;
-      return true;
-
     }
     else if (addr_item->data_length == 2)
     {
       *value = value_16_bit;
-      return true;
     }
     else if (addr_item->data_length == 4)
     {
       *value = value_32_bit;
-      return true;
     }
   }
   else
   {
     packetHandler_->printTxRxResult(comm_result);
+    printf("[ID] %u, Fail to read!(%s)\n", dynamixel_->id_, addr_item->item_name.c_str());
 
-    ROS_ERROR("[ID] %u, Fail to read!(%s)", dynamixel_->id_, addr_item->item_name.c_str());
     return false;
   }
+  return true;
 }
 
 bool DynamixelDriver::reboot()
 {
   if (getProtocolVersion() != 2.0)
   {
-    ROS_WARN("reboot command only can support in protocol version 2.0");
+    printf("reboot command only can support in protocol version 2.0\n");
   }
   else
   {
@@ -227,7 +225,7 @@ bool DynamixelDriver::reboot()
 
     comm_result = packetHandler_->reboot(portHandler_, dynamixel_->id_, &error);
 
-    ROS_INFO("...wait for a second");
+    printf("...wait for a second\n");
     sleep(1);
 
     if (comm_result == COMM_SUCCESS)
@@ -235,20 +233,21 @@ bool DynamixelDriver::reboot()
       if (error != 0)
       {
         packetHandler_->printRxPacketError(error);
+        printf("Fail to reboot!\n");
+        return false;
       }
-      ROS_INFO("Success to reboot!");
-      ROS_INFO("[ID] %u, [Model Name] %s, [BAUD RATE] %d", dynamixel_->id_, dynamixel_->model_name_.c_str(), portHandler_->getBaudRate());
-
-      return true;
+      printf("Success to reboot!\n");
+      printf("[ID] %u, [Model Name] %s, [BAUD RATE] %d\n", dynamixel_->id_, dynamixel_->model_name_.c_str(), portHandler_->getBaudRate());
     }
     else
     {
       packetHandler_->printTxRxResult(comm_result);
-      ROS_ERROR("Fail to reboot!");
+      printf("Fail to reboot!\n");
 
       return false;
     }
   }
+  return true;
 }
 
 bool DynamixelDriver::reset()
@@ -262,7 +261,7 @@ bool DynamixelDriver::reset()
     // Reset Dynamixel except ID and Baudrate
     comm_result = packetHandler_->factoryReset(portHandler_, dynamixel_->id_, 0x00, &error);
 
-    ROS_INFO("...wait for a second");
+    printf("...wait for a second\n");
     sleep(1);
 
     if (comm_result == COMM_SUCCESS)
@@ -271,7 +270,7 @@ bool DynamixelDriver::reset()
       {
         packetHandler_->printRxPacketError(error);
       }
-      ROS_INFO("Success to reset!");
+      printf("Success to reset!\n");
 
       if (dynamixel_->model_name_.find("AX") != std::string::npos ||
           dynamixel_->model_name_.find("MX_12W") != std::string::npos)
@@ -282,7 +281,7 @@ bool DynamixelDriver::reset()
       if(portHandler_->setBaudRate(baud) == false)
       {
         sleep(1);
-        ROS_ERROR(" Failed to change baudrate!");
+        printf(" Failed to change baudrate!\n");
 
         return false;
       }
@@ -290,15 +289,13 @@ bool DynamixelDriver::reset()
       {
         sleep(1);
         dynamixel_ = new dynamixel_tool::DynamixelTool(1, dynamixel_->model_number_);
-        ROS_INFO("[ID] %u, [Model Name] %s, [BAUD RATE] %d", dynamixel_->id_, dynamixel_->model_name_.c_str(), portHandler_->getBaudRate());
-
-        return true;
+        printf("[ID] %u, [Model Name] %s, [BAUD RATE] %d\n", dynamixel_->id_, dynamixel_->model_name_.c_str(), portHandler_->getBaudRate());
       }
     }
     else
     {
       packetHandler_->printTxRxResult(comm_result);
-      ROS_ERROR("Fail to reset!");
+      printf("Fail to reset!");
 
       return false;
     }
@@ -314,12 +311,12 @@ bool DynamixelDriver::reset()
       {
         packetHandler_->printRxPacketError(error);
       }
-      ROS_INFO("Success to reset!");
+      printf("Success to reset!\n");
 
       if (portHandler_->setBaudRate(57600) == false)
       {
         sleep(1);
-        ROS_ERROR(" Failed to change baudrate!");
+        printf(" Failed to change baudrate!\n");
 
         return false;
       }
@@ -327,17 +324,16 @@ bool DynamixelDriver::reset()
       {
         sleep(1);
         dynamixel_ = new dynamixel_tool::DynamixelTool(1, dynamixel_->model_number_);
-        ROS_INFO("[ID] %u, [Model Name] %s, [BAUD RATE] %d", dynamixel_->id_, dynamixel_->model_name_.c_str(), portHandler_->getBaudRate());
-
-        return true;
+        printf("[ID] %u, [Model Name] %s, [BAUD RATE] %d\n", dynamixel_->id_, dynamixel_->model_name_.c_str(), portHandler_->getBaudRate());
       }
     }
     else
     {
       packetHandler_->printTxRxResult(comm_result);
-      ROS_ERROR("Fail to reset!");
+      printf("Fail to reset!\n");
 
       return false;
     }
   }
+  return true;
 }

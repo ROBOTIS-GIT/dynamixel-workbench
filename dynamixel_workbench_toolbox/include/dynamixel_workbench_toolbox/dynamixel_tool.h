@@ -20,12 +20,14 @@
 #define DYNAMIXEL_TOOL_H
 
 #include <unistd.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <fstream>
-#include <string>
-#include <ros/ros.h>
-#include <ros/package.h>
+#include <string.h>
+#include <map>
+#include <vector>
+#include <algorithm>
 
 namespace dynamixel_tool
 {

@@ -36,7 +36,7 @@
 #include <ros/ros.h>
 
 #include <dynamixel_workbench_toolbox/dynamixel_multi_driver.h>
-
+#include "message_header.h"
 #include <dynamixel_workbench_msgs/DynamixelStateList.h>
 #include <dynamixel_workbench_msgs/WheelCommand.h>
 

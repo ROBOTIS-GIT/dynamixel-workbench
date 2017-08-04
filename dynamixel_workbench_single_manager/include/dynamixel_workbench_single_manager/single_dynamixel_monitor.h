@@ -25,7 +25,7 @@
 
 #include "dynamixel_workbench_msgs/DynamixelCommand.h"
 #include "dynamixel_workbench_msgs/GetDynamixelInfo.h"
-#include "dynamixel_workbench_toolbox//message_header.h"
+#include "message_header.h"
 
 namespace single_dynamixel_monitor
 {

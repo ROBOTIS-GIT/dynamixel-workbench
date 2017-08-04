@@ -30,14 +30,14 @@ TorqueControl::TorqueControl()
   }
   else
   {
-    ROS_ERROR("Cant' Load Dynamixel, Please check Parameter");
+    printf("Cant' Load Dynamixel, Please check Parameter\n");
   }
 
   if (!multi_driver_->initSyncWrite())
-    ROS_ERROR("Init SyncWrite Failed!");
+    printf("Init SyncWrite Failed!\n");
 
   if (!multi_driver_->initSyncRead())
-    ROS_ERROR("Init SyncRead Failed!");
+    printf("Init SyncRead Failed!\n");
 
   writeValue_ = new WriteValue;
   motorPos_   = new MotorPos;
@@ -103,7 +103,7 @@ bool TorqueControl::setTorque(bool onoff)
 
   if (!multi_driver_->syncWriteTorque(writeValue_->torque))
   {
-    ROS_ERROR("SyncWrite Torque Failed!");
+    printf("SyncWrite Torque Failed!\n");
     return false;
   }
 
@@ -118,7 +118,7 @@ bool TorqueControl::setCurrent(int16_t pan_cur, int16_t tilt_cur)
 
   if (!multi_driver_->syncWriteCurrent(writeValue_->current))
   {
-    ROS_ERROR("SyncWrite Current Failed!");
+    printf("SyncWrite Current Failed!\n");
     return false;
   }
 
@@ -127,17 +127,17 @@ bool TorqueControl::setCurrent(int16_t pan_cur, int16_t tilt_cur)
 
 bool TorqueControl::checkLoadDynamixel()
 {
-  ROS_INFO("-----------------------------------------------------------------------");
-  ROS_INFO("  dynamixel_workbench controller; torque control example(Pan & Tilt)   ");
-  ROS_INFO("-----------------------------------------------------------------------");
-  ROS_INFO("PAN MOTOR INFO");
-  ROS_INFO("ID    : %d", dynamixel_info_[PAN]->model_id);
-  ROS_INFO("MODEL : %s", dynamixel_info_[PAN]->model_name.c_str());
-  ROS_INFO(" ");
-  ROS_INFO("TILT MOTOR INFO");
-  ROS_INFO("ID    : %d", dynamixel_info_[TILT]->model_id);
-  ROS_INFO("MODEL : %s", dynamixel_info_[TILT]->model_name.c_str());
-  ROS_INFO("-----------------------------------------------------------------------");
+  printf("-----------------------------------------------------------------------\n");
+  printf("  dynamixel_workbench controller; torque control example(Pan & Tilt)   \n");
+  printf("-----------------------------------------------------------------------\n");
+  printf("PAN MOTOR INFO\n");
+  printf("ID    : %d\n", dynamixel_info_[PAN]->model_id);
+  printf("MODEL : %s\n", dynamixel_info_[PAN]->model_name.c_str());
+  printf("\n");
+  printf("TILT MOTOR INFO\n");
+  printf("ID    : %d\n", dynamixel_info_[TILT]->model_id);
+  printf("MODEL : %s\n", dynamixel_info_[TILT]->model_name.c_str());
+  printf("-----------------------------------------------------------------------\n");
 }
 
 bool TorqueControl::initDynamixelStatePublisher()

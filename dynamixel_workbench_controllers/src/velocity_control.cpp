@@ -30,7 +30,7 @@ VelocityControl::VelocityControl()
   }
   else
   {
-    ROS_ERROR("Cant' Load Dynamixel, Please check Parameter");
+    printf("Cant' Load Dynamixel, Please check Parameter\n");
   }
 
   multi_driver_->initSyncWrite();
@@ -97,7 +97,7 @@ bool VelocityControl::setTorque(bool onoff)
 
   if (!multi_driver_->syncWriteTorque(writeValue_->torque))
   {
-    ROS_ERROR("SyncWrite Torque Failed!");
+    printf("SyncWrite Torque Failed!\n");
     return false;
   }
 
@@ -112,7 +112,7 @@ bool VelocityControl::setVelocity(int32_t left_vel, int32_t right_vel)
 
   if (!multi_driver_->syncWriteVelocity(writeValue_->vel))
   {
-    ROS_ERROR("SyncWrite Velocity Failed!");
+    printf("SyncWrite Velocity Failed!\n");
     return false;
   }
 
@@ -127,7 +127,7 @@ bool VelocityControl::setMovingSpeed(uint16_t left_spd, uint16_t right_spd)
 
   if (!multi_driver_->syncWriteMovingSpeed(writeValue_->spd))
   {
-    ROS_ERROR("SyncWrite Moving Speed Failed!");
+    printf("SyncWrite Moving Speed Failed!\n");
     return false;
   }
 
@@ -136,17 +136,17 @@ bool VelocityControl::setMovingSpeed(uint16_t left_spd, uint16_t right_spd)
 
 bool VelocityControl::checkLoadDynamixel()
 {
-  ROS_INFO("-----------------------------------------------------------------------");
-  ROS_INFO("  dynamixel_workbench controller; velocity control example             ");
-  ROS_INFO("-----------------------------------------------------------------------");
-  ROS_INFO("PAN MOTOR INFO");
-  ROS_INFO("ID    : %d", dynamixel_info_[LEFT]->model_id);
-  ROS_INFO("MODEL : %s", dynamixel_info_[LEFT]->model_name.c_str());
-  ROS_INFO(" ");
-  ROS_INFO("TILT MOTOR INFO");
-  ROS_INFO("ID    : %d", dynamixel_info_[RIGHT]->model_id);
-  ROS_INFO("MODEL : %s", dynamixel_info_[RIGHT]->model_name.c_str());
-  ROS_INFO("-----------------------------------------------------------------------");
+  printf("-----------------------------------------------------------------------\n");
+  printf("  dynamixel_workbench controller; velocity control example             \n");
+  printf("-----------------------------------------------------------------------\n");
+  printf("PAN MOTOR INFO\n");
+  printf("ID    : %d\n", dynamixel_info_[LEFT]->model_id);
+  printf("MODEL : %s\n", dynamixel_info_[LEFT]->model_name.c_str());
+  printf("\n");
+  printf("TILT MOTOR INFO\n");
+  printf("ID    : %d\n", dynamixel_info_[RIGHT]->model_id);
+  printf("MODEL : %s\n", dynamixel_info_[RIGHT]->model_name.c_str());
+  printf("-----------------------------------------------------------------------\n");
 }
 
 bool VelocityControl::initDynamixelStatePublisher()

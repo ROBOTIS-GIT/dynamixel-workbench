@@ -22,7 +22,7 @@
 #include <ros/ros.h>
 
 #include <dynamixel_workbench_toolbox/dynamixel_driver.h>
-
+#include "message_header.h"
 #include <dynamixel_workbench_msgs/DynamixelState.h>
 #include <dynamixel_workbench_msgs/JointCommand.h>
 
