@@ -26,7 +26,7 @@
 TARGET      = test
 
 # important directories used by assorted rules and other variables
-DIR_DXL    = ../../..
+DIR_WKB    = ../../..
 DIR_OBJS   = .objects
 
 # compiler options
@@ -41,8 +41,8 @@ FORMAT      = -m64
 #---------------------------------------------------------------------
 # Core components (all of these are likely going to be needed)
 #---------------------------------------------------------------------
-INCLUDES   += -I$(DIR_DXL)/include/dynamixel_workbench_toolbox
-LIBRARIES  += -ldynamixel_workbench_x64_cpp
+INCLUDES   += -I$(DIR_WKB)/include/dynamixel_workbench_toolbox
+LIBRARIES  += -ldynamixel_toolbox_x64_cpp
 LIBRARIES  += -lrt
 
 #---------------------------------------------------------------------
@@ -52,7 +52,6 @@ SOURCES = test.cpp \
     # *** OTHER SOURCES GO HERE ***
 
 OBJECTS  = $(addsuffix .o,$(addprefix $(DIR_OBJS)/,$(basename $(notdir $(SOURCES)))))
-INCLUDES += -I../../../../DynamixelSDK/c++/include/dynamixel_sdk
 OBJETCS  += -ldxl_x64_cpp
 #OBJETCS += *** ADDITIONAL STATIC LIBRARIES GO HERE ***
 

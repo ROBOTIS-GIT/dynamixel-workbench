@@ -136,7 +136,7 @@ bool SingleDynamixelController::controlLoop()
     if (getchar() == ENTER_ASCII_VALUE)
     {
       viewManagerMenu();
-      printf("[ CMD ]");
+      printf("[CMD]");
       fgets(input, sizeof(input), stdin);
 
       char *p;

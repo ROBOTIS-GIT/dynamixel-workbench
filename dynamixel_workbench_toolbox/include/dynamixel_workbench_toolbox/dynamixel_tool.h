@@ -65,7 +65,7 @@ class DynamixelTool
   float  min_radian_;
   float  max_radian_;
 
-  std::string item_path_;
+  std::string model_path_;
   std::string name_path_;
 
   std::map<std::string, ControlTableItem *> ctrl_table_;
@@ -82,9 +82,11 @@ class DynamixelTool
   ~DynamixelTool();
 
  private:
-  bool getModelPath();
   bool getModelName(uint16_t model_number);
   bool getModelItem();
+
+  bool getNameFilePath();
+  bool getModelFilePath();
 };
 }
 #endif //DYNAMIXEL_TOOL_H

@@ -16,14 +16,9 @@
 
 /* Authors: Taehoon Lim (Darby) */
 
-#ifdef __linux__
 #include <unistd.h>
 #include <fcntl.h>
 #include <termios.h>
-#elif defined(_WIN32) || defined(_WIN64)
-#include <conio.h>
-#endif
-
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -49,6 +44,7 @@ void setup()
   dynamixel_driver_->ping(ID);
 
   dynamixel_driver_->writeRegister("torque_enable", ENABLE);
+
 }
 
 int main()
@@ -61,7 +57,7 @@ int main()
 
     sleep(1.5);
 
-    dynamixel_driver_->writeRegister("goal_position", 1000);
+    dynamixel_driver_->writeRegister("goal_position", 512);
 
     sleep(1.5);
   }

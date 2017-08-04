@@ -16,7 +16,7 @@
 
 /* Authors: Taehoon Lim (Darby) */
 
-#include "../include/dynamixel_workbench_toolbox/dynamixel_multi_driver.h"
+#include "../../include/dynamixel_workbench_toolbox/dynamixel_multi_driver.h"
 
 using namespace dynamixel_multi_driver;
 

@@ -1,12 +1,12 @@
 ##################################################
-# PROJECT: Dynamixel-Workbench-Toolbox
+# PROJECT: Dynamixel-Workbench-Toolbox Test
 # AUTHOR : Taehoon Lim(Darby)
 ##################################################
 
 #---------------------------------------------------------------------
 # C++ COMPILER, COMPILER FLAGS, AND TARGET PROGRAM NAME
 #---------------------------------------------------------------------
-DIR_DXL     = ../..
+DIR_WKB     = ../..
 DIR_OBJS    = ./.objects
 
 INSTALL_ROOT = /usr/local
@@ -15,7 +15,7 @@ MAJ_VERSION = 2
 MIN_VERSION = 0
 REV_VERSION = 0
 
-TARGET      = libdynamixel_workbench_x64_cpp.so
+TARGET      = libdynamixel_toolbox_x64_cpp.so
 TARGET1     = $(TARGET).$(MAJ_VERSION)
 TARGET2     = $(TARGET).$(MAJ_VERSION).$(MIN_VERSION)
 TARGET3     = $(TARGET).$(MAJ_VERSION).$(MIN_VERSION).$(REV_VERSION)
@@ -39,21 +39,20 @@ CX          = g++
 CCFLAGS     = -O2 -O3 -DLINUX -D_GNU_SOURCE -Wall -c $(INCLUDES) $(FORMAT) -fPIC -g
 CXFLAGS     = -O2 -O3 -DLINUX -D_GNU_SOURCE -Wall -c $(INCLUDES) $(FORMAT) -fPIC -g
 FORMAT      = -m64
-INCLUDES    += -I$(DIR_DXL)/include/dynamixel_workbench_toolbox
+INCLUDES    += -I$(DIR_WKB)/include/dynamixel_workbench_toolbox
 
 #---------------------------------------------------------------------
 # Required external libraries
 #---------------------------------------------------------------------
-INCLUDES   += -I../../../../DynamixelSDK/c++/include/dynamixel_sdk
 LIBRARIES  += -ldxl_x64_cpp
 LIBRARIES  += -lrt
 
 #---------------------------------------------------------------------
 # SDK Files
 #---------------------------------------------------------------------
-SOURCES  = src/dynamixel_tool.cpp \
-		   src/dynamixel_driver.cpp \
-		   src/dynamixel_multi_driver.cpp \
+SOURCES  = src/dynamixel_workbench_toolbox/dynamixel_tool.cpp \
+		   src/dynamixel_workbench_toolbox/dynamixel_driver.cpp \
+		   src/dynamixel_workbench_toolbox/dynamixel_multi_driver.cpp \
 
 
 OBJECTS=$(addsuffix .o,$(addprefix $(DIR_OBJS)/,$(basename $(notdir $(SOURCES)))))
@@ -80,7 +79,7 @@ install: $(TARGET)
 
     # copy the headers into the include directory
 	@$(CHK_DIR_EXISTS) $(INSTALL_ROOT)/include/dynamixel_workbench_toolbox || $(MKDIR) $(INSTALL_ROOT)/include/dynamixel_workbench_toolbox
-	$(CP_ALL) $(DIR_DXL)/include/dynamixel_workbench_toolbox/* $(INSTALL_ROOT)/include/dynamixel_workbench_toolbox
+	$(CP_ALL) $(DIR_WKB)/include/dynamixel_workbench_toolbox/* $(INSTALL_ROOT)/include/dynamixel_workbench_toolbox
 
 	$(LD_CONFIG)
 
@@ -90,7 +89,7 @@ uninstall:
 	$(RM) $(INSTALL_ROOT)/lib/$(TARGET2)
 	$(RM) $(INSTALL_ROOT)/lib/$(TARGET3)
 
-	$(RM) $(INSTALL_ROOT)/include/dynamixel_workbench_toolbox/dynamixel_tool.h
+	$(RM) $(INSTALL_ROOT)/include/dynamixel_workbench_toolbox/dynamixel_toolbox.h
 	$(RM_ALL) $(INSTALL_ROOT)/include/dynamixel_workbench_toolbox/*
 
 reinstall: uninstall install
@@ -100,16 +99,16 @@ reinstall: uninstall install
 # Make rules for all .c and .cpp files in each directory
 #---------------------------------------------------------------------
 
-$(DIR_OBJS)/%.o: $(DIR_DXL)/src/%.c
+$(DIR_OBJS)/%.o: $(DIR_WKB)/src/dynamixel_workbench_toolbox/%.c
 	$(CC) $(CCFLAGS) -c $? -o $@
 
-$(DIR_OBJS)/%.o: $(DIR_DXL)/src/%.cpp
+$(DIR_OBJS)/%.o: $(DIR_WKB)/src/dynamixel_workbench_toolbox/%.cpp
 	$(CX) $(CXFLAGS) -c $? -o $@
 
-$(DIR_OBJS)/%.o: $(DIR_DXL)/src/%.c
+$(DIR_OBJS)/%.o: $(DIR_WKB)/src/dynamixel_workbench_toolbox/%.c
 	$(CC) $(CCFLAGS) -c $? -o $@
 
-$(DIR_OBJS)/%.o: $(DIR_DXL)/src/%.cpp
+$(DIR_OBJS)/%.o: $(DIR_WKB)/src/dynamixel_workbench_toolbox/%.cpp
 	$(CX) $(CXFLAGS) -c $? -o $@
 
 #---------------------------------------------------------------------

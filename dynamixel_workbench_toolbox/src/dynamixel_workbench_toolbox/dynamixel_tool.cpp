@@ -16,39 +16,46 @@
 
 /* Authors: zerom, Taehoon Lim (Darby) */
 
-#include "dynamixel_workbench_toolbox/dynamixel_tool.h"
+#include "../../include/dynamixel_workbench_toolbox/dynamixel_tool.h"
 
 using namespace dynamixel_tool;
 
-static inline std::string &ltrim(std::string &s) {
-    s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
-    return s;
+static inline std::string &ltrim(std::string &s)
+{
+  s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
+  return s;
 }
-static inline std::string &rtrim(std::string &s) {
-    s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
-    return s;
+static inline std::string &rtrim(std::string &s)
+{
+  s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+  return s;
 }
-static inline std::string &trim(std::string &s) {
-    return ltrim(rtrim(s));
+static inline std::string &trim(std::string &s)
+{
+  return ltrim(rtrim(s));
 }
-static inline std::vector<std::string> split(const std::string &text, char sep) {
-    std::vector<std::string> tokens;
-    std::size_t start = 0, end = 0;
-    while((end = text.find(sep, start)) != (std::string::npos)) {
-        tokens.push_back(text.substr(start, end - start));
-        trim(tokens.back());
-        start = end + 1;
-    }
-    tokens.push_back(text.substr(start));
+static inline std::vector<std::string> split(const std::string &text, char sep)
+{
+  std::vector<std::string> tokens;
+  std::size_t start = 0, end = 0;
+
+  while((end = text.find(sep, start)) != (std::string::npos))
+  {
+    tokens.push_back(text.substr(start, end - start));
     trim(tokens.back());
-    return tokens;
+    start = end + 1;
+  }
+
+  tokens.push_back(text.substr(start));
+  trim(tokens.back());
+  return tokens;
 }
 
 DynamixelTool::DynamixelTool(uint8_t id, uint16_t model_number)
     :id_(0),
      model_number_(0),
      model_name_(""),
-     item_path_(""),
+     model_path_(""),
      name_path_("")
 {
   id_ = id;
@@ -61,7 +68,7 @@ DynamixelTool::DynamixelTool(uint8_t id, std::string model_name)
     :id_(0),
      model_number_(0),
      model_name_(""),
-     item_path_(""),
+     model_path_(""),
      name_path_("")
 {
   id_         = id;
@@ -74,11 +81,15 @@ DynamixelTool::~DynamixelTool(){}
 
 bool DynamixelTool::getModelName(uint16_t model_number)
 {
-  name_path_  = "../../../dynamixel/model_info.list";
-
-//  name_path_  = ros::package::getPath("dynamixel_workbench_toolbox") + "/dynamixel/model_info.list";
+  if (!getNameFilePath())
+  {
+    printf("Unable to read model_info.list file\n");
+    exit(1);
+    return false;
+  }
 
   std::ifstream file(name_path_.c_str());
+
   if (file.is_open())
   {
     std::string input_str;
@@ -106,34 +117,21 @@ bool DynamixelTool::getModelName(uint16_t model_number)
     }
     file.close();
   }
-  else
-  {
-    printf("Unable to open model_info file : %s\n", name_path_.c_str());
-    exit(1);
-    return false;
-  }
-  return true;
-}
 
-bool DynamixelTool::getModelPath()
-{
-  std::string dynamixel_series = "";
-  dynamixel_series = model_name_.substr(0,3);
-
-  if (dynamixel_series.find("_") != std::string::npos ||
-      dynamixel_series.find("4") != std::string::npos)
-    dynamixel_series.erase(2,3);
-
-  item_path_ = "../../../dynamixel/models/"
-                + dynamixel_series + "/" + model_name_ + ".device";
   return true;
 }
 
 bool DynamixelTool::getModelItem()
 {
-  getModelPath();
+  if (!getModelFilePath())
+  {
+    printf("Unable to read .device file\n");
+    exit(1);
+    return false;
+  }
 
-  std::ifstream file(item_path_.c_str());
+  std::ifstream file(model_path_.c_str());
+
   if (file.is_open())
   {
     std::string session = "";
@@ -217,11 +215,53 @@ bool DynamixelTool::getModelItem()
     }
     file.close();
   }
-  else
-  {
-    printf("Unable to open .device file : %s\n", item_path_.c_str());
-    exit(1);
-    return false;
-  }
+
   return true;
 }
+
+bool DynamixelTool::getNameFilePath()
+{
+  name_path_ = "../catkin_ws/src/dynamixel-workbench/dynamixel_workbench_toolbox/dynamixel/model_info.list";
+  std::ifstream ros_file(name_path_.c_str());
+
+  if (ros_file.is_open())
+    return true;
+
+  name_path_ = "../../../dynamixel/model_info.list";
+  std::ifstream linux_file(name_path_.c_str());
+
+  if (linux_file.is_open())
+    return true;
+
+  return false;
+}
+
+bool DynamixelTool::getModelFilePath()
+{
+  std::string dynamixel_series = "";
+
+  dynamixel_series = model_name_.substr(0,3);
+
+  if (dynamixel_series.find("_") != std::string::npos ||
+      dynamixel_series.find("4") != std::string::npos)
+    dynamixel_series.erase(2,3);
+
+  model_path_ = "../catkin_ws/src/dynamixel-workbench/dynamixel_workbench_toolbox/dynamixel/models/";
+  model_path_ = model_path_ + dynamixel_series + "/" + model_name_ + ".device";
+  
+  std::ifstream ros_file(model_path_.c_str());
+
+  if (ros_file.is_open())
+    return true;
+
+  model_path_ = "../../../dynamixel/models/";
+  model_path_ = model_path_ + dynamixel_series + "/" + model_name_ + ".device";
+  
+  std::ifstream linux_file(model_path_.c_str());
+
+  if (linux_file.is_open())
+    return true;
+
+  return false;
+}
+
