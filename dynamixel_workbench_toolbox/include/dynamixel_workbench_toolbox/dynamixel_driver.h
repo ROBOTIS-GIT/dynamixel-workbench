@@ -20,7 +20,12 @@
 #define DYNAMIXEL_WORKBENCH_DYNAMIXEL_DRIVER_H
 
 #include "dynamixel_tool.h"
-#include "dynamixel_sdk/dynamixel_sdk.h"
+
+#ifdef __OPENCR__
+  #include "DynamixelSDK.h"
+#else
+  #include "dynamixel_sdk/dynamixel_sdk.h"
+#endif
 
 namespace dynamixel_driver
 {

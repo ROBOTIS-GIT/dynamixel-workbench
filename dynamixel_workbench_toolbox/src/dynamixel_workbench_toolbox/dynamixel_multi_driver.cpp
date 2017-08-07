@@ -150,7 +150,7 @@ bool DynamixelMultiDriver::syncWritePosition(std::vector<uint32_t> pos)
     dynamixel_addparam_result_ = groupSyncWritePosition_->addParam(multi_dynamixel_[num]->id_, (uint8_t*)&param_goal_position);
     if (dynamixel_addparam_result_ != true)
     {
-      printf("[ID:%03d] groupSyncWrite addparam failed\n", multi_dynamixel_[num]->id_);
+      //printf("[ID:%03d] groupSyncWrite addparam failed\n", multi_dynamixel_[num]->id_);
       return false;
     }
   }
@@ -182,7 +182,7 @@ bool DynamixelMultiDriver::syncWriteVelocity(std::vector<int32_t> vel)
     dynamixel_addparam_result_ = groupSyncWriteVelocity_->addParam(multi_dynamixel_[num]->id_, (uint8_t*)&param_goal_velocity);
     if (dynamixel_addparam_result_ != true)
     {
-      printf("[ID:%03d] groupSyncWrite addparam failed\n", multi_dynamixel_[num]->id_);
+      //printf("[ID:%03d] groupSyncWrite addparam failed\n", multi_dynamixel_[num]->id_);
       return false;
     }
   }
@@ -214,7 +214,7 @@ bool DynamixelMultiDriver::syncWriteMovingSpeed(std::vector<uint16_t> spd)
     dynamixel_addparam_result_ = groupSyncWriteMovingSpeed_->addParam(multi_dynamixel_[num]->id_, (uint8_t*)&param_goal_speed);
     if (dynamixel_addparam_result_ != true)
     {
-      printf("[ID:%03d] groupSyncWrite addparam failed\n", multi_dynamixel_[num]->id_);
+     //printf("[ID:%03d] groupSyncWrite addparam failed\n", multi_dynamixel_[num]->id_);
       return false;
     }
   }
@@ -246,7 +246,7 @@ bool DynamixelMultiDriver::syncWriteCurrent(std::vector<int16_t> cur)
     dynamixel_addparam_result_ = groupSyncWriteCurrent_->addParam(multi_dynamixel_[num]->id_, (uint8_t*)&param_goal_current);
     if (dynamixel_addparam_result_ != true)
     {
-      printf("[ID:%03d] groupSyncWrite addparam failed\n", multi_dynamixel_[num]->id_);
+      //printf("[ID:%03d] groupSyncWrite addparam failed\n", multi_dynamixel_[num]->id_);
       return false;
     }
   }
@@ -278,7 +278,7 @@ bool DynamixelMultiDriver::syncWriteTorque(std::vector<uint8_t> &onoff)
     dynamixel_addparam_result_ = groupSyncWriteTorque_->addParam(multi_dynamixel_[num]->id_, (uint8_t*)&param_goal_torque);
     if (dynamixel_addparam_result_ != true)
     {
-      printf("[ID:%03d] groupSyncWrite addparam failed\n", multi_dynamixel_[num]->id_);
+      //printf("[ID:%03d] groupSyncWrite addparam failed\n", multi_dynamixel_[num]->id_);
       return false;
     }
   }
@@ -310,7 +310,7 @@ bool DynamixelMultiDriver::syncWriteProfileVelocity(std::vector<uint32_t> vel)
     dynamixel_addparam_result_ = groupSyncWriteProfileVelocity_->addParam(multi_dynamixel_[num]->id_, (uint8_t*)&param_goal_profile_velocity);
     if (dynamixel_addparam_result_ != true)
     {
-      printf("[ID:%03d] groupSyncWrite addparam failed\n", multi_dynamixel_[num]->id_);
+      //printf("[ID:%03d] groupSyncWrite addparam failed\n", multi_dynamixel_[num]->id_);
       return false;
     }
   }
@@ -342,7 +342,7 @@ bool DynamixelMultiDriver::syncWriteProfileVelocity(std::vector<uint32_t> vel)
     dynamixel_addparam_result_ = groupSyncWriteProfileAcceleration_->addParam(multi_dynamixel_[num]->id_, (uint8_t*)&param_goal_profile_acceleration);
     if (dynamixel_addparam_result_ != true)
     {
-      printf("[ID:%03d] groupSyncWrite addparam failed\n", multi_dynamixel_[num]->id_);
+      //printf("[ID:%03d] groupSyncWrite addparam failed\n", multi_dynamixel_[num]->id_);
       return false;
     }
   }

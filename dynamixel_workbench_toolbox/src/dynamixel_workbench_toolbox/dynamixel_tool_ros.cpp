@@ -16,7 +16,7 @@
 
 /* Authors: zerom, Taehoon Lim (Darby) */
 
-#include "../../include/dynamixel_workbench_toolbox/dynamixel_tool.h"
+#include "../../include/dynamixel_workbench_toolbox/dynamixel_tool_ros.h"
 
 using namespace dynamixel_tool;
 
@@ -83,11 +83,7 @@ bool DynamixelTool::getModelName(uint16_t model_number)
 {
   if (!getNameFilePath())
   {
-#ifdef __OPENCR__
-    Serial.print("Unable to read model_info.list file\n");
-#else
     printf("Unable to read model_info.list file\n");
-#endif
     exit(1);
     return false;
   }
@@ -129,11 +125,7 @@ bool DynamixelTool::getModelItem()
 {
   if (!getModelFilePath())
   {
-#ifdef __OPENCR__
-    Serial.print("Unable to read .device file\n");
-#else
     printf("Unable to read .device file\n");
-#endif
     exit(1);
     return false;
   }
@@ -229,13 +221,7 @@ bool DynamixelTool::getModelItem()
 
 bool DynamixelTool::getNameFilePath()
 {
-#ifdef _LINUX
-  name_path_ = "../../../dynamixel/model_info.list";
-#endif
-
-#ifdef _OPENCR
-  name_path_ = "./tmp.txt";
-#endif
+  name_path_  = ros::package::getPath("dynamixel_workbench_toolbox") + "/dynamixel/model_info.list";
 
   std::ifstream file(name_path_.c_str());
   if (file.is_open())
@@ -254,15 +240,9 @@ bool DynamixelTool::getModelFilePath()
       dynamixel_series.find("4") != std::string::npos)
     dynamixel_series.erase(2,3);
 
-#ifdef _LINUX
-  model_path_ = "../../../dynamixel/models/";
-  model_path_ = model_path_ + dynamixel_series + "/" + model_name_ + ".device";
-#endif
+  model_path_  = ros::package::getPath("dynamixel_workbench_toolbox") + "/dynamixel";
 
-#ifdef _OPENCR
-  model_path_ = "../../../dynamixel/models/";
-  model_path_ = model_path_ + dynamixel_series + "/" + model_name_ + ".device";
-#endif
+  model_path_ = model_path_ + "/models" + "/" + dynamixel_series + "/" + model_name_ + ".device";
 
   std::ifstream file(model_path_.c_str());
   if (file.is_open())

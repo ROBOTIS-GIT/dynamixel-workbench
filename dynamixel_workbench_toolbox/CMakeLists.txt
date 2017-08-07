@@ -12,6 +12,7 @@ set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   dynamixel_sdk
+  roslib
 )
 
 ################################################################################
@@ -28,7 +29,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
  INCLUDE_DIRS include
  LIBRARIES dynamixel_workbench_toolbox
- CATKIN_DEPENDS roscpp
+ CATKIN_DEPENDS roscpp roslib
 )
 
 ################################################################################
@@ -36,11 +37,11 @@ catkin_package(
 ################################################################################
 include_directories(
   ${catkin_INCLUDE_DIRS}
-  include
+  include/dynamixel_workbench_toolbox
 )
 
 add_library(dynamixel_workbench_toolbox
-    src/dynamixel_workbench_toolbox/dynamixel_tool.cpp
+    src/dynamixel_workbench_toolbox/dynamixel_tool_ros.cpp
     src/dynamixel_workbench_toolbox/dynamixel_driver.cpp
     src/dynamixel_workbench_toolbox/dynamixel_multi_driver.cpp
 )

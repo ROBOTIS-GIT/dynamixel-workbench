@@ -20,23 +20,12 @@
 #define DYNAMIXEL_TOOL_H
 
 #include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include <fstream>
 #include <string>
-#include <map>
-#include <vector>
-#include <algorithm>
-
-#ifdef __OPENCR__
-  #include <Arduino.h> 
-
-  #define _OPENCR
-#else
-  #include <stdint.h>
-  #include <stdlib.h>
-  #include <stdio.h>
-
-  #define _LINUX
-#endif
+#include <ros/ros.h>
+#include <ros/package.h>
 
 namespace dynamixel_tool
 {
