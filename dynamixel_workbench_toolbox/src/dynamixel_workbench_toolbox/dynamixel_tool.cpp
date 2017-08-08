@@ -58,10 +58,11 @@ DynamixelTool::DynamixelTool(uint8_t id, uint16_t model_number)
      model_path_(""),
      name_path_("")
 {
-  id_ = id;
+  id_           = id;
+  model_number_ = model_number;
 
-  getModelName(model_number);
-  getModelItem();
+  getNameFilePath();
+  getModelFilePath();
 }
 
 DynamixelTool::DynamixelTool(uint8_t id, std::string model_name)
@@ -74,24 +75,55 @@ DynamixelTool::DynamixelTool(uint8_t id, std::string model_name)
   id_         = id;
   model_name_ = model_name;
 
-  getModelItem();
+  getModelFilePath();
 }
 
 DynamixelTool::~DynamixelTool(){}
 
-bool DynamixelTool::getModelName(uint16_t model_number)
+bool DynamixelTool::getNameFilePath()
 {
-  if (!getNameFilePath())
+#ifdef _LINUX
+  name_path_ = "../../../dynamixel/model_info.list";
+
+  std::ifstream file(name_path_.c_str());
+
+  if (file.is_open())
   {
-#ifdef __OPENCR__
-    Serial.print("Unable to read model_info.list file\n");
-#else
+    getModelName();
+    return true;
+  }
+  else
+  {
     printf("Unable to read model_info.list file\n");
-#endif
     exit(1);
     return false;
   }
+#endif
 
+#ifdef _OPENCR
+  std::string input_str = 
+  #include "../../dynamixel/model_info.list"
+  ; 
+
+  char *buf;
+  sprintf(buf, "%d", model_number_);
+  std::string tmp(buf);
+
+  if (input_str.find(buf) != std::string::npos)
+  {
+    
+    Serial.print(model_number_);  
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+#endif
+}
+
+bool DynamixelTool::getModelName()
+{
   std::ifstream file(name_path_.c_str());
 
   if (file.is_open())
@@ -113,9 +145,9 @@ bool DynamixelTool::getModelName(uint16_t model_number)
       if (tokens.size() != 2)
         continue;
 
-      if (model_number == std::atoi(tokens[0].c_str()))
+      if (model_number_ == std::atoi(tokens[0].c_str()))
       {
-        model_number_ = model_number;
+        // model_number_ = model_number;
         model_name_ = tokens[1];
       }
     }
@@ -127,17 +159,6 @@ bool DynamixelTool::getModelName(uint16_t model_number)
 
 bool DynamixelTool::getModelItem()
 {
-  if (!getModelFilePath())
-  {
-#ifdef __OPENCR__
-    Serial.print("Unable to read .device file\n");
-#else
-    printf("Unable to read .device file\n");
-#endif
-    exit(1);
-    return false;
-  }
-
   std::ifstream file(model_path_.c_str());
 
   if (file.is_open())
@@ -227,23 +248,6 @@ bool DynamixelTool::getModelItem()
   return true;
 }
 
-bool DynamixelTool::getNameFilePath()
-{
-#ifdef _LINUX
-  name_path_ = "../../../dynamixel/model_info.list";
-#endif
-
-#ifdef _OPENCR
-  name_path_ = "./tmp.txt";
-#endif
-
-  std::ifstream file(name_path_.c_str());
-  if (file.is_open())
-    return true;
-
-  return false;
-}
-
 bool DynamixelTool::getModelFilePath()
 {
   std::string dynamixel_series = "";
@@ -260,13 +264,23 @@ bool DynamixelTool::getModelFilePath()
 #endif
 
 #ifdef _OPENCR
-  model_path_ = "../../../dynamixel/models/";
-  model_path_ = model_path_ + dynamixel_series + "/" + model_name_ + ".device";
+  std::string s = 
+  #include "../../dynamixel/models/XM/XM430_W350.device"
+  ;
 #endif
 
   std::ifstream file(model_path_.c_str());
   if (file.is_open())
+  {
+    getModelItem();
     return true;
+  }
+  else
+  {
+    printf("Unable to read .device file\n");
+    exit(1);
+    return false;
+  }
 
   return false;
 }

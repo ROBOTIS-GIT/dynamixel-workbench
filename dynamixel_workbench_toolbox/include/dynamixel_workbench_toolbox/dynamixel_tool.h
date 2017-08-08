@@ -91,7 +91,7 @@ class DynamixelTool
   ~DynamixelTool();
 
  private:
-  bool getModelName(uint16_t model_number);
+  bool getModelName();
   bool getModelItem();
 
   bool getNameFilePath();
