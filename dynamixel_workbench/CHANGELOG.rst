@@ -2,6 +2,26 @@
 Changelog for package dynamixel_workbench
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.6 (2017-08-09)
+-----------
+* bug fixed
+* updated error msg
+* updated get model path
+* updated Dynamixel PRO
+* updated Dynamixel XL, XM and XH
+* updated annotation
+* updated multi driver
+* updated address name
+* updated msg name
+* modified launch files
+* modified variable
+* modified file location
+* added sync read
+* added multi read function
+* added multi_driver
+* changed BSD license to Apache 2.0 license
+* Contributors: Darby Lim
+
 0.1.5 (2017-05-23)
 -----------
 * modified the cmake of toolbox
