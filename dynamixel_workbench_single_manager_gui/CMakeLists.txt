@@ -4,6 +4,8 @@
 cmake_minimum_required(VERSION 2.8.0)
 project(dynamixel_workbench_single_manager_gui)
 
+set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
+
 ################################################################################
 # Packages
 ################################################################################
@@ -33,7 +35,7 @@ include_directories(${catkin_INCLUDE_DIRS})
 
 catkin_package(
     INCLUDE_DIRS include
-    CATKIN_DEPENDS roscpp
+    CATKIN_DEPENDS qt_build roscpp
 )
 
 ################################################################################

@@ -63,8 +63,8 @@ max_radian                      =  3.14159265
 #   35  | torque_limit(H)               | 1      | RW     | RAM
     36  | present_position              | 2      | R      | RAM
 #   37  | present_position(H)           | 1      | R      | RAM
-    38  | present_velocity              | 2      | R      | RAM
-#   39  | present_velocity(H)           | 1      | R      | RAM
+    38  | present_speed                 | 2      | R      | RAM
+#   39  | present_speed(H)              | 1      | R      | RAM
     40  | present_load                  | 2      | R      | RAM
 #   41  | present_load(H)               | 1      | R      | RAM
     42  | present_voltage               | 1      | R      | RAM

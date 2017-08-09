@@ -3,10 +3,9 @@
   <name>dynamixel_workbench_single_manager_gui</name>
   <version>0.1.5</version>
   <description>
-    This package is single manager for a Dynamixel.
-    Before operating Dynamixels, it can be used to check states of a Dynamixel and change address value with GUI.
+    It provides a grapic user interface to check the status of Dynamixel and control it before using Dynamixel
   </description>
-  <license>BSD</license>
+  <license>Apache License 2.0</license>
   <author email="thlim@robotis.com">Darby Lim</author>
   <maintainer email="pyo@robotis.com">Pyo</maintainer>
   <url type="bugtracker">https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues</url>

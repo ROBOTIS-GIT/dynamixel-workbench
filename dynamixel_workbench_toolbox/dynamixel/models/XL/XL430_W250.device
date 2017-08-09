@@ -31,14 +31,14 @@ max_radian                      =  3.14159265
    9   | return_delay_time        | 1      | RW     | EEPROM
    10  | drive_mode               | 1      | RW     | EEPROM
    11  | operating_mode           | 1      | RW     | EEPROM
+   12  | secondary_id             | 1      | RW     | EEPROM
    13  | protocol_version         | 1      | RW     | EEPROM
    20  | homing_offset            | 4      | RW     | EEPROM
    24  | moving_threshold         | 4      | RW     | EEPROM
-   31  | max_temperature_limit    | 1      | RW     | EEPROM
+   31  | temperature_limit        | 1      | RW     | EEPROM
    32  | max_voltage_limit        | 2      | RW     | EEPROM
    34  | min_voltage_limit        | 2      | RW     | EEPROM
    36  | pwm_limit                | 2      | RW     | EEPROM
-   38  | current_limit            | 2      | RW     | EEPROM
    40  | acceleration_limit       | 4      | RW     | EEPROM
    44  | velocity_limit           | 4      | RW     | EEPROM
    48  | max_position_limit       | 4      | RW     | EEPROM
@@ -56,8 +56,8 @@ max_radian                      =  3.14159265
    84  | position_p_gain          | 2      | RW     | RAM
    88  | feedforward_2nd_gain     | 2      | RW     | RAM
    90  | feedforward_1st_gain     | 2      | RW     | RAM
+   98  | bus_watchdog             | 1      | RW     | RAM
    100 | goal_pwm                 | 2      | RW     | RAM
-   102 | goal_current             | 2      | RW     | RAM
    104 | goal_velocity            | 4      | RW     | RAM
    108 | profile_acceleration     | 4      | RW     | RAM
    112 | profile_velocity         | 4      | RW     | RAM
@@ -66,7 +66,7 @@ max_radian                      =  3.14159265
    122 | moving                   | 1      | R      | RAM
    123 | moving_status            | 1      | R      | RAM
    124 | present_pwm              | 2      | R      | RAM
-   126 | present_current          | 2      | R      | RAM
+   124 | present_load             | 2      | R      | RAM
    128 | present_velocity         | 4      | R      | RAM
    132 | present_position         | 4      | R      | RAM
    136 | velocity_trajectory      | 4      | R      | RAM

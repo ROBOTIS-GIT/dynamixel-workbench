@@ -1,34 +1,20 @@
 /*******************************************************************************
-* Copyright (c) 2016, ROBOTIS CO., LTD.
-* All rights reserved.
+* Copyright 2016 ROBOTIS CO., LTD.
 *
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions are met:
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
 *
-* * Redistributions of source code must retain the above copyright notice, this
-*   list of conditions and the following disclaimer.
+*     http://www.apache.org/licenses/LICENSE-2.0
 *
-* * Redistributions in binary form must reproduce the above copyright notice,
-*   this list of conditions and the following disclaimer in the documentation
-*   and/or other materials provided with the distribution.
-*
-* * Neither the name of ROBOTIS nor the names of its
-*   contributors may be used to endorse or promote products derived from
-*   this software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-* FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-* DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-* CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-* OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-* OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
 *******************************************************************************/
 
-/* Author: Taehoon Lim (Darby), zerom */
+/* Authors: zerom, Taehoon Lim (Darby) */
 
 #include "dynamixel_workbench_toolbox/dynamixel_tool.h"
 
@@ -58,32 +44,28 @@ static inline std::vector<std::string> split(const std::string &text, char sep) 
     return tokens;
 }
 
-DynamixelTool::DynamixelTool(uint8_t id, uint16_t model_number, float protocol_version)
+DynamixelTool::DynamixelTool(uint8_t id, uint16_t model_number)
     :id_(0),
      model_number_(0),
-     protocol_version_(0.0),
      model_name_(""),
      item_path_(""),
-     dynamixel_name_path_("")
+     name_path_("")
 {
   id_ = id;
-  protocol_version_ = protocol_version;
 
   getModelName(model_number);
   getModelItem();
 }
 
-DynamixelTool::DynamixelTool(uint8_t id, std::string model_name, float protocol_version)
+DynamixelTool::DynamixelTool(uint8_t id, std::string model_name)
     :id_(0),
      model_number_(0),
-     protocol_version_(0.0),
      model_name_(""),
      item_path_(""),
-     dynamixel_name_path_("")
+     name_path_("")
 {
-  id_ = id;
+  id_         = id;
   model_name_ = model_name;
-  protocol_version_ = protocol_version;
 
   getModelItem();
 }
@@ -92,9 +74,9 @@ DynamixelTool::~DynamixelTool(){}
 
 bool DynamixelTool::getModelName(uint16_t model_number)
 {
-  dynamixel_name_path_  = ros::package::getPath("dynamixel_workbench_toolbox") + "/dynamixel/model_info.list";
+  name_path_  = ros::package::getPath("dynamixel_workbench_toolbox") + "/dynamixel/model_info.list";
 
-  std::ifstream file(dynamixel_name_path_.c_str());
+  std::ifstream file(name_path_.c_str());
   if (file.is_open())
   {
     std::string input_str;
@@ -124,7 +106,7 @@ bool DynamixelTool::getModelName(uint16_t model_number)
   }
   else
   {
-    ROS_ERROR("Unable to open model_info file : %s", dynamixel_name_path_.c_str());
+    ROS_ERROR("Unable to open model_info file : %s", name_path_.c_str());
     ros::shutdown();
   }
 }
@@ -132,7 +114,11 @@ bool DynamixelTool::getModelName(uint16_t model_number)
 bool DynamixelTool::getModelPath()
 {
   std::string dynamixel_series = "";
-  dynamixel_series = model_name_.substr(0,2);
+  dynamixel_series = model_name_.substr(0,3);
+
+  if (dynamixel_series.find("_") != std::string::npos ||
+      dynamixel_series.find("4") != std::string::npos)
+    dynamixel_series.erase(2,3);
 
   item_path_  = ros::package::getPath("dynamixel_workbench_toolbox") + "/dynamixel";
 

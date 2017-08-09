@@ -1,0 +1,23 @@
+<launch>
+  <arg name="pan_device_name"      default="/dev/ttyUSB0"/>
+  <arg name="pan_baud_rate"        default="57600"/>
+  <arg name="pan_protocol_version" default="2.0"/>
+  <arg name="pan_id"               default="1"/>
+
+  <arg name="tilt_device_name"      default="/dev/ttyUSB1"/>
+  <arg name="tilt_baud_rate"        default="1000000"/>
+  <arg name="tilt_protocol_version" default="1.0"/>
+  <arg name="tilt_id"               default="2"/>
+
+  <param name="pan/device_name"      value="$(arg pan_device_name)"/>
+  <param name="pan/baud_rate"        value="$(arg pan_baud_rate)"/>
+  <param name="pan/protocol_version" value="$(arg pan_protocol_version)"/>
+  <param name="pan/id"               value="$(arg pan_id)"/>
+
+  <param name="tilt/device_name"      value="$(arg tilt_device_name)"/>
+  <param name="tilt/baud_rate"        value="$(arg tilt_baud_rate)"/>
+  <param name="tilt/protocol_version" value="$(arg tilt_protocol_version)"/>
+  <param name="tilt/id"               value="$(arg tilt_id)"/>
+
+  <node name="multi_port_example" pkg="dynamixel_workbench_controllers" type="multi_port" required="true" output="screen"/>
+</launch>
