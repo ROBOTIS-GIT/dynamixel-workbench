@@ -1,3 +1,4 @@
+R"(
 [device info]
 model_number = 29
 model_name  = MX_28
@@ -74,3 +75,4 @@ max_radian                      =  3.14159265
     48  | punch                         | 2      | RW     | RAM
 #   49  | punch(H)                      | 1      | RW     | RAM
     73  | goal_acceleration             | 1      | RW     | RAM
+#)"

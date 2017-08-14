@@ -1,14 +1,10 @@
 R"(
-[device info]
-model_number = 38176
-model_name  = PRO_L54_50_S290_R
-
 [type info]
-velocity_to_value_ratio 	= 2755.0
+velocity_to_value_ratio 	= 4792.8
 
 value_of_0_radian_position      = 0
-value_of_min_radian_position    = -103860
-value_of_max_radian_position    =  103860
+value_of_min_radian_position    = -250950
+value_of_max_radian_position    =  250950
 min_radian                      = -3.14159265
 max_radian                      =  3.14159265
 

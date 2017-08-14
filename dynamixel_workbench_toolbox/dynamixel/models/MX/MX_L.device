@@ -1,10 +1,6 @@
 R"(
-[device info]
-model_number = 107
-model_name  = EX_106
-
 [type info]
-velocity_to_value_ratio 	= 86.03
+velocity_to_value_ratio 	= 83.77
 
 value_of_0_radian_position      = 2048
 value_of_min_radian_position    = 0
@@ -23,6 +19,9 @@ max_radian                      =  3.14159265
 57600       |  34
 19200       |  103
 9600        |  207
+2250000     |  250
+2500000     |  251
+3000000     |  252
 
 [control table]
 #  addr | item name                     | length | access | memory
@@ -36,7 +35,6 @@ max_radian                      =  3.14159265
 #   7   | cw_angle_limit(H)             | 1      | RW     | EEPROM
     8   | ccw_angle_limit               | 2      | RW     | EEPROM
 #   9   | ccw_angle_limit(H)            | 1      | RW     | EEPROM
-    10  | drive_mode                    | 1      | RW     | EEPROM
     11  | the_highest_limit_temperature | 1      | RW     | EEPROM
     12  | the_lowest_limit_voltage      | 1      | RW     | EEPROM
     13  | the_highest_limit_voltage     | 1      | RW     | EEPROM
@@ -45,12 +43,14 @@ max_radian                      =  3.14159265
     16  | status_return_level           | 1      | RW     | EEPROM
     17  | alarm_led                     | 1      | RW     | EEPROM
     18  | alarm_shutdown                | 1      | RW     | EEPROM
+    20  | multi_turn_offset             | 2      | RW     | EEPROM
+#   21  | multi_turn_offset(H)          | 1      | RW     | EEPROM
+    22  | resolution_divider            | 1      | RW     | EEPROM
     24  | torque_enable                 | 1      | RW     | RAM
     25  | led                           | 1      | RW     | RAM
-    26  | cw_compliance_margin          | 1      | RW     | RAM
-    27  | ccw_compliance_margin         | 1      | RW     | RAM
-    28  | cw_compliance_slope           | 1      | RW     | RAM
-    29  | ccw_compliance_slope          | 1      | RW     | RAM
+    26  | d_gain                        | 1      | RW     | RAM
+    27  | i_gain                        | 1      | RW     | RAM
+    28  | p_gain                        | 1      | RW     | RAM
     30  | goal_position                 | 2      | RW     | RAM
 #   31  | goal_position(H)              | 1      | RW     | RAM
     32  | moving_speed                  | 2      | RW     | RAM
@@ -70,6 +70,10 @@ max_radian                      =  3.14159265
     47  | lock                          | 1      | RW     | RAM
     48  | punch                         | 2      | RW     | RAM
 #   49  | punch(H)                      | 1      | RW     | RAM
-    56  | sensed_current                | 2      | R     | RAM
-#   57  | sensed_current(H)             | 1      | R     | RAM
+    68  | current                       | 2      | R     | RAM
+#   69  | current(H)                    | 1      | R     | RAM
+    70  | torque_control_mode_enable    | 1      | RW     | RAM
+    71  | goal_torque                   | 2      | RW     | RAM
+#   72  | goal_torque(H)                | 1      | RW     | RAM
+    73  | goal_acceleration             | 1      | RW     | RAM
 #)"

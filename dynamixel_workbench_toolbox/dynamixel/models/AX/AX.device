@@ -1,14 +1,10 @@
 R"(
-[device info]
-model_number = 107
-model_name  = EX_106
-
 [type info]
 velocity_to_value_ratio 	= 86.03
 
-value_of_0_radian_position      = 2048
+value_of_0_radian_position      = 512
 value_of_min_radian_position    = 0
-value_of_max_radian_position    = 4095
+value_of_max_radian_position    = 1024
 min_radian                      = -3.14159265
 max_radian                      =  3.14159265
 
@@ -36,7 +32,6 @@ max_radian                      =  3.14159265
 #   7   | cw_angle_limit(H)             | 1      | RW     | EEPROM
     8   | ccw_angle_limit               | 2      | RW     | EEPROM
 #   9   | ccw_angle_limit(H)            | 1      | RW     | EEPROM
-    10  | drive_mode                    | 1      | RW     | EEPROM
     11  | the_highest_limit_temperature | 1      | RW     | EEPROM
     12  | the_lowest_limit_voltage      | 1      | RW     | EEPROM
     13  | the_highest_limit_voltage     | 1      | RW     | EEPROM
@@ -70,6 +65,4 @@ max_radian                      =  3.14159265
     47  | lock                          | 1      | RW     | RAM
     48  | punch                         | 2      | RW     | RAM
 #   49  | punch(H)                      | 1      | RW     | RAM
-    56  | sensed_current                | 2      | R     | RAM
-#   57  | sensed_current(H)             | 1      | R     | RAM
 #)"

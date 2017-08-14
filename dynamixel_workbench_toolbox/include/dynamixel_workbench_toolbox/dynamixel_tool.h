@@ -22,6 +22,7 @@
 #include <unistd.h>
 #include <fstream>
 #include <string>
+#include <sstream>
 #include <map>
 #include <vector>
 #include <algorithm>
@@ -92,7 +93,9 @@ class DynamixelTool
 
  private:
   bool getModelName();
+  bool getModelName(std::string info);
   bool getModelItem();
+  bool getModelItem(std::string device);
 
   bool getNameFilePath();
   bool getModelFilePath();

@@ -1,3 +1,4 @@
+R"(
 [device info]
 model_number = 24
 model_name  = RX_24F
@@ -68,3 +69,4 @@ max_radian                      =  3.14159265
    47  | lock                          | 1      | RW     | RAM
    48  | punch                         | 2      | RW     | RAM
 #  49  | punch(H)                      | 1      | RW     | RAM
+#)"

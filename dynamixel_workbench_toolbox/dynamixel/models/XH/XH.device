@@ -1,8 +1,4 @@
 R"(
-[device info]
-model_number = 1010
-model_name  = XH430_W210
-
 [type info]
 velocity_to_value_ratio 	= 41.71
 

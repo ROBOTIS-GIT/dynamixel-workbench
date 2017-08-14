@@ -1,8 +1,4 @@
 R"(
-[device info]
-model_number = 107
-model_name  = EX_106
-
 [type info]
 velocity_to_value_ratio 	= 86.03
 

@@ -85,41 +85,119 @@ bool DynamixelTool::getNameFilePath()
 #ifdef _LINUX
   name_path_ = "../../../dynamixel/model_info.list";
 
-  std::ifstream file(name_path_.c_str());
-
-  if (file.is_open())
-  {
-    getModelName();
-    return true;
-  }
-  else
-  {
-    printf("Unable to read model_info.list file\n");
-    exit(1);
-    return false;
-  }
+  getModelName();
 #endif
 
 #ifdef _OPENCR
-  std::string input_str = 
+  std::string model_info = 
   #include "../../dynamixel/model_info.list"
   ; 
 
-  char *buf;
-  sprintf(buf, "%d", model_number_);
-  std::string tmp(buf);
-
-  if (input_str.find(buf) != std::string::npos)
-  {
-    
-    Serial.print(model_number_);  
-    return true;
-  }
-  else
-  {
-    return false;
-  }
+  getModelName(model_info);
 #endif
+
+  return true;
+}
+
+bool DynamixelTool::getModelFilePath()
+{
+  std::string dynamixel_series = "";
+
+  dynamixel_series = model_name_.substr(0,3);
+
+  if (dynamixel_series.find("_") != std::string::npos ||
+      dynamixel_series.find("4") != std::string::npos)
+    dynamixel_series.erase(2,3);
+
+#ifdef _LINUX
+  model_path_ = "../../../dynamixel/models/";
+  model_path_ = model_path_ + dynamixel_series + "/" + model_name_ + ".device";
+
+  getModelItem();
+#endif
+
+#ifdef _OPENCR
+  std::string device;
+  if (dynamixel_series == "AX")
+  {
+    device = 
+    #include "../../dynamixel/models/AX/AX.device"
+    ;
+  }
+  else if (dynamixel_series == "RX")
+  {
+    device = 
+    #include "../../dynamixel/models/RX/RX.device"
+    ;
+  }
+  else if (dynamixel_series == "EX")
+  {
+    device = 
+    #include "../../dynamixel/models/EX/EX.device"
+    ;
+  }
+  else if (dynamixel_series == "MX")
+  {
+    if (model_name_ == "MX_12W" || model_name_ == "MX_28")
+    {
+      device = 
+      #include "../../dynamixel/models/MX/MX_S.device"
+      ;
+    }
+    else
+    {
+      device = 
+      #include "../../dynamixel/models/MX/MX_L.device"
+      ;
+    }
+  }
+  else if (dynamixel_series == "XL")
+  {
+    if (model_name_ == "XL_320")
+    {
+      device = 
+      #include "../../dynamixel/models/XL/XL_320.device"
+      ;
+    }
+    else
+    {
+      device = 
+      #include "../../dynamixel/models/XL/XL.device"
+      ;     
+    }
+  }
+  else if (dynamixel_series == "XM")
+  {
+    device = 
+    #include "../../dynamixel/models/XM/XM.device"
+    ;
+  }
+  else if (dynamixel_series == "XH")
+  {
+    device = 
+    #include "../../dynamixel/models/XH/XH.device"
+    ;
+  }
+  else if (dynamixel_series == "PRO")
+  {
+    if (model_name_ == "PRO_L42_10_S300_R")
+    {
+      device = 
+      #include "../../dynamixel/models/PRO/PRO_L42_10_S300_R.device"
+      ;
+    }
+    else
+    {
+      device = 
+      #include "../../dynamixel/models/PRO/PRO.device"
+      ;
+    }
+  }
+
+  getModelItem(device);
+#endif
+
+  return true;
 }
 
 bool DynamixelTool::getModelName()
@@ -147,11 +225,42 @@ bool DynamixelTool::getModelName()
 
       if (model_number_ == std::atoi(tokens[0].c_str()))
       {
-        // model_number_ = model_number;
         model_name_ = tokens[1];
       }
     }
-    file.close();
+    file.close();    
+    return true;
+  }
+  else
+  {
+    printf("Unable to read model_info.list file\n");
+    exit(1);
+    return false;
+  }
+}
+
+bool DynamixelTool::getModelName(std::string info)
+{
+  std::istringstream iss(info);
+
+  std::string line;
+  while (std::getline(iss, line))
+  {
+    // remove comment ( # )
+    std::size_t pos = line.find("#");
+    if (pos != std::string::npos)
+    {
+      line = line.substr(0,pos);
+    }
+
+    std::vector<std::string> tokens = split(line, '|');
+    if (tokens.size() != 2)
+      continue;
+
+    if (model_number_ == std::atoi(tokens[0].c_str()))
+    {
+      model_name_ = tokens[1];
+    }
   }
 
   return true;
@@ -244,37 +353,6 @@ bool DynamixelTool::getModelItem()
     }
     file.close();
   }
-
-  return true;
-}
-
-bool DynamixelTool::getModelFilePath()
-{
-  std::string dynamixel_series = "";
-
-  dynamixel_series = model_name_.substr(0,3);
-
-  if (dynamixel_series.find("_") != std::string::npos ||
-      dynamixel_series.find("4") != std::string::npos)
-    dynamixel_series.erase(2,3);
-
-#ifdef _LINUX
-  model_path_ = "../../../dynamixel/models/";
-  model_path_ = model_path_ + dynamixel_series + "/" + model_name_ + ".device";
-#endif
-
-#ifdef _OPENCR
-  std::string s = 
-  #include "../../dynamixel/models/XM/XM430_W350.device"
-  ;
-#endif
-
-  std::ifstream file(model_path_.c_str());
-  if (file.is_open())
-  {
-    getModelItem();
-    return true;
-  }
   else
   {
     printf("Unable to read .device file\n");
@@ -282,6 +360,91 @@ bool DynamixelTool::getModelFilePath()
     return false;
   }
 
-  return false;
+  return true;
+}
+
+bool DynamixelTool::getModelItem(std::string device)
+{
+  std::istringstream iss(device);
+
+  std::string line;
+  std::string session = "";
+
+  while (std::getline(iss, line))
+  {
+    // remove comment ( # )
+    std::size_t pos = line.find("#");
+    if (pos != std::string::npos)
+    {
+      line = line.substr(0,pos);
+    }
+
+    // trim
+    line = trim(line);
+    if (line == "")
+      continue;
+
+    // find session;
+    if (!line.compare(0, 1, "[") && !line.compare(line.size()-1, 1, "]"))
+    {
+      line = line.substr(1, line.size()-2);
+      std::transform(line.begin(), line.end(), line.begin(), ::tolower);
+      session = trim(line);
+      continue;
+    }
+
+    if (session == "type info")
+    {
+      std::vector<std::string> tokens = split(line, '=');
+      if (tokens.size() != 2)
+        continue;
+
+      if (tokens[0] == "torque_to_current_value_ratio")
+        torque_to_current_value_ratio_ = std::atof(tokens[1].c_str());
+      else if (tokens[0] == "velocity_to_value_ratio")
+        velocity_to_value_ratio_ = std::atof(tokens[1].c_str());
+      else if (tokens[0] == "value_of_0_radian_position")
+        value_of_0_radian_position_ = std::atoi(tokens[1].c_str());
+      else if (tokens[0] == "value_of_min_radian_position")
+        value_of_min_radian_position_ = std::atoi(tokens[1].c_str());
+      else if (tokens[0] == "value_of_max_radian_position")
+        value_of_max_radian_position_ = std::atoi(tokens[1].c_str());
+      else if (tokens[0] == "min_radian")
+        min_radian_ = std::atof(tokens[1].c_str());
+      else if (tokens[0] == "max_radian")
+        max_radian_ = std::atof(tokens[1].c_str());
+    }
+    else if (session == "baud rate")
+    {
+      std::vector<std::string> tokens = split(line, '|');
+      if(tokens.size() != 2)
+        continue;
+
+      baud_rate_table_[std::atoi(tokens[0].c_str())] = std::atoi(tokens[1].c_str());
+    }
+    else if (session == "control table")
+    {
+      std::vector<std::string> tokens = split(line, '|');
+      if(tokens.size() != 5)
+        continue;
+
+      ControlTableItem *item = new ControlTableItem;
+      item->item_name = tokens[1];
+      item->address = std::atoi(tokens[0].c_str());
+      item->data_length = std::atoi(tokens[2].c_str());
+      if(tokens[3] == "R")
+          item->access_type = READ;
+      else if(tokens[3] == "RW")
+          item->access_type = READ_WRITE;
+      if(tokens[4] == "EEPROM")
+          item->memory_type = EEPROM;
+      else if(tokens[4] == "RAM")
+          item->memory_type = RAM;
+
+      ctrl_table_[item->item_name] = item;
+    }
+  }
+
+  return true;
 }
 
