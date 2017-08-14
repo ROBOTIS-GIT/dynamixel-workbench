@@ -2,6 +2,16 @@
 Changelog for package dynamixel_workbench_tutorials
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.6 (2017-08-09)
+-----------
+* added C++11
+* updated command function
+* updated annotation
+* modified variables
+* added operators package
+* changed BSD license to Apache 2.0 license
+* Contributors: Darby Lim
+
 0.1.5 (2017-05-23)
 -----------
 * modified the cmake of toolbox

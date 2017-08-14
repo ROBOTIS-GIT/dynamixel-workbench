@@ -2,6 +2,23 @@
 Changelog for package dynamixel_workbench_controllers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.6 (2017-08-09)
+-----------
+* updated annotation
+* updated controller cpp
+* updated profile function
+* updated torque control
+* updated read function
+* modified launch files
+* modified variable
+* added C++11
+* added pro condition
+* added multi port
+* added velocity and current control
+* added multi_driver
+* changed BSD license to Apache 2.0 license
+* Contributors: Darby Lim
+
 0.1.5 (2017-05-23)
 -----------
 * modified the cmake of toolbox
