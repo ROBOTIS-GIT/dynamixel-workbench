@@ -29,14 +29,10 @@
 
 #if defined(__OPENCR__) || defined(__OPENCM904__)
   #include <Arduino.h> 
-
-  #define _OPENCR
-#else
+#elif defined(__linux__)
   #include <stdint.h>
   #include <stdlib.h>
   #include <stdio.h>
-
-  #define _LINUX
 #endif
 
 namespace dynamixel_tool

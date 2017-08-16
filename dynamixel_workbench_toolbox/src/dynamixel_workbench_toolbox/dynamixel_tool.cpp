@@ -82,17 +82,14 @@ DynamixelTool::~DynamixelTool(){}
 
 bool DynamixelTool::getNameFilePath()
 {
-#ifdef _LINUX
+#if defined(__linux__)
   name_path_ = "../../../dynamixel/model_info.list";
-
   getModelName();
-#endif
 
-#ifdef _OPENCR
+#elif defined(__OPENCR__) || defined(__OPENCM904__)
   char* model_info = 
   #include "../../dynamixel/model_info.list"
   ;
-
   getModelName(model_info);
 #endif
 
@@ -109,14 +106,13 @@ bool DynamixelTool::getModelFilePath()
       dynamixel_series.find("4") != std::string::npos)
     dynamixel_series.erase(2,3);
 
-#ifdef _LINUX
+#if defined(__linux__)
   model_path_ = "../../../dynamixel/models/";
   model_path_ = model_path_ + dynamixel_series + "/" + model_name_ + ".device";
 
   getModelItem();
-#endif
 
-#ifdef _OPENCR
+#elif defined(__OPENCR__) || defined(__OPENCM904__)
   char* device;
   if (dynamixel_series == "AX")
   {
@@ -263,12 +259,32 @@ bool DynamixelTool::getModelName(char* info)
   //   }
   // }
 
-  char* pch;
-  pch = strtok(info, "|");
-  while (pch != NULL)
+  char* single_line;
+  single_line = strtok(info, "\n");
+  std::string input_str(single_line);
+
+  while (single_line != NULL)
   {
-    Serial.println(pch);
-    pch = strtok(NULL, "|");
+    // remove comment ( # )
+    std::size_t pos = input_str.find("#");
+    if (pos != std::string::npos)
+    {
+      input_str = input_str.substr(0,pos);
+    }
+    Serial.println(input_str.c_str());
+
+    std::vector<std::string> tokens = split(input_str, '|');
+    if (tokens.size() != 2)
+      continue;
+
+    // if (model_number_ == std::atoi(tokens[0].c_str()))
+    // {
+    //   model_name_ = tokens[1];
+    // }
+
+    // Serial.println(model_name_.c_str());
+
+    single_line = strtok(NULL, "\n");
   }
 
   return true;
