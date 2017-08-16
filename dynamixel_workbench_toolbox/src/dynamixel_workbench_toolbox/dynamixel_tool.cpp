@@ -62,7 +62,7 @@ DynamixelTool::DynamixelTool(uint8_t id, uint16_t model_number)
   model_number_ = model_number;
 
   getNameFilePath();
-  getModelFilePath();
+  // getModelFilePath();
 }
 
 DynamixelTool::DynamixelTool(uint8_t id, std::string model_name)
@@ -89,9 +89,9 @@ bool DynamixelTool::getNameFilePath()
 #endif
 
 #ifdef _OPENCR
-  std::string model_info = 
+  char* model_info = 
   #include "../../dynamixel/model_info.list"
-  ; 
+  ;
 
   getModelName(model_info);
 #endif
@@ -117,7 +117,7 @@ bool DynamixelTool::getModelFilePath()
 #endif
 
 #ifdef _OPENCR
-  std::string device;
+  char* device;
   if (dynamixel_series == "AX")
   {
     device = 
@@ -194,7 +194,7 @@ bool DynamixelTool::getModelFilePath()
     }
   }
 
-  getModelItem(device);
+  // getModelItem(device);
 #endif
 
   return true;
@@ -239,28 +239,36 @@ bool DynamixelTool::getModelName()
   }
 }
 
-bool DynamixelTool::getModelName(std::string info)
+bool DynamixelTool::getModelName(char* info)
 {
-  std::istringstream iss(info);
+  // std::istringstream iss;
 
-  std::string line;
-  while (std::getline(iss, line))
+  // std::string line;
+  // while (std::getline(iss, line))
+  // {
+  //   // remove comment ( # )
+  //   std::size_t pos = line.find("#");
+  //   if (pos != std::string::npos)
+  //   {
+  //     line = line.substr(0,pos);
+  //   }
+
+  //   std::vector<std::string> tokens = split(line, '|');
+  //   if (tokens.size() != 2)
+  //     continue;
+
+  //   if (model_number_ == std::atoi(tokens[0].c_str()))
+  //   {
+  //     model_name_ = tokens[1];
+  //   }
+  // }
+
+  char* pch;
+  pch = strtok(info, "|");
+  while (pch != NULL)
   {
-    // remove comment ( # )
-    std::size_t pos = line.find("#");
-    if (pos != std::string::npos)
-    {
-      line = line.substr(0,pos);
-    }
-
-    std::vector<std::string> tokens = split(line, '|');
-    if (tokens.size() != 2)
-      continue;
-
-    if (model_number_ == std::atoi(tokens[0].c_str()))
-    {
-      model_name_ = tokens[1];
-    }
+    Serial.println(pch);
+    pch = strtok(NULL, "|");
   }
 
   return true;
@@ -363,88 +371,88 @@ bool DynamixelTool::getModelItem()
   return true;
 }
 
-bool DynamixelTool::getModelItem(std::string device)
-{
-  std::istringstream iss(device);
+// bool DynamixelTool::getModelItem(char* device)
+// {
+//   std::istringstream iss(device);
 
-  std::string line;
-  std::string session = "";
+//   std::string line;
+//   std::string session = "";
 
-  while (std::getline(iss, line))
-  {
-    // remove comment ( # )
-    std::size_t pos = line.find("#");
-    if (pos != std::string::npos)
-    {
-      line = line.substr(0,pos);
-    }
+//   while (std::getline(iss, line))
+//   {
+//     // remove comment ( # )
+//     std::size_t pos = line.find("#");
+//     if (pos != std::string::npos)
+//     {
+//       line = line.substr(0,pos);
+//     }
 
-    // trim
-    line = trim(line);
-    if (line == "")
-      continue;
+//     // trim
+//     line = trim(line);
+//     if (line == "")
+//       continue;
 
-    // find session;
-    if (!line.compare(0, 1, "[") && !line.compare(line.size()-1, 1, "]"))
-    {
-      line = line.substr(1, line.size()-2);
-      std::transform(line.begin(), line.end(), line.begin(), ::tolower);
-      session = trim(line);
-      continue;
-    }
+//     // find session;
+//     if (!line.compare(0, 1, "[") && !line.compare(line.size()-1, 1, "]"))
+//     {
+//       line = line.substr(1, line.size()-2);
+//       std::transform(line.begin(), line.end(), line.begin(), ::tolower);
+//       session = trim(line);
+//       continue;
+//     }
 
-    if (session == "type info")
-    {
-      std::vector<std::string> tokens = split(line, '=');
-      if (tokens.size() != 2)
-        continue;
+//     if (session == "type info")
+//     {
+//       std::vector<std::string> tokens = split(line, '=');
+//       if (tokens.size() != 2)
+//         continue;
 
-      if (tokens[0] == "torque_to_current_value_ratio")
-        torque_to_current_value_ratio_ = std::atof(tokens[1].c_str());
-      else if (tokens[0] == "velocity_to_value_ratio")
-        velocity_to_value_ratio_ = std::atof(tokens[1].c_str());
-      else if (tokens[0] == "value_of_0_radian_position")
-        value_of_0_radian_position_ = std::atoi(tokens[1].c_str());
-      else if (tokens[0] == "value_of_min_radian_position")
-        value_of_min_radian_position_ = std::atoi(tokens[1].c_str());
-      else if (tokens[0] == "value_of_max_radian_position")
-        value_of_max_radian_position_ = std::atoi(tokens[1].c_str());
-      else if (tokens[0] == "min_radian")
-        min_radian_ = std::atof(tokens[1].c_str());
-      else if (tokens[0] == "max_radian")
-        max_radian_ = std::atof(tokens[1].c_str());
-    }
-    else if (session == "baud rate")
-    {
-      std::vector<std::string> tokens = split(line, '|');
-      if(tokens.size() != 2)
-        continue;
+//       if (tokens[0] == "torque_to_current_value_ratio")
+//         torque_to_current_value_ratio_ = std::atof(tokens[1].c_str());
+//       else if (tokens[0] == "velocity_to_value_ratio")
+//         velocity_to_value_ratio_ = std::atof(tokens[1].c_str());
+//       else if (tokens[0] == "value_of_0_radian_position")
+//         value_of_0_radian_position_ = std::atoi(tokens[1].c_str());
+//       else if (tokens[0] == "value_of_min_radian_position")
+//         value_of_min_radian_position_ = std::atoi(tokens[1].c_str());
+//       else if (tokens[0] == "value_of_max_radian_position")
+//         value_of_max_radian_position_ = std::atoi(tokens[1].c_str());
+//       else if (tokens[0] == "min_radian")
+//         min_radian_ = std::atof(tokens[1].c_str());
+//       else if (tokens[0] == "max_radian")
+//         max_radian_ = std::atof(tokens[1].c_str());
+//     }
+//     // else if (session == "baud rate")
+//     // {
+//     //   std::vector<std::string> tokens = split(line, '|');
+//     //   if(tokens.size() != 2)
+//     //     continue;
 
-      baud_rate_table_[std::atoi(tokens[0].c_str())] = std::atoi(tokens[1].c_str());
-    }
-    else if (session == "control table")
-    {
-      std::vector<std::string> tokens = split(line, '|');
-      if(tokens.size() != 5)
-        continue;
+//     //   baud_rate_table_[std::atoi(tokens[0].c_str())] = std::atoi(tokens[1].c_str());
+//     // }
+//     else if (session == "control table")
+//     {
+//       std::vector<std::string> tokens = split(line, '|');
+//       if(tokens.size() != 5)
+//         continue;
 
-      ControlTableItem *item = new ControlTableItem;
-      item->item_name = tokens[1];
-      item->address = std::atoi(tokens[0].c_str());
-      item->data_length = std::atoi(tokens[2].c_str());
-      if(tokens[3] == "R")
-          item->access_type = READ;
-      else if(tokens[3] == "RW")
-          item->access_type = READ_WRITE;
-      if(tokens[4] == "EEPROM")
-          item->memory_type = EEPROM;
-      else if(tokens[4] == "RAM")
-          item->memory_type = RAM;
+//       ControlTableItem *item = new ControlTableItem;
+//       item->item_name = tokens[1];
+//       item->address = std::atoi(tokens[0].c_str());
+//       item->data_length = std::atoi(tokens[2].c_str());
+//       // if(tokens[3] == "R")
+//       //     item->access_type = READ;
+//       // else if(tokens[3] == "RW")
+//       //     item->access_type = READ_WRITE;
+//       // if(tokens[4] == "EEPROM")
+//       //     item->memory_type = EEPROM;
+//       // else if(tokens[4] == "RAM")
+//       //     item->memory_type = RAM;
 
-      ctrl_table_[item->item_name] = item;
-    }
-  }
+//       ctrl_table_[item->item_name] = item;
+//     }
+//   }
 
-  return true;
-}
+//   return true;
+// }
 

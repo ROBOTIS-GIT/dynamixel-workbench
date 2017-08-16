@@ -27,7 +27,7 @@
 #include <vector>
 #include <algorithm>
 
-#ifdef __OPENCR__
+#if defined(__OPENCR__) || defined(__OPENCM904__)
   #include <Arduino.h> 
 
   #define _OPENCR
@@ -93,9 +93,9 @@ class DynamixelTool
 
  private:
   bool getModelName();
-  bool getModelName(std::string info);
+  bool getModelName(char* info);
   bool getModelItem();
-  bool getModelItem(std::string device);
+  bool getModelItem(char* device);
 
   bool getNameFilePath();
   bool getModelFilePath();
