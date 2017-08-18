@@ -228,17 +228,7 @@ bool SingleDynamixelMonitor::checkValidAccess(std::string cmd)
 
       return false;
     }
-    else if ((torque_status == false) && (dynamixel->item_->item_name != "torque_enable") && dynamixel->item_->memory_type == dynamixel_tool::RAM)
-    {
-      printf("address in RAM can't be accessed when torque is off\n");
-      printf("Check a 'table'\n");
-
-      return false;
-    }
-    else
-    {
-      return true;
-    }
+    return true;
   }
   else
   {
