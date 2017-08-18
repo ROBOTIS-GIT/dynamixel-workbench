@@ -1,6 +1,6 @@
 R"(
 [type info]
-velocity_to_value_ratio 	= 86.03
+velocity_to_value_ratio         = 86.03
 
 value_of_0_radian_position      = 512
 value_of_min_radian_position    = 0

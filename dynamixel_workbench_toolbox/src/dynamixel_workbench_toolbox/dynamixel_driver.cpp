@@ -38,7 +38,7 @@ bool DynamixelDriver::scan()
   uint8_t id         = 0;
   uint16_t model_num = 0;
 
-#ifdef __OPENCR__
+#if defined(__OPENCR__) || defined(__OPENCM904__)
   Serial.print("\n...wait for seconds\n\n");
 #else
   printf("\n...wait for seconds\n\n");
@@ -75,7 +75,7 @@ bool DynamixelDriver::setPortHandler(std::string device_name)
 
   if (portHandler_->openPort())
   {
-#ifdef __OPENCR__
+#if defined(__OPENCR__) || defined(__OPENCM904__)
     Serial.print("Succeeded to open the port!\n");
 #else
     printf("\nSucceeded to open the port(%s)!\n", device_name.c_str());
@@ -84,7 +84,7 @@ bool DynamixelDriver::setPortHandler(std::string device_name)
   }
   else
   {
-#ifdef __OPENCR__
+#if defined(__OPENCR__) || defined(__OPENCM904__)
     Serial.print("Failed to open the port!\n");
 #else
     printf("Failed to open the port!\n");
@@ -104,7 +104,7 @@ bool DynamixelDriver::setBaudrate(uint32_t baud_rate)
 {
   if (portHandler_->setBaudRate(baud_rate))
   {
-#ifdef __OPENCR__
+#if defined(__OPENCR__) || defined(__OPENCM904__)
     Serial.print("Succeeded to change the baudrate!\n");
 #else
     printf("Succeeded to change the baudrate(%d)!\n", portHandler_->getBaudRate());
@@ -113,7 +113,7 @@ bool DynamixelDriver::setBaudrate(uint32_t baud_rate)
   }
   else
   {
-#ifdef __OPENCR__
+#if defined(__OPENCR__) || defined(__OPENCM904__)
     Serial.print("Failed to change the baudrate!\n");
 #else
     printf("Failed to change the baudrate!\n");

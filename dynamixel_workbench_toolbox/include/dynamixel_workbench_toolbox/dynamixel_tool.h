@@ -22,18 +22,19 @@
 #include <unistd.h>
 #include <fstream>
 #include <string>
-#include <sstream>
 #include <map>
 #include <vector>
 #include <algorithm>
 
 #if defined(__OPENCR__) || defined(__OPENCM904__)
-  #include <Arduino.h> 
+  #include <Arduino.h>
 #elif defined(__linux__)
   #include <stdint.h>
   #include <stdlib.h>
   #include <stdio.h>
 #endif
+
+#define XM
 
 namespace dynamixel_tool
 {

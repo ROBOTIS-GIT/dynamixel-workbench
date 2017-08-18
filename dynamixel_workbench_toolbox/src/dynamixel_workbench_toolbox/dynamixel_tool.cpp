@@ -62,7 +62,7 @@ DynamixelTool::DynamixelTool(uint8_t id, uint16_t model_number)
   model_number_ = model_number;
 
   getNameFilePath();
-  // getModelFilePath();
+  getModelFilePath();
 }
 
 DynamixelTool::DynamixelTool(uint8_t id, std::string model_name)
@@ -90,6 +90,7 @@ bool DynamixelTool::getNameFilePath()
   char* model_info = 
   #include "../../dynamixel/model_info.list"
   ;
+  
   getModelName(model_info);
 #endif
 
@@ -114,29 +115,22 @@ bool DynamixelTool::getModelFilePath()
 
 #elif defined(__OPENCR__) || defined(__OPENCM904__)
   char* device;
-  if (dynamixel_series == "AX")
-  {
+  #if defined(AX)
     device = 
     #include "../../dynamixel/models/AX/AX.device"
     ;
-  }
-  else if (dynamixel_series == "RX")
-  {
-    device = 
+  #elif defined(RX)
+    device =  
     #include "../../dynamixel/models/RX/RX.device"
     ;
-  }
-  else if (dynamixel_series == "EX")
-  {
-    device = 
+  #elif defined(EX)
+    device =  
     #include "../../dynamixel/models/EX/EX.device"
     ;
-  }
-  else if (dynamixel_series == "MX")
-  {
+  #elif defined(MX)
     if (model_name_ == "MX_12W" || model_name_ == "MX_28")
     {
-      device = 
+      device =   
       #include "../../dynamixel/models/MX/MX_S.device"
       ;
     }
@@ -146,9 +140,7 @@ bool DynamixelTool::getModelFilePath()
       #include "../../dynamixel/models/MX/MX_L.device"
       ;
     }
-  }
-  else if (dynamixel_series == "XL")
-  {
+  #elif defined(XL)
     if (model_name_ == "XL_320")
     {
       device = 
@@ -159,23 +151,17 @@ bool DynamixelTool::getModelFilePath()
     {
       device = 
       #include "../../dynamixel/models/XL/XL.device"
-      ;     
+      ;
     }
-  }
-  else if (dynamixel_series == "XM")
-  {
+  #elif defined(XM)    
     device = 
     #include "../../dynamixel/models/XM/XM.device"
     ;
-  }
-  else if (dynamixel_series == "XH")
-  {
-    device = 
+  #elif defined(XH)   
+    device =
     #include "../../dynamixel/models/XH/XH.device"
     ;
-  }
-  else if (dynamixel_series == "PRO")
-  {
+  #elif defined(PRO) 
     if (model_name_ == "PRO_L42_10_S300_R")
     {
       device = 
@@ -184,13 +170,13 @@ bool DynamixelTool::getModelFilePath()
     }
     else
     {
-      device = 
+      device =
       #include "../../dynamixel/models/PRO/PRO.device"
       ;
     }
-  }
+  #endif
 
-  // getModelItem(device);
+  getModelItem(device);
 #endif
 
   return true;
@@ -237,54 +223,43 @@ bool DynamixelTool::getModelName()
 
 bool DynamixelTool::getModelName(char* info)
 {
-  // std::istringstream iss;
+  char get_line[1];
+  int ndx = 0, pre_ndx = 0;
 
-  // std::string line;
-  // while (std::getline(iss, line))
-  // {
-  //   // remove comment ( # )
-  //   std::size_t pos = line.find("#");
-  //   if (pos != std::string::npos)
-  //   {
-  //     line = line.substr(0,pos);
-  //   }
+  for (ndx = 1; ndx < strlen(info); ndx++)
+  {    
+    strncpy(get_line, info+ndx, 1);
 
-  //   std::vector<std::string> tokens = split(line, '|');
-  //   if (tokens.size() != 2)
-  //     continue;
-
-  //   if (model_number_ == std::atoi(tokens[0].c_str()))
-  //   {
-  //     model_name_ = tokens[1];
-  //   }
-  // }
-
-  char* single_line;
-  single_line = strtok(info, "\n");
-  std::string input_str(single_line);
-
-  while (single_line != NULL)
-  {
-    // remove comment ( # )
-    std::size_t pos = input_str.find("#");
-    if (pos != std::string::npos)
+    if (iscntrl((int)get_line[0]))
     {
-      input_str = input_str.substr(0,pos);
+      char line[40];
+
+      strncpy(line, info+pre_ndx+1, ndx-pre_ndx-1);
+      line[ndx-pre_ndx-1] = '\0';
+
+      std::string input_str(line);
+
+      // remove comment ( # )
+      std::size_t pos = input_str.find("#");
+      if (pos != std::string::npos)
+      {
+        input_str = input_str.substr(0,pos);
+      }
+
+      std::vector<std::string> tokens = split(input_str, '|');
+      if (tokens.size() != 2)
+      {
+        pre_ndx = ndx;
+        continue;
+      }
+
+      if (model_number_ == std::atoi(tokens[0].c_str()))
+      {
+        model_name_ = tokens[1];
+      }
+
+      pre_ndx = ndx;
     }
-    Serial.println(input_str.c_str());
-
-    std::vector<std::string> tokens = split(input_str, '|');
-    if (tokens.size() != 2)
-      continue;
-
-    // if (model_number_ == std::atoi(tokens[0].c_str()))
-    // {
-    //   model_name_ = tokens[1];
-    // }
-
-    // Serial.println(model_name_.c_str());
-
-    single_line = strtok(NULL, "\n");
   }
 
   return true;
@@ -387,88 +362,96 @@ bool DynamixelTool::getModelItem()
   return true;
 }
 
-// bool DynamixelTool::getModelItem(char* device)
-// {
-//   std::istringstream iss(device);
+bool DynamixelTool::getModelItem(char* device)
+{
+  char get_line[1];
+  std::string session = "";
+  int ndx = 0, pre_ndx = 0;
 
-//   std::string line;
-//   std::string session = "";
+  for (ndx = 1; ndx < strlen(device); ndx++)
+  {    
+    strncpy(get_line, device+ndx, 1);
 
-//   while (std::getline(iss, line))
-//   {
-//     // remove comment ( # )
-//     std::size_t pos = line.find("#");
-//     if (pos != std::string::npos)
-//     {
-//       line = line.substr(0,pos);
-//     }
+    if (iscntrl((int)get_line[0]))
+    {
+      char line[70];
 
-//     // trim
-//     line = trim(line);
-//     if (line == "")
-//       continue;
+      strncpy(line, device+pre_ndx+1, ndx-pre_ndx-1);
+      line[ndx-pre_ndx-1] = '\0';
 
-//     // find session;
-//     if (!line.compare(0, 1, "[") && !line.compare(line.size()-1, 1, "]"))
-//     {
-//       line = line.substr(1, line.size()-2);
-//       std::transform(line.begin(), line.end(), line.begin(), ::tolower);
-//       session = trim(line);
-//       continue;
-//     }
+      std::string input_str(line); 
 
-//     if (session == "type info")
-//     {
-//       std::vector<std::string> tokens = split(line, '=');
-//       if (tokens.size() != 2)
-//         continue;
+      // remove comment ( # )
+      std::size_t pos = input_str.find("#");
+      if (pos != std::string::npos)
+      {
+        input_str = input_str.substr(0,pos);
+      }
 
-//       if (tokens[0] == "torque_to_current_value_ratio")
-//         torque_to_current_value_ratio_ = std::atof(tokens[1].c_str());
-//       else if (tokens[0] == "velocity_to_value_ratio")
-//         velocity_to_value_ratio_ = std::atof(tokens[1].c_str());
-//       else if (tokens[0] == "value_of_0_radian_position")
-//         value_of_0_radian_position_ = std::atoi(tokens[1].c_str());
-//       else if (tokens[0] == "value_of_min_radian_position")
-//         value_of_min_radian_position_ = std::atoi(tokens[1].c_str());
-//       else if (tokens[0] == "value_of_max_radian_position")
-//         value_of_max_radian_position_ = std::atoi(tokens[1].c_str());
-//       else if (tokens[0] == "min_radian")
-//         min_radian_ = std::atof(tokens[1].c_str());
-//       else if (tokens[0] == "max_radian")
-//         max_radian_ = std::atof(tokens[1].c_str());
-//     }
-//     // else if (session == "baud rate")
-//     // {
-//     //   std::vector<std::string> tokens = split(line, '|');
-//     //   if(tokens.size() != 2)
-//     //     continue;
+      // trim
+      input_str = trim(input_str);
+      if (input_str == "")
+      {
+        pre_ndx = ndx;
+        continue;
+      }
 
-//     //   baud_rate_table_[std::atoi(tokens[0].c_str())] = std::atoi(tokens[1].c_str());
-//     // }
-//     else if (session == "control table")
-//     {
-//       std::vector<std::string> tokens = split(line, '|');
-//       if(tokens.size() != 5)
-//         continue;
+      // find session;
+      if (!input_str.compare(0, 1, "[") && !input_str.compare(input_str.size()-1, 1, "]"))
+      {
+        input_str = input_str.substr(1, input_str.size()-2);
+        std::transform(input_str.begin(), input_str.end(), input_str.begin(), ::tolower);
+        session = trim(input_str);
 
-//       ControlTableItem *item = new ControlTableItem;
-//       item->item_name = tokens[1];
-//       item->address = std::atoi(tokens[0].c_str());
-//       item->data_length = std::atoi(tokens[2].c_str());
-//       // if(tokens[3] == "R")
-//       //     item->access_type = READ;
-//       // else if(tokens[3] == "RW")
-//       //     item->access_type = READ_WRITE;
-//       // if(tokens[4] == "EEPROM")
-//       //     item->memory_type = EEPROM;
-//       // else if(tokens[4] == "RAM")
-//       //     item->memory_type = RAM;
+        pre_ndx = ndx;
+        continue;
+      }
 
-//       ctrl_table_[item->item_name] = item;
-//     }
-//   }
+      if (session == "type info")
+      {
+        std::vector<std::string> tokens = split(input_str, '=');
+        if (tokens.size() != 2)
+        {
+          pre_ndx = ndx;
+          continue;
+        }
 
-//   return true;
-// }
+        if (tokens[0] == "torque_to_current_value_ratio")
+          torque_to_current_value_ratio_ = std::atof(tokens[1].c_str());
+        else if (tokens[0] == "velocity_to_value_ratio")
+          velocity_to_value_ratio_ = std::atof(tokens[1].c_str());
+        else if (tokens[0] == "value_of_0_radian_position")
+          value_of_0_radian_position_ = std::atoi(tokens[1].c_str());
+        else if (tokens[0] == "value_of_min_radian_position")
+          value_of_min_radian_position_ = std::atoi(tokens[1].c_str());
+        else if (tokens[0] == "value_of_max_radian_position")
+          value_of_max_radian_position_ = std::atoi(tokens[1].c_str());
+        else if (tokens[0] == "min_radian")
+          min_radian_ = std::atof(tokens[1].c_str());
+        else if (tokens[0] == "max_radian")
+          max_radian_ = std::atof(tokens[1].c_str());
+      }
+      else if (session == "control table")
+      {
+        std::vector<std::string> tokens = split(input_str, '|');
+        if(tokens.size() != 5)
+        {
+          pre_ndx = ndx;
+          continue;
+        }
+
+        ControlTableItem *item = new ControlTableItem;
+        item->item_name = tokens[1];
+        item->address = std::atoi(tokens[0].c_str());
+        item->data_length = std::atoi(tokens[2].c_str());
+
+        ctrl_table_[item->item_name] = item;
+      }
+
+      pre_ndx = ndx;
+    }
+  }
+
+  return true;
+}
 

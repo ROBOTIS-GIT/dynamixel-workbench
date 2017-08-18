@@ -1,20 +1,16 @@
 R"(
-#  model_number | model name
+#  model_number | model_name
         12      | AX_12A
         300     | AX_12W
         18      | AX_18A
-
         360     | MX_12W
         29      | MX_28
         310     | MX_64
         320     | MX_106
-
         24      | RX_24F
         28      | RX_28
         64      | RX_64
-
         107     | EX_106
-
         350     | XL_320
         1060    | XL430_W250
         1050    | XH430_V210
@@ -23,7 +19,6 @@ R"(
         1020    | XM430_W350
         1010    | XH430_W210
         1000    | XH430_W350
-
         51200   | PRO_H42_20_S300_R
         53768   | PRO_H54_100_S500_R
         54024   | PRO_H54_200_S500_R
