@@ -14,30 +14,21 @@
 * limitations under the License.
 *******************************************************************************/
 
-/* Authors: zerom, Taehoon Lim (Darby) */
+/* Authors: Taehoon Lim (Darby) */
 
 #ifndef DYNAMIXEL_TOOL_H
 #define DYNAMIXEL_TOOL_H
 
-#include <unistd.h>
-#include <fstream>
-#include <string>
-#include <map>
-#include <vector>
-#include <algorithm>
-
 #if defined(__OPENCR__) || defined(__OPENCM904__)
   #include <Arduino.h>
+  #define CONTROL_TABLE_ITEM_NUM 25
 #elif defined(__linux__)
-  #include <stdint.h>
-  #include <stdlib.h>
   #include <stdio.h>
+  #include <stdint.h>
+  #include <string.h>
+  #define CONTROL_TABLE_ITEM_NUM 70
 #endif
 
-#define XM
-
-namespace dynamixel_tool
-{
 enum ACCESS_TYPE {
   READ,
   READ_WRITE
@@ -50,52 +41,65 @@ enum MEMORY_TYPE {
 
 struct ControlTableItem
 {
- std::string item_name;
- uint16_t address;
- ACCESS_TYPE access_type;
- MEMORY_TYPE memory_type;
- uint8_t data_length;
+  uint16_t    address;
+  char*       item_name;  
+  uint8_t     data_length;
+  ACCESS_TYPE access_type;
+  MEMORY_TYPE memory_type;  
 };
 
 class DynamixelTool
 {
- public:
+ private:
+  char* model_name_;
   uint8_t id_;
-  uint16_t model_number_;
-  std::string model_name_;
 
   float velocity_to_value_ratio_;
   float torque_to_current_value_ratio_;
-  int32_t value_of_0_radian_position_;
+
   int32_t value_of_min_radian_position_;
+  int32_t value_of_0_radian_position_;
   int32_t value_of_max_radian_position_;
+
   float  min_radian_;
   float  max_radian_;
 
-  std::string model_path_;
-  std::string name_path_;
+  uint8_t control_table_size_;
+  uint8_t baud_rate_table_size_;
 
-  std::map<std::string, ControlTableItem *> ctrl_table_;
-  std::map<std::string, ControlTableItem *>::iterator it_ctrl_;
-
-  std::map<uint32_t, uint32_t> baud_rate_table_;
-  std::map<uint32_t, uint32_t>::iterator it_baud_;
-
-  ControlTableItem *item_;
+  ControlTableItem item_[CONTROL_TABLE_ITEM_NUM];
 
  public:
-  DynamixelTool(uint8_t id, uint16_t model_number);
-  DynamixelTool(uint8_t id, std::string model_name);
+  DynamixelTool();
   ~DynamixelTool();
 
- private:
-  bool getModelName();
-  bool getModelName(char* info);
-  bool getModelItem();
-  bool getModelItem(char* device);
+  bool begin(char* model_name);
+  bool begin(uint16_t model_num);
 
-  bool getNameFilePath();
-  bool getModelFilePath();
+  void setControlTable(char* name);
+  void setControlTable(uint16_t num);
+
+  void setModelInfo(char* name);
+  void setModelInfo(uint16_t num);
+
+  char* getModelName();
+
+  void setID(uint8_t id);
+  uint8_t getID();
+
+  float getVelocityToValueRatio();  
+  float getTorqueToCurrentValueRatio();  
+
+  int32_t getValueOfMinRadianPosition();  
+  int32_t getValueOfMaxRadianPosition();  
+  int32_t getValueOfZeroRadianPosition();  
+
+  float getMinRadian();  
+  float getMaxRadian();  
+
+  uint8_t getControlTableSize();  
+  uint8_t getBaudRateTableSize();  
+  
+  ControlTableItem getControlItem(char* item_name);  
 };
-}
 #endif //DYNAMIXEL_TOOL_H
