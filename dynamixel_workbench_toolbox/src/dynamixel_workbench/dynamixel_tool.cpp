@@ -132,6 +132,11 @@ void DynamixelTool::setControlTable(uint16_t num)
     model_name_ = "XM430-W350";
     setControlTable(model_name_);
   }
+  if (num == 1030)
+  {
+    model_name_ = "XM430-W350";
+    setControlTable(model_name_);
+  }
   else if (num == 1060)
   {
     model_name_ = "XM430-W350";
@@ -158,6 +163,11 @@ void DynamixelTool::setModelInfo(char* name)
 void DynamixelTool::setModelInfo(uint16_t num)
 {
   if (num == 1020)
+  {
+    model_name_ = "XM430-W350";
+    setModelInfo(model_name_);
+  }
+  if (num == 1030)
   {
     model_name_ = "XM430-W350";
     setModelInfo(model_name_);
