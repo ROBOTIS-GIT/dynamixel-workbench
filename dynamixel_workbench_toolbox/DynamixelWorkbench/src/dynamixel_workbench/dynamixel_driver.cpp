@@ -408,20 +408,20 @@ bool DynamixelDriver::writeRegister(uint8_t id, char* item_name, int32_t data)
   uint8_t error   = 0;
   int dxl_comm_result = COMM_TX_FAIL;
 
-  ControlTableItem cti;
+  ControlTableItem* cti;
   cti = tools_[findTools(id)].getControlItem(item_name);
 
-  if (cti.data_length == 1)
+  if (cti->data_length == 1)
   {
-    dxl_comm_result = packetHandler_->write1ByteTxRx(portHandler_, id, cti.address, (uint8_t)data, &error);
+    dxl_comm_result = packetHandler_->write1ByteTxRx(portHandler_, id, cti->address, (uint8_t)data, &error);
   }
-  else if (cti.data_length == 2)
+  else if (cti->data_length == 2)
   {
-    dxl_comm_result = packetHandler_->write2ByteTxRx(portHandler_, id, cti.address, (uint16_t)data, &error);
+    dxl_comm_result = packetHandler_->write2ByteTxRx(portHandler_, id, cti->address, (uint16_t)data, &error);
   }
-  else if (cti.data_length == 4)
+  else if (cti->data_length == 4)
   {
-    dxl_comm_result = packetHandler_->write4ByteTxRx(portHandler_, id, cti.address, (uint32_t)data, &error);
+    dxl_comm_result = packetHandler_->write4ByteTxRx(portHandler_, id, cti->address, (uint32_t)data, &error);
   }
 
   if (dxl_comm_result == COMM_SUCCESS)
@@ -455,19 +455,20 @@ bool DynamixelDriver::readRegister(uint8_t id, char* item_name, int32_t* data)
   int16_t value_16_bit = 0;
   int32_t value_32_bit = 0;
 
-  ControlTableItem cti = tools_[findTools(id)].getControlItem(item_name);
+  ControlTableItem* cti;
+  cti = tools_[findTools(id)].getControlItem(item_name);
 
-  if (cti.data_length == 1)
+  if (cti->data_length == 1)
   {
-    dxl_comm_result = packetHandler_->read1ByteTxRx(portHandler_, id, cti.address, (uint8_t*)&value_8_bit, &error);
+    dxl_comm_result = packetHandler_->read1ByteTxRx(portHandler_, id, cti->address, (uint8_t*)&value_8_bit, &error);
   }
-  else if (cti.data_length == 2)
+  else if (cti->data_length == 2)
   {
-    dxl_comm_result = packetHandler_->read2ByteTxRx(portHandler_, id, cti.address, (uint16_t*)&value_16_bit, &error);
+    dxl_comm_result = packetHandler_->read2ByteTxRx(portHandler_, id, cti->address, (uint16_t*)&value_16_bit, &error);
   }
-  else if (cti.data_length == 4)
+  else if (cti->data_length == 4)
   {
-    dxl_comm_result = packetHandler_->read4ByteTxRx(portHandler_, id, cti.address, (uint32_t*)&value_32_bit, &error);
+    dxl_comm_result = packetHandler_->read4ByteTxRx(portHandler_, id, cti->address, (uint32_t*)&value_32_bit, &error);
   }
 
   if (dxl_comm_result == COMM_SUCCESS)
@@ -477,15 +478,15 @@ bool DynamixelDriver::readRegister(uint8_t id, char* item_name, int32_t* data)
       packetHandler_->printRxPacketError(error);
     }
 
-    if (cti.data_length == 1)
+    if (cti->data_length == 1)
     {
       *data = value_8_bit;
     }
-    else if (cti.data_length == 2)
+    else if (cti->data_length == 2)
     {
       *data = value_16_bit;
     }
-    else if (cti.data_length == 4)
+    else if (cti->data_length == 4)
     {
       *data = value_32_bit;
     }
@@ -516,12 +517,13 @@ uint8_t DynamixelDriver::findTools(uint8_t id)
 
 void DynamixelDriver::initSyncWrite(uint8_t id, char* item_name)
 {
-  ControlTableItem cti = tools_[findTools(id)].getControlItem(item_name);
+  ControlTableItem* cti;
+  cti = tools_[findTools(id)].getControlItem(item_name);
 
   groupSyncWrite_ = new dynamixel::GroupSyncWrite(portHandler_, 
                                                   packetHandler_, 
-                                                  cti.address, 
-                                                  cti.data_length);
+                                                  cti->address, 
+                                                  cti->data_length);
 }
 
 bool DynamixelDriver::syncWrite(int32_t *data)
@@ -568,12 +570,13 @@ bool DynamixelDriver::syncWrite(int32_t *data)
 
 void DynamixelDriver::initSyncRead(uint8_t id, char* item_name)
 {
-  ControlTableItem cti = tools_[findTools(id)].getControlItem(item_name);
+  ControlTableItem* cti;
+  cti = tools_[findTools(id)].getControlItem(item_name);
   
   groupSyncRead_ = new dynamixel::GroupSyncRead(portHandler_, 
                                                 packetHandler_, 
-                                                cti.address, 
-                                                cti.data_length);
+                                                cti->address, 
+                                                cti->data_length);
 }
 
 bool DynamixelDriver::syncRead(char* item_name, int32_t *data)
@@ -605,13 +608,14 @@ bool DynamixelDriver::syncRead(char* item_name, int32_t *data)
   for (int num = 0; num < cnt; ++num)
   {
     uint8_t id  = tools_[num].getID();
-    ControlTableItem cti = tools_[findTools(id)].getControlItem(item_name);
+    ControlTableItem* cti;
+    cti = tools_[findTools(id)].getControlItem(item_name);
 
-    dxl_getdata_result = groupSyncRead_->isAvailable(id, cti.address, cti.data_length);
+    dxl_getdata_result = groupSyncRead_->isAvailable(id, cti->address, cti->data_length);
 
     if (dxl_getdata_result)
     {
-      data[num] = groupSyncRead_->getData(id, cti.address, cti.data_length);
+      data[num] = groupSyncRead_->getData(id, cti->address, cti->data_length);
     }
     else
     {
@@ -635,14 +639,15 @@ bool DynamixelDriver::addBulkWriteParam(uint8_t id, char* item_name, int32_t dat
   bool dxl_addparam_result = false;
   uint8_t data_byte[4] = {0, };
 
-  ControlTableItem cti = tools_[findTools(id)].getControlItem(item_name);
+  ControlTableItem* cti;
+  cti = tools_[findTools(id)].getControlItem(item_name);
 
   data_byte[0] = DXL_LOBYTE(DXL_LOWORD(data));
   data_byte[1] = DXL_HIBYTE(DXL_LOWORD(data));
   data_byte[2] = DXL_LOBYTE(DXL_HIWORD(data));
   data_byte[3] = DXL_HIBYTE(DXL_HIWORD(data));
 
-  dxl_addparam_result = groupBulkWrite_->addParam(id, cti.address, cti.data_length, data_byte);
+  dxl_addparam_result = groupBulkWrite_->addParam(id, cti->address, cti->data_length, data_byte);
   if (dxl_addparam_result != true)
   {
 #if defined(__OPENCR__) || defined(__OPENCM904__)
@@ -681,9 +686,10 @@ void DynamixelDriver::addBulkReadParam(uint8_t id, char* item_name)
 {
   bool dxl_addparam_result = false;
 
-  ControlTableItem cti = tools_[findTools(id)].getControlItem(item_name);
+  ControlTableItem* cti;
+  cti = tools_[findTools(id)].getControlItem(item_name);
 
-  dxl_addparam_result = groupBulkRead_->addParam(id, cti.address, cti.data_length);
+  dxl_addparam_result = groupBulkRead_->addParam(id, cti->address, cti->data_length);
   if (dxl_addparam_result != true)
   {
 #if defined(__OPENCR__) || defined(__OPENCM904__)
@@ -712,9 +718,10 @@ void DynamixelDriver::sendBulkReadPacket()
 bool DynamixelDriver::bulkRead(uint8_t id, char* item_name, int32_t *data)
 {
   bool dxl_getdata_result = false;
-  ControlTableItem cti = tools_[findTools(id)].getControlItem(item_name);
+  ControlTableItem* cti;
+  cti = tools_[findTools(id)].getControlItem(item_name);
 
-  dxl_getdata_result = groupBulkRead_->isAvailable(id, cti.address, cti.data_length);
+  dxl_getdata_result = groupBulkRead_->isAvailable(id, cti->address, cti->data_length);
   if (dxl_getdata_result != true)
   {
 #if defined(__OPENCR__) || defined(__OPENCM904__)
@@ -726,7 +733,7 @@ bool DynamixelDriver::bulkRead(uint8_t id, char* item_name, int32_t *data)
     return 0;
   }
 
-  *data = groupBulkRead_->getData(id, cti.address, cti.data_length);
+  *data = groupBulkRead_->getData(id, cti->address, cti->data_length);
 }
 int32_t DynamixelDriver::convertRadian2Value(int8_t id, float radian)
 {

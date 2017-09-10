@@ -21,32 +21,13 @@
 
 #if defined(__OPENCR__) || defined(__OPENCM904__)
   #include <Arduino.h>
-  #define CONTROL_TABLE_ITEM_NUM 25
 #elif defined(__linux__)
   #include <stdio.h>
   #include <stdint.h>
   #include <string.h>
-  #define CONTROL_TABLE_ITEM_NUM 70
 #endif
 
-enum ACCESS_TYPE {
-  READ,
-  READ_WRITE
-};
-
-enum MEMORY_TYPE {
-  EEPROM,
-  RAM
-};
-
-struct ControlTableItem
-{
-  uint16_t    address;
-  char*       item_name;  
-  uint8_t     data_length;
-  ACCESS_TYPE access_type;
-  MEMORY_TYPE memory_type;  
-};
+#include "dynamixel_item.h"
 
 class DynamixelTool
 {
@@ -54,20 +35,9 @@ class DynamixelTool
   char* model_name_;
   uint8_t id_;
 
-  float velocity_to_value_ratio_;
-  float torque_to_current_value_ratio_;
-
-  int32_t value_of_min_radian_position_;
-  int32_t value_of_0_radian_position_;
-  int32_t value_of_max_radian_position_;
-
-  float  min_radian_;
-  float  max_radian_;
-
   uint8_t control_table_size_;
-  uint8_t baud_rate_table_size_;
-
-  ControlTableItem item_[CONTROL_TABLE_ITEM_NUM];
+  ControlTableItem* item_;
+  ModelInfo* model_info_;
 
  public:
   DynamixelTool();
@@ -78,9 +48,6 @@ class DynamixelTool
 
   void setControlTable(char* name);
   void setControlTable(uint16_t num);
-
-  void setModelInfo(char* name);
-  void setModelInfo(uint16_t num);
 
   char* getModelName();
 
@@ -97,9 +64,7 @@ class DynamixelTool
   float getMinRadian();  
   float getMaxRadian();  
 
-  uint8_t getControlTableSize();  
-  uint8_t getBaudRateTableSize();  
-  
-  ControlTableItem getControlItem(char* item_name);  
+  uint8_t getControlTableSize();    
+  ControlTableItem* getControlItem(char* item_name);  
 };
 #endif //DYNAMIXEL_TOOL_H
