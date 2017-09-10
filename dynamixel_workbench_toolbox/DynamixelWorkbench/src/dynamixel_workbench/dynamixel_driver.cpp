@@ -143,7 +143,7 @@ void DynamixelDriver::setBaudrate(uint32_t baud_rate, bool *error)
   }
 }
 
-uint8_t DynamixelDriver::scan(uint8_t *get_id)
+uint8_t DynamixelDriver::scan(uint8_t *get_id, uint8_t num)
 {
   uint8_t error      = 0;
   uint8_t id         = 0;
@@ -156,7 +156,7 @@ uint8_t DynamixelDriver::scan(uint8_t *get_id)
   printf("...wait for seconds\n");
 #endif
 
-  for (id = 1; id < 254; id++)
+  for (id = 1; id < num; id++)
   {
     if (packetHandler_->ping(portHandler_, id, &model_num, &error) == COMM_SUCCESS)
     {

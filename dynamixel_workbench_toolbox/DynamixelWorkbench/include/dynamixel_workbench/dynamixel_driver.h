@@ -59,7 +59,7 @@ class DynamixelDriver
   void setPacketHandler(float protocol_version, bool *error);
   void setBaudrate(uint32_t baud_rate, bool *error);
 
-  uint8_t  scan(uint8_t *get_id);
+  uint8_t  scan(uint8_t *get_id, uint8_t num = 252);
   uint16_t ping(uint8_t id);
 
   bool reboot(uint8_t id);
