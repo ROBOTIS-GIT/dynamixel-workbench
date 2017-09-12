@@ -16,9 +16,9 @@
 
 /* Authors: zerom, Taehoon Lim (Darby) */
 
-#include "dynamixel_workbench_toolbox/dynamixel_tool.h"
+#include <dynamixel_workbench_toolbox/dynamixel_tool.h>
 
-using namespace dynamixel_tool;
+namespace dynamixel_tool {
 
 static inline std::string &ltrim(std::string &s) {
     s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
@@ -176,15 +176,15 @@ double DynamixelTool::convertValue2Velocity(int32_t value)
 
 int32_t DynamixelTool::convertVelocity2Value(double velocity)
 {
-  return (int32_t) (velocity * velocity_to_value_ratio_);;
+  return (int32_t) (velocity * velocity_to_value_ratio_);
 }
 
-double DynamixelTool::convertValue2Torque(int16_t value)
+double DynamixelTool::convertValue2Torque(int32_t value)
 {
   return (double) value / torque_to_current_value_ratio_;
 }
 
-int16_t DynamixelTool::convertTorque2Value(double torque)
+int32_t DynamixelTool::convertTorque2Value(double torque)
 {
   return (int16_t) (torque * torque_to_current_value_ratio_);
 }
@@ -296,4 +296,6 @@ bool DynamixelTool::getModelItem()
     ROS_ERROR("Unable to open .device file : %s", item_path_.c_str());
     ros::shutdown();
   }
+}
+
 }

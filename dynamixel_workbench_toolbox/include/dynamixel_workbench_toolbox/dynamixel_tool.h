@@ -74,7 +74,6 @@ class DynamixelTool
 
   ControlTableItem *item_;
 
- public:
   DynamixelTool(uint8_t id, uint16_t model_number);
   DynamixelTool(uint8_t id, std::string model_name);
   ~DynamixelTool();
@@ -83,8 +82,8 @@ class DynamixelTool
   int32_t convertRadian2Value(double radian);
   double convertValue2Velocity(int32_t value);
   int32_t convertVelocity2Value(double velocity);
-  double convertValue2Torque(int16_t value);
-  int16_t convertTorque2Value(double torque);
+  double convertValue2Torque(int32_t value);
+  int32_t convertTorque2Value(double torque);
 
  private:
   bool getModelPath();
