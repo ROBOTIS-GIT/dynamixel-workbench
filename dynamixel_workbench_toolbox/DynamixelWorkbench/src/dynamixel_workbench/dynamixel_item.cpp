@@ -31,24 +31,24 @@ void setAXItem()
   item[2]  = {6  , "CW Angle Limit"                , 2 , READ_WRITE , EEPROM};
   item[3]  = {8  , "CCW Angle Limit"               , 2 , READ_WRITE , EEPROM};
 
-  item[4] = {24 , "Torque ON/OFF"          , 1 , READ_WRITE , RAM};
-  item[5] = {25 , "LED"                    , 1 , READ_WRITE , RAM};
-  item[6] = {26 , "CW Compliance Margin"   , 1 , READ_WRITE , RAM};
-  item[7] = {27 , "CCW Compliance Margin"  , 1 , READ_WRITE , RAM};
-  item[8] = {28 , "CW Compliance Slope"    , 1 , READ_WRITE , RAM};
-  item[9] = {29 , "CCW Compliance Slope"   , 1 , READ_WRITE , RAM};
-  item[10] = {30 , "Goal Position"         , 2 , READ_WRITE , RAM};
-  item[11] = {32 , "Moving Speed"          , 2 , READ_WRITE , RAM};
-  item[12] = {35 , "Torque Limit"          , 2 , READ_WRITE , RAM};
-  item[13] = {36 , "Present Position"      , 2 , READ       , RAM};
-  item[14] = {38 , "Present Speed"         , 2 , READ       , RAM};
-  item[15] = {40 , "Present Load"          , 2 , READ       , RAM};
-  item[16] = {42 , "Present Voltage"       , 1 , READ       , RAM};
-  item[17] = {43 , "Present Temperature"   , 1 , READ       , RAM};
-  item[18] = {44 , "Registered"            , 1 , READ       , RAM};
-  item[19] = {46 , "Moving"                , 1 , READ       , RAM};
-  item[20] = {47 , "Lock"                  , 1 , READ_WRITE , RAM};
-  item[21] = {48 , "Punch"                 , 2 , READ_WRITE , RAM};
+  item[4]  = {24 , "Torque ON/OFF"                 , 1 , READ_WRITE , RAM};
+  item[5]  = {25 , "LED"                           , 1 , READ_WRITE , RAM};
+  item[6]  = {26 , "CW Compliance Margin"          , 1 , READ_WRITE , RAM};
+  item[7]  = {27 , "CCW Compliance Margin"         , 1 , READ_WRITE , RAM};
+  item[8]  = {28 , "CW Compliance Slope"           , 1 , READ_WRITE , RAM};
+  item[9]  = {29 , "CCW Compliance Slope"          , 1 , READ_WRITE , RAM};
+  item[10] = {30 , "Goal Position"                 , 2 , READ_WRITE , RAM};
+  item[11] = {32 , "Moving Speed"                  , 2 , READ_WRITE , RAM};
+  item[12] = {35 , "Torque Limit"                  , 2 , READ_WRITE , RAM};
+  item[13] = {36 , "Present Position"              , 2 , READ       , RAM};
+  item[14] = {38 , "Present Speed"                 , 2 , READ       , RAM};
+  item[15] = {40 , "Present Load"                  , 2 , READ       , RAM};
+  item[16] = {42 , "Present Voltage"               , 1 , READ       , RAM};
+  item[17] = {43 , "Present Temperature"           , 1 , READ       , RAM};
+  item[18] = {44 , "Registered"                    , 1 , READ       , RAM};
+  item[19] = {46 , "Moving"                        , 1 , READ       , RAM};
+  item[20] = {47 , "Lock"                          , 1 , READ_WRITE , RAM};
+  item[21] = {48 , "Punch"                         , 2 , READ_WRITE , RAM};
 
   control_table_size = 22;
 #else
@@ -67,24 +67,24 @@ void setAXItem()
   item[12] = {17 , "Alarm LED"                     , 1 , READ_WRITE , EEPROM};
   item[13] = {18 , "Alarm Shutdown"                , 1 , READ_WRITE , EEPROM};
 
-  item[14] = {24 , "Torque ON/OFF"         , 1 , READ_WRITE , RAM};
-  item[15] = {25 , "LED"                   , 1 , READ_WRITE , RAM};
-  item[16] = {26 , "CW Compliance Margin"  , 1 , READ_WRITE , RAM};
-  item[17] = {27 , "CCW Compliance Margin" , 1 , READ_WRITE , RAM};
-  item[18] = {28 , "CW Compliance Slope"   , 1 , READ_WRITE , RAM};
-  item[19] = {29 , "CCW Compliance Slope"  , 1 , READ_WRITE , RAM};
-  item[20] = {30 , "Goal Position"         , 2 , READ_WRITE , RAM};
-  item[21] = {32 , "Moving Speed"          , 2 , READ_WRITE , RAM};
-  item[22] = {35 , "Torque Limit"          , 2 , READ_WRITE , RAM};
-  item[23] = {36 , "Present Position"      , 2 , READ       , RAM};
-  item[24] = {38 , "Present Speed"         , 2 , READ       , RAM};
-  item[25] = {40 , "Present Load"          , 2 , READ       , RAM};
-  item[26] = {42 , "Present Voltage"       , 1 , READ       , RAM};
-  item[27] = {43 , "Present Temperature"   , 1 , READ       , RAM};
-  item[28] = {44 , "Registered"            , 1 , READ       , RAM};
-  item[29] = {46 , "Moving"                , 1 , READ       , RAM};
-  item[30] = {47 , "Lock"                  , 1 , READ_WRITE , RAM};
-  item[31] = {48 , "Punch"                 , 2 , READ_WRITE , RAM};
+  item[14] = {24 , "Torque ON/OFF"                 , 1 , READ_WRITE , RAM};
+  item[15] = {25 , "LED"                           , 1 , READ_WRITE , RAM};
+  item[16] = {26 , "CW Compliance Margin"          , 1 , READ_WRITE , RAM};
+  item[17] = {27 , "CCW Compliance Margin"         , 1 , READ_WRITE , RAM};
+  item[18] = {28 , "CW Compliance Slope"           , 1 , READ_WRITE , RAM};
+  item[19] = {29 , "CCW Compliance Slope"          , 1 , READ_WRITE , RAM};
+  item[20] = {30 , "Goal Position"                 , 2 , READ_WRITE , RAM};
+  item[21] = {32 , "Moving Speed"                  , 2 , READ_WRITE , RAM};
+  item[22] = {35 , "Torque Limit"                  , 2 , READ_WRITE , RAM};
+  item[23] = {36 , "Present Position"              , 2 , READ       , RAM};
+  item[24] = {38 , "Present Speed"                 , 2 , READ       , RAM};
+  item[25] = {40 , "Present Load"                  , 2 , READ       , RAM};
+  item[26] = {42 , "Present Voltage"               , 1 , READ       , RAM};
+  item[27] = {43 , "Present Temperature"           , 1 , READ       , RAM};
+  item[28] = {44 , "Registered"                    , 1 , READ       , RAM};
+  item[29] = {46 , "Moving"                        , 1 , READ       , RAM};
+  item[30] = {47 , "Lock"                          , 1 , READ_WRITE , RAM};
+  item[31] = {48 , "Punch"                         , 2 , READ_WRITE , RAM};
 
   control_table_size = 32;
 #endif  
@@ -104,30 +104,339 @@ void setAXInfo()
 
 void setRXItem()
 {
+  #if defined(__OPENCR__) || defined(__OPENCM904__)
+  item[0]  = {3  , "ID"                            , 1 , READ_WRITE , EEPROM};
+  item[1]  = {4  , "Baud Rate"                     , 1 , READ_WRITE , EEPROM};
+  item[2]  = {6  , "CW Angle Limit"                , 2 , READ_WRITE , EEPROM};
+  item[3]  = {8  , "CCW Angle Limit"               , 2 , READ_WRITE , EEPROM};
 
+  item[4]  = {24 , "Torque ON/OFF"                 , 1 , READ_WRITE , RAM};
+  item[5]  = {25 , "LED"                           , 1 , READ_WRITE , RAM};
+  item[6]  = {26 , "CW Compliance Margin"          , 1 , READ_WRITE , RAM};
+  item[7]  = {27 , "CCW Compliance Margin"         , 1 , READ_WRITE , RAM};
+  item[8]  = {28 , "CW Compliance Slope"           , 1 , READ_WRITE , RAM};
+  item[9]  = {29 , "CCW Compliance Slope"          , 1 , READ_WRITE , RAM};
+  item[10] = {30 , "Goal Position"                 , 2 , READ_WRITE , RAM};
+  item[11] = {32 , "Moving Speed"                  , 2 , READ_WRITE , RAM};
+  item[12] = {35 , "Torque Limit"                  , 2 , READ_WRITE , RAM};
+  item[13] = {36 , "Present Position"              , 2 , READ       , RAM};
+  item[14] = {38 , "Present Speed"                 , 2 , READ       , RAM};
+  item[15] = {40 , "Present Load"                  , 2 , READ       , RAM};
+  item[16] = {42 , "Present Voltage"               , 1 , READ       , RAM};
+  item[17] = {43 , "Present Temperature"           , 1 , READ       , RAM};
+  item[18] = {44 , "Registered"                    , 1 , READ       , RAM};
+  item[19] = {46 , "Moving"                        , 1 , READ       , RAM};
+  item[20] = {47 , "Lock"                          , 1 , READ_WRITE , RAM};
+  item[21] = {48 , "Punch"                         , 2 , READ_WRITE , RAM};
+
+  control_table_size = 22;
+#else
+  item[0]  = {0  , "Model Number"                  , 2 , READ       , EEPROM};
+  item[1]  = {2  , "Version of Firmware"           , 1 , READ       , EEPROM};
+  item[2]  = {3  , "ID"                            , 1 , READ_WRITE , EEPROM};
+  item[3]  = {4  , "Baud Rate"                     , 1 , READ_WRITE , EEPROM};
+  item[4]  = {5  , "Return Delay Time"             , 1 , READ_WRITE , EEPROM};
+  item[5]  = {6  , "CW Angle Limit"                , 2 , READ_WRITE , EEPROM};
+  item[6]  = {8  , "CCW Angle Limit"               , 2 , READ_WRITE , EEPROM};
+  item[7]  = {11 , "the Highest Limit Temperature" , 1 , READ_WRITE , EEPROM};
+  item[8]  = {12 , "the Lowest Limit Voltage"      , 1 , READ_WRITE , EEPROM};
+  item[9]  = {13 , "the Highest Limit Voltage"     , 1 , READ_WRITE , EEPROM};
+  item[10] = {14 , "Max Torque"                    , 2 , READ_WRITE , EEPROM};
+  item[11] = {16 , "Status Return Level"           , 1 , READ_WRITE , EEPROM};
+  item[12] = {17 , "Alarm LED"                     , 1 , READ_WRITE , EEPROM};
+  item[13] = {18 , "Alarm Shutdown"                , 1 , READ_WRITE , EEPROM};
+
+  item[14] = {24 , "Torque ON/OFF"                 , 1 , READ_WRITE , RAM};
+  item[15] = {25 , "LED"                           , 1 , READ_WRITE , RAM};
+  item[16] = {26 , "CW Compliance Margin"          , 1 , READ_WRITE , RAM};
+  item[17] = {27 , "CCW Compliance Margin"         , 1 , READ_WRITE , RAM};
+  item[18] = {28 , "CW Compliance Slope"           , 1 , READ_WRITE , RAM};
+  item[19] = {29 , "CCW Compliance Slope"          , 1 , READ_WRITE , RAM};
+  item[20] = {30 , "Goal Position"                 , 2 , READ_WRITE , RAM};
+  item[21] = {32 , "Moving Speed"                  , 2 , READ_WRITE , RAM};
+  item[22] = {35 , "Torque Limit"                  , 2 , READ_WRITE , RAM};
+  item[23] = {36 , "Present Position"              , 2 , READ       , RAM};
+  item[24] = {38 , "Present Speed"                 , 2 , READ       , RAM};
+  item[25] = {40 , "Present Load"                  , 2 , READ       , RAM};
+  item[26] = {42 , "Present Voltage"               , 1 , READ       , RAM};
+  item[27] = {43 , "Present Temperature"           , 1 , READ       , RAM};
+  item[28] = {44 , "Registered"                    , 1 , READ       , RAM};
+  item[29] = {46 , "Moving"                        , 1 , READ       , RAM};
+  item[30] = {47 , "Lock"                          , 1 , READ_WRITE , RAM};
+  item[31] = {48 , "Punch"                         , 2 , READ_WRITE , RAM};
+
+  control_table_size = 32;
+#endif  
 }
 
 void setRXInfo()
 {
+  velocity_to_value_ratio         = 86.03
+  
+  value_of_0_radian_position      = 512
+  value_of_min_radian_position    = 0
+  value_of_max_radian_position    = 1024
 
+  min_radian                      = -3.14159265
+  max_radian                      =  3.14159265
 }
 
 void setEXItem()
 {
+  #if defined(__OPENCR__) || defined(__OPENCM904__)
+  item[0]  = {3  , "ID"                            , 1 , READ_WRITE , EEPROM};
+  item[1]  = {4  , "Baud Rate"                     , 1 , READ_WRITE , EEPROM};
+  item[2]  = {6  , "CW Angle Limit"                , 2 , READ_WRITE , EEPROM};
+  item[3]  = {8  , "CCW Angle Limit"               , 2 , READ_WRITE , EEPROM};
+  item[4]  = {10 , "Drive Mode"                    , 1 , READ_WRITE , EEPROM};
 
+  item[5]  = {24 , "Torque ON/OFF"                 , 1 , READ_WRITE , RAM};
+  item[6]  = {25 , "LED"                           , 1 , READ_WRITE , RAM};
+  item[7]  = {26 , "CW Compliance Margin"          , 1 , READ_WRITE , RAM};
+  item[8]  = {27 , "CCW Compliance Margin"         , 1 , READ_WRITE , RAM};
+  item[9]  = {28 , "CW Compliance Slope"           , 1 , READ_WRITE , RAM};
+  item[10] = {29 , "CCW Compliance Slope"          , 1 , READ_WRITE , RAM};
+  item[11] = {30 , "Goal Position"                 , 2 , READ_WRITE , RAM};
+  item[12] = {32 , "Moving Speed"                  , 2 , READ_WRITE , RAM};
+  item[13] = {35 , "Torque Limit"                  , 2 , READ_WRITE , RAM};
+  item[14] = {36 , "Present Position"              , 2 , READ       , RAM};
+  item[15] = {38 , "Present Speed"                 , 2 , READ       , RAM};
+  item[16] = {40 , "Present Load"                  , 2 , READ       , RAM};
+  item[17] = {42 , "Present Voltage"               , 1 , READ       , RAM};
+  item[18] = {43 , "Present Temperature"           , 1 , READ       , RAM};
+  item[19] = {44 , "Registered"                    , 1 , READ       , RAM};
+  item[20] = {46 , "Moving"                        , 1 , READ       , RAM};
+  item[21] = {47 , "Lock"                          , 1 , READ_WRITE , RAM};
+  item[22] = {48 , "Punch"                         , 2 , READ_WRITE , RAM};
+  item[23] = {56 , "Sensored Current"              , 2 , READ       , RAM};
+
+  control_table_size = 24;
+#else
+  item[0]  = {0  , "Model Number"                  , 2 , READ       , EEPROM};
+  item[1]  = {2  , "Version of Firmware"           , 1 , READ       , EEPROM};
+  item[2]  = {3  , "ID"                            , 1 , READ_WRITE , EEPROM};
+  item[3]  = {4  , "Baud Rate"                     , 1 , READ_WRITE , EEPROM};
+  item[4]  = {5  , "Return Delay Time"             , 1 , READ_WRITE , EEPROM};
+  item[5]  = {6  , "CW Angle Limit"                , 2 , READ_WRITE , EEPROM};
+  item[6]  = {8  , "CCW Angle Limit"               , 2 , READ_WRITE , EEPROM};
+  item[7]  = {10 , "Drive Mode"                    , 1 , READ_WRITE , EEPROM};
+  item[8]  = {11 , "the Highest Limit Temperature" , 1 , READ_WRITE , EEPROM};
+  item[9]  = {12 , "the Lowest Limit Voltage"      , 1 , READ_WRITE , EEPROM};
+  item[10] = {13 , "the Highest Limit Voltage"     , 1 , READ_WRITE , EEPROM};
+  item[11] = {14 , "Max Torque"                    , 2 , READ_WRITE , EEPROM};
+  item[12] = {16 , "Status Return Level"           , 1 , READ_WRITE , EEPROM};
+  item[13] = {17 , "Alarm LED"                     , 1 , READ_WRITE , EEPROM};
+  item[14] = {18 , "Alarm Shutdown"                , 1 , READ_WRITE , EEPROM};
+
+  item[15] = {24 , "Torque ON/OFF"                 , 1 , READ_WRITE , RAM};
+  item[16] = {25 , "LED"                           , 1 , READ_WRITE , RAM};
+  item[17] = {26 , "CW Compliance Margin"          , 1 , READ_WRITE , RAM};
+  item[18] = {27 , "CCW Compliance Margin"         , 1 , READ_WRITE , RAM};
+  item[19] = {28 , "CW Compliance Slope"           , 1 , READ_WRITE , RAM};
+  item[20] = {29 , "CCW Compliance Slope"          , 1 , READ_WRITE , RAM};
+  item[21] = {30 , "Goal Position"                 , 2 , READ_WRITE , RAM};
+  item[22] = {32 , "Moving Speed"                  , 2 , READ_WRITE , RAM};
+  item[23] = {35 , "Torque Limit"                  , 2 , READ_WRITE , RAM};
+  item[24] = {36 , "Present Position"              , 2 , READ       , RAM};
+  item[25] = {38 , "Present Speed"                 , 2 , READ       , RAM};
+  item[26] = {40 , "Present Load"                  , 2 , READ       , RAM};
+  item[27] = {42 , "Present Voltage"               , 1 , READ       , RAM};
+  item[28] = {43 , "Present Temperature"           , 1 , READ       , RAM};
+  item[29] = {44 , "Registered"                    , 1 , READ       , RAM};
+  item[30] = {46 , "Moving"                        , 1 , READ       , RAM};
+  item[31] = {47 , "Lock"                          , 1 , READ_WRITE , RAM};
+  item[32] = {48 , "Punch"                         , 2 , READ_WRITE , RAM};
+  item[33] = {56 , "Sensored Current"              , 2 , READ       , RAM};
+
+  control_table_size = 34;
+#endif  
 }
 
 void setEXInfo()
 {
-
+  velocity_to_value_ratio         = 86.03
+  
+  value_of_0_radian_position      = 2048
+  value_of_min_radian_position    = 0
+  value_of_max_radian_position    = 4095
+  min_radian                      = -3.14159265
+  max_radian                      =  3.14159265
 }
 
 void setMXItem()
 {
+  #if defined(__OPENCR__) || defined(__OPENCM904__)
+  item[0]  = {3  , "ID"                            , 1 , READ_WRITE , EEPROM};
+  item[1]  = {4  , "Baud Rate"                     , 1 , READ_WRITE , EEPROM};
+  item[2]  = {6  , "CW Angle Limit"                , 2 , READ_WRITE , EEPROM};
+  item[3]  = {8  , "CCW Angle Limit"               , 2 , READ_WRITE , EEPROM};
 
+  item[4]  = {24 , "Torque ON/OFF"                 , 1 , READ_WRITE , RAM};
+  item[5]  = {25 , "LED"                           , 1 , READ_WRITE , RAM};
+  item[6]  = {26 , "D gain"                        , 1 , READ_WRITE , RAM};
+  item[7]  = {27 , "I gain"                        , 1 , READ_WRITE , RAM};
+  item[8]  = {28 , "P gain"                        , 1 , READ_WRITE , RAM};
+  item[9]  = {30 , "Goal Position"                 , 2 , READ_WRITE , RAM};
+  item[10] = {32 , "Moving Speed"                  , 2 , READ_WRITE , RAM};
+  item[11] = {35 , "Torque Limit"                  , 2 , READ_WRITE , RAM};
+  item[12] = {36 , "Present Position"              , 2 , READ       , RAM};
+  item[13] = {38 , "Present Speed"                 , 2 , READ       , RAM};
+  item[14] = {40 , "Present Load"                  , 2 , READ       , RAM};
+  item[15] = {42 , "Present Voltage"               , 1 , READ       , RAM};
+  item[16] = {43 , "Present Temperature"           , 1 , READ       , RAM};
+  item[17] = {44 , "Registered"                    , 1 , READ       , RAM};
+  item[18] = {46 , "Moving"                        , 1 , READ       , RAM};
+  item[19] = {47 , "Lock"                          , 1 , READ_WRITE , RAM};
+  item[20] = {48 , "Punch"                         , 2 , READ_WRITE , RAM};
+  item[21] = {73 , "Goal Acceleration"             , 1 , READ_WRITE , RAM};
+
+  control_table_size = 22;
+#else
+  item[0]  = {0  , "Model Number"                  , 2 , READ       , EEPROM};
+  item[1]  = {2  , "Version of Firmware"           , 1 , READ       , EEPROM};
+  item[2]  = {3  , "ID"                            , 1 , READ_WRITE , EEPROM};
+  item[3]  = {4  , "Baud Rate"                     , 1 , READ_WRITE , EEPROM};
+  item[4]  = {5  , "Return Delay Time"             , 1 , READ_WRITE , EEPROM};
+  item[5]  = {6  , "CW Angle Limit"                , 2 , READ_WRITE , EEPROM};
+  item[6]  = {8  , "CCW Angle Limit"               , 2 , READ_WRITE , EEPROM};
+  item[7]  = {11 , "the Highest Limit Temperature" , 1 , READ_WRITE , EEPROM};
+  item[8]  = {12 , "the Lowest Limit Voltage"      , 1 , READ_WRITE , EEPROM};
+  item[9]  = {13 , "the Highest Limit Voltage"     , 1 , READ_WRITE , EEPROM};
+  item[10] = {14 , "Max Torque"                    , 2 , READ_WRITE , EEPROM};
+  item[11] = {16 , "Status Return Level"           , 1 , READ_WRITE , EEPROM};
+  item[12] = {17 , "Alarm LED"                     , 1 , READ_WRITE , EEPROM};
+  item[13] = {18 , "Alarm Shutdown"                , 1 , READ_WRITE , EEPROM};
+  item[14] = {20 , "Multi Turn Offset"             , 2 , READ_WRITE , EEPROM};
+  item[15] = {22 , "Resolution Divider"            , 1 , READ_WRITE , EEPROM};
+
+  item[16] = {24 , "Torque ON/OFF"                 , 1 , READ_WRITE , RAM};
+  item[17] = {25 , "LED"                           , 1 , READ_WRITE , RAM};
+  item[18] = {26 , "D gain"                        , 1 , READ_WRITE , RAM};
+  item[19] = {27 , "I gain"                        , 1 , READ_WRITE , RAM};
+  item[20] = {28 , "P gain"                        , 1 , READ_WRITE , RAM};
+  item[21] = {30 , "Goal Position"                 , 2 , READ_WRITE , RAM};
+  item[22] = {32 , "Moving Speed"                  , 2 , READ_WRITE , RAM};
+  item[23] = {35 , "Torque Limit"                  , 2 , READ_WRITE , RAM};
+  item[24] = {36 , "Present Position"              , 2 , READ       , RAM};
+  item[25] = {38 , "Present Speed"                 , 2 , READ       , RAM};
+  item[26] = {40 , "Present Load"                  , 2 , READ       , RAM};
+  item[27] = {42 , "Present Voltage"               , 1 , READ       , RAM};
+  item[28] = {43 , "Present Temperature"           , 1 , READ       , RAM};
+  item[29] = {44 , "Registered"                    , 1 , READ       , RAM};
+  item[30] = {46 , "Moving"                        , 1 , READ       , RAM};
+  item[31] = {47 , "Lock"                          , 1 , READ_WRITE , RAM};
+  item[32] = {48 , "Punch"                         , 2 , READ_WRITE , RAM};
+  item[33] = {73 , "Goal Acceleration"             , 1 , READ_WRITE , RAM};
+
+  control_table_size = 34;
+#endif  
 }
 
 void setMXInfo()
+{
+  velocity_to_value_ratio         = 83.77
+  
+  value_of_0_radian_position      = 2048
+  value_of_min_radian_position    = 0
+  value_of_max_radian_position    = 4095
+
+  min_radian                      = -3.14159265
+  max_radian                      =  3.14159265
+}
+
+void setExtMXItem()
+{
+  #if defined(__OPENCR__) || defined(__OPENCM904__)
+  item[0]  = {3  , "ID"                            , 1 , READ_WRITE , EEPROM};
+  item[1]  = {4  , "Baud Rate"                     , 1 , READ_WRITE , EEPROM};
+  item[2]  = {6  , "CW Angle Limit"                , 2 , READ_WRITE , EEPROM};
+  item[3]  = {8  , "CCW Angle Limit"               , 2 , READ_WRITE , EEPROM};
+
+  item[4]  = {24 , "Torque ON/OFF"                 , 1 , READ_WRITE , RAM};
+  item[5]  = {25 , "LED"                           , 1 , READ_WRITE , RAM};
+  item[6]  = {26 , "D gain"                        , 1 , READ_WRITE , RAM};
+  item[7]  = {27 , "I gain"                        , 1 , READ_WRITE , RAM};
+  item[8]  = {28 , "P gain"                        , 1 , READ_WRITE , RAM};
+  item[9]  = {30 , "Goal Position"                 , 2 , READ_WRITE , RAM};
+  item[10] = {32 , "Moving Speed"                  , 2 , READ_WRITE , RAM};
+  item[11] = {35 , "Torque Limit"                  , 2 , READ_WRITE , RAM};
+  item[12] = {36 , "Present Position"              , 2 , READ       , RAM};
+  item[13] = {38 , "Present Speed"                 , 2 , READ       , RAM};
+  item[14] = {40 , "Present Load"                  , 2 , READ       , RAM};
+  item[15] = {42 , "Present Voltage"               , 1 , READ       , RAM};
+  item[16] = {43 , "Present Temperature"           , 1 , READ       , RAM};
+  item[17] = {44 , "Registered"                    , 1 , READ       , RAM};
+  item[18] = {46 , "Moving"                        , 1 , READ       , RAM};
+  item[19] = {47 , "Lock"                          , 1 , READ_WRITE , RAM};
+  item[20] = {48 , "Punch"                         , 2 , READ_WRITE , RAM};
+  item[21] = {68 , "Current"                       , 2 , READ       , RAM};
+  item[22] = {70 , "Torque Control Mode Enable"    , 1 , READ_WRITE , RAM};
+  item[23] = {71 , "Goal Torque"                   , 2 , READ_WRITE , RAM};
+  item[24] = {73 , "Goal Acceleration"             , 1 , READ_WRITE , RAM};
+
+  control_table_size = 25;
+#else
+  item[0]  = {0  , "Model Number"                  , 2 , READ       , EEPROM};
+  item[1]  = {2  , "Version of Firmware"           , 1 , READ       , EEPROM};
+  item[2]  = {3  , "ID"                            , 1 , READ_WRITE , EEPROM};
+  item[3]  = {4  , "Baud Rate"                     , 1 , READ_WRITE , EEPROM};
+  item[4]  = {5  , "Return Delay Time"             , 1 , READ_WRITE , EEPROM};
+  item[5]  = {6  , "CW Angle Limit"                , 2 , READ_WRITE , EEPROM};
+  item[6]  = {8  , "CCW Angle Limit"               , 2 , READ_WRITE , EEPROM};
+  item[7]  = {11 , "the Highest Limit Temperature" , 1 , READ_WRITE , EEPROM};
+  item[8]  = {12 , "the Lowest Limit Voltage"      , 1 , READ_WRITE , EEPROM};
+  item[9]  = {13 , "the Highest Limit Voltage"     , 1 , READ_WRITE , EEPROM};
+  item[10] = {14 , "Max Torque"                    , 2 , READ_WRITE , EEPROM};
+  item[11] = {16 , "Status Return Level"           , 1 , READ_WRITE , EEPROM};
+  item[12] = {17 , "Alarm LED"                     , 1 , READ_WRITE , EEPROM};
+  item[13] = {18 , "Alarm Shutdown"                , 1 , READ_WRITE , EEPROM};
+  item[14] = {20 , "Multi Turn Offset"             , 2 , READ_WRITE , EEPROM};
+  item[15] = {22 , "Resolution Divider"            , 1 , READ_WRITE , EEPROM};
+
+  item[16] = {24 , "Torque ON/OFF"                 , 1 , READ_WRITE , RAM};
+  item[17] = {25 , "LED"                           , 1 , READ_WRITE , RAM};
+  item[18] = {26 , "D gain"                        , 1 , READ_WRITE , RAM};
+  item[19] = {27 , "I gain"                        , 1 , READ_WRITE , RAM};
+  item[20] = {28 , "P gain"                        , 1 , READ_WRITE , RAM};
+  item[21] = {30 , "Goal Position"                 , 2 , READ_WRITE , RAM};
+  item[22] = {32 , "Moving Speed"                  , 2 , READ_WRITE , RAM};
+  item[23] = {35 , "Torque Limit"                  , 2 , READ_WRITE , RAM};
+  item[24] = {36 , "Present Position"              , 2 , READ       , RAM};
+  item[25] = {38 , "Present Speed"                 , 2 , READ       , RAM};
+  item[26] = {40 , "Present Load"                  , 2 , READ       , RAM};
+  item[27] = {42 , "Present Voltage"               , 1 , READ       , RAM};
+  item[28] = {43 , "Present Temperature"           , 1 , READ       , RAM};
+  item[29] = {44 , "Registered"                    , 1 , READ       , RAM};
+  item[30] = {46 , "Moving"                        , 1 , READ       , RAM};
+  item[31] = {47 , "Lock"                          , 1 , READ_WRITE , RAM};
+  item[32] = {48 , "Punch"                         , 2 , READ_WRITE , RAM};
+  item[33] = {68 , "Current"                       , 2 , READ       , RAM};
+  item[34] = {70 , "Torque Control Mode Enable"    , 1 , READ_WRITE , RAM};
+  item[35] = {71 , "Goal Torque"                   , 2 , READ_WRITE , RAM};
+  item[36] = {73 , "Goal Acceleration"             , 1 , READ_WRITE , RAM};
+
+  control_table_size = 37;
+#endif  
+}
+
+void setExtMXInfo();
+{
+  velocity_to_value_ratio         = 83.77
+  
+  value_of_0_radian_position      = 2048
+  value_of_min_radian_position    = 0
+  value_of_max_radian_position    = 4095
+
+  min_radian                      = -3.14159265
+  max_radian                      =  3.14159265
+}
+
+void setXLItem()
+{
+
+}
+
+void setXLInfo()
 {
   
 }

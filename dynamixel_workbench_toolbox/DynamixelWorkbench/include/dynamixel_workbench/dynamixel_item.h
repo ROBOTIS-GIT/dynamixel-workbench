@@ -46,6 +46,9 @@ static void setEXInfo();
 static void setMXItem();
 static void setMXInfo();
 
+static void setExtMXItem();
+static void setExtMXInfo();
+
 static void setXLItem();
 static void setXLInfo();
 
