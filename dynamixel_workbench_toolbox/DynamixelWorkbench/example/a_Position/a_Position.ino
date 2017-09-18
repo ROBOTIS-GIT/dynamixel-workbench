@@ -18,39 +18,34 @@
 
 #include <DynamixelWorkbench.h>
 
-#define DXL_BUS_SERIAL1 "1"  //Dynamixel on Serial1(USART1)  <-OpenCM9.04
-#define DXL_BUS_SERIAL2 "2"  //Dynamixel on Serial2(USART2)  <-LN101,BT210
-#define DXL_BUS_SERIAL3 "3"  //Dynamixel on Serial3(USART3)  <-OpenCM 485EXP
+#define DXL_BUS_SERIAL1 "1"            //Dynamixel on Serial1(USART1)  <-OpenCM9.04
+#define DXL_BUS_SERIAL2 "2"            //Dynamixel on Serial2(USART2)  <-LN101,BT210
+#define DXL_BUS_SERIAL3 "3"            //Dynamixel on Serial3(USART3)  <-OpenCM 485EXP
+#define DXL_BUS_SERIAL4 "/dev/ttyUSB0" //Dynamixel on Serial3(USART3)  <-OpenCR
 
-#define DEVICENAME       "3"
-#define BAUDRATE         1000000
+#define BAUDRATE         57600
+#define DXL_ID  1
 
-#define DXL_ID           1
-
-DynamixelDriver driver;
+DynamixelWorkbench dxl_wb;
 
 void setup() 
 {
   Serial.begin(57600);
   while(!Serial);
 
-  driver.begin("XM", DEVICENAME, BAUDRATE);
-  driver.ping(DXL_ID);
+  dxl_wb.begin("XM", DXL_BUS_SERIAL4, BAUDRATE);
+  dxl_wb.ping(DXL_ID);
 
-  driver.writeRegister(DXL_ID, "Operating Mode", 3);
-
-  driver.writeRegister(DXL_ID, "Torque Enable", 1);
-
-  // driver.writeRegister(DXL_ID, "Profile Velocity", 40);
+  dxl_wb.jointMode(DXL_ID);
 }
 
 void loop() 
 {
-  driver.writeRegister(DXL_ID, "Goal Position", 0);
+  dxl_wb.goalPosition(DXL_ID, 0);
   
-  delay(1000);
+  delay(2000);
 
-  driver.writeRegister(DXL_ID, "Goal Position", 2048);  
+  dxl_wb.goalPosition(DXL_ID, 2048);
 
-  delay(1000);
+  delay(2000);
 }

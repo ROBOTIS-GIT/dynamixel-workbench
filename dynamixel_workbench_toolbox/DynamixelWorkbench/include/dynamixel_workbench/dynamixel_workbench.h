@@ -38,7 +38,7 @@ class DynamixelWorkbench
   bool reboot(uint8_t id);
   bool reset(uint8_t id);
 
-  bool jointMode(uint8_t id, uint32_t accel = 100, uint32_t vel = 10);
+  bool jointMode(uint8_t id, uint32_t accel = 100, uint32_t vel = 40);
 
   bool goalPosition(uint8_t id, uint32_t goal);
 };
