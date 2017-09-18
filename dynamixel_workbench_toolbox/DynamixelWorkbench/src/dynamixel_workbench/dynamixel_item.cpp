@@ -19,7 +19,7 @@
 #include "../../include/dynamixel_workbench/dynamixel_item.h"
 
 static uint8_t control_table_size = 0;
-static ControlTableItem item[60]    = {0.0, };
+static ControlTableItem item[60]  = {0, };
 
 static ModelInfo model_info       = {0.0, };
 
@@ -171,14 +171,14 @@ void setRXItem()
 
 void setRXInfo()
 {
-  velocity_to_value_ratio         = 86.03
+  model_info.velocity_to_value_ratio         = 86.03;
   
-  value_of_0_radian_position      = 512
-  value_of_min_radian_position    = 0
-  value_of_max_radian_position    = 1024
+  model_info.value_of_0_radian_position      = 512;
+  model_info.value_of_min_radian_position    = 0;
+  model_info.value_of_max_radian_position    = 1024;
 
-  min_radian                      = -3.14159265
-  max_radian                      =  3.14159265
+  model_info.min_radian                      = -3.14159265;
+  model_info.max_radian                      =  3.14159265;
 }
 
 void setEXItem()
@@ -254,13 +254,14 @@ void setEXItem()
 
 void setEXInfo()
 {
-  velocity_to_value_ratio         = 86.03
+  model_info.velocity_to_value_ratio         = 86.03;
   
-  value_of_0_radian_position      = 2048
-  value_of_min_radian_position    = 0
-  value_of_max_radian_position    = 4095
-  min_radian                      = -3.14159265
-  max_radian                      =  3.14159265
+  model_info.value_of_0_radian_position      = 2048;
+  model_info.value_of_min_radian_position    = 0;
+  model_info.value_of_max_radian_position    = 4095;
+
+  model_info.min_radian                      = -3.14159265;
+  model_info.max_radian                      =  3.14159265;
 }
 
 void setMXItem()
@@ -334,14 +335,14 @@ void setMXItem()
 
 void setMXInfo()
 {
-  velocity_to_value_ratio         = 83.77
+  model_info.velocity_to_value_ratio         = 83.77;
   
-  value_of_0_radian_position      = 2048
-  value_of_min_radian_position    = 0
-  value_of_max_radian_position    = 4095
+  model_info.value_of_0_radian_position      = 2048;
+  model_info.value_of_min_radian_position    = 0;
+  model_info.value_of_max_radian_position    = 4095;
 
-  min_radian                      = -3.14159265
-  max_radian                      =  3.14159265
+  model_info.min_radian                      = -3.14159265;
+  model_info.max_radian                      =  3.14159265;
 }
 
 void setExtMXItem()
@@ -419,26 +420,114 @@ void setExtMXItem()
 #endif  
 }
 
-void setExtMXInfo();
+void setExtMXInfo()
 {
-  velocity_to_value_ratio         = 83.77
+  model_info.velocity_to_value_ratio         = 83.77;
   
-  value_of_0_radian_position      = 2048
-  value_of_min_radian_position    = 0
-  value_of_max_radian_position    = 4095
+  model_info.value_of_0_radian_position      = 2048;
+  model_info.value_of_min_radian_position    = 0;
+  model_info.value_of_max_radian_position    = 4095;
 
-  min_radian                      = -3.14159265
-  max_radian                      =  3.14159265
+  model_info.min_radian                      = -3.14159265;
+  model_info.max_radian                      =  3.14159265;
 }
 
 void setXLItem()
 {
+#if defined(__OPENCR__) || defined(__OPENCM904__)
+  item[0]  = {7  , "ID"                    , 1 , READ_WRITE , EEPROM};
+  item[1]  = {8  , "Baud Rate"             , 1 , READ_WRITE , EEPROM};
+  item[2]  = {11 , "Operating Mode"        , 1 , READ_WRITE , EEPROM};
 
+  item[3]  = {64 , "Torque Enable"         , 1 , READ_WRITE , RAM};
+  item[4]  = {65 , "LED"                   , 1 , READ_WRITE , RAM};
+  item[5]  = {100, "Goal PWM"              , 2 , READ_WRITE , RAM};
+  item[6]  = {102, "Goal Current"          , 2 , READ_WRITE , RAM};
+  item[7]  = {104, "Goal Velocity"         , 4 , READ_WRITE , RAM};
+  item[8]  = {108, "Profile Acceleration"  , 4 , READ_WRITE , RAM};
+  item[9]  = {112, "Profile Velocity"      , 4 , READ_WRITE , RAM};
+  item[10] = {116, "Goal Position"         , 4 , READ_WRITE , RAM};
+  item[11] = {120, "Realtime Tick"         , 2 , READ       , RAM};
+  item[12] = {122, "Moving"                , 1 , READ       , RAM};
+  item[13] = {123, "Moving Status"         , 1 , READ       , RAM};
+  item[14] = {124, "Present PWM"           , 2 , READ       , RAM};
+  item[15] = {126, "Present Current"       , 2 , READ       , RAM};
+  item[16] = {128, "Present Velocity"      , 4 , READ       , RAM};
+  item[17] = {132, "Present Position"      , 4 , READ       , RAM};
+  item[18] = {136, "Velocity Trajectory"   , 4 , READ       , RAM};
+  item[19] = {140, "Position Trajectory"   , 4 , READ       , RAM};
+  item[20] = {144, "Present Input Voltage" , 2 , READ       , RAM};
+  item[21] = {146, "Present Temperature"   , 1 , READ       , RAM};
+
+  control_table_size = 22;
+#else
+  item[0]  = {0  , "Model Number"          , 2 , READ       , EEPROM};
+  item[1]  = {6  , "Version of Firmware"   , 1 , READ       , EEPROM};
+  item[2]  = {7  , "ID"                    , 1 , READ_WRITE , EEPROM};
+  item[3]  = {8  , "Baud Rate"             , 1 , READ_WRITE , EEPROM};
+  item[4]  = {9  , "Return Delay Time"     , 1 , READ_WRITE , EEPROM};
+  item[5]  = {10 , "Drive Mode"            , 1 , READ_WRITE , EEPROM};
+  item[6]  = {11 , "Operating Mode"        , 1 , READ_WRITE , EEPROM};
+  item[7]  = {12 , "Secondary ID"          , 1 , READ_WRITE , EEPROM};
+  item[8]  = {13 , "Protocol Version"      , 1 , READ_WRITE , EEPROM};
+  item[9]  = {20 , "Homing Offset"         , 4 , READ_WRITE , EEPROM};
+  item[10] = {24 , "Moving Threshold"      , 4 , READ_WRITE , EEPROM};
+  item[11] = {31 , "Temperature Limit"     , 1 , READ_WRITE , EEPROM};
+  item[12] = {32 , "Max Voltage Limit"     , 2 , READ_WRITE , EEPROM};
+  item[13] = {34 , "Min Voltage Limit"     , 2 , READ_WRITE , EEPROM};
+  item[14] = {36 , "PWM Limit"             , 2 , READ_WRITE , EEPROM};
+  item[15] = {38 , "Current Limit"         , 2 , READ_WRITE , EEPROM};
+  item[16] = {40 , "Acceleration Limit"    , 4 , READ_WRITE , EEPROM};
+  item[17] = {44 , "Velocity Limit"        , 4 , READ_WRITE , EEPROM};
+  item[18] = {48 , "Max Position Limit"    , 4 , READ_WRITE , EEPROM};
+  item[19] = {52 , "Min Position Limit"    , 4 , READ_WRITE , EEPROM};
+  item[20] = {63 , "Shutdown"              , 1 , READ_WRITE , EEPROM};
+
+  item[21] = {64 , "Torque Enable"         , 1 , READ_WRITE , RAM};
+  item[22] = {65 , "LED"                   , 1 , READ_WRITE , RAM};
+  item[23] = {68 , "Status Return Level"   , 1 , READ_WRITE , RAM};
+  item[24] = {69 , "Registered Instruction", 1 , READ       , RAM};
+  item[25] = {70 , "Hardware Error Status" , 1 , READ       , RAM};
+  item[26] = {76 , "Velocity I Gain"       , 2 , READ_WRITE , RAM};
+  item[27] = {78 , "Velocity P Gain"       , 2 , READ_WRITE , RAM};
+  item[28] = {80 , "Position D Gain"       , 2 , READ_WRITE , RAM};
+  item[29] = {82 , "Position I Gain"       , 2 , READ_WRITE , RAM};
+  item[30] = {84 , "Position P Gain"       , 2 , READ_WRITE , RAM};
+  item[31] = {88 , "Feedforward 2nd Gain"  , 2 , READ_WRITE , RAM};
+  item[32] = {90 , "Feedforward 1st Gain"  , 2 , READ_WRITE , RAM};
+  item[33] = {98 , "Bus Watchdog"          , 1 , READ_WRITE , RAM};
+  item[34] = {100, "Goal PWM"              , 2 , READ_WRITE , RAM};
+  item[35] = {102, "Goal Current"          , 2 , READ_WRITE , RAM};
+  item[36] = {104, "Goal Velocity"         , 4 , READ_WRITE , RAM};
+  item[37] = {108, "Profile Acceleration"  , 4 , READ_WRITE , RAM};
+  item[38] = {112, "Profile Velocity"      , 4 , READ_WRITE , RAM};
+  item[39] = {116, "Goal Position"         , 4 , READ_WRITE , RAM};
+  item[40] = {120, "Realtime Tick"         , 2 , READ       , RAM};
+  item[41] = {122, "Moving"                , 1 , READ       , RAM};
+  item[42] = {123, "Moving Status"         , 1 , READ       , RAM};
+  item[43] = {124, "Present PWM"           , 2 , READ       , RAM};
+  item[44] = {126, "Present Current"       , 2 , READ       , RAM};
+  item[45] = {128, "Present Velocity"      , 4 , READ       , RAM};
+  item[46] = {132, "Present Position"      , 4 , READ       , RAM};
+  item[47] = {136, "Velocity Trajectory"   , 4 , READ       , RAM};
+  item[48] = {140, "Position Trajectory"   , 4 , READ       , RAM};
+  item[49] = {144, "Present Input Voltage" , 2 , READ       , RAM};
+  item[50] = {146, "Present Temperature"   , 1 , READ       , RAM};
+
+  control_table_size = 51;
+#endif  
 }
 
 void setXLInfo()
 {
-  
+  model_info.velocity_to_value_ratio         = 41.71;
+
+  model_info.value_of_0_radian_position      = 2048;
+  model_info.value_of_min_radian_position    = 0;
+  model_info.value_of_max_radian_position    = 4095;
+
+  model_info.min_radian                      = -3.14159265;
+  model_info.max_radian                      =  3.14159265;
 }
 
 void setXMItem()
@@ -540,6 +629,104 @@ void setXMInfo()
   model_info.max_radian = 3.14159265;
 }
 
+void setXHItem()
+{
+#if defined(__OPENCR__) || defined(__OPENCM904__)
+  item[0]  = {7  , "ID"                    , 1 , READ_WRITE , EEPROM};
+  item[1]  = {8  , "Baud Rate"             , 1 , READ_WRITE , EEPROM};
+  item[2]  = {11 , "Operating Mode"        , 1 , READ_WRITE , EEPROM};
+
+  item[3]  = {64 , "Torque Enable"         , 1 , READ_WRITE , RAM};
+  item[4]  = {65 , "LED"                   , 1 , READ_WRITE , RAM};
+  item[5]  = {100, "Goal PWM"              , 2 , READ_WRITE , RAM};
+  item[6]  = {102, "Goal Current"          , 2 , READ_WRITE , RAM};
+  item[7]  = {104, "Goal Velocity"         , 4 , READ_WRITE , RAM};
+  item[8]  = {108, "Profile Acceleration"  , 4 , READ_WRITE , RAM};
+  item[9]  = {112, "Profile Velocity"      , 4 , READ_WRITE , RAM};
+  item[10] = {116, "Goal Position"         , 4 , READ_WRITE , RAM};
+  item[11] = {120, "Realtime Tick"         , 2 , READ       , RAM};
+  item[12] = {122, "Moving"                , 1 , READ       , RAM};
+  item[13] = {123, "Moving Status"         , 1 , READ       , RAM};
+  item[14] = {124, "Present PWM"           , 2 , READ       , RAM};
+  item[15] = {126, "Present Current"       , 2 , READ       , RAM};
+  item[16] = {128, "Present Velocity"      , 4 , READ       , RAM};
+  item[17] = {132, "Present Position"      , 4 , READ       , RAM};
+  item[18] = {136, "Velocity Trajectory"   , 4 , READ       , RAM};
+  item[19] = {140, "Position Trajectory"   , 4 , READ       , RAM};
+  item[20] = {144, "Present Input Voltage" , 2 , READ       , RAM};
+  item[21] = {146, "Present Temperature"   , 1 , READ       , RAM};
+
+  control_table_size = 22;
+#else
+  item[0]  = {0  , "Model Number"          , 2 , READ       , EEPROM};
+  item[1]  = {6  , "Version of Firmware"   , 1 , READ       , EEPROM};
+  item[2]  = {7  , "ID"                    , 1 , READ_WRITE , EEPROM};
+  item[3]  = {8  , "Baud Rate"             , 1 , READ_WRITE , EEPROM};
+  item[4]  = {9  , "Return Delay Time"     , 1 , READ_WRITE , EEPROM};
+  item[5]  = {10 , "Drive Mode"            , 1 , READ_WRITE , EEPROM};
+  item[6]  = {11 , "Operating Mode"        , 1 , READ_WRITE , EEPROM};
+  item[7]  = {12 , "Secondary ID"          , 1 , READ_WRITE , EEPROM};
+  item[8]  = {13 , "Protocol Version"      , 1 , READ_WRITE , EEPROM};
+  item[9]  = {20 , "Homing Offset"         , 4 , READ_WRITE , EEPROM};
+  item[10] = {24 , "Moving Threshold"      , 4 , READ_WRITE , EEPROM};
+  item[11] = {31 , "Temperature Limit"     , 1 , READ_WRITE , EEPROM};
+  item[12] = {32 , "Max Voltage Limit"     , 2 , READ_WRITE , EEPROM};
+  item[13] = {34 , "Min Voltage Limit"     , 2 , READ_WRITE , EEPROM};
+  item[14] = {36 , "PWM Limit"             , 2 , READ_WRITE , EEPROM};
+  item[15] = {38 , "Current Limit"         , 2 , READ_WRITE , EEPROM};
+  item[16] = {40 , "Acceleration Limit"    , 4 , READ_WRITE , EEPROM};
+  item[17] = {44 , "Velocity Limit"        , 4 , READ_WRITE , EEPROM};
+  item[18] = {48 , "Max Position Limit"    , 4 , READ_WRITE , EEPROM};
+  item[19] = {52 , "Min Position Limit"    , 4 , READ_WRITE , EEPROM};
+  item[20] = {63 , "Shutdown"              , 1 , READ_WRITE , EEPROM};
+
+  item[21] = {64 , "Torque Enable"         , 1 , READ_WRITE , RAM};
+  item[22] = {65 , "LED"                   , 1 , READ_WRITE , RAM};
+  item[23] = {68 , "Status Return Level"   , 1 , READ_WRITE , RAM};
+  item[24] = {69 , "Registered Instruction", 1 , READ       , RAM};
+  item[25] = {70 , "Hardware Error Status" , 1 , READ       , RAM};
+  item[26] = {76 , "Velocity I Gain"       , 2 , READ_WRITE , RAM};
+  item[27] = {78 , "Velocity P Gain"       , 2 , READ_WRITE , RAM};
+  item[28] = {80 , "Position D Gain"       , 2 , READ_WRITE , RAM};
+  item[29] = {82 , "Position I Gain"       , 2 , READ_WRITE , RAM};
+  item[30] = {84 , "Position P Gain"       , 2 , READ_WRITE , RAM};
+  item[31] = {88 , "Feedforward 2nd Gain"  , 2 , READ_WRITE , RAM};
+  item[32] = {90 , "Feedforward 1st Gain"  , 2 , READ_WRITE , RAM};
+  item[33] = {98 , "Bus Watchdog"          , 1 , READ_WRITE , RAM};
+  item[34] = {100, "Goal PWM"              , 2 , READ_WRITE , RAM};
+  item[35] = {102, "Goal Current"          , 2 , READ_WRITE , RAM};
+  item[36] = {104, "Goal Velocity"         , 4 , READ_WRITE , RAM};
+  item[37] = {108, "Profile Acceleration"  , 4 , READ_WRITE , RAM};
+  item[38] = {112, "Profile Velocity"      , 4 , READ_WRITE , RAM};
+  item[39] = {116, "Goal Position"         , 4 , READ_WRITE , RAM};
+  item[40] = {120, "Realtime Tick"         , 2 , READ       , RAM};
+  item[41] = {122, "Moving"                , 1 , READ       , RAM};
+  item[42] = {123, "Moving Status"         , 1 , READ       , RAM};
+  item[43] = {124, "Present PWM"           , 2 , READ       , RAM};
+  item[44] = {126, "Present Current"       , 2 , READ       , RAM};
+  item[45] = {128, "Present Velocity"      , 4 , READ       , RAM};
+  item[46] = {132, "Present Position"      , 4 , READ       , RAM};
+  item[47] = {136, "Velocity Trajectory"   , 4 , READ       , RAM};
+  item[48] = {140, "Position Trajectory"   , 4 , READ       , RAM};
+  item[49] = {144, "Present Input Voltage" , 2 , READ       , RAM};
+  item[50] = {146, "Present Temperature"   , 1 , READ       , RAM};
+
+  control_table_size = 51;
+#endif  
+}
+
+void setXHInfo()
+{
+  model_info.velocity_to_value_ratio       = 41.71;
+
+  model_info.value_of_min_radian_position  = 0;
+  model_info.value_of_0_radian_position    = 2048;
+  model_info.value_of_max_radian_position  = 4095;
+
+  model_info.min_radian = -3.14159265;
+  model_info.max_radian = 3.14159265;
+}
+
 ControlTableItem* getItem(uint16_t num)
 {
   if (num == 12 || num == 300 || num == 18)
@@ -554,13 +741,25 @@ ControlTableItem* getItem(uint16_t num)
   {
     setEXItem();
   }
-  else if (num == 29 || num == 310 || num == 320 || num == 360)
+  else if (num == 29 || num == 360)
   {
     setMXItem();
   }
-  else if (num == 1020 || num == 1030 || num == 1060)
+  else if (num == 310 || num == 320)
+  {
+    setExtMXItem();
+  }
+  else if (num == 1060)
+  {
+    setXLItem();
+  }
+  else if (num == 1020 || num == 1030)
   {
     setXMItem();
+  }
+  else if (num == 1000 || num == 1010 || num == 1040 || num == 1050)
+  {
+    setXHItem();
   }
 
   return item;
@@ -580,13 +779,25 @@ ModelInfo* getInfo(uint16_t num)
   {
     setEXInfo();
   }
-  else if (num == 29 || num == 310 || num == 320 || num == 360)
+  else if (num == 29 || num == 360)
   {
     setMXInfo();
   }
-  else if (num == 1020 || num == 1030 || num == 1060)
+  else if (num == 310 || num == 320)
+  {
+    setExtMXInfo();
+  }
+  else if (num == 1060)
+  {
+    setXLInfo();
+  }
+  else if (num == 1020 || num == 1030)
   {
     setXMInfo();
+  }
+  else if (num == 1000 || num == 1010 || num == 1040 || num == 1050)
+  {
+    setXHInfo();
   }
 
   return &model_info;

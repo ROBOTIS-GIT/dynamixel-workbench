@@ -16,19 +16,19 @@
 
 /* Authors: Taehoon Lim (Darby) */
 
-#include "../../include/dynamixel_workbench/dynamixel_toolbox.h"
+#include "../../include/dynamixel_workbench/dynamixel_workbench.h"
 
-DynamixelToolbox::DynamixelToolbox()
+DynamixelWorkbench::DynamixelWorkbench()
 {
 
 }
 
-DynamixelToolbox::~DynamixelToolbox()
+DynamixelWorkbench::~DynamixelWorkbench()
 {
 
 }
 
-bool DynamixelToolbox::begin(char* model_series, char* device_name, uint32_t baud_rate)
+bool DynamixelWorkbench::begin(char* model_series, char* device_name, uint32_t baud_rate)
 {
   bool error = false;
 
@@ -37,16 +37,16 @@ bool DynamixelToolbox::begin(char* model_series, char* device_name, uint32_t bau
   return error;
 }
 
-uint8_t  DynamixelToolbox::scan(uint8_t *get_id)
+uint8_t  DynamixelWorkbench::scan(uint8_t *get_id)
 {
   uint8_t id_cnt = 0;
 
-  id_cnt = driver_.scan(get_id);
+  id_cnt = driver_.scan(get_id, 16);
 
   return id_cnt;
 }
 
-uint16_t DynamixelToolbox::ping(uint8_t id)
+uint16_t DynamixelWorkbench::ping(uint8_t id)
 {
   uint16_t model_num = 0;
 
@@ -55,7 +55,7 @@ uint16_t DynamixelToolbox::ping(uint8_t id)
   return model_num;
 }
 
-bool DynamixelToolbox::reboot(uint8_t id)
+bool DynamixelWorkbench::reboot(uint8_t id)
 {
   bool error = false;
 
@@ -64,7 +64,7 @@ bool DynamixelToolbox::reboot(uint8_t id)
   return error;
 }
 
-bool DynamixelToolbox::reset(uint8_t id)
+bool DynamixelWorkbench::reset(uint8_t id)
 {
   bool error = false;
 
@@ -73,7 +73,7 @@ bool DynamixelToolbox::reset(uint8_t id)
   return error;
 }
 
-bool DynamixelToolbox::jointMode(uint8_t id, uint32_t accel, uint32_t vel)
+bool DynamixelWorkbench::jointMode(uint8_t id, uint32_t accel, uint32_t vel)
 {
   driver_.writeRegister(id, "Operating Mode", 3);
 
@@ -84,7 +84,7 @@ bool DynamixelToolbox::jointMode(uint8_t id, uint32_t accel, uint32_t vel)
   driver_.writeRegister(id, "Profile Velocity", vel);
 }
 
-bool DynamixelToolbox::goalPosition(uint8_t id, uint32_t goal)
+bool DynamixelWorkbench::goalPosition(uint8_t id, uint32_t goal)
 {
   driver_.writeRegister(id, "Goal Position", goal);  
 }

@@ -23,7 +23,7 @@
 #define DXL_BUS_SERIAL3 "3"  //Dynamixel on Serial3(USART3)  <-OpenCM 485EXP
 
 #define DEVICENAME       "3"
-#define BAUDRATE         57600
+#define BAUDRATE         1000000
 
 #define DXL_ID           1
 
@@ -35,7 +35,7 @@ void setup()
   while(!Serial);
 
   driver.begin("XM", DEVICENAME, BAUDRATE);
-  // driver.ping(DXL_ID);
+  driver.ping(DXL_ID);
 
   driver.writeRegister(DXL_ID, "Operating Mode", 3);
 

@@ -1,2 +1,2 @@
-#include "../include/dynamixel_workbench/dynamixel_toolbox.h"
+#include "../include/dynamixel_workbench/dynamixel_workbench.h"
 

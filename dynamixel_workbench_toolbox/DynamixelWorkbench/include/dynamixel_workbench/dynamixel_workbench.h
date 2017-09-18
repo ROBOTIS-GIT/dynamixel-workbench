@@ -16,19 +16,19 @@
 
 /* Authors: Taehoon Lim (Darby) */
 
-#ifndef DYNAMIXEL_TOOLBOX_H_
-#define DYNAMIXEL_TOOLBOX_H_
+#ifndef DYNAMIXEL_WORKBENCH_H_
+#define DYNAMIXEL_WORKBENCH_H_
 
 #include "dynamixel_driver.h"
 
-class DynamixelToolbox
+class DynamixelWorkbench
 {
  private:
   DynamixelDriver driver_;
 
  public:
-  DynamixelToolbox();
-  ~DynamixelToolbox();
+  DynamixelWorkbench();
+  ~DynamixelWorkbench();
 
   bool begin(char* model_series, char* device_name = "/dev/ttyUSB0", uint32_t baud_rate = 57600);
 
@@ -43,4 +43,4 @@ class DynamixelToolbox
   bool goalPosition(uint8_t id, uint32_t goal);
 };
 
-#endif /*DYNAMIXEL_TOOLBOX_H_*/
+#endif /*DYNAMIXEL_WORKBENCH_H_*/
