@@ -22,7 +22,7 @@
 #include "dynamixel_tool.h"
 
 #if defined(__OPENCR__) || defined(__OPENCM904__)
-  #include "DynamixelSDK.h"
+  #include <DynamixelSDK.h>
 #elif defined(__linux__)
   #include "dynamixel_sdk/dynamixel_sdk.h"
 #endif
