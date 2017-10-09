@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 
-/* Authors: Taehoon Lim (Darby) */
+/* Authors: Taehun Lim (Darby) */
 
 #include "../../include/dynamixel_workbench/dynamixel_driver.h"
 
@@ -27,7 +27,21 @@ DynamixelDriver::~DynamixelDriver()
 {
   for (int i = 0; i < tools_cnt_; i++)
   {
-    writeRegister(tools_[i].getID(), "Torque Enable", 0);
+    if (getProtocolVersion() == 1.0)
+    {
+      writeRegister(tools_[i].getID(), "Torque ON/OFF", false);
+    }
+    else if (getProtocolVersion() == 2.0)
+    {
+      if (!strncmp(tools_[i].getModelName(), "XL-320", 6))
+      {
+        writeRegister(tools_[i].getID(), "Torque ON/OFF", false);
+      }
+      else
+      {
+        writeRegister(tools_[i].getID(), "Torque Enable", 0);
+      }
+    }   
   }
   portHandler_->closePort();
 }
@@ -63,6 +77,17 @@ bool DynamixelDriver::begin(char* model_series, char* device_name, uint32_t baud
   {
     setPacketHandler(2.0, &error);
   }
+
+  return error;
+}
+
+bool DynamixelDriver::begin(char* device_name, uint32_t baud_rate, float protocol_version)
+{
+  bool error = false;
+
+  setPortHandler(device_name, &error);
+  setBaudrate(baud_rate, &error);
+  setPacketHandler(protocol_version, &error);
 
   return error;
 }
@@ -143,6 +168,11 @@ void DynamixelDriver::setBaudrate(uint32_t baud_rate, bool *error)
   }
 }
 
+float DynamixelDriver::getProtocolVersion()
+{
+  return packetHandler_->getProtocolVersion();
+}
+
 uint8_t DynamixelDriver::scan(uint8_t *get_id, uint8_t num)
 {
   uint8_t error      = 0;
@@ -156,7 +186,7 @@ uint8_t DynamixelDriver::scan(uint8_t *get_id, uint8_t num)
   printf("...wait for seconds\n");
 #endif
 
-  for (id = 1; id < num; id++)
+  for (id = 1; id <= num; id++)
   {
     if (packetHandler_->ping(portHandler_, id, &model_num, &error) == COMM_SUCCESS)
     {
