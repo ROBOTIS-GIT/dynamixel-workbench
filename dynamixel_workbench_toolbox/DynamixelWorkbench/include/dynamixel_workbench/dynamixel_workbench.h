@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 
-/* Authors: Taehoon Lim (Darby) */
+/* Authors: Taehun Lim (Darby) */
 
 #ifndef DYNAMIXEL_WORKBENCH_H_
 #define DYNAMIXEL_WORKBENCH_H_
@@ -33,13 +33,14 @@ class DynamixelWorkbench
  private:
   DynamixelDriver driver_;
   char dxl_[64];
+  float version_;
 
  public:
   DynamixelWorkbench();
   ~DynamixelWorkbench();
 
-  bool begin(char* model_series, char* device_name = "/dev/ttyUSB0", uint32_t baud_rate = 57600);
-
+  bool begin(char* model_series, char* device_name = "/dev/ttyUSB0", uint32_t baud_rate = 57600, float protocol_version = 1.0);
+ 
   uint8_t  scan(uint8_t *get_id);
   uint16_t ping(uint8_t id);
 
@@ -48,6 +49,7 @@ class DynamixelWorkbench
 
   bool setID(uint8_t id, uint8_t new_id);
   bool setBaud(uint8_t id, uint32_t new_baud);
+  bool setProtocolVersion(uint8_t id, uint8_t new_version);
 
   bool jointMode(uint8_t id, uint16_t accel = 0, uint16_t vel = 0);
   bool wheelMode(uint8_t id, uint16_t accel = 0, uint16_t vel = 0);

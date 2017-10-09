@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 
-/* Authors: Taehoon Lim (Darby) */
+/* Authors: Taehun Lim (Darby) */
 
 #include "../../include/dynamixel_workbench/dynamixel_workbench.h"
 
@@ -28,12 +28,16 @@ DynamixelWorkbench::~DynamixelWorkbench()
 
 }
 
-bool DynamixelWorkbench::begin(char* model_series, char* device_name, uint32_t baud_rate)
+bool DynamixelWorkbench::begin(char* model_series, char* device_name, uint32_t baud_rate, float protocol_version)
 {
   bool error = false;
   
   strcpy(dxl_, model_series);
-  error = driver_.begin(model_series, device_name, baud_rate);
+
+  if (!strncmp(dxl_, "MX", 2) && (protocol_version == 2.0))
+    error = driver_.begin(device_name, baud_rate, protocol_version);
+  else
+    error = driver_.begin(model_series, device_name, baud_rate);
 
   return error;
 }
@@ -84,6 +88,11 @@ bool DynamixelWorkbench::setBaud(uint8_t id, uint32_t new_baud)
   driver_.writeRegister(id, "Baud Rate", new_baud);
 }
 
+bool DynamixelWorkbench::setProtocolVersion(uint8_t id, uint8_t new_version)
+{
+  driver_.writeRegister(id, "Protocol Version", new_version);
+}
+
 bool DynamixelWorkbench::jointMode(uint8_t id, uint16_t accel, uint16_t vel)
 {
   driver_.writeRegister(id, "Operating Mode", X_SERIES_POSITION_CONTROL_MODE);
@@ -116,23 +125,15 @@ bool DynamixelWorkbench::goalSpeed(uint8_t id, int32_t goal)
   driver_.writeRegister(id, "Goal Velocity", goal);  
 }
 
-//TODO
 bool DynamixelWorkbench::setOperatingMode(uint8_t id)
 {
-  const char joint_mode = 3;
-
-  if (!strncmp(dxl_, "AX", 2) || 
-      !strncmp(dxl_, "RX", 2) || 
-      !strncmp(dxl_, "MX", 2) || 
-      !strncmp(dxl_, "EX", 2)  )
+  if (driver_.getProtocolVersion() == 1.0)
   {
     driver_.writeRegister(id, "CW Angle Limit", 0);
     driver_.writeRegister(id, "CCW Angle Limit", 2048);
   }
-  else if (!strncmp(dxl_, "XL", 2) || 
-           !strncmp(dxl_, "XM", 2) || 
-           !strncmp(dxl_, "XH", 2)  )
+  else if (driver_.getProtocolVersion() == 2.0)
   {
-    driver_.writeRegister(id, "Operating Mode", joint_mode);
+    driver_.writeRegister(id, "Operating Mode", X_SERIES_POSITION_CONTROL_MODE);
   }
 }
