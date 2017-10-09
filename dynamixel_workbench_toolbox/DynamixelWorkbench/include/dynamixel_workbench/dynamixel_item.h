@@ -14,12 +14,52 @@
 * limitations under the License.
 *******************************************************************************/
 
-/* Authors: Taehoon Lim (Darby) */
+/* Authors: Taehun Lim (Darby) */
 
 #ifndef DYNAMIXEL_H
 #define DYNAMIXEL_H
 
 #include "control_table_item.h"
+
+#define AX_12A     12
+#define AX_12W     300
+#define AX_18A     18
+
+#define RX_24F     24
+#define RX_28      28
+#define RX_64      64
+
+#define EX_106     107
+
+#define MX_12W     360
+#define MX_28      29
+#define MX_64      310
+#define MX_106     320
+
+#define XL_320     350
+#define XL430_W250 1060
+
+#define XM430_W210 1030
+#define XM430_W350 1020
+
+#define XH430_V210 1050
+#define XH430_V350 1040
+#define XH430_W210 1010
+#define XH430_W350 1000
+
+#define PRO_L42_10_S300_R  35072
+#define PRO_L54_30_S400_R  37928
+#define PRO_L54_30_S500_R  37896
+#define PRO_L54_50_S290_R  38176
+#define PRO_L54_50_S500_R  38152
+
+#define PRO_M42_10_S260_R  43288
+#define PRO_M54_40_S250_R  46096
+#define PRO_M54_60_S250_R  46352
+
+#define PRO_H42_20_S300_R  51200
+#define PRO_H54_100_S500_R 53768
+#define PRO_H54_200_S500_R 54024
 
 typedef struct
 {
@@ -48,6 +88,9 @@ static void setMXInfo();
 
 static void setExtMXItem();
 static void setExtMXInfo();
+
+static void setXL320Item();
+static void setXL320Info();
 
 static void setXLItem();
 static void setXLInfo();

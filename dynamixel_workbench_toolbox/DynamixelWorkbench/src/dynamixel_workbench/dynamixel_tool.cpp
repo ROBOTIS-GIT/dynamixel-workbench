@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 
-/* Authors: Taehoon Lim (Darby) */
+/* Authors: Taehun Lim (Darby) */
 
 #include "../../include/dynamixel_workbench/dynamixel_tool.h"
 
@@ -35,44 +35,143 @@ bool DynamixelTool::begin(uint16_t model_num)
 
 void DynamixelTool::setControlTable(char* name)
 {  
-  if (!strncmp(name, "XM430-W350", strlen(name)))
+  if (!strncmp(name, "AX-12A", strlen(name)))
   { 
-    setControlTable(1020);
+    setControlTable(AX_12A);
   }
-  else if (!strncmp(name, "XM430-W210", strlen(name)))
+  else if (!strncmp(name, "AX-12W", strlen(name)))
   { 
-    setControlTable(1030);
+    setControlTable(AX_12W);
+  }
+  else if (!strncmp(name, "AX-18A", strlen(name)))
+  { 
+    setControlTable(AX_18A);
+  }
+
+  else if (!strncmp(name, "RX-24F", strlen(name)))
+  { 
+    setControlTable(RX_24F);
+  }
+  else if (!strncmp(name, "RX-28", strlen(name)))
+  { 
+    setControlTable(RX_28);
+  }
+  else if (!strncmp(name, "RX-64", strlen(name)))
+  { 
+    setControlTable(RX_64);
+  }
+
+  else if (!strncmp(name, "EX-106", strlen(name)))
+  { 
+    setControlTable(EX_106);
+  }
+
+  else if (!strncmp(name, "MX-12W", strlen(name)))
+  { 
+    setControlTable(MX_12W);
+  }
+  else if (!strncmp(name, "MX-28", strlen(name)))
+  { 
+    setControlTable(MX_28);
+  }
+  else if (!strncmp(name, "MX-64", strlen(name)))
+  { 
+    setControlTable(MX_64);
+  }
+  else if (!strncmp(name, "MX-106", strlen(name)))
+  { 
+    setControlTable(MX_106);
+  }
+
+  else if (!strncmp(name, "XL-320", strlen(name)))
+  { 
+    setControlTable(XL_320);
   }
   else if (!strncmp(name, "XL430-W250", strlen(name)))
   { 
-    setControlTable(1060);
+    setControlTable(XL430_W250);
+  }
+
+  else if (!strncmp(name, "XM430-W210", strlen(name)))
+  { 
+    setControlTable(XM430_W210);
+  }
+  else if (!strncmp(name, "XM430-W350", strlen(name)))
+  { 
+    setControlTable(XM430_W350);
+  }
+
+  else if (!strncmp(name, "XH430-V210", strlen(name)))
+  { 
+    setControlTable(XH430_V210);
+  }
+  else if (!strncmp(name, "XH430-V350", strlen(name)))
+  { 
+    setControlTable(XH430_V350);
+  }
+  else if (!strncmp(name, "XH430-W210", strlen(name)))
+  { 
+    setControlTable(XH430_W210);
+  }
+  else if (!strncmp(name, "XH430-W350", strlen(name)))
+  { 
+    setControlTable(XH430_W350);
   }
 }
 
 void DynamixelTool::setControlTable(uint16_t num)
 {
-  if (num == 1020)
-  {
+  if (num == AX_12A)
+    model_name_ = "AX-12A";
+  else if (num == AX_12W)
+    model_name_ = "AX-12W";
+  else if (num == AX_18A)
+    model_name_ = "AX-18A";
+
+  else if (num == RX_24F)
+    model_name_ = "RX-24F";
+  else if (num == RX_28)
+    model_name_ = "RX-28";
+  else if (num == RX_64)
+    model_name_ = "RX-64";
+
+  else if (num == EX_106)
+    model_name_ = "EX-106";
+
+  else if (num == EX_106)
+    model_name_ = "EX-106";
+
+  else if (num == MX_12W)
+    model_name_ = "MX-12W";
+  else if (num == MX_28)
+    model_name_ = "MX-28";
+  else if (num == MX_64)
+    model_name_ = "MX-64";
+  else if (num == MX_106)
+    model_name_ = "MX-106";
+
+  else if (num == XL_320)
+    model_name_ = "XL-320";
+  else if (num == XL430_W250)
+    model_name_ = "XL430-W250";
+
+  else if (num == XM430_W210)
+    model_name_ = "XM430-W210";
+  else if (num == XM430_W350)
     model_name_ = "XM430-W350";
 
-    item_               = getItem(num);
-    control_table_size_ = getSize();
-    model_info_         = getInfo(num);
-  }
-  if (num == 1030)
-  {
-    model_name_ = "XM430-W210";
-    item_               = getItem(num);
-    control_table_size_ = getSize();
-    model_info_         = getInfo(num);
-  }
-  else if (num == 1060)
-  {
-    model_name_ = "XL430-W250";
-    item_               = getItem(num);
-    control_table_size_ = getSize();
-    model_info_         = getInfo(num);
-  }
+  else if (num == XH430_V210)
+    model_name_ = "XH430-V210";
+  else if (num == XH430_V350)
+    model_name_ = "XH430-V350";
+  else if (num == XH430_W210)
+    model_name_ = "XH430-W210";
+  else if (num == XH430_W350)
+    model_name_ = "XH430-W350";
+
+  item_               = getItem(num);
+  control_table_size_ = getSize();
+  model_info_         = getInfo(num);
 }
 
 char* DynamixelTool::getModelName()
