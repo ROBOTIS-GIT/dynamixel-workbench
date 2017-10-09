@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 
-/* Authors: Taehoon Lim (Darby) */
+/* Authors: Taehun Lim (Darby) */
 
 #ifndef CONTROL_TABLE_ITEM_H
 #define CONTROL_TABLE_ITEM_H
