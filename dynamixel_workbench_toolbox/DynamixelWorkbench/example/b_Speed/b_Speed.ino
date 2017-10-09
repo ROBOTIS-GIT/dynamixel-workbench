@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 
-/* Authors: Taehoon Lim (Darby) */
+/* Authors: Taehun Lim (Darby) */
 
 #include <DynamixelWorkbench.h>
 
@@ -30,7 +30,7 @@ DynamixelWorkbench dxl_wb;
 
 void setup() 
 {
-  dxl_wb.begin("XM", DXL_BUS_SERIAL3, BAUDRATE);
+  dxl_wb.begin("XM", DXL_BUS_SERIAL4, BAUDRATE);
   dxl_wb.ping(DXL_ID);
 
   dxl_wb.wheelMode(DXL_ID);
