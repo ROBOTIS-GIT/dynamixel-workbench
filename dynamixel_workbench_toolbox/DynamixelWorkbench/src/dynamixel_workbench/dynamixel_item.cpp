@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 
-/* Authors: Taehoon Lim (Darby) */
+/* Authors: Taehun Lim (Darby) */
 
 #include "../../include/dynamixel_workbench/dynamixel_item.h"
 
@@ -432,6 +432,84 @@ void setExtMXInfo()
   model_info.max_radian                      =  3.14159265;
 }
 
+void setXL320Item()
+{
+#if defined(__OPENCR__) || defined(__OPENCM904__)
+  item[0]  = {3  , "ID"                            , 1 , READ_WRITE , EEPROM};
+  item[1]  = {4  , "Baud Rate"                     , 1 , READ_WRITE , EEPROM};
+  item[2]  = {6  , "CW Angle Limit"                , 2 , READ_WRITE , EEPROM};
+  item[3]  = {8  , "CCW Angle Limit"               , 2 , READ_WRITE , EEPROM};
+  item[4]  = {11 , "Control Mode"                  , 1 , READ_WRITE , EEPROM};
+
+  item[5]  = {24 , "Torque ON/OFF"                 , 1 , READ_WRITE , RAM};
+  item[6]  = {25 , "LED"                           , 1 , READ_WRITE , RAM};
+  item[7]  = {27 , "D gain"                        , 1 , READ_WRITE , RAM};
+  item[8]  = {28 , "I gain"                        , 1 , READ_WRITE , RAM};
+  item[9]  = {29 , "P gain"                        , 1 , READ_WRITE , RAM};
+  item[10] = {30 , "Goal Position"                 , 2 , READ_WRITE , RAM};
+  item[11] = {32 , "Moving Speed"                  , 2 , READ_WRITE , RAM};
+  item[12] = {35 , "Torque Limit"                  , 2 , READ_WRITE , RAM};
+  item[13] = {37 , "Present Position"              , 2 , READ       , RAM};
+  item[14] = {39 , "Present Speed"                 , 2 , READ       , RAM};
+  item[15] = {41 , "Present Load"                  , 2 , READ       , RAM};
+  item[16] = {45 , "Present Voltage"               , 1 , READ       , RAM};
+  item[17] = {46 , "Present Temperature"           , 1 , READ       , RAM};
+  item[18] = {47 , "Registered Instruction"        , 1 , READ       , RAM};
+  item[19] = {49 , "Moving"                        , 1 , READ       , RAM};
+  item[20] = {50 , "Hardware Error Status"         , 1 , READ       , RAM};
+  item[21] = {51 , "Punch"                         , 2 , READ_WRITE , RAM};
+
+  control_table_size = 22;
+#else
+  item[0]  = {0  , "Model Number"                  , 2 , READ       , EEPROM};
+  item[1]  = {2  , "Version of Firmware"           , 1 , READ       , EEPROM};
+  item[2]  = {3  , "ID"                            , 1 , READ_WRITE , EEPROM};
+  item[3]  = {4  , "Baud Rate"                     , 1 , READ_WRITE , EEPROM};
+  item[4]  = {5  , "Return Delay Time"             , 1 , READ_WRITE , EEPROM};
+  item[5]  = {6  , "CW Angle Limit"                , 2 , READ_WRITE , EEPROM};
+  item[6]  = {8  , "CCW Angle Limit"               , 2 , READ_WRITE , EEPROM};
+  item[7]  = {11 , "Control Mode"                  , 1 , READ_WRITE , EEPROM};
+  item[8]  = {12 , "Limit Temperature"             , 1 , READ_WRITE , EEPROM};
+  item[9]  = {13 , "Down Limit Voltage"            , 4 , READ_WRITE , EEPROM};
+  item[10] = {14 , "Up Limit Voltage"              , 4 , READ_WRITE , EEPROM};
+  item[11] = {15 , "Max Torque"                    , 2 , READ_WRITE , EEPROM};
+  item[12] = {17 , "Return Level"                  , 2 , READ_WRITE , EEPROM};
+  item[13] = {18 , "Alarm Shutdown"                , 2 , READ_WRITE , EEPROM};
+
+  item[14] = {24 , "Torque ON/OFF"                 , 1 , READ_WRITE , RAM};
+  item[15] = {25 , "LED"                           , 1 , READ_WRITE , RAM};
+  item[16] = {27 , "D gain"                        , 1 , READ_WRITE , RAM};
+  item[17] = {28 , "I gain"                        , 1 , READ_WRITE , RAM};
+  item[18] = {29 , "P gain"                        , 1 , READ_WRITE , RAM};
+  item[19] = {30 , "Goal Position"                 , 2 , READ_WRITE , RAM};
+  item[20] = {32 , "Moving Speed"                  , 2 , READ_WRITE , RAM};
+  item[21] = {35 , "Torque Limit"                  , 2 , READ_WRITE , RAM};
+  item[22] = {37 , "Present Position"              , 2 , READ       , RAM};
+  item[23] = {39 , "Present Speed"                 , 2 , READ       , RAM};
+  item[24] = {41 , "Present Load"                  , 2 , READ       , RAM};
+  item[25] = {45 , "Present Voltage"               , 1 , READ       , RAM};
+  item[26] = {46 , "Present Temperature"           , 1 , READ       , RAM};
+  item[27] = {47 , "Registered Instruction"        , 1 , READ       , RAM};
+  item[28] = {49 , "Moving"                        , 1 , READ       , RAM};
+  item[29] = {50 , "Hardware Error Status"         , 1 , READ       , RAM};
+  item[30] = {51 , "Punch"                         , 2 , READ_WRITE , RAM};
+
+  control_table_size = 31;
+#endif  
+}
+
+void setXL320Info()
+{
+  model_info.velocity_to_value_ratio         = 86.03;
+  
+  model_info.value_of_0_radian_position      = 512;
+  model_info.value_of_min_radian_position    = 0;
+  model_info.value_of_max_radian_position    = 1024;
+
+  model_info.min_radian                      = -3.14159265;
+  model_info.max_radian                      =  3.14159265;
+}
+
 void setXLItem()
 {
 #if defined(__OPENCR__) || defined(__OPENCM904__)
@@ -729,35 +807,39 @@ void setXHInfo()
 
 ControlTableItem* getItem(uint16_t num)
 {
-  if (num == 12 || num == 300 || num == 18)
+  if (num == AX_12A || num == AX_12W || num == AX_18A)
   {
     setAXItem();
   }
-  else if (num == 24 || num == 28 || num == 64)
+  else if (num == RX_24F || num == RX_28 || num == RX_64)
   {
     setRXItem();
   }
-  else if (num == 107)
+  else if (num == EX_106)
   {
     setEXItem();
   }
-  else if (num == 29 || num == 360)
+  else if (num == MX_12W || num == MX_28)
   {
     setMXItem();
   }
-  else if (num == 310 || num == 320)
+  else if (num == MX_64 || num == MX_106)
   {
     setExtMXItem();
   }
-  else if (num == 1060)
+  else if (num == XL_320)
+  {
+    setXL320Item();
+  }
+  else if (num == XL430_W250)
   {
     setXLItem();
   }
-  else if (num == 1020 || num == 1030)
+  else if (num == XM430_W210 || num == XM430_W350)
   {
     setXMItem();
   }
-  else if (num == 1000 || num == 1010 || num == 1040 || num == 1050)
+  else if (num == XH430_V210 || num == XH430_V350 || num == XH430_W210 || num == XH430_W350)
   {
     setXHItem();
   }
@@ -767,35 +849,39 @@ ControlTableItem* getItem(uint16_t num)
 
 ModelInfo* getInfo(uint16_t num)
 {  
-  if (num == 12 || num == 300 || num == 18)
+  if (num == AX_12A || num == AX_12W || num == AX_18A)
   {
     setAXInfo();
   }
-  else if (num == 24 || num == 28 || num == 64)
+  else if (num == RX_24F || num == RX_28 || num == RX_64)
   {
     setRXInfo();
   }
-  else if (num == 107)
+  else if (num == EX_106)
   {
     setEXInfo();
   }
-  else if (num == 29 || num == 360)
+  else if (num == MX_12W || num == MX_28)
   {
     setMXInfo();
   }
-  else if (num == 310 || num == 320)
+  else if (num == MX_64 || num == MX_106)
   {
     setExtMXInfo();
   }
-  else if (num == 1060)
+  else if (num == XL_320)
+  {
+    setXL320Info();
+  }
+  else if (num == XL430_W250)
   {
     setXLInfo();
   }
-  else if (num == 1020 || num == 1030)
+  else if (num == XM430_W210 || num == XM430_W350)
   {
     setXMInfo();
   }
-  else if (num == 1000 || num == 1010 || num == 1040 || num == 1050)
+  else if (num == XH430_V210 || num == XH430_V350 || num == XH430_W210 || num == XH430_W350)
   {
     setXHInfo();
   }
