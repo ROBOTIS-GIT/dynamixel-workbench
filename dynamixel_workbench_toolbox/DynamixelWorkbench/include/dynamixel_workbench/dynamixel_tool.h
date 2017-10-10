@@ -37,7 +37,7 @@ class DynamixelTool
 
   uint8_t control_table_size_;
   ControlTableItem* item_;
-  ModelInfo* model_info_;
+  ModelInfo* info_;
 
  public:
   DynamixelTool();

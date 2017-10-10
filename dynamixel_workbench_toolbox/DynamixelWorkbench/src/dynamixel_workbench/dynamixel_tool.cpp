@@ -171,7 +171,7 @@ void DynamixelTool::setControlTable(uint16_t num)
 
   item_               = getItem(num);
   control_table_size_ = getSize();
-  model_info_         = getInfo(num);
+  info_         = getInfo(num);
 }
 
 char* DynamixelTool::getModelName()
@@ -181,37 +181,37 @@ char* DynamixelTool::getModelName()
 
 float DynamixelTool::getVelocityToValueRatio()
 {
-  return model_info_->velocity_to_value_ratio;
+  return info_->velocity_to_value_ratio;
 }
 
 float DynamixelTool::getTorqueToCurrentValueRatio()
 {
-  return model_info_->torque_to_current_value_ratio;
+  return info_->torque_to_current_value_ratio;
 }
 
 int32_t DynamixelTool::getValueOfMinRadianPosition()
 {
-  return model_info_->value_of_min_radian_position;
+  return info_->value_of_min_radian_position;
 }
 
 int32_t DynamixelTool::getValueOfMaxRadianPosition()
 {
-  return model_info_->value_of_max_radian_position;
+  return info_->value_of_max_radian_position;
 }
 
 int32_t DynamixelTool::getValueOfZeroRadianPosition()
 {
-  return model_info_->value_of_0_radian_position;
+  return info_->value_of_0_radian_position;
 }
 
 float DynamixelTool::getMinRadian()
 {
-  return model_info_->min_radian;
+  return info_->min_radian;
 }
 
 float DynamixelTool::getMaxRadian()
 {
-  return model_info_->max_radian;
+  return info_->max_radian;
 }
 
 uint8_t DynamixelTool::getControlTableSize()
