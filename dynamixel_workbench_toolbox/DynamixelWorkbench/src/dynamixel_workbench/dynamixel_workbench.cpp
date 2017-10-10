@@ -93,47 +93,126 @@ bool DynamixelWorkbench::setProtocolVersion(uint8_t id, uint8_t new_version)
   driver_.writeRegister(id, "Protocol Version", new_version);
 }
 
-bool DynamixelWorkbench::jointMode(uint8_t id, uint16_t accel, uint16_t vel)
+bool DynamixelWorkbench::jointMode(uint8_t id, uint16_t vel, uint16_t acc)
 {
-  driver_.writeRegister(id, "Operating Mode", X_SERIES_POSITION_CONTROL_MODE);
+  setPositionControlMode(id);
 
-  driver_.writeRegister(id, "Torque Enable", 1);
+  torque(id, TRUE);
 
-  driver_.writeRegister(id, "Profile Acceleration", accel);
-
-  driver_.writeRegister(id, "Profile Velocity", vel);
+  if (driver_.getProtocolVersion() == 1.0)
+  {
+    driver_.writeRegister(id, "Moving Speed", vel);
+  }
+  else if (driver_.getProtocolVersion() == 2.0)
+  {    
+    if (!strncmp(dxl_, "XL320", 5) || !strncmp(dxl_, "PRO", 3))
+    {
+      driver_.writeRegister(id, "Moving Speed", vel);
+    }
+    else
+    {
+      driver_.writeRegister(id, "Profile Acceleration", acc);
+      driver_.writeRegister(id, "Profile Velocity", vel);
+    }
+  }
 }
 
-bool DynamixelWorkbench::wheelMode(uint8_t id, uint16_t accel, uint16_t vel)
+bool DynamixelWorkbench::wheelMode(uint8_t id, uint16_t vel, uint16_t acc)
 {
-  driver_.writeRegister(id, "Operating Mode", X_SERIES_VELOCITY_CONTROL_MODE);
+  setVelocityControlMode(id);
 
-  driver_.writeRegister(id, "Torque Enable", 1);
+  torque(id, TRUE);
 
-  driver_.writeRegister(id, "Profile Acceleration", accel);
-
-  driver_.writeRegister(id, "Profile Velocity", vel);
+  if (driver_.getProtocolVersion() == 2.0 && strncmp(dxl_, "PRO", 3))
+  {   
+    driver_.writeRegister(id, "Profile Acceleration", acc);
+    driver_.writeRegister(id, "Profile Velocity", vel);
+  }
 }
 
 bool DynamixelWorkbench::goalPosition(uint8_t id, uint16_t goal)
 {
-  driver_.writeRegister(id, "Goal Position", goal);  
+  driver_.writeRegister(id, "Goal Position", goal);
 }
 
 bool DynamixelWorkbench::goalSpeed(uint8_t id, int32_t goal)
 {
-  driver_.writeRegister(id, "Goal Velocity", goal);  
+  if (driver_.getProtocolVersion() == 1.0)
+  {
+    driver_.writeRegister(id, "Moving Speed", goal);  
+  }
+  else if (driver_.getProtocolVersion() == 2.0)
+  {
+    if (!strncmp(dxl_, "XL320", 5))
+      driver_.writeRegister(id, "Moving Speed", goal);
+    else
+      driver_.writeRegister(id, "Goal Velocity", goal);  
+  }
 }
 
-bool DynamixelWorkbench::setOperatingMode(uint8_t id)
+bool DynamixelWorkbench::torque(uint8_t id, bool onoff)
+{
+  if (driver_.getProtocolVersion() == 1.0)
+  {
+    driver_.writeRegister(id, "Torque ON/OFF", onoff);
+  }
+  else if (driver_.getProtocolVersion() == 2.0)
+  {
+    if (!strncmp(dxl_, "XL320", 5))
+    {
+      driver_.writeRegister(id, "Torque ON/OFF", onoff);
+    }
+    else
+    {
+      driver_.writeRegister(id, "Torque Enable", onoff);
+    }
+  }
+}
+
+bool DynamixelWorkbench::setPositionControlMode(uint8_t id)
+{
+  if (driver_.getProtocolVersion() == 1.0)
+  {
+    if (!strncmp(dxl_, "AX", 2) || !strncmp(dxl_, "RX", 2))
+    {
+      driver_.writeRegister(id, "CW Angle Limit", 0);
+      driver_.writeRegister(id, "CCW Angle Limit", 1023);
+    }
+    else
+    {
+      driver_.writeRegister(id, "CW Angle Limit", 0);
+      driver_.writeRegister(id, "CCW Angle Limit", 4095);
+    }
+  }
+  else if (driver_.getProtocolVersion() == 2.0)
+  {
+    if (!strncmp(dxl_, "XL320", 5))
+    {
+      driver_.writeRegister(id, "CW Angle Limit", 0);
+      driver_.writeRegister(id, "CCW Angle Limit", 1023);
+      driver_.writeRegister(id, "Control Mode", XL320_POSITION_CONTROL_MODE);
+    }
+    else
+      driver_.writeRegister(id, "Operating Mode", X_SERIES_POSITION_CONTROL_MODE);
+  }
+}
+
+bool DynamixelWorkbench::setVelocityControlMode(uint8_t id)
 {
   if (driver_.getProtocolVersion() == 1.0)
   {
     driver_.writeRegister(id, "CW Angle Limit", 0);
-    driver_.writeRegister(id, "CCW Angle Limit", 2048);
+    driver_.writeRegister(id, "CCW Angle Limit", 0);
   }
   else if (driver_.getProtocolVersion() == 2.0)
   {
-    driver_.writeRegister(id, "Operating Mode", X_SERIES_POSITION_CONTROL_MODE);
-  }
+    if (!strncmp(dxl_, "XL320", 5))
+    {
+      driver_.writeRegister(id, "CW Angle Limit", 0);
+      driver_.writeRegister(id, "CCW Angle Limit", 0);
+      driver_.writeRegister(id, "Control Mode", XL320_VELOCITY_CONTROL_MODE);
+    }
+    else
+      driver_.writeRegister(id, "Operating Mode", X_SERIES_VELOCITY_CONTROL_MODE);
+  }   
 }

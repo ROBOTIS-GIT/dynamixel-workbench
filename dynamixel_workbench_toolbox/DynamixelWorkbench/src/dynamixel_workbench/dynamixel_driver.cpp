@@ -29,17 +29,17 @@ DynamixelDriver::~DynamixelDriver()
   {
     if (getProtocolVersion() == 1.0)
     {
-      writeRegister(tools_[i].getID(), "Torque ON/OFF", false);
+      writeRegister(tools_[i].getID(), "Torque ON/OFF", FALSE);
     }
     else if (getProtocolVersion() == 2.0)
     {
       if (!strncmp(tools_[i].getModelName(), "XL-320", 6))
       {
-        writeRegister(tools_[i].getID(), "Torque ON/OFF", false);
+        writeRegister(tools_[i].getID(), "Torque ON/OFF", FALSE);
       }
       else
       {
-        writeRegister(tools_[i].getID(), "Torque Enable", 0);
+        writeRegister(tools_[i].getID(), "Torque Enable", FALSE);
       }
     }   
   }

@@ -21,12 +21,20 @@
 
 #include "dynamixel_driver.h"
 
+#define XL320_POSITION_CONTROL_MODE 0
+#define XL320_VELOCITY_CONTROL_MODE 1
+
 #define X_SERIES_CURRENT_CONTROL_MODE                0
 #define X_SERIES_VELOCITY_CONTROL_MODE               1
 #define X_SERIES_POSITION_CONTROL_MODE               3
 #define X_SERIES_EXTENDED_POSITION_CONTROL_MODE      4
 #define X_SERIES_CURRENT_BASED_POSITION_CONTROL_MODE 5
 #define X_SERIES_VOLTAGE_CONTROL_MODE                16
+
+#define PRO_SERIES_TORQUE_CONTROL_MODE                 0
+#define PRO_SERIES_VELOCITY_CONTROL_MODE               1
+#define PRO_SERIES_POSITION_CONTROL_MODE               3
+#define PRO_SERIES_EXTENDED_POSITION_CONTROL_MODE      4
 
 class DynamixelWorkbench
 {
@@ -51,14 +59,16 @@ class DynamixelWorkbench
   bool setBaud(uint8_t id, uint32_t new_baud);
   bool setProtocolVersion(uint8_t id, uint8_t new_version);
 
-  bool jointMode(uint8_t id, uint16_t accel = 0, uint16_t vel = 0);
-  bool wheelMode(uint8_t id, uint16_t accel = 0, uint16_t vel = 0);
+  bool jointMode(uint8_t id, uint16_t vel = 0, uint16_t acc = 0);
+  bool wheelMode(uint8_t id, uint16_t vel = 0, uint16_t acc = 0);
 
   bool goalPosition(uint8_t id, uint16_t goal);
   bool goalSpeed(uint8_t id, int32_t goal);
 
  private:
-  bool setOperatingMode(uint8_t id);  //TODO
+  bool torque(uint8_t id, bool onoff);
+  bool setPositionControlMode(uint8_t id);
+  bool setVelocityControlMode(uint8_t id);
 };
 
 #endif /*DYNAMIXEL_WORKBENCH_H_*/
