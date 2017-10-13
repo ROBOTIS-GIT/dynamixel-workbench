@@ -41,13 +41,12 @@ class DynamixelWorkbench
  private:
   DynamixelDriver driver_;
   char dxl_[64];
-  float version_;
 
  public:
   DynamixelWorkbench();
   ~DynamixelWorkbench();
 
-  bool begin(char* model_series, char* device_name = "/dev/ttyUSB0", uint32_t baud_rate = 57600, float protocol_version = 1.0);
+  bool begin(char* device_name = "/dev/ttyUSB0", uint32_t baud_rate = 57600);
  
   uint8_t  scan(uint8_t *get_id);
   uint16_t ping(uint8_t id);
