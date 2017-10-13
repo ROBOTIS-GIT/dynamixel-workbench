@@ -30,7 +30,10 @@ DynamixelWorkbench dxl_wb;
 
 void setup() 
 {
-  dxl_wb.begin("XM", DXL_BUS_SERIAL4, BAUDRATE);
+  Serial.begin(57600);
+  while(!Serial);
+
+  dxl_wb.begin(DXL_BUS_SERIAL4, BAUDRATE);
   dxl_wb.ping(DXL_ID);
 
   dxl_wb.jointMode(DXL_ID);
@@ -42,7 +45,7 @@ void loop()
   
   delay(2000);
 
-  dxl_wb.goalPosition(DXL_ID, 2048);
+  dxl_wb.goalPosition(DXL_ID, 3000);
 
   delay(2000);
 }
