@@ -34,6 +34,8 @@ class DynamixelDriver
  private:
   dynamixel::PortHandler   *portHandler_;
   dynamixel::PacketHandler *packetHandler_;
+  dynamixel::PacketHandler *packetHandler_1;
+  dynamixel::PacketHandler *packetHandler_2;
 
   dynamixel::GroupSyncWrite *groupSyncWrite_;
   dynamixel::GroupSyncRead  *groupSyncRead_;
@@ -42,25 +44,22 @@ class DynamixelDriver
   dynamixel::GroupBulkRead  *groupBulkRead_;
  
   DynamixelTool tools_[DXL_NUM];
-
   uint8_t tools_cnt_;
+
+  char dxl_[64];
 
  public:
   DynamixelDriver();
   ~DynamixelDriver();
 
-  void setTools(uint16_t model_num, uint8_t id);
-  uint8_t findTools(uint8_t id);
-  uint8_t theNumberOfTools();
-
-  bool begin(char* model_series, char* device_name = "/dev/ttyUSB0", uint32_t baud_rate = 57600);
-  bool begin(char* device_name = "/dev/ttyUSB0", uint32_t baud_rate = 57600, float protocol_version = 2.0);
+  bool begin(char* device_name = "/dev/ttyUSB0", uint32_t baud_rate = 57600);
 
   void setPortHandler(char* device_name, bool *error);
-  void setPacketHandler(float protocol_version, bool *error);
+  void setPacketHandler(bool *error);
   void setBaudrate(uint32_t baud_rate, bool *error);
 
   float getProtocolVersion();
+  char* getModelName(uint8_t id);
 
   uint8_t  scan(uint8_t *get_id, uint8_t num = 252);
   uint16_t ping(uint8_t id);
@@ -88,6 +87,11 @@ class DynamixelDriver
 
   int32_t convertRadian2Value(int8_t id, float radian);
   float convertValue2Radian(int8_t id, int32_t value);
+
+ private:
+  void setTools(uint16_t model_num, uint8_t id);
+  uint8_t findTools(uint8_t id);
+  uint8_t theNumberOfTools();
 };
 
 #endif //DYNAMIXEL_WORKBENCH_DYNAMIXEL_DRIVER_H
