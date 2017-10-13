@@ -32,7 +32,7 @@
 class DynamixelTool
 {
  private:
-  char* model_name_;
+  char model_name_[64];
   uint8_t id_;
 
   uint8_t control_table_size_;
