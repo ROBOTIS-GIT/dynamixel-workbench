@@ -64,6 +64,9 @@ class DynamixelWorkbench
   bool goalPosition(uint8_t id, uint16_t goal);
   bool goalSpeed(uint8_t id, int32_t goal);
 
+  bool writeValue(uint8_t id, char* item_name, int32_t value);
+  int32_t readValue(uint8_t id, char* item_name);
+
  private:
   bool torque(uint8_t id, bool onoff);
   bool setPositionControlMode(uint8_t id);

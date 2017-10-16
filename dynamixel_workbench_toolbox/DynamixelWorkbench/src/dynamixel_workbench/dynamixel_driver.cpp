@@ -238,7 +238,7 @@ uint8_t DynamixelDriver::scan(uint8_t *get_id, uint8_t num)
 #endif  
 
     strcpy(dxl_, tools_[0].getModelName());
-    if (!strncmp(dxl_, "AX", 2) || !strncmp(dxl_, "RX", 2) || !strncmp(dxl_, "EX", 2))
+    if (!strncmp(dxl_, "AX", 2) || !strncmp(dxl_, "RX", 2) || !strncmp(dxl_, "EX", 2) || !strncmp(dxl_, "MX", 2))
       packetHandler_ = dynamixel::PacketHandler::getPacketHandler(1.0);
     else
       packetHandler_ = dynamixel::PacketHandler::getPacketHandler(2.0);
@@ -282,7 +282,7 @@ uint16_t DynamixelDriver::ping(uint8_t id)
 #endif    
 
   strcpy(dxl_, tools_[0].getModelName());
-  if (!strncmp(dxl_, "AX", 2) || !strncmp(dxl_, "RX", 2) || !strncmp(dxl_, "EX", 2))
+  if (!strncmp(dxl_, "AX", 2) || !strncmp(dxl_, "RX", 2) || !strncmp(dxl_, "EX", 2) || !strncmp(dxl_, "MX", 2))
     packetHandler_ = dynamixel::PacketHandler::getPacketHandler(1.0);
   else
     packetHandler_ = dynamixel::PacketHandler::getPacketHandler(2.0);
@@ -588,6 +588,7 @@ bool DynamixelDriver::readRegister(uint8_t id, char *item_name, int32_t *data)
 #endif
     return false;
   }
+
   return true;
 }
 

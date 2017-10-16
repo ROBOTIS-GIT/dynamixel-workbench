@@ -239,7 +239,7 @@ ControlTableItem* DynamixelTool::getControlItem(char* item_name)
 
   for (int num = 0; num < control_table_size_; num++)
   {
-    if (!strncmp(item_name, item_[num].item_name, strlen(item_name)))
+    if (!strncmp(item_name, item_[num].item_name, strlen(item_[num].item_name)))
     {
       cti = &item_[num];
       return cti;

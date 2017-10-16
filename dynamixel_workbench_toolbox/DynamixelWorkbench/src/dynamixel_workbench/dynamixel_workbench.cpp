@@ -75,11 +75,21 @@ bool DynamixelWorkbench::reset(uint8_t id)
 
 bool DynamixelWorkbench::setID(uint8_t id, uint8_t new_id)
 {
+  torque(id, FALSE);
+
   driver_.writeRegister(id, "ID", new_id);
+
+#if defined(__OPENCR__) || defined(__OPENCM904__)
+  delay(1000);
+#else
+  sleep(1);
+#endif
 }
 
 bool DynamixelWorkbench::setBaud(uint8_t id, uint32_t new_baud)
 {
+  torque(id, FALSE);
+
   if (driver_.getProtocolVersion() == 1.0)
   {
     if (new_baud == 9600)
@@ -192,6 +202,23 @@ bool DynamixelWorkbench::goalSpeed(uint8_t id, int32_t goal)
       driver_.writeRegister(id, "Goal Velocity", goal);  
   }
 }
+
+bool DynamixelWorkbench::writeValue(uint8_t id, char* item_name, int32_t value)
+{
+  return driver_.writeRegister(id, item_name, value);
+}
+
+int32_t DynamixelWorkbench::readValue(uint8_t id, char* item_name)
+{
+  static int32_t value = 0;
+
+  if (driver_.readRegister(id, item_name, &value))
+    return value;
+}
+
+/*/////////////////////////////////////////////////////////////////////////////
+// Private Function
+*//////////////////////////////////////////////////////////////////////////////
 
 bool DynamixelWorkbench::torque(uint8_t id, bool onoff)
 {
