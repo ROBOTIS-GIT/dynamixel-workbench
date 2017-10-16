@@ -27,8 +27,6 @@
 #define DXL_ID    1
 
 DynamixelWorkbench dxl_wb;
-bool is_moving = false;
-int goal_position = 0;
 
 void setup() 
 {
@@ -38,22 +36,10 @@ void setup()
   dxl_wb.begin(DXL_BUS_SERIAL3, BAUDRATE);
   dxl_wb.ping(DXL_ID);
 
-  dxl_wb.jointMode(DXL_ID);
-
-  // dxl_wb.writeValue(DXL_ID, "Torque Enable", false);
+  // Factory reset (ID : 1, Baud Rate : 57600 or 1000000(AX or MX-12W))
+  dxl_wb.reset(DXL_ID);
 }
 
 void loop() 
 {
-  is_moving = dxl_wb.readValue(DXL_ID, "Moving");
-
-  if (is_moving == false)
-  {
-    dxl_wb.writeValue(DXL_ID, "Goal Position", goal_position);
-
-    if (goal_position == 3000)
-      goal_position = 0;
-    else
-      goal_position = 3000;
-  }
 }

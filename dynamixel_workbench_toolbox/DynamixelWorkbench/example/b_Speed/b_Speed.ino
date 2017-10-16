@@ -33,7 +33,7 @@ void setup()
   Serial.begin(57600);
   while(!Serial);
 
-  dxl_wb.begin(DXL_BUS_SERIAL4, BAUDRATE);
+  dxl_wb.begin(DXL_BUS_SERIAL3, BAUDRATE);
   dxl_wb.ping(DXL_ID);
 
   dxl_wb.wheelMode(DXL_ID);

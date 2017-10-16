@@ -35,7 +35,7 @@ void setup()
 
   uint8_t get_id;
 
-  dxl_wb.begin(DXL_BUS_SERIAL4, BAUDRATE);
+  dxl_wb.begin(DXL_BUS_SERIAL3, BAUDRATE);
   dxl_wb.scan(&get_id);
 
   Serial.println("");
@@ -61,7 +61,7 @@ void loop()
   
   delay(2000);
 
-  dxl_wb.goalPosition(NEW_DXL_ID, 500);
+  dxl_wb.goalPosition(NEW_DXL_ID, 2000);
 
   delay(2000);
 }
