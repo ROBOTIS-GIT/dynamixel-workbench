@@ -23,12 +23,11 @@
 #define DXL_BUS_SERIAL3 "3"            //Dynamixel on Serial3(USART3)  <-OpenCM 485EXP
 #define DXL_BUS_SERIAL4 "/dev/ttyUSB0" //Dynamixel on Serial3(USART3)  <-OpenCR
 
-#define BAUDRATE  1000000
-#define DXL_ID    1
+#define BAUDRATE  57600
+#define DXL_JOINT_ID    1
+#define DXL_WHEEL_ID    2
 
 DynamixelWorkbench dxl_wb;
-bool is_moving = false;
-int goal_position = 0;
 
 void setup() 
 {
@@ -36,23 +35,22 @@ void setup()
   while(!Serial);
 
   dxl_wb.begin(DXL_BUS_SERIAL3, BAUDRATE);
-  dxl_wb.ping(DXL_ID);
+  dxl_wb.ping(DXL_JOINT_ID);
+  dxl_wb.ping(DXL_WHEEL_ID);
 
-  dxl_wb.jointMode(DXL_ID);
+  dxl_wb.jointMode(DXL_JOINT_ID);
+  dxl_wb.wheelMode(DXL_WHEEL_ID);
 }
 
 void loop() 
 {
-  is_moving = dxl_wb.read(DXL_ID, "Moving");
-  Serial.println(is_moving);
+  dxl_wb.goalPosition(DXL_JOINT_ID, 0);
+  dxl_wb.goalSpeed(DXL_WHEEL_ID, 500);
+  
+  delay(3000);
 
-  if (is_moving == false)
-  {
-    dxl_wb.write(DXL_ID, "Goal Position", goal_position);
+  dxl_wb.goalPosition(DXL_JOINT_ID, 2000);
+  dxl_wb.goalSpeed(DXL_WHEEL_ID, -500);
 
-    if (goal_position == 500)
-      goal_position = 0;
-    else
-      goal_position = 500;
-  }
+  delay(3000);
 }

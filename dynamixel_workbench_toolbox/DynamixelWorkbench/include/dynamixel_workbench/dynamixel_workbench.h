@@ -58,14 +58,24 @@ class DynamixelWorkbench
   bool setBaud(uint8_t id, uint32_t new_baud);
   bool setProtocolVersion(uint8_t id, uint8_t new_version);
 
+  bool ledOn(uint8_t id, int32_t data);
+  bool ledOff(uint8_t id);
+
   bool jointMode(uint8_t id, uint16_t vel = 0, uint16_t acc = 0);
   bool wheelMode(uint8_t id, uint16_t vel = 0, uint16_t acc = 0);
 
   bool goalPosition(uint8_t id, uint16_t goal);
   bool goalSpeed(uint8_t id, int32_t goal);
 
-  bool writeValue(uint8_t id, char* item_name, int32_t value);
-  int32_t readValue(uint8_t id, char* item_name);
+  bool write(uint8_t id, char* item_name, int32_t value); // write register
+  bool write(int32_t* value);  // sync write
+  bool write(void); // bulk write
+
+  int32_t read(uint8_t id, char* item_name);  // read register
+  bool read(char* item_name, int32_t *data);  // sync read
+
+  bool initSyncWrite(uint8_t id, char* item_name);
+  bool initSyncRead(uint8_t id, char* item_name);
 
  private:
   bool torque(uint8_t id, bool onoff);

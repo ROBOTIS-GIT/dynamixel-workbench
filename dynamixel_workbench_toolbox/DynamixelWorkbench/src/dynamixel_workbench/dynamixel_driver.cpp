@@ -496,7 +496,7 @@ bool DynamixelDriver::writeRegister(uint8_t id, char *item_name, int32_t data)
   int dxl_comm_result = COMM_TX_FAIL;
 
   ControlTableItem *cti;
-  cti = tools_[findTools(id)].getControlItem(item_name);
+  cti = tools_[findTools(id)].getControlItem(item_name);  
 
   if (cti->data_length == 1)
   {
@@ -530,6 +530,7 @@ bool DynamixelDriver::writeRegister(uint8_t id, char *item_name, int32_t data)
 #endif
     return false;
   }
+
   return true;
 }
 

@@ -24,11 +24,13 @@
 #define DXL_BUS_SERIAL4 "/dev/ttyUSB0" //Dynamixel on Serial3(USART3)  <-OpenCR
 
 #define BAUDRATE  1000000
-#define DXL_ID    1
+#define DXL_1   1
+#define DXL_2   2
 
 DynamixelWorkbench dxl_wb;
-bool is_moving = false;
-int goal_position = 0;
+
+int goal_position[2] = {1000, 0};
+int error = 0;
 
 void setup() 
 {
@@ -36,23 +38,31 @@ void setup()
   while(!Serial);
 
   dxl_wb.begin(DXL_BUS_SERIAL3, BAUDRATE);
-  dxl_wb.ping(DXL_ID);
+  dxl_wb.ping(DXL_1);
+  dxl_wb.ping(DXL_2);
 
-  dxl_wb.jointMode(DXL_ID);
+  dxl_wb.jointMode(DXL_1);
+  dxl_wb.jointMode(DXL_2);
+
+  dxl_wb.initSyncWrite(DXL_1, "Goal Position");
+  dxl_wb.initSyncRead(DXL_1, "Present Position");
 }
 
 void loop() 
 {
-  is_moving = dxl_wb.read(DXL_ID, "Moving");
-  Serial.println(is_moving);
+  int read_position[2];
+  dxl_wb.read("Present Position", read_position);
+  Serial.print("DXL_1 : "); Serial.println(read_position[0]);
+  Serial.print("DXL_2 : "); Serial.println(read_position[1]);
 
-  if (is_moving == false)
+  if ((abs(goal_position[0] - read_position[0]) < 10) && 
+      (abs(goal_position[1] - read_position[1]) < 10))
   {
-    dxl_wb.write(DXL_ID, "Goal Position", goal_position);
+    int tmp = goal_position[0];
+    goal_position[0] = goal_position[1];
+    goal_position[1] = tmp;
 
-    if (goal_position == 500)
-      goal_position = 0;
-    else
-      goal_position = 500;
+    dxl_wb.write(goal_position);
   }
+
 }

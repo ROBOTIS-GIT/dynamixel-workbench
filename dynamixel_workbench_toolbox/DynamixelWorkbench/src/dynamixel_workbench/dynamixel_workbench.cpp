@@ -124,6 +124,16 @@ bool DynamixelWorkbench::setProtocolVersion(uint8_t id, uint8_t new_version)
   driver_.writeRegister(id, "Protocol Version", new_version);
 }
 
+bool DynamixelWorkbench::ledOn(uint8_t id, int32_t data)
+{
+  driver_.writeRegister(id, "LED", data);
+}
+
+bool DynamixelWorkbench::ledOff(uint8_t id)
+{
+  driver_.writeRegister(id, "LED", 0);
+}
+
 bool DynamixelWorkbench::jointMode(uint8_t id, uint16_t vel, uint16_t acc)
 {
   strcpy(dxl_, driver_.getModelName(id));
@@ -203,17 +213,37 @@ bool DynamixelWorkbench::goalSpeed(uint8_t id, int32_t goal)
   }
 }
 
-bool DynamixelWorkbench::writeValue(uint8_t id, char* item_name, int32_t value)
+bool DynamixelWorkbench::write(uint8_t id, char* item_name, int32_t value)
 {
   return driver_.writeRegister(id, item_name, value);
 }
 
-int32_t DynamixelWorkbench::readValue(uint8_t id, char* item_name)
+bool DynamixelWorkbench::write(int32_t* value)
+{
+  driver_.syncWrite(value));
+}
+
+int32_t DynamixelWorkbench::read(uint8_t id, char* item_name)
 {
   static int32_t value = 0;
 
   if (driver_.readRegister(id, item_name, &value))
     return value;
+}
+
+bool DynamixelWorkbench::read(char* item_name, int32_t *data)
+{
+  syncRead(item_name, data);
+}
+
+bool DynamixelWorkbench::initSyncWrite(uint8_t id, char* item_name)
+{
+  driver_.initSyncWrite(id, item_name);
+}
+
+bool DynamixelWorkbench::initSyncRead(uint8_t id, char* item_name)
+{
+  driver_.initSyncRead(id, item_name);
 }
 
 /*/////////////////////////////////////////////////////////////////////////////
