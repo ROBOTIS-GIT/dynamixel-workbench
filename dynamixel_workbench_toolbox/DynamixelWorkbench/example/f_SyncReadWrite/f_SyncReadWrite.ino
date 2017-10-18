@@ -23,14 +23,14 @@
 #define DXL_BUS_SERIAL3 "3"            //Dynamixel on Serial3(USART3)  <-OpenCM 485EXP
 #define DXL_BUS_SERIAL4 "/dev/ttyUSB0" //Dynamixel on Serial3(USART3)  <-OpenCR
 
-#define BAUDRATE  1000000
+#define BAUDRATE  57600
 #define DXL_1   1
 #define DXL_2   2
 
 DynamixelWorkbench dxl_wb;
 
-int goal_position[2] = {1000, 0};
-int error = 0;
+int32_t goal_position[2] = {1000, 1000};
+int32_t *read_position;
 
 void setup() 
 {
@@ -44,25 +44,34 @@ void setup()
   dxl_wb.jointMode(DXL_1);
   dxl_wb.jointMode(DXL_2);
 
-  dxl_wb.initSyncWrite(DXL_1, "Goal Position");
-  dxl_wb.initSyncRead(DXL_1, "Present Position");
+  dxl_wb.addSyncWrite("Goal Position");
+  dxl_wb.addSyncRead("Present Position");
+
+  dxl_wb.write(DXL_1, "Torque Enable", 0);
+  dxl_wb.write(DXL_2, "Torque Enable", 0);
 }
 
 void loop() 
 {
-  int read_position[2];
-  dxl_wb.read("Present Position", read_position);
+  read_position = dxl_wb.read("Present Position");
   Serial.print("DXL_1 : "); Serial.println(read_position[0]);
   Serial.print("DXL_2 : "); Serial.println(read_position[1]);
+  delay(500);
 
-  if ((abs(goal_position[0] - read_position[0]) < 10) && 
-      (abs(goal_position[1] - read_position[1]) < 10))
-  {
-    int tmp = goal_position[0];
-    goal_position[0] = goal_position[1];
-    goal_position[1] = tmp;
+  // if ((abs(goal_position[0] - read_position[0]) < 10) && 
+  //     (abs(goal_position[1] - read_position[1]) < 10))
+  // {
+    // int tmp = goal_position[0];
+    // goal_position[0] = goal_position[1];
+    // goal_position[1] = tmp;
 
-    dxl_wb.write(goal_position);
-  }
+    // goal_position[0] = 3000; goal_position[1] = 3000;
+    // dxl_wb.write("Goal Position", goal_position);
+    // delay(2000);
+
+    // goal_position[0] = 1000; goal_position[1] = 1000;
+    // dxl_wb.write("Goal Position", goal_position);
+    // delay(2000);
+  // }
 
 }

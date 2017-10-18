@@ -68,14 +68,14 @@ class DynamixelWorkbench
   bool goalSpeed(uint8_t id, int32_t goal);
 
   bool write(uint8_t id, char* item_name, int32_t value); // write register
-  bool write(int32_t* value);  // sync write
+  bool write(char *item_name, int32_t* value);  // sync write
   bool write(void); // bulk write
 
   int32_t read(uint8_t id, char* item_name);  // read register
-  bool read(char* item_name, int32_t *data);  // sync read
+  int32_t* read(char* item_name);  // sync read
 
-  bool initSyncWrite(uint8_t id, char* item_name);
-  bool initSyncRead(uint8_t id, char* item_name);
+  bool addSyncWrite(char* item_name);
+  bool addSyncRead(char* item_name);
 
  private:
   bool torque(uint8_t id, bool onoff);

@@ -34,7 +34,7 @@ void setup()
 
   uint8_t get_id[5];
 
-  dxl_wb.begin(DXL_BUS_SERIAL4, BAUDRATE);
+  dxl_wb.begin(DXL_BUS_SERIAL1, BAUDRATE);
   dxl_wb.scan(get_id);
 }
 

@@ -21,6 +21,10 @@
 DynamixelDriver::DynamixelDriver()
 {
   tools_cnt_ = 0;
+  sync_write_handler_cnt_ = 0;
+  sync_read_handler_cnt_  = 0;
+  bulk_write_handler_cnt_ = 0;
+  bulk_read_handler_cnt_  = 0;
 }
 
 DynamixelDriver::~DynamixelDriver()
@@ -604,18 +608,22 @@ uint8_t DynamixelDriver::findTools(uint8_t id)
   }
 }
 
-void DynamixelDriver::initSyncWrite(uint8_t id, char *item_name)
+void DynamixelDriver::addSyncWrite(char *item_name)
 {
   ControlTableItem *cti;
-  cti = tools_[findTools(id)].getControlItem(item_name);
+  cti = tools_[0].getControlItem(item_name);
 
-  groupSyncWrite_ = new dynamixel::GroupSyncWrite(portHandler_,
-                                                  packetHandler_,
-                                                  cti->address,
-                                                  cti->data_length);
+  syncWriteHandler_[sync_write_handler_cnt_].cti = cti;
+
+  syncWriteHandler_[sync_write_handler_cnt_].groupSyncWrite = new dynamixel::GroupSyncWrite(portHandler_,
+                                                                                            packetHandler_,
+                                                                                            cti->address,
+                                                                                            cti->data_length);
+
+  sync_write_handler_cnt_++;
 }
 
-bool DynamixelDriver::syncWrite(int32_t *data)
+bool DynamixelDriver::syncWrite(char *item_name, int32_t *data)
 {
   bool dxl_addparam_result = false;
   int dxl_comm_result = COMM_TX_FAIL;
@@ -624,6 +632,17 @@ bool DynamixelDriver::syncWrite(int32_t *data)
 
   uint8_t cnt = theNumberOfTools();
 
+  SyncWriteHandler swh;
+
+  for (int index = 0; index < sync_write_handler_cnt_; index++)
+  {
+    if (!strncmp(syncWriteHandler_[index].cti->item_name, item_name, strlen(item_name)))
+    {
+      swh.groupSyncWrite = syncWriteHandler_[index].groupSyncWrite;
+      swh.cti = syncWriteHandler_[index].cti;
+    }
+  }
+
   for (int num = 0; num < cnt; ++num)
   {
     data_byte[0] = DXL_LOBYTE(DXL_LOWORD(data[num]));
@@ -631,7 +650,7 @@ bool DynamixelDriver::syncWrite(int32_t *data)
     data_byte[2] = DXL_LOBYTE(DXL_HIWORD(data[num]));
     data_byte[3] = DXL_HIBYTE(DXL_HIWORD(data[num]));
 
-    dxl_addparam_result = groupSyncWrite_->addParam(tools_[num].getID(), (uint8_t *)&data_byte);
+    dxl_addparam_result = swh.groupSyncWrite->addParam(tools_[num].getID(), (uint8_t *)&data_byte);
     if (dxl_addparam_result != true)
     {
 #if defined(__OPENCR__) || defined(__OPENCM904__)
@@ -643,7 +662,7 @@ bool DynamixelDriver::syncWrite(int32_t *data)
     }
   }
 
-  dxl_comm_result = groupSyncWrite_->txPacket();
+  dxl_comm_result = swh.groupSyncWrite->txPacket();
   if (dxl_comm_result != COMM_SUCCESS)
   {
 #if defined(__OPENCR__) || defined(__OPENCM904__)
@@ -653,19 +672,23 @@ bool DynamixelDriver::syncWrite(int32_t *data)
 #endif
     return false;
   }
-  groupSyncWrite_->clearParam();
+  swh.groupSyncWrite->clearParam();
   return true;
 }
 
-void DynamixelDriver::initSyncRead(uint8_t id, char *item_name)
+void DynamixelDriver::addSyncRead(char *item_name)
 {
   ControlTableItem *cti;
-  cti = tools_[findTools(id)].getControlItem(item_name);
+  cti = tools_[0].getControlItem(item_name);
 
-  groupSyncRead_ = new dynamixel::GroupSyncRead(portHandler_,
-                                                packetHandler_,
-                                                cti->address,
-                                                cti->data_length);
+  syncReadHandler_[sync_read_handler_cnt_].cti = cti;
+  
+  syncReadHandler_[sync_read_handler_cnt_].groupSyncRead = new dynamixel::GroupSyncRead(portHandler_,
+                                                                                        packetHandler_,
+                                                                                        cti->address,
+                                                                                        cti->data_length);
+
+  sync_read_handler_cnt_++;
 }
 
 bool DynamixelDriver::syncRead(char *item_name, int32_t *data)
@@ -676,14 +699,25 @@ bool DynamixelDriver::syncRead(char *item_name, int32_t *data)
 
   uint8_t cnt = theNumberOfTools();
 
+  SyncReadHandler srh;
+  
+  for (int index = 0; index < sync_read_handler_cnt_; index++)
+  {
+    if (!strncmp(syncReadHandler_[index].cti->item_name, item_name, strlen(item_name)))
+    {
+      srh.groupSyncRead = syncReadHandler_[index].groupSyncRead;
+      srh.cti = syncReadHandler_[index].cti;
+    }
+  }
+  
   for (int num = 0; num < cnt; ++num)
   {
-    dxl_addparam_result = groupSyncRead_->addParam(tools_[num].getID());
+    dxl_addparam_result = srh.groupSyncRead->addParam(tools_[num].getID());
     if (dxl_addparam_result != true)
       return false;
   }
-
-  dxl_comm_result = groupSyncRead_->txRxPacket();
+  
+  dxl_comm_result = srh.groupSyncRead->txRxPacket();
   if (dxl_comm_result != COMM_SUCCESS)
   {
 #if defined(__OPENCR__) || defined(__OPENCM904__)
@@ -697,14 +731,13 @@ bool DynamixelDriver::syncRead(char *item_name, int32_t *data)
   for (int num = 0; num < cnt; ++num)
   {
     uint8_t id = tools_[num].getID();
-    ControlTableItem *cti;
-    cti = tools_[findTools(id)].getControlItem(item_name);
 
-    dxl_getdata_result = groupSyncRead_->isAvailable(id, cti->address, cti->data_length);
+    dxl_getdata_result = srh.groupSyncRead->isAvailable(id, srh.cti->address, srh.cti->data_length);
 
     if (dxl_getdata_result)
     {
-      data[num] = groupSyncRead_->getData(id, cti->address, cti->data_length);
+      data[num] = srh.groupSyncRead->getData(id, srh.cti->address, srh.cti->data_length);
+      Serial.println(data[num]);
     }
     else
     {
@@ -712,7 +745,7 @@ bool DynamixelDriver::syncRead(char *item_name, int32_t *data)
     }
   }
 
-  groupSyncRead_->clearParam();
+  srh.groupSyncRead->clearParam();
 
   return true;
 }
@@ -726,9 +759,7 @@ void DynamixelDriver::initBulkWrite()
 bool DynamixelDriver::addBulkWriteParam(uint8_t id, char *item_name, int32_t data)
 {
   bool dxl_addparam_result = false;
-  uint8_t data_byte[4] = {
-      0,
-  };
+  uint8_t data_byte[4] = {0, };
 
   ControlTableItem *cti;
   cti = tools_[findTools(id)].getControlItem(item_name);

@@ -218,9 +218,9 @@ bool DynamixelWorkbench::write(uint8_t id, char* item_name, int32_t value)
   return driver_.writeRegister(id, item_name, value);
 }
 
-bool DynamixelWorkbench::write(int32_t* value)
+bool DynamixelWorkbench::write(char *item_name, int32_t* value)
 {
-  driver_.syncWrite(value));
+  driver_.syncWrite(item_name, value);
 }
 
 int32_t DynamixelWorkbench::read(uint8_t id, char* item_name)
@@ -231,19 +231,21 @@ int32_t DynamixelWorkbench::read(uint8_t id, char* item_name)
     return value;
 }
 
-bool DynamixelWorkbench::read(char* item_name, int32_t *data)
+int32_t* DynamixelWorkbench::read(char *item_name)
 {
-  syncRead(item_name, data);
+  static int32_t data[16];
+  if (driver_.syncRead(item_name, data))
+    return data;
 }
 
-bool DynamixelWorkbench::initSyncWrite(uint8_t id, char* item_name)
+bool DynamixelWorkbench::addSyncWrite(char* item_name)
 {
-  driver_.initSyncWrite(id, item_name);
+  driver_.addSyncWrite(item_name);
 }
 
-bool DynamixelWorkbench::initSyncRead(uint8_t id, char* item_name)
+bool DynamixelWorkbench::addSyncRead(char* item_name)
 {
-  driver_.initSyncRead(id, item_name);
+  driver_.addSyncRead(item_name);
 }
 
 /*/////////////////////////////////////////////////////////////////////////////

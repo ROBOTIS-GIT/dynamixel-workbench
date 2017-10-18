@@ -23,12 +23,14 @@
 #define DXL_BUS_SERIAL3 "3"            //Dynamixel on Serial3(USART3)  <-OpenCM 485EXP
 #define DXL_BUS_SERIAL4 "/dev/ttyUSB0" //Dynamixel on Serial3(USART3)  <-OpenCR
 
-#define BAUDRATE  1000000
+#define BAUDRATE  57600
 #define DXL_ID    1
 
 DynamixelWorkbench dxl_wb;
-bool is_moving = false;
-int goal_position = 0;
+int present_position = 0;
+int goal_position = 4000;
+
+uint32_t tTime = 0;
 
 void setup() 
 {
@@ -43,16 +45,23 @@ void setup()
 
 void loop() 
 {
-  is_moving = dxl_wb.read(DXL_ID, "Moving");
-  Serial.println(is_moving);
+  // uint32_t t = millis();
+  // if ((t-tTime) >= (1000 / 30))
+  // {
+  //   dxl_wb.write(DXL_ID, "Goal Position", 0);
+    
+  //   present_position = dxl_wb.read(DXL_ID, "Present Position");
+  //   Serial.print("Present Position : ");
+  //   Serial.println(present_position);
 
-  if (is_moving == false)
-  {
-    dxl_wb.write(DXL_ID, "Goal Position", goal_position);
+  //   tTime = t;
+  // }
+  // goal_position = (-1) * goal_position;
 
-    if (goal_position == 500)
-      goal_position = 0;
-    else
-      goal_position = 500;
-  }
+  dxl_wb.write(DXL_ID, "Goal Position", goal_position);
+
+  // do
+  // {
+
+  // }while(abs(present_position - goal_position) < 10);
 }

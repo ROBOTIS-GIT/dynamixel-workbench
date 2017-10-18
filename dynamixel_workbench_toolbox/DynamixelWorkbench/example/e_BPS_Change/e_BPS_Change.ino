@@ -25,7 +25,7 @@
 
 #define BAUDRATE  1000000
 #define NEW_BAUDRATE 57600
-#define DXL_ID 1
+#define DXL_ID 2
 
 DynamixelWorkbench dxl_wb;
 
