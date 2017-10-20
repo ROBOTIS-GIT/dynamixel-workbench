@@ -63,16 +63,17 @@ class DynamixelWorkbench
 
   bool jointMode(uint8_t id, uint16_t vel = 0, uint16_t acc = 0);
   bool wheelMode(uint8_t id, uint16_t vel = 0, uint16_t acc = 0);
+  bool currentMode(uint8_t id, uint8_t cur = 50);
 
   bool goalPosition(uint8_t id, uint16_t goal);
   bool goalSpeed(uint8_t id, int32_t goal);
 
   bool write(uint8_t id, char* item_name, int32_t value); // write register
-  bool write(char *item_name, int32_t* value);  // sync write
-  bool write(void); // bulk write
+  bool write(char *item_name, int32_t* value);            // sync write
+  bool write(void);                                       // bulk write
 
   int32_t read(uint8_t id, char* item_name);  // read register
-  int32_t* read(char* item_name);  // sync read
+  int32_t* read(char* item_name);             // sync read
 
   bool addSyncWrite(char* item_name);
   bool addSyncRead(char* item_name);
@@ -81,6 +82,7 @@ class DynamixelWorkbench
   bool torque(uint8_t id, bool onoff);
   bool setPositionControlMode(uint8_t id);
   bool setVelocityControlMode(uint8_t id);
+  bool setCurrentControlMode(uint8_t id);
 };
 
 #endif /*DYNAMIXEL_WORKBENCH_H_*/

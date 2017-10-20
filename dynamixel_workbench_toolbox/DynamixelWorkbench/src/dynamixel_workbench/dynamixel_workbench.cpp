@@ -179,6 +179,22 @@ bool DynamixelWorkbench::wheelMode(uint8_t id, uint16_t vel, uint16_t acc)
   }
 }
 
+bool DynamixelWorkbench::currentMode(uint8_t id, uint8_t cur)
+{
+  strcpy(dxl_, driver_.getModelName(id));
+  
+  torque(id, FALSE);
+
+  setCurrentControlMode(id);
+
+  torque(id, TRUE);
+
+  if (!strncmp(dxl_, "X", 1))
+  {   
+    driver_.writeRegister(id, "Goal Current", cur);
+  }
+}
+
 bool DynamixelWorkbench::goalPosition(uint8_t id, uint16_t goal)
 {
   driver_.writeRegister(id, "Goal Position", goal);
@@ -215,12 +231,12 @@ bool DynamixelWorkbench::goalSpeed(uint8_t id, int32_t goal)
 
 bool DynamixelWorkbench::write(uint8_t id, char* item_name, int32_t value)
 {
-  return driver_.writeRegister(id, item_name, value);
+  driver_.writeRegister(id, item_name, value);
 }
 
 bool DynamixelWorkbench::write(char *item_name, int32_t* value)
 {
-  driver_.syncWrite(item_name, value);
+  return driver_.syncWrite(item_name, value);
 }
 
 int32_t DynamixelWorkbench::read(uint8_t id, char* item_name)
@@ -241,11 +257,15 @@ int32_t* DynamixelWorkbench::read(char *item_name)
 bool DynamixelWorkbench::addSyncWrite(char* item_name)
 {
   driver_.addSyncWrite(item_name);
+
+  return true;
 }
 
 bool DynamixelWorkbench::addSyncRead(char* item_name)
 {
   driver_.addSyncRead(item_name);
+
+  return true;
 }
 
 /*/////////////////////////////////////////////////////////////////////////////
@@ -323,4 +343,18 @@ bool DynamixelWorkbench::setVelocityControlMode(uint8_t id)
     else
       driver_.writeRegister(id, "Operating Mode", X_SERIES_VELOCITY_CONTROL_MODE);
   }   
+}
+
+bool DynamixelWorkbench::setCurrentControlMode(uint8_t id)
+{
+  strcpy(dxl_, driver_.getModelName(id));
+  
+  if (!strncmp(dxl_, "X", 1))
+  {
+    driver_.writeRegister(id, "Operating Mode", X_SERIES_CURRENT_BASED_POSITION_CONTROL_MODE);
+  }   
+  else
+  {
+    Serial.println("Position control based current control is only support in X series");
+  }
 }

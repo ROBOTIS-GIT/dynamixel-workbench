@@ -844,7 +844,7 @@ ControlTableItem* getItem(uint16_t num)
     setXHItem();
   }
 
-  return item;
+  // return item;
 }
 
 ModelInfo* getInfo(uint16_t num)

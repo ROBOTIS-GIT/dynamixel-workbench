@@ -30,6 +30,10 @@
 #define DXL_NUM 16
 #define MAX_HANDLER 5
 
+#define BYTE  1
+#define WORD  2
+#define DWORD 4
+
 typedef struct 
 {
   ControlTableItem *cti; 
@@ -44,7 +48,7 @@ typedef struct
 
 class DynamixelDriver
 {
- private:
+ public:
   dynamixel::PortHandler   *portHandler_;
   dynamixel::PacketHandler *packetHandler_;
   dynamixel::PacketHandler *packetHandler_1;

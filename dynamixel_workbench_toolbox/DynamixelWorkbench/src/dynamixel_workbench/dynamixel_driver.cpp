@@ -241,7 +241,7 @@ uint8_t DynamixelDriver::scan(uint8_t *get_id, uint8_t num)
     printf("\n");
 #endif  
 
-    strcpy(dxl_, tools_[0].getModelName());
+    strncpy(dxl_, tools_[0].getModelName(), 2);
     if (!strncmp(dxl_, "AX", 2) || !strncmp(dxl_, "RX", 2) || !strncmp(dxl_, "EX", 2) || !strncmp(dxl_, "MX", 2))
       packetHandler_ = dynamixel::PacketHandler::getPacketHandler(1.0);
     else
@@ -285,7 +285,7 @@ uint16_t DynamixelDriver::ping(uint8_t id)
   printf("DXL ID : %d\n", id);
 #endif    
 
-  strcpy(dxl_, tools_[0].getModelName());
+  strncpy(dxl_, tools_[0].getModelName(), 2);
   if (!strncmp(dxl_, "AX", 2) || !strncmp(dxl_, "RX", 2) || !strncmp(dxl_, "EX", 2) || !strncmp(dxl_, "MX", 2))
     packetHandler_ = dynamixel::PacketHandler::getPacketHandler(1.0);
   else
@@ -502,15 +502,15 @@ bool DynamixelDriver::writeRegister(uint8_t id, char *item_name, int32_t data)
   ControlTableItem *cti;
   cti = tools_[findTools(id)].getControlItem(item_name);  
 
-  if (cti->data_length == 1)
+  if (cti->data_length == BYTE)
   {
     dxl_comm_result = packetHandler_->write1ByteTxRx(portHandler_, id, cti->address, (uint8_t)data, &error);
   }
-  else if (cti->data_length == 2)
+  else if (cti->data_length == WORD)
   {
     dxl_comm_result = packetHandler_->write2ByteTxRx(portHandler_, id, cti->address, (uint16_t)data, &error);
   }
-  else if (cti->data_length == 4)
+  else if (cti->data_length == DWORD)
   {
     dxl_comm_result = packetHandler_->write4ByteTxRx(portHandler_, id, cti->address, (uint32_t)data, &error);
   }
@@ -550,15 +550,15 @@ bool DynamixelDriver::readRegister(uint8_t id, char *item_name, int32_t *data)
   ControlTableItem *cti;
   cti = tools_[findTools(id)].getControlItem(item_name);
 
-  if (cti->data_length == 1)
+  if (cti->data_length == BYTE)
   {
     dxl_comm_result = packetHandler_->read1ByteTxRx(portHandler_, id, cti->address, (uint8_t *)&value_8_bit, &error);
   }
-  else if (cti->data_length == 2)
+  else if (cti->data_length == WORD)
   {
     dxl_comm_result = packetHandler_->read2ByteTxRx(portHandler_, id, cti->address, (uint16_t *)&value_16_bit, &error);
   }
-  else if (cti->data_length == 4)
+  else if (cti->data_length == DWORD)
   {
     dxl_comm_result = packetHandler_->read4ByteTxRx(portHandler_, id, cti->address, (uint32_t *)&value_32_bit, &error);
   }
@@ -570,15 +570,15 @@ bool DynamixelDriver::readRegister(uint8_t id, char *item_name, int32_t *data)
       packetHandler_->printRxPacketError(error);
     }
 
-    if (cti->data_length == 1)
+    if (cti->data_length == BYTE)
     {
       *data = value_8_bit;
     }
-    else if (cti->data_length == 2)
+    else if (cti->data_length == WORD)
     {
       *data = value_16_bit;
     }
-    else if (cti->data_length == 4)
+    else if (cti->data_length == DWORD)
     {
       *data = value_32_bit;
     }
