@@ -519,19 +519,23 @@ bool DynamixelDriver::writeRegister(uint8_t id, char *item_name, int32_t data)
   {
     if (error != 0)
     {
-      packetHandler_->printRxPacketError(error);
+#if defined(__OPENCR__) || defined(__OPENCM904__)
+      Serial.println(packetHandler_->getRxPacketError(error));
+#else
+      printf(packetHandler_->getRxPacketError(error));
+#endif    
+
       return false;
     }
   }
   else
   {
-    packetHandler_->printTxRxResult(dxl_comm_result);
-
 #if defined(__OPENCR__) || defined(__OPENCM904__)
-    Serial.print("Failed to write!\n");
+    Serial.println(packetHandler_->getTxRxResult(dxl_comm_result));
 #else
-    printf("[ID] %u, Failed to write!\n", id);
+    printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
 #endif
+
     return false;
   }
 
@@ -567,7 +571,11 @@ bool DynamixelDriver::readRegister(uint8_t id, char *item_name, int32_t *data)
   {
     if (error != 0)
     {
-      packetHandler_->printRxPacketError(error);
+#if defined(__OPENCR__) || defined(__OPENCM904__)
+      Serial.print(packetHandler_->getRxPacketError(error));
+#else
+      printf(packetHandler_->getRxPacketError(error));
+#endif
     }
 
     if (cti->data_length == BYTE)
@@ -585,11 +593,10 @@ bool DynamixelDriver::readRegister(uint8_t id, char *item_name, int32_t *data)
   }
   else
   {
-    packetHandler_->printTxRxResult(dxl_comm_result);
 #if defined(__OPENCR__) || defined(__OPENCM904__)
-    Serial.print("Failed to read!\n");
+    Serial.println(packetHandler_->getTxRxResult(dxl_comm_result));
 #else
-    printf("[ID] %u, Failed to read!\n", id);
+    printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
 #endif
     return false;
   }
@@ -666,9 +673,9 @@ bool DynamixelDriver::syncWrite(char *item_name, int32_t *data)
   if (dxl_comm_result != COMM_SUCCESS)
   {
 #if defined(__OPENCR__) || defined(__OPENCM904__)
-    Serial.print("groupSyncWrite tx failed\n");
+    Serial.println(packetHandler_->getTxRxResult(dxl_comm_result));
 #else
-    packetHandler_->printTxRxResult(dxl_comm_result);
+    printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
 #endif
     return false;
   }
@@ -721,9 +728,9 @@ bool DynamixelDriver::syncRead(char *item_name, int32_t *data)
   if (dxl_comm_result != COMM_SUCCESS)
   {
 #if defined(__OPENCR__) || defined(__OPENCM904__)
-    Serial.print("groupSyncRead rx failed\n");
+    Serial.println(packetHandler_->getTxRxResult(dxl_comm_result));
 #else
-    packetHandler_->printTxRxResult(dxl_comm_result);
+    printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
 #endif
     return false;
   }
@@ -737,7 +744,6 @@ bool DynamixelDriver::syncRead(char *item_name, int32_t *data)
     if (dxl_getdata_result)
     {
       data[num] = srh.groupSyncRead->getData(id, srh.cti->address, srh.cti->data_length);
-      Serial.println(data[num]);
     }
     else
     {
@@ -789,7 +795,7 @@ void DynamixelDriver::bulkWrite()
   if (dxl_comm_result != COMM_SUCCESS)
   {
 #if defined(__OPENCR__) || defined(__OPENCM904__)
-    Serial.print("groupBulkWrite tx failed\n");
+    Serial.println(packetHandler_->getTxRxResult(dxl_comm_result));
 #else
     printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
 #endif
@@ -830,7 +836,7 @@ void DynamixelDriver::sendBulkReadPacket()
   if (dxl_comm_result != COMM_SUCCESS)
   {
 #if defined(__OPENCR__) || defined(__OPENCM904__)
-    Serial.print("groupBulkRead tx failed\n");
+    Serial.println(packetHandler_->getTxRxResult(dxl_comm_result));
 #else
     printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
 #endif

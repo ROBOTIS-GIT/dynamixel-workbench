@@ -38,7 +38,7 @@
 
 class DynamixelWorkbench
 {
- private:
+public:
   DynamixelDriver driver_;
   char dxl_[64];
 

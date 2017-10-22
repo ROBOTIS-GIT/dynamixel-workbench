@@ -321,6 +321,11 @@ bool DynamixelWorkbench::setPositionControlMode(uint8_t id)
     else
       driver_.writeRegister(id, "Operating Mode", X_SERIES_POSITION_CONTROL_MODE);
   }
+#if defined(__OPENCR__) || defined(__OPENCM904__)
+  delay(10);
+#else
+  sleep(0.01);
+#endif
 }
 
 bool DynamixelWorkbench::setVelocityControlMode(uint8_t id)
@@ -342,7 +347,12 @@ bool DynamixelWorkbench::setVelocityControlMode(uint8_t id)
     }
     else
       driver_.writeRegister(id, "Operating Mode", X_SERIES_VELOCITY_CONTROL_MODE);
-  }   
+  } 
+#if defined(__OPENCR__) || defined(__OPENCM904__)
+  delay(10);
+#else
+  sleep(0.01);
+#endif  
 }
 
 bool DynamixelWorkbench::setCurrentControlMode(uint8_t id)
@@ -357,4 +367,9 @@ bool DynamixelWorkbench::setCurrentControlMode(uint8_t id)
   {
     Serial.println("Position control based current control is only support in X series");
   }
+#if defined(__OPENCR__) || defined(__OPENCM904__)
+  delay(10);
+#else
+  sleep(0.01);
+#endif
 }
