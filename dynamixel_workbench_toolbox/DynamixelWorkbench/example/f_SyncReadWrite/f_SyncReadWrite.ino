@@ -28,6 +28,7 @@
 #define DXL_2   2
 
 DynamixelWorkbench dxl_wb;
+uint8_t get_id[5];
 
 int32_t goal_position[2] = {1000, 1000};
 int32_t *read_position;
@@ -38,40 +39,41 @@ void setup()
   while(!Serial);
 
   dxl_wb.begin(DXL_BUS_SERIAL3, BAUDRATE);
-  dxl_wb.ping(DXL_1);
-  dxl_wb.ping(DXL_2);
+  dxl_wb.scan(get_id);
 
   dxl_wb.jointMode(DXL_1);
-  dxl_wb.jointMode(DXL_2);
+  // dxl_wb.jointMode(DXL_2);
 
   dxl_wb.addSyncWrite("Goal Position");
   dxl_wb.addSyncRead("Present Position");
-
-  dxl_wb.write(DXL_1, "Torque Enable", 0);
-  dxl_wb.write(DXL_2, "Torque Enable", 0);
 }
 
 void loop() 
 {
-  read_position = dxl_wb.read("Present Position");
-  Serial.print("DXL_1 : "); Serial.println(read_position[0]);
-  Serial.print("DXL_2 : "); Serial.println(read_position[1]);
-  delay(500);
+  static int index = 0;
+  int32_t present_position = 0;
+  uint16_t goal_position[2] = {1, 3000};
+  
+  // dxl_wb.write(DXL_ID, "Goal Position", goal_position[index]);
+  
+  dxl_wb.driver_.packetHandler_1->write4ByteTxRx(dxl_wb.driver_.portHandler_, 1, 116, goal_position[index]);
 
-  // if ((abs(goal_position[0] - read_position[0]) < 10) && 
-  //     (abs(goal_position[1] - read_position[1]) < 10))
-  // {
-    // int tmp = goal_position[0];
-    // goal_position[0] = goal_position[1];
-    // goal_position[1] = tmp;
+  do
+  {
+    dxl_wb.driver_.packetHandler_1->read4ByteTxRx(dxl_wb.driver_.portHandler_, 1, 132, (uint32_t *)&present_position); 
+    //present_position = dxl_wb.read(DXL_ID, "Present Position");
+    Serial.print("[ID:");      Serial.print(DXL_ID);
+    Serial.print(" GoalPos:"); Serial.print(goal_position[index]);
+    Serial.print(" PresPos:");  Serial.print(present_position);
+    Serial.println(" ");
+  }while(abs(goal_position[index] - present_position) > 20);
 
-    // goal_position[0] = 3000; goal_position[1] = 3000;
-    // dxl_wb.write("Goal Position", goal_position);
-    // delay(2000);
-
-    // goal_position[0] = 1000; goal_position[1] = 1000;
-    // dxl_wb.write("Goal Position", goal_position);
-    // delay(2000);
-  // }
-
+  if (index == 0)
+  {
+    index = 1;
+  }
+  else
+  {
+    index = 0;
+  }
 }
