@@ -48,24 +48,23 @@ typedef struct
 
 class DynamixelDriver
 {
- public:
+ private:
   dynamixel::PortHandler   *portHandler_;
   dynamixel::PacketHandler *packetHandler_;
   dynamixel::PacketHandler *packetHandler_1;
   dynamixel::PacketHandler *packetHandler_2;
 
   SyncWriteHandler syncWriteHandler_[MAX_HANDLER];
-  SyncReadHandler syncReadHandler_[MAX_HANDLER];
+  SyncReadHandler  syncReadHandler_[MAX_HANDLER];
 
-  dynamixel::GroupBulkWrite *groupBulkWrite_;
-  dynamixel::GroupBulkRead  *groupBulkRead_;
+  dynamixel::GroupBulkRead  *groupBulkRead_;  
+  dynamixel::GroupBulkWrite *groupBulkWrite_;  
  
   DynamixelTool tools_[DXL_NUM];
+
   uint8_t tools_cnt_;
   uint8_t sync_write_handler_cnt_;
   uint8_t sync_read_handler_cnt_;
-  uint8_t bulk_write_handler_cnt_;
-  uint8_t bulk_read_handler_cnt_;
 
   char dxl_[64];
 
@@ -99,11 +98,11 @@ class DynamixelDriver
 
   void initBulkWrite();
   bool addBulkWriteParam(uint8_t id, char *item_name, int32_t data);
-  void bulkWrite();
+  bool bulkWrite();
 
   void initBulkRead();
-  void addBulkReadParam(uint8_t id, char *item_name);
-  void sendBulkReadPacket();
+  bool addBulkReadParam(uint8_t id, char *item_name);
+  bool sendBulkReadPacket();
   bool bulkRead(uint8_t id, char *item_name, int32_t *data);
 
   int32_t convertRadian2Value(int8_t id, float radian);

@@ -38,7 +38,7 @@
 
 class DynamixelWorkbench
 {
-public:
+ private:
   DynamixelDriver driver_;
   char dxl_[64];
 
@@ -68,15 +68,23 @@ public:
   bool goalPosition(uint8_t id, uint16_t goal);
   bool goalSpeed(uint8_t id, int32_t goal);
 
-  bool write(uint8_t id, char* item_name, int32_t value); // write register
-  bool write(char *item_name, int32_t* value);            // sync write
-  bool write(void);                                       // bulk write
+  bool regWrite(uint8_t id, char* item_name, int32_t value); // write register
+  bool syncWrite(char *item_name, int32_t* value);            // sync write
+  bool bulkWrite(void);                                       // bulk write
 
-  int32_t read(uint8_t id, char* item_name);  // read register
-  int32_t* read(char* item_name);             // sync read
+  int32_t  regRead(uint8_t id, char* item_name);  // read register
+  int32_t* syncRead(char* item_name);              // sync read
+  int32_t  bulkRead(uint8_t id, char* item_name);  // bulk read
 
   bool addSyncWrite(char* item_name);
   bool addSyncRead(char* item_name);
+
+  bool initBulkWrite();
+  bool initBulkRead();
+
+  bool addBulkWriteParam(uint8_t id, char *item_name, int32_t data);
+  bool addBulkReadParam(uint8_t id, char *item_name);
+  bool setBulkRead();
 
  private:
   bool torque(uint8_t id, bool onoff);

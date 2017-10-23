@@ -121,57 +121,53 @@ void DynamixelTool::setControlTable(char* name)
 
 void DynamixelTool::setControlTable(uint16_t num)
 {
-  char* model_name = "\0";
-
   if (num == AX_12A)
-    model_name = "AX-12A";
+    strcpy(model_name_, "AX-12A");
   else if (num == AX_12W)
-    model_name = "AX-12W";
+    strcpy(model_name_, "AX-12W");
   else if (num == AX_18A)
-    model_name = "AX-18A";
+    strcpy(model_name_, "AX-18A");
 
   else if (num == RX_24F)
-    model_name = "RX-24F";
+    strcpy(model_name_, "RX-24F");
   else if (num == RX_28)
-    model_name = "RX-28";
+    strcpy(model_name_, "RX-28");
   else if (num == RX_64)
-    model_name = "RX-64";
+    strcpy(model_name_, "RX-64");
 
   else if (num == EX_106)
-    model_name = "EX-106";
+    strcpy(model_name_, "EX-106");
 
   else if (num == EX_106)
-    model_name = "EX-106";
+    strcpy(model_name_, "EX-106");
 
   else if (num == MX_12W)
-    model_name = "MX-12W";
+    strcpy(model_name_, "MX-12W");
   else if (num == MX_28)
-    model_name = "MX-28";
+    strcpy(model_name_, "MX-28");
   else if (num == MX_64)
-    model_name = "MX-64";
+    strcpy(model_name_, "MX-64");
   else if (num == MX_106)
-    model_name = "MX-106";
+    strcpy(model_name_, "MX-106");
 
   else if (num == XL_320)
-    model_name = "XL-320";
+    strcpy(model_name_, "XL-320");
   else if (num == XL430_W250)
-    model_name = "XL430-W250";
+    strcpy(model_name_, "XL430-W250");
 
   else if (num == XM430_W210)
-    model_name = "XM430-W210";
+    strcpy(model_name_, "XM430-W210");
   else if (num == XM430_W350)
-    model_name = "XM430-W350";
+    strcpy(model_name_, "XM430-W350");
 
   else if (num == XH430_V210)
-    model_name = "XH430-V210";
+    strcpy(model_name_, "XH430-V210");
   else if (num == XH430_V350)
-    model_name = "XH430-V350";
+    strcpy(model_name_, "XH430-V350");
   else if (num == XH430_W210)
-    model_name = "XH430-W210";
+    strcpy(model_name_, "XH430-W210");
   else if (num == XH430_W350)
-    model_name = "XH430-W350";
-
-  strcpy(model_name_, model_name); 
+    strcpy(model_name_, "XH430-W350");
 
   item_               = getItem(num);
   control_table_size_ = getSize();

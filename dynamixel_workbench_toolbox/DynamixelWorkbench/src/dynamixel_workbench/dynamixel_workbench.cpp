@@ -229,17 +229,22 @@ bool DynamixelWorkbench::goalSpeed(uint8_t id, int32_t goal)
   }
 }
 
-bool DynamixelWorkbench::write(uint8_t id, char* item_name, int32_t value)
+bool DynamixelWorkbench::regWrite(uint8_t id, char* item_name, int32_t value)
 {
   driver_.writeRegister(id, item_name, value);
 }
 
-bool DynamixelWorkbench::write(char *item_name, int32_t* value)
+bool DynamixelWorkbench::syncWrite(char *item_name, int32_t* value)
 {
   return driver_.syncWrite(item_name, value);
 }
 
-int32_t DynamixelWorkbench::read(uint8_t id, char* item_name)
+bool DynamixelWorkbench::bulkWrite()
+{
+  return driver_.bulkWrite();
+}
+
+int32_t DynamixelWorkbench::regRead(uint8_t id, char* item_name)
 {
   static int32_t value = 0;
 
@@ -247,10 +252,17 @@ int32_t DynamixelWorkbench::read(uint8_t id, char* item_name)
     return value;
 }
 
-int32_t* DynamixelWorkbench::read(char *item_name)
+int32_t* DynamixelWorkbench::syncRead(char *item_name)
 {
   static int32_t data[16];
   if (driver_.syncRead(item_name, data))
+    return data;
+}
+
+int32_t DynamixelWorkbench::bulkRead(uint8_t id, char* item_name)
+{
+  static int32_t data;
+  if (driver_.bulkRead(id, item_name, &data))
     return data;
 }
 
@@ -267,6 +279,36 @@ bool DynamixelWorkbench::addSyncRead(char* item_name)
 
   return true;
 }
+
+bool DynamixelWorkbench::initBulkWrite()
+{
+  driver_.initBulkWrite();
+
+  return true;
+}
+
+bool DynamixelWorkbench::initBulkRead()
+{
+  driver_.initBulkRead();
+
+  return true;
+}
+
+bool DynamixelWorkbench::addBulkWriteParam(uint8_t id, char *item_name, int32_t data)
+{
+  return driver_.addBulkWriteParam(id, item_name, data);
+}
+
+bool DynamixelWorkbench::addBulkReadParam(uint8_t id, char *item_name)
+{
+  return driver_.addBulkReadParam(id, item_name);
+}
+
+bool DynamixelWorkbench::setBulkRead()
+{
+  return driver_.sendBulkReadPacket();
+}
+
 
 /*/////////////////////////////////////////////////////////////////////////////
 // Private Function

@@ -843,6 +843,10 @@ ControlTableItem* getItem(uint16_t num)
   {
     setXHItem();
   }
+  else
+  {
+    setXMItem();
+  }
 
   return item;
 }

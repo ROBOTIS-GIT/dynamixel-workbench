@@ -23,8 +23,6 @@ DynamixelDriver::DynamixelDriver()
   tools_cnt_ = 0;
   sync_write_handler_cnt_ = 0;
   sync_read_handler_cnt_  = 0;
-  bulk_write_handler_cnt_ = 0;
-  bulk_read_handler_cnt_  = 0;
 }
 
 DynamixelDriver::~DynamixelDriver()
@@ -716,7 +714,7 @@ bool DynamixelDriver::syncRead(char *item_name, int32_t *data)
       srh.cti = syncReadHandler_[index].cti;
     }
   }
-  
+
   for (int num = 0; num < cnt; ++num)
   {
     dxl_addparam_result = srh.groupSyncRead->addParam(tools_[num].getID());
@@ -758,8 +756,7 @@ bool DynamixelDriver::syncRead(char *item_name, int32_t *data)
 
 void DynamixelDriver::initBulkWrite()
 {
-  groupBulkWrite_ = new dynamixel::GroupBulkWrite(portHandler_,
-                                                  packetHandler_);
+  groupBulkWrite_ = new dynamixel::GroupBulkWrite(portHandler_, packetHandler_);
 }
 
 bool DynamixelDriver::addBulkWriteParam(uint8_t id, char *item_name, int32_t data)
@@ -785,9 +782,11 @@ bool DynamixelDriver::addBulkWriteParam(uint8_t id, char *item_name, int32_t dat
 #endif
     return false;
   }
+
+  return true;
 }
 
-void DynamixelDriver::bulkWrite()
+bool DynamixelDriver::bulkWrite()
 {
   int dxl_comm_result = COMM_TX_FAIL;
 
@@ -799,18 +798,21 @@ void DynamixelDriver::bulkWrite()
 #else
     printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
 #endif
+
+    return false;
   }
 
   groupBulkWrite_->clearParam();
+
+  return true;
 }
 
 void DynamixelDriver::initBulkRead()
 {
-  groupBulkRead_ = new dynamixel::GroupBulkRead(portHandler_,
-                                                packetHandler_);
+  groupBulkRead_ = new dynamixel::GroupBulkRead(portHandler_, packetHandler_);
 }
 
-void DynamixelDriver::addBulkReadParam(uint8_t id, char *item_name)
+bool DynamixelDriver::addBulkReadParam(uint8_t id, char *item_name)
 {
   bool dxl_addparam_result = false;
 
@@ -825,10 +827,14 @@ void DynamixelDriver::addBulkReadParam(uint8_t id, char *item_name)
 #else
     printf("[ID:%03d] groupBulkRead addparam failed", id);
 #endif
+
+    return false;
   }
+
+  return true;
 }
 
-void DynamixelDriver::sendBulkReadPacket()
+bool DynamixelDriver::sendBulkReadPacket()
 {
   int dxl_comm_result = COMM_RX_FAIL;
 
@@ -840,7 +846,11 @@ void DynamixelDriver::sendBulkReadPacket()
 #else
     printf("%s\n", packetHandler->getTxRxResult(dxl_comm_result));
 #endif
+
+    return false;
   }
+
+  return true;
 }
 
 bool DynamixelDriver::bulkRead(uint8_t id, char *item_name, int32_t *data)
@@ -858,11 +868,14 @@ bool DynamixelDriver::bulkRead(uint8_t id, char *item_name, int32_t *data)
     fprintf(stderr, "[ID:%03d] groupBulkRead getdata failed", id);
 #endif
 
-    return 0;
+    return false;
   }
 
   *data = groupBulkRead_->getData(id, cti->address, cti->data_length);
+
+  return true;
 }
+
 int32_t DynamixelDriver::convertRadian2Value(int8_t id, float radian)
 {
   int32_t value = 0;
