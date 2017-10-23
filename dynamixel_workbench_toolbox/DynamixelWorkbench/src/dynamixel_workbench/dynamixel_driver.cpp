@@ -137,6 +137,11 @@ void DynamixelDriver::setPacketHandler(bool *error)
   }
 }
 
+void DynamixelDriver::setPacketHandler(float protocol_version)
+{
+  packetHandler_ = dynamixel::PacketHandler::getPacketHandler(protocol_version);
+}
+
 void DynamixelDriver::setBaudrate(uint32_t baud_rate, bool *error)
 {
   if (portHandler_->setBaudRate(baud_rate))
@@ -172,12 +177,14 @@ char *DynamixelDriver::getModelName(uint8_t id)
   return tools_[cnt].getModelName();
 }
 
-uint8_t DynamixelDriver::scan(uint8_t *get_id, uint8_t num)
+uint8_t DynamixelDriver::scan(uint8_t *get_id, uint8_t num, float protocol_version)
 {
   uint8_t error = 0;
   uint8_t id = 0;
   uint16_t model_num = 0;
   uint8_t id_cnt = 0;
+
+  tools_cnt_ = 0;
 
 #if defined(__OPENCR__) || defined(__OPENCM904__)
   Serial.print("...wait for seconds\n");
@@ -240,10 +247,21 @@ uint8_t DynamixelDriver::scan(uint8_t *get_id, uint8_t num)
 #endif  
 
     strncpy(dxl_, tools_[0].getModelName(), 2);
-    if (!strncmp(dxl_, "AX", 2) || !strncmp(dxl_, "RX", 2) || !strncmp(dxl_, "EX", 2) || !strncmp(dxl_, "MX", 2))
-      packetHandler_ = dynamixel::PacketHandler::getPacketHandler(1.0);
-    else
+    if (protocol_version == 2.0)
+    {
       packetHandler_ = dynamixel::PacketHandler::getPacketHandler(2.0);
+    }
+    else if (protocol_version == 1.0)
+    {
+      packetHandler_ = dynamixel::PacketHandler::getPacketHandler(1.0);
+    }
+    else
+    {
+      if (!strncmp(dxl_, "AX", 2) || !strncmp(dxl_, "RX", 2) || !strncmp(dxl_, "EX", 2) || !strncmp(dxl_, "MX", 2))
+        packetHandler_ = dynamixel::PacketHandler::getPacketHandler(1.0);
+      else
+        packetHandler_ = dynamixel::PacketHandler::getPacketHandler(2.0);
+    }
   }
 
 #if defined(__OPENCR__) || defined(__OPENCM904__)
@@ -255,10 +273,12 @@ uint8_t DynamixelDriver::scan(uint8_t *get_id, uint8_t num)
   return id_cnt;
 }
 
-uint16_t DynamixelDriver::ping(uint8_t id)
+uint16_t DynamixelDriver::ping(uint8_t id, float protocol_version)
 {
   uint8_t error = 0;
   uint16_t model_num = 0;
+
+  tools_cnt_ = 0;
 
   if (packetHandler_1->ping(portHandler_, id, &model_num, &error) == COMM_SUCCESS)
     setTools(model_num, id);
@@ -284,10 +304,21 @@ uint16_t DynamixelDriver::ping(uint8_t id)
 #endif    
 
   strncpy(dxl_, tools_[0].getModelName(), 2);
-  if (!strncmp(dxl_, "AX", 2) || !strncmp(dxl_, "RX", 2) || !strncmp(dxl_, "EX", 2) || !strncmp(dxl_, "MX", 2))
-    packetHandler_ = dynamixel::PacketHandler::getPacketHandler(1.0);
-  else
+  if (protocol_version == 2.0)
+  {
     packetHandler_ = dynamixel::PacketHandler::getPacketHandler(2.0);
+  }
+  else if (protocol_version == 1.0)
+  {
+    packetHandler_ = dynamixel::PacketHandler::getPacketHandler(1.0);
+  }
+  else
+  {
+    if (!strncmp(dxl_, "AX", 2) || !strncmp(dxl_, "RX", 2) || !strncmp(dxl_, "EX", 2) || !strncmp(dxl_, "MX", 2))
+      packetHandler_ = dynamixel::PacketHandler::getPacketHandler(1.0);
+    else
+      packetHandler_ = dynamixel::PacketHandler::getPacketHandler(2.0);
+  }
 
   return model_num;
 }

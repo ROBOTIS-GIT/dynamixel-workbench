@@ -76,13 +76,14 @@ class DynamixelDriver
 
   void setPortHandler(char *device_name, bool *error);
   void setPacketHandler(bool *error);
+  void setPacketHandler(float protocol_version);
   void setBaudrate(uint32_t baud_rate, bool *error);
 
   float getProtocolVersion();
   char* getModelName(uint8_t id);
 
-  uint8_t  scan(uint8_t *get_id, uint8_t num = 252);
-  uint16_t ping(uint8_t id);
+  uint8_t  scan(uint8_t *get_id, uint8_t num = 252, float protocol_version = 0.0);
+  uint16_t ping(uint8_t id, float protocol_version = 0.0);
 
   bool reboot(uint8_t id);
   bool reset(uint8_t id);

@@ -37,20 +37,20 @@ bool DynamixelWorkbench::begin(char* device_name, uint32_t baud_rate)
   return error;
 }
 
-uint8_t  DynamixelWorkbench::scan(uint8_t *get_id)
+uint8_t  DynamixelWorkbench::scan(uint8_t *get_id, float protocol_version)
 {
   uint8_t id_cnt = 0;
 
-  id_cnt = driver_.scan(get_id, 16);
+  id_cnt = driver_.scan(get_id, 16, protocol_version);
 
   return id_cnt;
 }
 
-uint16_t DynamixelWorkbench::ping(uint8_t id)
+uint16_t DynamixelWorkbench::ping(uint8_t id, float protocol_version)
 {
   uint16_t model_num = 0;
 
-  model_num = driver_.ping(id);
+  model_num = driver_.ping(id, protocol_version);
 
   return model_num;
 }
@@ -75,53 +75,61 @@ bool DynamixelWorkbench::reset(uint8_t id)
 
 bool DynamixelWorkbench::setID(uint8_t id, uint8_t new_id)
 {
+  bool check = false;
+
   torque(id, FALSE);
 
-  driver_.writeRegister(id, "ID", new_id);
+  check = driver_.writeRegister(id, "ID", new_id);
 
 #if defined(__OPENCR__) || defined(__OPENCM904__)
   delay(1000);
 #else
   sleep(1);
 #endif
+
+  return check;
 }
 
 bool DynamixelWorkbench::setBaud(uint8_t id, uint32_t new_baud)
 {
+  bool check = false;
+
   torque(id, FALSE);
 
   if (driver_.getProtocolVersion() == 1.0)
   {
     if (new_baud == 9600)
-      driver_.writeRegister(id, "Baud Rate", 207);
+      check = driver_.writeRegister(id, "Baud Rate", 207);
     else if (new_baud == 57600)
-      driver_.writeRegister(id, "Baud Rate", 34);
+      check = driver_.writeRegister(id, "Baud Rate", 34);
     else if (new_baud == 115200)
-      driver_.writeRegister(id, "Baud Rate", 16);
+      check = driver_.writeRegister(id, "Baud Rate", 16);
     else if (new_baud == 1000000)
-      driver_.writeRegister(id, "Baud Rate", 1);
+      check = driver_.writeRegister(id, "Baud Rate", 1);
   }
   else if (driver_.getProtocolVersion() == 2.0)
   {    
     if (new_baud == 9600)
-      driver_.writeRegister(id, "Baud Rate", 0);
+      check = driver_.writeRegister(id, "Baud Rate", 0);
     else if (new_baud == 57600)
-      driver_.writeRegister(id, "Baud Rate", 1);
+      check = driver_.writeRegister(id, "Baud Rate", 1);
     else if (new_baud == 115200)
-      driver_.writeRegister(id, "Baud Rate", 2);
+      check = driver_.writeRegister(id, "Baud Rate", 2);
     else if (new_baud == 1000000)
-      driver_.writeRegister(id, "Baud Rate", 3);
+      check = driver_.writeRegister(id, "Baud Rate", 3);
   }
 #if defined(__OPENCR__) || defined(__OPENCM904__)
   delay(1000);
 #else
   sleep(1);
 #endif
+
+  return check;
 }
 
-bool DynamixelWorkbench::setProtocolVersion(uint8_t id, uint8_t new_version)
+bool DynamixelWorkbench::setPacketHandler(float protocol_version)
 {
-  driver_.writeRegister(id, "Protocol Version", new_version);
+  driver_.setPacketHandler(protocol_version);
 }
 
 bool DynamixelWorkbench::ledOn(uint8_t id, int32_t data)
@@ -197,11 +205,17 @@ bool DynamixelWorkbench::currentMode(uint8_t id, uint8_t cur)
 
 bool DynamixelWorkbench::goalPosition(uint8_t id, uint16_t goal)
 {
-  driver_.writeRegister(id, "Goal Position", goal);
+  bool check = false;
+  
+  check = driver_.writeRegister(id, "Goal Position", goal);
+
+  return check;
 }
 
 bool DynamixelWorkbench::goalSpeed(uint8_t id, int32_t goal)
 {
+  bool check = false;
+
   strcpy(dxl_, driver_.getModelName(id));
 
   if (driver_.getProtocolVersion() == 1.0)
@@ -211,7 +225,7 @@ bool DynamixelWorkbench::goalSpeed(uint8_t id, int32_t goal)
       goal = (-1) * goal;
       goal |= 1024;
     }
-    driver_.writeRegister(id, "Moving Speed", goal);
+    check = driver_.writeRegister(id, "Moving Speed", goal);
   }
   else if (driver_.getProtocolVersion() == 2.0)
   {
@@ -222,11 +236,13 @@ bool DynamixelWorkbench::goalSpeed(uint8_t id, int32_t goal)
         goal = (-1) * goal;
         goal |= 1024;
       }
-      driver_.writeRegister(id, "Moving Speed", goal);
+      check = driver_.writeRegister(id, "Moving Speed", goal);
     }
     else
-      driver_.writeRegister(id, "Goal Velocity", goal);  
+      check = driver_.writeRegister(id, "Goal Velocity", goal);  
   }
+
+  return check;
 }
 
 bool DynamixelWorkbench::regWrite(uint8_t id, char* item_name, int32_t value)

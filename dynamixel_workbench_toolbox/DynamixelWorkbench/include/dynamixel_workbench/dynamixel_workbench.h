@@ -48,15 +48,15 @@ class DynamixelWorkbench
 
   bool begin(char* device_name = "/dev/ttyUSB0", uint32_t baud_rate = 57600);
  
-  uint8_t  scan(uint8_t *get_id);
-  uint16_t ping(uint8_t id);
+  uint8_t  scan(uint8_t *get_id, float protocol_version = 0.0);
+  uint16_t ping(uint8_t id, float protocol_version = 0.0);
 
   bool reboot(uint8_t id);
   bool reset(uint8_t id);
 
   bool setID(uint8_t id, uint8_t new_id);
   bool setBaud(uint8_t id, uint32_t new_baud);
-  bool setProtocolVersion(uint8_t id, uint8_t new_version);
+  bool setPacketHandler(float protocol_version);
 
   bool ledOn(uint8_t id, int32_t data);
   bool ledOff(uint8_t id);
