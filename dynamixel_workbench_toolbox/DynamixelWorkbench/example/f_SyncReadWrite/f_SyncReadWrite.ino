@@ -24,14 +24,15 @@
 #define DXL_BUS_SERIAL4 "/dev/ttyUSB0" //Dynamixel on Serial3(USART3)  <-OpenCR
 
 #define BAUDRATE  57600
-#define DXL_1   1
-#define DXL_2   2
 
 DynamixelWorkbench dxl_wb;
 uint8_t get_id[5];
 
-int32_t goal_position[2] = {1000, 1000};
-int32_t *read_position;
+int32_t goal_position[2] = {1000, 3000};
+int32_t *get_data;
+
+int32_t present_position[2];
+int32_t present_velocity[2];
 
 void setup() 
 {
@@ -41,39 +42,51 @@ void setup()
   dxl_wb.begin(DXL_BUS_SERIAL3, BAUDRATE);
   dxl_wb.scan(get_id);
 
-  dxl_wb.jointMode(DXL_1);
-  // dxl_wb.jointMode(DXL_2);
+  dxl_wb.jointMode(get_id[0]);
+  dxl_wb.jointMode(get_id[1]);
 
   dxl_wb.addSyncWrite("Goal Position");
   dxl_wb.addSyncRead("Present Position");
+  dxl_wb.addSyncRead("Present Velocity");
 }
 
 void loop() 
-{
-  static int index = 0;
-  int32_t present_position = 0;
-  uint16_t goal_position[2] = {1, 3000};
-  
-  // dxl_wb.write(DXL_ID, "Goal Position", goal_position[index]);
-  
-  dxl_wb.driver_.packetHandler_1->write4ByteTxRx(dxl_wb.driver_.portHandler_, 1, 116, goal_position[index]);
+{  
+  dxl_wb.syncWrite("Goal Position", goal_position);
 
   do
   {
-    dxl_wb.driver_.packetHandler_1->read4ByteTxRx(dxl_wb.driver_.portHandler_, 1, 132, (uint32_t *)&present_position); 
-    //present_position = dxl_wb.read(DXL_ID, "Present Position");
-    Serial.print("[ID:");      Serial.print(DXL_ID);
-    Serial.print(" GoalPos:"); Serial.print(goal_position[index]);
-    Serial.print(" PresPos:");  Serial.print(present_position);
-    Serial.println(" ");
-  }while(abs(goal_position[index] - present_position) > 20);
+    get_data = dxl_wb.syncRead("Present Velocity");
+    present_velocity[0] = get_data[0];
+    present_velocity[1] = get_data[1];
 
-  if (index == 0)
-  {
-    index = 1;
-  }
-  else
-  {
-    index = 0;
-  }
+    get_data = dxl_wb.syncRead("Present Position");
+    present_position[0] = get_data[0];
+    present_position[1] = get_data[1];
+
+    log();
+  }while(abs(goal_position[0] - present_position[0]) > 20);
+
+  swap();
+}
+
+void log()
+{
+  Serial.print("[ DXL 1:");
+  Serial.print(" GoalPos:");  Serial.print(goal_position[0]);
+  Serial.print(" PresPos:");  Serial.print(present_position[0]);
+  Serial.print(" PresVel:");  Serial.print(present_velocity[0]);
+  Serial.print(" ,");
+  Serial.print(" DXL 2: ");
+  Serial.print(" GoalPos:");  Serial.print(goal_position[1]);
+  Serial.print(" PresPos:");  Serial.print(present_position[1]);
+  Serial.print(" PresVel:");  Serial.print(present_velocity[1]);
+  Serial.println(" ]");
+}
+
+void swap()
+{
+  int32_t tmp = goal_position[0];
+  goal_position[0] = goal_position[1];
+  goal_position[1] = tmp;
 }

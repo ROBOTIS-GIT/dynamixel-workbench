@@ -36,31 +36,24 @@ void setup()
   dxl_wb.begin(DXL_BUS_SERIAL3, BAUDRATE);
   dxl_wb.ping(DXL_ID);
 
-  // dxl_wb.jointMode(DXL_ID);
-  dxl_wb.driver_.packetHandler_2->write1ByteTxRx(dxl_wb.driver_.portHandler_, 1, 64, 1);
-  // dxl_wb.driver_.packetHandler_1->write1ByteTxRx(dxl_wb.driver_.portHandler_, 1, 13, 2);
-  
-  Serial.println("ok");
+  dxl_wb.jointMode(DXL_ID);
 }
 
 void loop() 
 {
   static int index = 0;
   int32_t present_position = 0;
-  uint16_t goal_position[2] = {1, 3000};
+  int32_t goal_position[2] = {1000, 2000};
   
-  // dxl_wb.write(DXL_ID, "Goal Position", goal_position[index]);
-  
-  dxl_wb.driver_.packetHandler_1->write4ByteTxRx(dxl_wb.driver_.portHandler_, 1, 116, goal_position[index]);
+  dxl_wb.regWrite(DXL_ID, "Goal Position", goal_position[index]);
 
   do
   {
-    dxl_wb.driver_.packetHandler_1->read4ByteTxRx(dxl_wb.driver_.portHandler_, 1, 132, (uint32_t *)&present_position); 
-    //present_position = dxl_wb.read(DXL_ID, "Present Position");
-    Serial.print("[ID:");      Serial.print(DXL_ID);
-    Serial.print(" GoalPos:"); Serial.print(goal_position[index]);
+    present_position = dxl_wb.regRead(DXL_ID, "Present Position");
+    Serial.print("[ ID:");      Serial.print(DXL_ID);
+    Serial.print(" GoalPos:");  Serial.print(goal_position[index]);
     Serial.print(" PresPos:");  Serial.print(present_position);
-    Serial.println(" ");
+    Serial.println(" ]");
   }while(abs(goal_position[index] - present_position) > 20);
 
   if (index == 0)
@@ -72,50 +65,3 @@ void loop()
     index = 0;
   }
 }
-
-// DynamixelDriver drv;
-// int32_t data;
-// int32_t goal_position[2] = {1000, 0};
-
-// void setup()
-// {
-//   Serial.begin(57600);
-//   while(!Serial);
-
-//   drv.begin(DXL_BUS_SERIAL3, BAUDRATE);
-//   drv.ping(DXL_ID);
-
-//   drv.packetHandler_->write1ByteTxRx(drv.portHandler_, 1, 64, 0);
-
-//   drv.packetHandler_->write1ByteTxRx(drv.portHandler_, 1, 11, 3);
-
-//   drv.packetHandler_->write1ByteTxRx(drv.portHandler_, 1, 64, 1);
-
-//   drv.packetHandler_->write4ByteTxRx(drv.portHandler_, 1, 108, 0);
-//   drv.packetHandler_->write4ByteTxRx(drv.portHandler_, 1, 112, 0);
-// }
-
-// void loop()
-// {
-//   static int index = 0;
-
-//   drv.packetHandler_->write4ByteTxRx(drv.portHandler_, 1, 116, goal_position[index]);
-  
-//   do
-//   {
-//     drv.packetHandler_->read4ByteTxRx(drv.portHandler_, 1, 132, (uint32_t *)&data); 
-//     Serial.print("[ID:");      Serial.print(DXL_ID);
-//     Serial.print(" GoalPos:"); Serial.print(goal_position[index]);
-//     Serial.print(" PresPos:");  Serial.print(data);
-//     Serial.println(" ");
-//   }while(abs(goal_position[index] - data) > 20);
-
-//   if (index == 0)
-//   {
-//     index = 1;
-//   }
-//   else
-//   {
-//     index = 0;
-//   }
-// }

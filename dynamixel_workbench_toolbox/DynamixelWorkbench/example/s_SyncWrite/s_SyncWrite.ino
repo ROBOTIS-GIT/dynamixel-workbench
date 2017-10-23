@@ -29,10 +29,7 @@ DynamixelWorkbench dxl_wb;
 uint8_t get_id[5];
 
 int32_t goal_position[2] = {1000, 3000};
-int32_t led_status[2] = {true, false};
-
-int32_t present_position;
-int32_t present_led;
+int32_t *present_position;
 
 void setup() 
 {
@@ -45,45 +42,21 @@ void setup()
   dxl_wb.jointMode(get_id[0]);
   dxl_wb.jointMode(get_id[1]);
 
-  dxl_wb.initBulkWrite();
-  dxl_wb.initBulkRead();
-
-  dxl_wb.addBulkReadParam(get_id[0], "Present Position");
-  dxl_wb.addBulkReadParam(get_id[1], "LED");
+  dxl_wb.addSyncWrite("Goal Position");
 }
 
 void loop() 
 {  
-  static uint8_t index = 0;
+  dxl_wb.syncWrite("Goal Position", goal_position);
 
-  dxl_wb.addBulkWriteParam(get_id[0], "Goal Position", goal_position[index]);
-  dxl_wb.addBulkWriteParam(get_id[1], "LED", led_status[index]);
+  delay(2000);
 
-  dxl_wb.bulkWrite();
-
-  do
-  {
-    dxl_wb.setBulkRead();
-    
-    present_position = dxl_wb.bulkRead(get_id[0], "Present Position");
-    present_led      = dxl_wb.bulkRead(get_id[1], "LED");
-
-    log(index);
-  }while(abs(goal_position[index] - present_position) > 20);
-
-  if (index == 0)
-    index = 1;
-  else
-    index = 0;
+  swap();
 }
 
-void log(int index)
+void swap()
 {
-  Serial.print("[ DXL 1:");
-  Serial.print(" GoalPos:");  Serial.print(goal_position[index]);
-  Serial.print(" PresPos:");  Serial.print(present_position);
-  Serial.print(" ,");
-  Serial.print(" DXL 2: ");
-  Serial.print(" LED:");      Serial.print(present_led);
-  Serial.println(" ]");
+  int32_t tmp = goal_position[0];
+  goal_position[0] = goal_position[1];
+  goal_position[1] = tmp;
 }
