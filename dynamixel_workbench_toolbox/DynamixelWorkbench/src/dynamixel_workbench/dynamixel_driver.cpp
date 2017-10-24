@@ -147,7 +147,9 @@ void DynamixelDriver::setBaudrate(uint32_t baud_rate, bool *error)
   if (portHandler_->setBaudRate(baud_rate))
   {
 #if defined(__OPENCR__) || defined(__OPENCM904__)
-    Serial.println("Succeeded to change the baudrate!");
+    Serial.print("Succeeded to change the baudrate!(");
+    Serial.print(baud_rate);
+    Serial.println(")");
 #else
     printf("Succeeded to change the baudrate(%d)!\n", portHandler_->getBaudRate());
 #endif
@@ -266,6 +268,7 @@ uint8_t DynamixelDriver::scan(uint8_t *get_id, uint8_t num, float protocol_versi
 
 #if defined(__OPENCR__) || defined(__OPENCM904__)
   Serial.println("Scan END");
+  Serial.println(" ");
 #else
   printf("Scan END\n");
 #endif
