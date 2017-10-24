@@ -352,7 +352,12 @@ bool DynamixelDriver::reboot(uint8_t id)
     {
       if (error != 0)
       {
-        packetHandler_->printRxPacketError(error);
+#if defined(__OPENCR__) || defined(__OPENCM904__)
+        Serial.println(packetHandler_->getRxPacketError(error));
+#else
+        printf(packetHandler_->getRxPacketError(error));
+#endif    
+
 #if defined(__OPENCR__) || defined(__OPENCM904__)
         Serial.print("Failed to reboot!\n");
 #else
@@ -406,7 +411,11 @@ bool DynamixelDriver::reset(uint8_t id)
     {
       if (error != 0)
       {
-        packetHandler_->printRxPacketError(error);
+#if defined(__OPENCR__) || defined(__OPENCM904__)
+        Serial.println(packetHandler_->getRxPacketError(error));
+#else
+        printf(packetHandler_->getRxPacketError(error));
+#endif    
       }
 #if defined(__OPENCR__) || defined(__OPENCM904__)
       Serial.print("Succeeded to reset!\n");
@@ -476,7 +485,11 @@ bool DynamixelDriver::reset(uint8_t id)
     {
       if (error != 0)
       {
-        packetHandler_->printRxPacketError(error);
+#if defined(__OPENCR__) || defined(__OPENCM904__)
+        Serial.println(packetHandler_->getRxPacketError(error));
+#else
+        printf(packetHandler_->getRxPacketError(error));
+#endif    
       }
 #if defined(__OPENCR__) || defined(__OPENCM904__)
       Serial.print("Succeeded to reset!\n");
