@@ -65,7 +65,7 @@ void loop()
     if (cmd[0] == "port")
     {
       uint32_t baud = cmd[1].toInt();
-      dxl_wb.begin(DXL_BUS_SERIAL3, baud);
+      dxl_wb.begin(DXL_BUS_SERIAL1, baud);
     }
     else if (cmd[0] == "scan")
     {      
