@@ -2,6 +2,11 @@
 Changelog for package dynamixel_workbench_tutorials
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.7 (2017-10-30)
+-----------
+* added rospy for the issue https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues/77
+* Contributors: Darby Lim
+
 0.1.6 (2017-08-09)
 -----------
 * added C++11
