@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>dynamixel_workbench_toolbox</name>
-  <version>0.1.6</version>
+  <version>0.1.7</version>
   <description>
     This package is composed of 'dynamixel_tool', 'dynamixel_driver' and 'dynamixel_multi_driver' class.
     The 'dynamixel_tool' class loads the information of Dynamixel stored in '.device' files.
