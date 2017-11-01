@@ -2,6 +2,10 @@
 Changelog for package dynamixel_workbench_controllers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.8 (2017-11-01)
+-----------
+* None
+
 0.1.7 (2017-10-30)
 -----------
 * added rospy for the issue https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues/77
