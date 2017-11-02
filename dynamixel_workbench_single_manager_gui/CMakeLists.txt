@@ -14,7 +14,6 @@ find_package(catkin REQUIRED COMPONENTS
     roscpp
     dynamixel_workbench_msgs
     dynamixel_workbench_toolbox
-    libqt4-dev
 )
 
 ################################################################################
@@ -36,7 +35,7 @@ include_directories(${catkin_INCLUDE_DIRS})
 
 catkin_package(
     INCLUDE_DIRS include
-    CATKIN_DEPENDS qt_build roscpp libqt4-dev dynamixel_workbench_msgs dynamixel_workbench_toolbox
+    CATKIN_DEPENDS qt_build roscpp dynamixel_workbench_msgs dynamixel_workbench_toolbox
 )
 
 ################################################################################
