@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>dynamixel_workbench_toolbox</name>
-  <version>0.1.8</version>
+  <version>0.1.9</version>
   <description>
     This package is composed of 'dynamixel_tool', 'dynamixel_driver' and 'dynamixel_multi_driver' class.
     The 'dynamixel_tool' class loads the information of Dynamixel stored in '.device' files.
@@ -21,5 +21,4 @@
   <run_depend>roscpp</run_depend>
   <run_depend>dynamixel_sdk</run_depend>
   <run_depend>roslib</run_depend>
-  <export></export>
 </package>
