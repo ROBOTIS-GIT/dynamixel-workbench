@@ -28,23 +28,8 @@ DynamixelDriver::DynamixelDriver()
 DynamixelDriver::~DynamixelDriver()
 {
   for (int i = 0; i < tools_cnt_; i++)
-  {
-    if (getProtocolVersion() == 1.0)
-    {
-      writeRegister(tools_[i].getID(), "Torque ON/OFF", FALSE);
-    }
-    else if (getProtocolVersion() == 2.0)
-    {
-      if (!strncmp(tools_[i].getModelName(), "XL-320", 6))
-      {
-        writeRegister(tools_[i].getID(), "Torque ON/OFF", FALSE);
-      }
-      else
-      {
-        writeRegister(tools_[i].getID(), "Torque Enable", FALSE);
-      }
-    }
-  }
+    writeRegister(tools_[i].getID(), "Torque Enable", false);
+
   portHandler_->closePort();
 }
 
@@ -285,10 +270,21 @@ uint8_t DynamixelDriver::scan(uint8_t *get_id, uint8_t num, float protocol_versi
     }
     else
     {
-      if (!strncmp(dxl_, "AX", 2) || !strncmp(dxl_, "RX", 2) || !strncmp(dxl_, "EX", 2) || !strncmp(dxl_, "MX", 2))
+      if (!strncmp(dxl_, "AX", 2) || !strncmp(dxl_, "RX", 2) || !strncmp(dxl_, "EX", 2))
+      {
         packetHandler_ = dynamixel::PacketHandler::getPacketHandler(1.0);
+      }
+      else if (!strncmp(dxl_, "MX", 2))
+      {
+        if (!strcmp(dxl_, "MX-28-2") || !strcmp(dxl_, "MX-64-2") || !strcmp(dxl_, "MX-106-2"))
+          packetHandler_ = dynamixel::PacketHandler::getPacketHandler(2.0);
+        else
+          packetHandler_ = dynamixel::PacketHandler::getPacketHandler(1.0);
+      }
       else
+      {
         packetHandler_ = dynamixel::PacketHandler::getPacketHandler(2.0);
+      }
     }
   }
 
@@ -349,10 +345,21 @@ uint16_t DynamixelDriver::ping(uint8_t id, float protocol_version)
   }
   else
   {
-    if (!strncmp(dxl_, "AX", 2) || !strncmp(dxl_, "RX", 2) || !strncmp(dxl_, "EX", 2) || !strncmp(dxl_, "MX", 2))
+    if (!strncmp(dxl_, "AX", 2) || !strncmp(dxl_, "RX", 2) || !strncmp(dxl_, "EX", 2))
+    {
       packetHandler_ = dynamixel::PacketHandler::getPacketHandler(1.0);
+    }
+    else if (!strncmp(dxl_, "MX", 2))
+    {
+      if (!strcmp(dxl_, "MX-28-2") || !strcmp(dxl_, "MX-64-2") || !strcmp(dxl_, "MX-106-2"))
+        packetHandler_ = dynamixel::PacketHandler::getPacketHandler(2.0);
+      else
+        packetHandler_ = dynamixel::PacketHandler::getPacketHandler(1.0);
+    }
     else
+    {
       packetHandler_ = dynamixel::PacketHandler::getPacketHandler(2.0);
+    }
   }
 
   return model_num;

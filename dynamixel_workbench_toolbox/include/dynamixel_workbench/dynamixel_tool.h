@@ -19,13 +19,7 @@
 #ifndef DYNAMIXEL_TOOL_H
 #define DYNAMIXEL_TOOL_H
 
-#if defined(__OPENCR__) || defined(__OPENCM904__)
-  #include <Arduino.h>
-#elif defined(__linux__)
-  #include <stdio.h>
-  #include <stdint.h>
-  #include <string.h>
-#endif
+#include <string.h>
 
 #include "dynamixel_item.h"
 
@@ -35,9 +29,16 @@ class DynamixelTool
   char model_name_[64];
   uint8_t id_;
 
+  ControlTableItem* item_ptr_;
+  ModelInfo* info_ptr_;
+
+#if defined(__OPENCR__) || defined(__OPENCM904__)
+  ControlTableItem item_[14];
+#else
+  ControlTableItem item_[60];
+#endif
+  ModelInfo info_;
   uint8_t control_table_size_;
-  ControlTableItem* item_;
-  ModelInfo* info_;
 
  public:
   DynamixelTool();
@@ -65,6 +66,8 @@ class DynamixelTool
   float getMaxRadian();  
 
   uint8_t getControlTableSize();    
-  ControlTableItem* getControlItem(char* item_name);  
+  ControlTableItem* getControlItem(char* item_name); 
+  ControlTableItem* getControlItemPtr(); 
+  ModelInfo* getModelInfoPtr();
 };
 #endif //DYNAMIXEL_TOOL_H

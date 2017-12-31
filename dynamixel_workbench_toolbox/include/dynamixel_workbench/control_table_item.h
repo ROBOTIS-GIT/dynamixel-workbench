@@ -16,33 +16,16 @@
 
 /* Authors: Taehun Lim (Darby) */
 
-#include <DynamixelWorkbench.h>
+#ifndef CONTROL_TABLE_ITEM_H
+#define CONTROL_TABLE_ITEM_H
 
-#define DXL_BUS_SERIAL1 "1"            //Dynamixel on Serial1(USART1)  <-OpenCM9.04
-#define DXL_BUS_SERIAL2 "2"            //Dynamixel on Serial2(USART2)  <-LN101,BT210
-#define DXL_BUS_SERIAL3 "3"            //Dynamixel on Serial3(USART3)  <-OpenCM 485EXP
-#define DXL_BUS_SERIAL4 "/dev/ttyUSB0" //Dynamixel on Serial3(USART3)  <-OpenCR
+#include <stdint.h>
 
-#define BAUDRATE  1000000
-#define DXL_ID    1
-
-DynamixelWorkbench dxl_wb;
-
-void setup() 
+typedef struct 
 {
-  Serial.begin(57600);
-  while(!Serial);
+  uint16_t    address;
+  char*       item_name;  
+  uint8_t     data_length;
+} ControlTableItem;
 
-  dxl_wb.begin(DXL_BUS_SERIAL1, BAUDRATE);
-  dxl_wb.ping(DXL_ID);
-
-  // Factory reset (ID : 1, Baud Rate : 57600 or 1000000(only AX or MX-12W))
-  if (dxl_wb.reset(DXL_ID))
-    Serial.println("Succeed to reset");
-  else
-    Serial.println("Failed to reset");
-}
-
-void loop() 
-{
-}
+#endif //CONTROL_TABLE_ITEM_H

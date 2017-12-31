@@ -77,14 +77,14 @@ bool DynamixelWorkbench::setID(uint8_t id, uint8_t new_id)
 {
   bool check = false;
 
-  torque(id, FALSE);
+  torque(id, false);
 
   check = driver_.writeRegister(id, "ID", new_id);
 
 #if defined(__OPENCR__) || defined(__OPENCM904__)
   delay(1000);
 #else
-  sleep(1);
+  usleep(1000*1000);
 #endif
 
   return check;
@@ -94,7 +94,7 @@ bool DynamixelWorkbench::setBaud(uint8_t id, uint32_t new_baud)
 {
   bool check = false;
 
-  torque(id, FALSE);
+  torque(id, false);
 
   if (driver_.getProtocolVersion() == 1.0)
   {
@@ -129,7 +129,7 @@ bool DynamixelWorkbench::setBaud(uint8_t id, uint32_t new_baud)
 #if defined(__OPENCR__) || defined(__OPENCM904__)
   delay(1000);
 #else
-  sleep(1);
+  usleep(1000*1000);
 #endif
 
   return check;
@@ -159,11 +159,11 @@ bool DynamixelWorkbench::jointMode(uint8_t id, uint16_t vel, uint16_t acc)
 {
   strcpy(dxl_, driver_.getModelName(id));
 
-  torque(id, FALSE);
+  torque(id, false);
 
   setPositionControlMode(id);
 
-  torque(id, TRUE);
+  torque(id, true);
 
   if (driver_.getProtocolVersion() == 1.0)
   {
@@ -187,11 +187,11 @@ bool DynamixelWorkbench::wheelMode(uint8_t id, uint16_t vel, uint16_t acc)
 {
   strcpy(dxl_, driver_.getModelName(id));
 
-  torque(id, FALSE);
+  torque(id, false);
 
   setVelocityControlMode(id);
 
-  torque(id, TRUE);
+  torque(id, true);
 
   if (driver_.getProtocolVersion() == 2.0 && (strncmp(dxl_, "PRO", 3) != 0))
   {   
@@ -204,11 +204,11 @@ bool DynamixelWorkbench::currentMode(uint8_t id, uint8_t cur)
 {
   strcpy(dxl_, driver_.getModelName(id));
   
-  torque(id, FALSE);
+  torque(id, false);
 
   setCurrentControlMode(id);
 
-  torque(id, TRUE);
+  torque(id, true);
 
   if (!strncmp(dxl_, "X", 1))
   {   
@@ -258,9 +258,9 @@ bool DynamixelWorkbench::goalSpeed(uint8_t id, int32_t goal)
   return check;
 }
 
-bool DynamixelWorkbench::regWrite(uint8_t id, char* item_name, int32_t value)
+bool DynamixelWorkbench::itemWrite(uint8_t id, char* item_name, int32_t value)
 {
-  driver_.writeRegister(id, item_name, value);
+  return driver_.writeRegister(id, item_name, value);
 }
 
 bool DynamixelWorkbench::syncWrite(char *item_name, int32_t* value)
@@ -273,7 +273,7 @@ bool DynamixelWorkbench::bulkWrite()
   return driver_.bulkWrite();
 }
 
-int32_t DynamixelWorkbench::regRead(uint8_t id, char* item_name)
+int32_t DynamixelWorkbench::itemRead(uint8_t id, char* item_name)
 {
   static int32_t value = 0;
 
@@ -345,23 +345,7 @@ bool DynamixelWorkbench::setBulkRead()
 
 bool DynamixelWorkbench::torque(uint8_t id, bool onoff)
 {
-  strcpy(dxl_, driver_.getModelName(id));
-
-  if (driver_.getProtocolVersion() == 1.0)
-  {
-    driver_.writeRegister(id, "Torque ON/OFF", onoff);
-  }
-  else if (driver_.getProtocolVersion() == 2.0)
-  {
-    if (!strncmp(dxl_, "XL-320", 6))
-    {
-      driver_.writeRegister(id, "Torque ON/OFF", onoff);
-    }
-    else
-    {
-      driver_.writeRegister(id, "Torque Enable", onoff);
-    }
-  }
+  driver_.writeRegister(id, "Torque Enable", onoff);
 }
 
 bool DynamixelWorkbench::setPositionControlMode(uint8_t id)
@@ -395,7 +379,7 @@ bool DynamixelWorkbench::setPositionControlMode(uint8_t id)
 #if defined(__OPENCR__) || defined(__OPENCM904__)
   delay(10);
 #else
-  sleep(0.01);
+  usleep(1000*10);
 #endif
 }
 
@@ -422,7 +406,7 @@ bool DynamixelWorkbench::setVelocityControlMode(uint8_t id)
 #if defined(__OPENCR__) || defined(__OPENCM904__)
   delay(10);
 #else
-  sleep(0.01);
+  usleep(1000*10);
 #endif  
 }
 
@@ -434,13 +418,10 @@ bool DynamixelWorkbench::setCurrentControlMode(uint8_t id)
   {
     driver_.writeRegister(id, "Operating Mode", X_SERIES_CURRENT_BASED_POSITION_CONTROL_MODE);
   }   
-  else
-  {
-    Serial.println("Position control based current control is only support in X series");
-  }
+
 #if defined(__OPENCR__) || defined(__OPENCM904__)
   delay(10);
 #else
-  sleep(0.01);
+  usleep(1000*10);
 #endif
 }

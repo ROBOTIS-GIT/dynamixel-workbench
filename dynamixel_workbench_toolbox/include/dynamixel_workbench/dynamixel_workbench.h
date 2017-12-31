@@ -21,15 +21,19 @@
 
 #include "dynamixel_driver.h"
 
+#if defined(__linux__)
+  #include "unistd.h"
+#endif
+
 #define XL320_POSITION_CONTROL_MODE 0
 #define XL320_VELOCITY_CONTROL_MODE 1
 
-#define X_SERIES_CURRENT_CONTROL_MODE                0
-#define X_SERIES_VELOCITY_CONTROL_MODE               1
-#define X_SERIES_POSITION_CONTROL_MODE               3
-#define X_SERIES_EXTENDED_POSITION_CONTROL_MODE      4
-#define X_SERIES_CURRENT_BASED_POSITION_CONTROL_MODE 5
-#define X_SERIES_VOLTAGE_CONTROL_MODE                16
+#define X_SERIES_CURRENT_CONTROL_MODE                  0
+#define X_SERIES_VELOCITY_CONTROL_MODE                 1
+#define X_SERIES_POSITION_CONTROL_MODE                 3
+#define X_SERIES_EXTENDED_POSITION_CONTROL_MODE        4
+#define X_SERIES_CURRENT_BASED_POSITION_CONTROL_MODE   5
+#define X_SERIES_VOLTAGE_CONTROL_MODE                  16
 
 #define PRO_SERIES_TORQUE_CONTROL_MODE                 0
 #define PRO_SERIES_VELOCITY_CONTROL_MODE               1
@@ -70,11 +74,11 @@ class DynamixelWorkbench
   bool goalPosition(uint8_t id, uint16_t goal);
   bool goalSpeed(uint8_t id, int32_t goal);
 
-  bool regWrite(uint8_t id, char* item_name, int32_t value); // write register
-  bool syncWrite(char *item_name, int32_t* value);            // sync write
-  bool bulkWrite(void);                                       // bulk write
+  bool itemWrite(uint8_t id, char* item_name, int32_t value);  // write value to item
+  bool syncWrite(char *item_name, int32_t* value);             // sync write
+  bool bulkWrite(void);                                        // bulk write
 
-  int32_t  regRead(uint8_t id, char* item_name);  // read register
+  int32_t  itemRead(uint8_t id, char* item_name);   // read value from item
   int32_t* syncRead(char* item_name);              // sync read
   int32_t  bulkRead(uint8_t id, char* item_name);  // bulk read
 

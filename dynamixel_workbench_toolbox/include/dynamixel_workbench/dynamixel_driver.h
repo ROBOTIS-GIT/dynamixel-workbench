@@ -22,12 +22,14 @@
 #include "dynamixel_tool.h"
 
 #if defined(__OPENCR__) || defined(__OPENCM904__)
+  #include <Arduino.h>
   #include <DynamixelSDK.h>
 #elif defined(__linux__)
+  #include "stdio.h"
   #include "dynamixel_sdk/dynamixel_sdk.h"
 #endif
 
-#define DXL_NUM 16
+#define DXL_MAX_NUM 16
 #define MAX_HANDLER 5
 
 #define BYTE  1
@@ -62,7 +64,7 @@ class DynamixelDriver
   dynamixel::GroupBulkRead  *groupBulkRead_;  
   dynamixel::GroupBulkWrite *groupBulkWrite_;  
  
-  DynamixelTool tools_[DXL_NUM];
+  DynamixelTool tools_[DXL_MAX_NUM];
 
   uint8_t tools_cnt_;
   uint8_t sync_write_handler_cnt_;

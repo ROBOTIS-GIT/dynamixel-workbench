@@ -12,7 +12,6 @@ set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   dynamixel_sdk
-  roslib
 )
 
 ################################################################################
@@ -27,9 +26,9 @@ find_package(catkin REQUIRED COMPONENTS
 # Catkin specific configuration
 ################################################################################
 catkin_package(
- INCLUDE_DIRS include
+ INCLUDE_DIRS include/dynamixel_workbench
  LIBRARIES dynamixel_workbench_toolbox
- CATKIN_DEPENDS roscpp roslib
+ CATKIN_DEPENDS roscpp dynamixel_sdk
 )
 
 ################################################################################
@@ -37,14 +36,15 @@ catkin_package(
 ################################################################################
 include_directories(
   ${catkin_INCLUDE_DIRS}
-  include/dynamixel_workbench_toolbox
 )
 
 add_library(dynamixel_workbench_toolbox
-    src/dynamixel_workbench_toolbox/dynamixel_tool_ros.cpp
-    src/dynamixel_workbench_toolbox/dynamixel_driver.cpp
-    src/dynamixel_workbench_toolbox/dynamixel_multi_driver.cpp
+  src/dynamixel_workbench/dynamixel_item.cpp
+  src/dynamixel_workbench/dynamixel_driver.cpp
+  src/dynamixel_workbench/dynamixel_tool.cpp
+  src/dynamixel_workbench/dynamixel_workbench.cpp
 )
+
 add_dependencies(dynamixel_workbench_toolbox ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(dynamixel_workbench_toolbox ${catkin_LIBRARIES})
 
@@ -57,13 +57,10 @@ install(TARGETS dynamixel_workbench_toolbox
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-install(DIRECTORY include/${PROJECT_NAME}/
+install(DIRECTORY DynamixelWorkbench/include/dynamixel_workbench/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 )
 
-install(DIRECTORY dynamixel/
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/dynamixel
-)
 
 ################################################################################
 # Test

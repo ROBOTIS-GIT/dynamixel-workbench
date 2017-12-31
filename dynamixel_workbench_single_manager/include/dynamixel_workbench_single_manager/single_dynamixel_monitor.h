@@ -21,7 +21,8 @@
 
 #include <ros/ros.h>
 
-#include "dynamixel_workbench_toolbox/dynamixel_driver.h"
+#include "dynamixel_driver.h"
+#include "dynamixel_sdk/dynamixel_sdk.h"
 
 #include "dynamixel_workbench_msgs/DynamixelCommand.h"
 #include "dynamixel_workbench_msgs/GetDynamixelInfo.h"
@@ -50,47 +51,49 @@ class SingleDynamixelMonitor
   bool use_ping_;
   int ping_id_;
 
-  dynamixel_driver::DynamixelInfo *dynamixel_info_;
-  dynamixel_driver::DynamixelDriver *dynamixel_driver_;
+//  dynamixel_driver::DynamixelInfo *dynamixel_info_;
+//  dynamixel_driver::DynamixelDriver *dynamixel_driver_;
+
+  DynamixelDriver *dynamixel_driver_;
 
  public:
   SingleDynamixelMonitor();
   ~SingleDynamixelMonitor();
-  bool controlLoop();
+//  bool controlLoop();
 
  private:
-  bool initSingleDynamixelMonitor();
-  bool shutdownSingleDynamixelMonitor();
+//  bool initSingleDynamixelMonitor();
+//  bool shutdownSingleDynamixelMonitor();
 
-  // TODO : Add new Dynamixel
-  bool initDynamixelStatePublisher();
-  bool initDynamixelInfoServer();
-  bool initDynamixelCommandServer();
-  // TODO : Add new Dynamixel
-  bool dynamixelStatePublish();
+//  // TODO : Add new Dynamixel
+//  bool initDynamixelStatePublisher();
+//  bool initDynamixelInfoServer();
+//  bool initDynamixelCommandServer();
+//  // TODO : Add new Dynamixel
+//  bool dynamixelStatePublish();
 
-  bool showDynamixelControlTable();
-  bool checkValidationCommand(std::string cmd);
-  bool checkValidAccess(std::string cmd);
-  bool changeId(uint8_t id);
-  bool changeBaudrate(uint64_t baud_rate);
-  bool changeProtocolVersion(float ver);
+//  bool showDynamixelControlTable();
+//  bool checkValidationCommand(std::string cmd);
+//  bool checkValidAccess(std::string cmd);
+//  bool changeId(uint8_t id);
+//  bool changeBaudrate(uint64_t baud_rate);
+//  bool changeProtocolVersion(float ver);
 
-  bool dynamixelInfoMsgCallback(dynamixel_workbench_msgs::GetDynamixelInfo::Request &req,
-                                dynamixel_workbench_msgs::GetDynamixelInfo::Response &res);
+//  bool dynamixelInfoMsgCallback(dynamixel_workbench_msgs::GetDynamixelInfo::Request &req,
+//                                dynamixel_workbench_msgs::GetDynamixelInfo::Response &res);
 
-  bool dynamixelCommandMsgCallback(dynamixel_workbench_msgs::DynamixelCommand::Request &req,
-                                   dynamixel_workbench_msgs::DynamixelCommand::Response &res);
+//  bool dynamixelCommandMsgCallback(dynamixel_workbench_msgs::DynamixelCommand::Request &req,
+//                                   dynamixel_workbench_msgs::DynamixelCommand::Response &res);
 
-  bool AX();
-  bool RX();
-  bool EX();
-  bool MX();
-  bool XL320();
-  bool XL();
-  bool XM();
-  bool XH();
-  bool PRO();
+//  bool AX();
+//  bool RX();
+//  bool EX();
+//  bool MX();
+//  bool XL320();
+//  bool XL();
+//  bool XM();
+//  bool XH();
+//  bool PRO();
 };
 }
 

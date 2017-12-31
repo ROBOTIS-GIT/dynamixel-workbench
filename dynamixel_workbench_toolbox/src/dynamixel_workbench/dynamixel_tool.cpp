@@ -35,88 +35,85 @@ bool DynamixelTool::begin(uint16_t model_num)
 
 void DynamixelTool::setControlTable(char* name)
 {  
-  if (!strncmp(name, "AX-12A", strlen(name)))
-  { 
+  if (!strncmp(name, "AX-12A", strlen(name))) 
     setControlTable(AX_12A);
-  }
   else if (!strncmp(name, "AX-12W", strlen(name)))
-  { 
     setControlTable(AX_12W);
-  }
   else if (!strncmp(name, "AX-18A", strlen(name)))
-  { 
     setControlTable(AX_18A);
-  }
 
   else if (!strncmp(name, "RX-24F", strlen(name)))
-  { 
     setControlTable(RX_24F);
-  }
   else if (!strncmp(name, "RX-28", strlen(name)))
-  { 
     setControlTable(RX_28);
-  }
   else if (!strncmp(name, "RX-64", strlen(name)))
-  { 
     setControlTable(RX_64);
-  }
 
   else if (!strncmp(name, "EX-106", strlen(name)))
-  { 
     setControlTable(EX_106);
-  }
 
   else if (!strncmp(name, "MX-12W", strlen(name)))
-  { 
     setControlTable(MX_12W);
-  }
   else if (!strncmp(name, "MX-28", strlen(name)))
-  { 
     setControlTable(MX_28);
-  }
+  else if (!strncmp(name, "MX-28-2", strlen(name)))
+    setControlTable(MX_28_2);
   else if (!strncmp(name, "MX-64", strlen(name)))
-  { 
     setControlTable(MX_64);
-  }
+  else if (!strncmp(name, "MX-64-2", strlen(name)))
+    setControlTable(MX_64_2);
   else if (!strncmp(name, "MX-106", strlen(name)))
-  { 
     setControlTable(MX_106);
-  }
+  else if (!strncmp(name, "MX-106-2", strlen(name)))
+    setControlTable(MX_106_2);
 
   else if (!strncmp(name, "XL-320", strlen(name)))
-  { 
     setControlTable(XL_320);
-  }
   else if (!strncmp(name, "XL430-W250", strlen(name)))
-  { 
     setControlTable(XL430_W250);
-  }
 
   else if (!strncmp(name, "XM430-W210", strlen(name)))
-  { 
     setControlTable(XM430_W210);
-  }
   else if (!strncmp(name, "XM430-W350", strlen(name)))
-  { 
     setControlTable(XM430_W350);
-  }
+  else if (!strncmp(name, "XM540-W150", strlen(name)))
+    setControlTable(XM540_W150);
+  else if (!strncmp(name, "XM540-W270", strlen(name)))
+    setControlTable(XM540_W270);
 
   else if (!strncmp(name, "XH430-V210", strlen(name)))
-  { 
     setControlTable(XH430_V210);
-  }
   else if (!strncmp(name, "XH430-V350", strlen(name)))
-  { 
     setControlTable(XH430_V350);
-  }
   else if (!strncmp(name, "XH430-W210", strlen(name)))
-  { 
     setControlTable(XH430_W210);
-  }
   else if (!strncmp(name, "XH430-W350", strlen(name)))
-  { 
     setControlTable(XH430_W350);
-  }
+
+  else if (!strncmp(name, "PRO-L42-10-S300-R", strlen(name)))
+    setControlTable(PRO_L42_10_S300_R);
+  else if (!strncmp(name, "PRO-L54-30-S400-R", strlen(name)))
+    setControlTable(PRO_L54_30_S400_R);
+  else if (!strncmp(name, "PRO-L54-30-S500-R", strlen(name)))
+    setControlTable(PRO_L54_30_S500_R);
+  else if (!strncmp(name, "PRO-L54-50-S290-R", strlen(name)))
+    setControlTable(PRO_L54_50_S290_R);
+  else if (!strncmp(name, "PRO-L54-50-S500-R", strlen(name)))
+    setControlTable(PRO_L54_50_S500_R);
+
+  else if (!strncmp(name, "PRO-M42-10-S260-R", strlen(name)))
+    setControlTable(PRO_M42_10_S260_R);
+  else if (!strncmp(name, "PRO-M54-40-S250-R", strlen(name)))
+    setControlTable(PRO_M54_40_S250_R);
+  else if (!strncmp(name, "PRO-M54-60-S250-R", strlen(name)))
+    setControlTable(PRO_M54_60_S250_R);
+
+  else if (!strncmp(name, "PRO-H42-20-S300-R", strlen(name)))
+    setControlTable(PRO_H42_20_S300_R);
+  else if (!strncmp(name, "PRO-H54-100-S500-R", strlen(name)))
+    setControlTable(PRO_H54_100_S500_R);
+  else if (!strncmp(name, "PRO-H54-200-S500-R", strlen(name)))
+    setControlTable(PRO_H54_200_S500_R);
 }
 
 void DynamixelTool::setControlTable(uint16_t num)
@@ -145,10 +142,16 @@ void DynamixelTool::setControlTable(uint16_t num)
     strcpy(model_name_, "MX-12W");
   else if (num == MX_28)
     strcpy(model_name_, "MX-28");
+  else if (num == MX_28_2)
+    strcpy(model_name_, "MX-28-2");
   else if (num == MX_64)
     strcpy(model_name_, "MX-64");
+  else if (num == MX_64_2)
+    strcpy(model_name_, "MX-64-2");
   else if (num == MX_106)
     strcpy(model_name_, "MX-106");
+  else if (num == MX_106_2)
+    strcpy(model_name_, "MX-106-2");
 
   else if (num == XL_320)
     strcpy(model_name_, "XL-320");
@@ -159,6 +162,10 @@ void DynamixelTool::setControlTable(uint16_t num)
     strcpy(model_name_, "XM430-W210");
   else if (num == XM430_W350)
     strcpy(model_name_, "XM430-W350");
+  else if (num == XM540_W150)
+    strcpy(model_name_, "XM540-W150");
+  else if (num == XM540_W270)
+    strcpy(model_name_, "XM540-W270");
 
   else if (num == XH430_V210)
     strcpy(model_name_, "XH430-V210");
@@ -169,9 +176,47 @@ void DynamixelTool::setControlTable(uint16_t num)
   else if (num == XH430_W350)
     strcpy(model_name_, "XH430-W350");
 
-  item_               = getItem(num);
+  else if (num == PRO_L42_10_S300_R)
+    strcpy(model_name_, "PRO-L42-10-S300-R");
+  else if (num == PRO_L54_30_S400_R)
+    strcpy(model_name_, "PRO-L54-30-S400-R");
+  else if (num == PRO_L54_30_S500_R)
+    strcpy(model_name_, "PRO-L54-30-S500-R");
+  else if (num == PRO_L54_50_S290_R)
+    strcpy(model_name_, "PRO-L54-50-S290-R");
+  else if (num == PRO_L54_50_S500_R)
+    strcpy(model_name_, "PRO-L54-50-S500-R");
+
+  else if (num == PRO_M42_10_S260_R)
+    strcpy(model_name_, "PRO-M42-10-S260-R");
+  else if (num == PRO_M54_40_S250_R)
+    strcpy(model_name_, "PRO-M54-40-S250-R");
+  else if (num == PRO_M54_60_S250_R)
+    strcpy(model_name_, "PRO-M54-60-S250-R");
+  else if (num == PRO_H42_20_S300_R)
+    strcpy(model_name_, "PRO-H42-20-S300-R");
+  else if (num == PRO_H54_100_S500_R)
+    strcpy(model_name_, "PRO-H54-100-S500-R");
+
+  else if (num == PRO_H54_200_S500_R)
+    strcpy(model_name_, "PRO-H54-200-S500-R");
+
+  item_ptr_           = getItem(num);
   control_table_size_ = getSize();
-  info_               = getInfo(num);
+  info_ptr_           = getInfo(num);
+
+  for (int index = 0; index < control_table_size_; index++)
+    item_[index] = item_ptr_[index];
+
+  info_.velocity_to_value_ratio         = info_ptr_->velocity_to_value_ratio;
+  info_.torque_to_current_value_ratio   = info_ptr_->torque_to_current_value_ratio;
+
+  info_.value_of_0_radian_position      = info_ptr_->value_of_0_radian_position;
+  info_.value_of_min_radian_position    = info_ptr_->value_of_min_radian_position;
+  info_.value_of_max_radian_position    = info_ptr_->value_of_max_radian_position;
+
+  info_.min_radian                      = info_ptr_->min_radian;
+  info_.max_radian                      = info_ptr_->max_radian;
 }
 
 char* DynamixelTool::getModelName()
@@ -181,37 +226,37 @@ char* DynamixelTool::getModelName()
 
 float DynamixelTool::getVelocityToValueRatio()
 {
-  return info_->velocity_to_value_ratio;
+  return info_.velocity_to_value_ratio;
 }
 
 float DynamixelTool::getTorqueToCurrentValueRatio()
 {
-  return info_->torque_to_current_value_ratio;
+  return info_.torque_to_current_value_ratio;
 }
 
 int32_t DynamixelTool::getValueOfMinRadianPosition()
 {
-  return info_->value_of_min_radian_position;
+  return info_.value_of_min_radian_position;
 }
 
 int32_t DynamixelTool::getValueOfMaxRadianPosition()
 {
-  return info_->value_of_max_radian_position;
+  return info_.value_of_max_radian_position;
 }
 
 int32_t DynamixelTool::getValueOfZeroRadianPosition()
 {
-  return info_->value_of_0_radian_position;
+  return info_.value_of_0_radian_position;
 }
 
 float DynamixelTool::getMinRadian()
 {
-  return info_->min_radian;
+  return info_.min_radian;
 }
 
 float DynamixelTool::getMaxRadian()
 {
-  return info_->max_radian;
+  return info_.max_radian;
 }
 
 uint8_t DynamixelTool::getControlTableSize()
@@ -241,4 +286,14 @@ ControlTableItem* DynamixelTool::getControlItem(char* item_name)
       return cti;
     }
   }
+}
+
+ControlTableItem* DynamixelTool::getControlItemPtr()
+{
+  return item_ptr_;
+}
+
+ModelInfo* DynamixelTool::getModelInfoPtr()
+{
+  return info_ptr_;
 }
