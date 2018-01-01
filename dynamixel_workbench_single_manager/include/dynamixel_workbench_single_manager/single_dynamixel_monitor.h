@@ -47,14 +47,13 @@ class SingleDynamixelMonitor
   ros::ServiceServer dynamixel_info_server_;
   ros::ServiceServer dynamixel_command_server_;
 
-  // Dynamixel Monitor variable
-  bool use_ping_;
-  int ping_id_;
-
 //  dynamixel_driver::DynamixelInfo *dynamixel_info_;
 //  dynamixel_driver::DynamixelDriver *dynamixel_driver_;
 
   DynamixelDriver *dynamixel_driver_;
+
+  uint32_t dxl_baud_rate_;
+  uint8_t dxl_id_;
 
  public:
   SingleDynamixelMonitor();
@@ -62,13 +61,13 @@ class SingleDynamixelMonitor
 //  bool controlLoop();
 
  private:
-//  bool initSingleDynamixelMonitor();
-//  bool shutdownSingleDynamixelMonitor();
+  bool initSingleDynamixelMonitor();
+  bool shutdownSingleDynamixelMonitor();
 
-//  // TODO : Add new Dynamixel
-//  bool initDynamixelStatePublisher();
-//  bool initDynamixelInfoServer();
-//  bool initDynamixelCommandServer();
+  // TODO : Add new Dynamixel
+  bool initDynamixelStatePublisher();
+  bool initDynamixelInfoServer();
+  bool initDynamixelCommandServer();
 //  // TODO : Add new Dynamixel
 //  bool dynamixelStatePublish();
 

@@ -21,10 +21,6 @@
 
 #include "dynamixel_driver.h"
 
-#if defined(__linux__)
-  #include "unistd.h"
-#endif
-
 #define XL320_POSITION_CONTROL_MODE 0
 #define XL320_VELOCITY_CONTROL_MODE 1
 
@@ -50,7 +46,7 @@ class DynamixelWorkbench
   DynamixelWorkbench();
   ~DynamixelWorkbench();
 
-  bool begin(char* device_name = "/dev/ttyUSB0", uint32_t baud_rate = 57600);
+  bool begin(const char* device_name = "/dev/ttyUSB0", uint32_t baud_rate = 57600);
  
   uint8_t  scan(uint8_t *get_id, float protocol_version = 0.0);
   uint16_t ping(uint8_t id, float protocol_version = 0.0);
@@ -74,22 +70,22 @@ class DynamixelWorkbench
   bool goalPosition(uint8_t id, uint16_t goal);
   bool goalSpeed(uint8_t id, int32_t goal);
 
-  bool itemWrite(uint8_t id, char* item_name, int32_t value);  // write value to item
-  bool syncWrite(char *item_name, int32_t* value);             // sync write
+  bool itemWrite(uint8_t id, const char* item_name, int32_t value);  // write value to item
+  bool syncWrite(const char *item_name, int32_t* value);             // sync write
   bool bulkWrite(void);                                        // bulk write
 
-  int32_t  itemRead(uint8_t id, char* item_name);   // read value from item
-  int32_t* syncRead(char* item_name);              // sync read
-  int32_t  bulkRead(uint8_t id, char* item_name);  // bulk read
+  int32_t  itemRead(uint8_t id, const char* item_name);   // read value from item
+  int32_t* syncRead(const char* item_name);              // sync read
+  int32_t  bulkRead(uint8_t id, const char* item_name);  // bulk read
 
-  bool addSyncWrite(char* item_name);
-  bool addSyncRead(char* item_name);
+  bool addSyncWrite(const char* item_name);
+  bool addSyncRead(const char* item_name);
 
   bool initBulkWrite();
   bool initBulkRead();
 
-  bool addBulkWriteParam(uint8_t id, char *item_name, int32_t data);
-  bool addBulkReadParam(uint8_t id, char *item_name);
+  bool addBulkWriteParam(uint8_t id, const char *item_name, int32_t data);
+  bool addBulkReadParam(uint8_t id, const char *item_name);
   bool setBulkRead();
 
  private:

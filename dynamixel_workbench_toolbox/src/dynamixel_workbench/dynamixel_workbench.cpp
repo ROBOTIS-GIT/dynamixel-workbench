@@ -28,7 +28,7 @@ DynamixelWorkbench::~DynamixelWorkbench()
 
 }
 
-bool DynamixelWorkbench::begin(char* device_name, uint32_t baud_rate)
+bool DynamixelWorkbench::begin(const char* device_name, uint32_t baud_rate)
 {
   bool error = false;
 
@@ -258,12 +258,12 @@ bool DynamixelWorkbench::goalSpeed(uint8_t id, int32_t goal)
   return check;
 }
 
-bool DynamixelWorkbench::itemWrite(uint8_t id, char* item_name, int32_t value)
+bool DynamixelWorkbench::itemWrite(uint8_t id, const char* item_name, int32_t value)
 {
   return driver_.writeRegister(id, item_name, value);
 }
 
-bool DynamixelWorkbench::syncWrite(char *item_name, int32_t* value)
+bool DynamixelWorkbench::syncWrite(const char *item_name, int32_t* value)
 {
   return driver_.syncWrite(item_name, value);
 }
@@ -273,7 +273,7 @@ bool DynamixelWorkbench::bulkWrite()
   return driver_.bulkWrite();
 }
 
-int32_t DynamixelWorkbench::itemRead(uint8_t id, char* item_name)
+int32_t DynamixelWorkbench::itemRead(uint8_t id, const char* item_name)
 {
   static int32_t value = 0;
 
@@ -281,28 +281,28 @@ int32_t DynamixelWorkbench::itemRead(uint8_t id, char* item_name)
     return value;
 }
 
-int32_t* DynamixelWorkbench::syncRead(char *item_name)
+int32_t* DynamixelWorkbench::syncRead(const char *item_name)
 {
   static int32_t data[16];
   if (driver_.syncRead(item_name, data))
     return data;
 }
 
-int32_t DynamixelWorkbench::bulkRead(uint8_t id, char* item_name)
+int32_t DynamixelWorkbench::bulkRead(uint8_t id, const char* item_name)
 {
   static int32_t data;
   if (driver_.bulkRead(id, item_name, &data))
     return data;
 }
 
-bool DynamixelWorkbench::addSyncWrite(char* item_name)
+bool DynamixelWorkbench::addSyncWrite(const char* item_name)
 {
   driver_.addSyncWrite(item_name);
 
   return true;
 }
 
-bool DynamixelWorkbench::addSyncRead(char* item_name)
+bool DynamixelWorkbench::addSyncRead(const char* item_name)
 {
   driver_.addSyncRead(item_name);
 
@@ -323,12 +323,12 @@ bool DynamixelWorkbench::initBulkRead()
   return true;
 }
 
-bool DynamixelWorkbench::addBulkWriteParam(uint8_t id, char *item_name, int32_t data)
+bool DynamixelWorkbench::addBulkWriteParam(uint8_t id, const char *item_name, int32_t data)
 {
   return driver_.addBulkWriteParam(id, item_name, data);
 }
 
-bool DynamixelWorkbench::addBulkReadParam(uint8_t id, char *item_name)
+bool DynamixelWorkbench::addBulkReadParam(uint8_t id, const char *item_name)
 {
   return driver_.addBulkReadParam(id, item_name);
 }

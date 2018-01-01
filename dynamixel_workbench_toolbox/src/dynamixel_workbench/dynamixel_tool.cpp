@@ -22,7 +22,7 @@ DynamixelTool::DynamixelTool(){}
 
 DynamixelTool::~DynamixelTool(){}
 
-bool DynamixelTool::begin(char* model_name)
+bool DynamixelTool::begin(const char* model_name)
 {
   strcpy(model_name_, model_name); 
   setControlTable(model_name);
@@ -33,7 +33,7 @@ bool DynamixelTool::begin(uint16_t model_num)
   setControlTable(model_num);
 }
 
-void DynamixelTool::setControlTable(char* name)
+void DynamixelTool::setControlTable(const char *name)
 {  
   if (!strncmp(name, "AX-12A", strlen(name))) 
     setControlTable(AX_12A);
@@ -274,7 +274,7 @@ uint8_t DynamixelTool::getID()
   return id_;
 }
 
-ControlTableItem* DynamixelTool::getControlItem(char* item_name)
+ControlTableItem* DynamixelTool::getControlItem(const char* item_name)
 {
   ControlTableItem* cti;
 

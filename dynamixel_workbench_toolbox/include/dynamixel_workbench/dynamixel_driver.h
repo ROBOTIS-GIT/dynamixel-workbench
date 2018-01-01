@@ -26,6 +26,7 @@
   #include <DynamixelSDK.h>
 #elif defined(__linux__)
   #include "stdio.h"
+  #include "unistd.h"
   #include "dynamixel_sdk/dynamixel_sdk.h"
 #endif
 
@@ -36,7 +37,7 @@
 #define WORD  2
 #define DWORD 4
 
-#define DEBUG false
+#define DEBUG true
 
 typedef struct 
 {
@@ -76,9 +77,9 @@ class DynamixelDriver
   DynamixelDriver();
   ~DynamixelDriver();
 
-  bool begin(char* device_name = "/dev/ttyUSB0", uint32_t baud_rate = 57600);
+  bool begin(const char* device_name = "/dev/ttyUSB0", uint32_t baud_rate = 57600);
 
-  void setPortHandler(char *device_name, bool *error);
+  void setPortHandler(const char *device_name, bool *error);
   void setPacketHandler(bool *error);
   void setPacketHandler(float protocol_version);
   void setBaudrate(uint32_t baud_rate, bool *error);
@@ -92,23 +93,23 @@ class DynamixelDriver
   bool reboot(uint8_t id);
   bool reset(uint8_t id);
 
-  bool writeRegister(uint8_t id, char *item_name, int32_t data);
-  bool readRegister(uint8_t id, char *item_name, int32_t *data);
+  bool writeRegister(uint8_t id, const char *item_name, int32_t data);
+  bool readRegister(uint8_t id, const char *item_name, int32_t *data);
 
-  void addSyncWrite(char *item_name);
-  bool syncWrite(char *item_name, int32_t *data);
+  void addSyncWrite(const char *item_name);
+  bool syncWrite(const char *item_name, int32_t *data);
 
-  void addSyncRead(char *item_name);
-  bool syncRead(char *item_name, int32_t *data);
+  void addSyncRead(const char *item_name);
+  bool syncRead(const char *item_name, int32_t *data);
 
   void initBulkWrite();
-  bool addBulkWriteParam(uint8_t id, char *item_name, int32_t data);
+  bool addBulkWriteParam(uint8_t id, const char *item_name, int32_t data);
   bool bulkWrite();
 
   void initBulkRead();
-  bool addBulkReadParam(uint8_t id, char *item_name);
+  bool addBulkReadParam(uint8_t id, const char *item_name);
   bool sendBulkReadPacket();
-  bool bulkRead(uint8_t id, char *item_name, int32_t *data);
+  bool bulkRead(uint8_t id, const char *item_name, int32_t *data);
 
   int32_t convertRadian2Value(int8_t id, float radian);
   float convertValue2Radian(int8_t id, int32_t value);

@@ -44,10 +44,10 @@ class DynamixelTool
   DynamixelTool();
   ~DynamixelTool();
 
-  bool begin(char* model_name);
+  bool begin(const char* model_name);
   bool begin(uint16_t model_num);
 
-  void setControlTable(char* name);
+  void setControlTable(const char* name);
   void setControlTable(uint16_t num);
 
   char* getModelName();
@@ -66,7 +66,7 @@ class DynamixelTool
   float getMaxRadian();  
 
   uint8_t getControlTableSize();    
-  ControlTableItem* getControlItem(char* item_name); 
+  ControlTableItem* getControlItem(const char *item_name);
   ControlTableItem* getControlItemPtr(); 
   ModelInfo* getModelInfoPtr();
 };

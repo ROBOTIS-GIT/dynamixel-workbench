@@ -23,8 +23,13 @@ using namespace single_dynamixel_monitor;
 SingleDynamixelMonitor::SingleDynamixelMonitor()
 {
   // Check Dynamixel Ping or Scan (default : Scan (1~253))
-  use_ping_ = node_handle_.param<bool>("ping", false);
-  ping_id_  = node_handle_.param<int>("ping_id", 1);
+
+  // Dynamixel Monitor variable
+  bool use_ping = node_handle_.param<bool>("ping", false);
+  int ping_id  = node_handle_.param<int>("ping_id", 1);
+
+  std::string device_name = node_handle_.param<std::string>("device_name", "/dev/ttyUSB0");
+  dxl_baud_rate_          = node_handle_.param<int>("baud_rate", 57600);
 
   // Load Paramameter For Connection
 //  dynamixel_info_ = new dynamixel_driver::DynamixelInfo;
@@ -39,58 +44,49 @@ SingleDynamixelMonitor::SingleDynamixelMonitor()
 
   dynamixel_driver_ = new DynamixelDriver;
 
-//  dynamixel_Driver
+  dynamixel_driver_->begin(device_name.c_str(), dxl_baud_rate_);
 
-//  if(!use_ping_)
-//  {
-//    // Get Connected Single Dynamixel State
-//    if (dynamixel_info_->lode_info.protocol_version == 1.0)
-//      printf("Scan Dynamixel(ID: 1~253) Using Protocol 1.0\n");
-//    else if (dynamixel_info_->lode_info.protocol_version == 2.0)
-//      printf("Scan Dynamixel(ID: 1~253) Using Protocol 2.0\n");
+  if(!use_ping)
+  {
+    if (dynamixel_driver_->scan(&dxl_id_) != false)
+    {
+      printf("...Succeeded to find dynamixel\n");
+      printf("[ID] %u, [Model Name] %s, [BAUD RATE] %d [VERSION] %.2f\n",
+               dxl_id_, dynamixel_driver_->getModelName(dxl_id_), dxl_baud_rate_, dynamixel_driver_->getProtocolVersion());
+    }
+    else
+    {
+      printf("Please Check USB Port authorization and\n");
+      printf("Baudrate [ex : 57600, 115200, 1000000, 3000000]\n");
+      printf("...Failed to find dynamixel!\n");
 
-//    if (dynamixel_driver_->scan())
-//    {
-//      printf("...Succeeded to find dynamixel\n");
-//      printf("[ID] %u, [Model Name] %s, [BAUD RATE] %d\n",
-//               dynamixel_driver_->dynamixel_->id_, dynamixel_driver_->dynamixel_->model_name_.c_str(), dynamixel_info_->lode_info.baud_rate);
-//    }
-//    else
-//    {
-//      printf("Please Check USB Port authorization and\n");
-//      printf("Baudrate [ex : 57600, 115200, 1000000, 3000000]\n");
-//      printf("...Failed to find dynamixel!\n");
-//      shutdownSingleDynamixelMonitor();
-//    }
-//  }
-//  else
-//  {
-//    // Ping Connected Single Dynamixel State
-//    if (dynamixel_info_->lode_info.protocol_version == 1.0)
-//      printf("Ping(ID: %d) Dynamixel Using Protocol 1.0\n", ping_id_);
-//    else if (dynamixel_info_->lode_info.protocol_version == 2.0)
-//      printf("Ping(ID: %d) Dynamixel Using Protocol 2.0\n", ping_id_);
+      ros::shutdown();
+    }
+  }
+  else
+  {
+    dxl_id_ = ping_id;
+    if (dynamixel_driver_->ping(dxl_id_) != false)
+    {
+      printf("...Succeeded to ping dynamixel\n");
+      printf("[ID] %u, [Model Name] %s, [BAUD RATE] %d [VERSION] %.2f\n",
+               dxl_id_, dynamixel_driver_->getModelName(dxl_id_), dxl_baud_rate_, dynamixel_driver_->getProtocolVersion());
+    }
+    else
+    {
+      printf("Please Check USB Port authorization and\n");
+      printf("Baudrate [ex : 57600, 115200, 1000000, 3000000]\n");
+      printf("...Failed to find dynamixel!\n");
 
-//    if (dynamixel_driver_->ping(ping_id_))
-//    {
-//      printf("...Succeeded to ping dynamixel\n");
-//      printf("[ID] %u, [Model Name] %s, [BAUD RATE] %d\n",
-//               dynamixel_driver_->dynamixel_->id_, dynamixel_driver_->dynamixel_->model_name_.c_str(), dynamixel_info_->lode_info.baud_rate);
-//    }
-//    else
-//    {
-//      printf("Please Check USB Port authorization and\n");
-//      printf("Baudrate [ex : 57600, 115200, 1000000, 3000000]\n");
-//      printf("...Failed to find dynamixel!\n");
-//      shutdownSingleDynamixelMonitor();
-//    }
-//  }
+      ros::shutdown();
+    }
+  }
 
 //  initDynamixelStatePublisher();
 //  initDynamixelInfoServer();
 //  initDynamixelCommandServer();
 
-//  printf("dynamixel_workbench_single_manager : Init Success!\n");
+  printf("dynamixel_workbench_single_manager : Init Success!\n");
 }
 
 SingleDynamixelMonitor::~SingleDynamixelMonitor()
@@ -98,18 +94,18 @@ SingleDynamixelMonitor::~SingleDynamixelMonitor()
 
 }
 
-//bool SingleDynamixelMonitor::initSingleDynamixelMonitor()
-//{
+bool SingleDynamixelMonitor::initSingleDynamixelMonitor()
+{
 
-//}
+}
 
-//bool SingleDynamixelMonitor::shutdownSingleDynamixelMonitor()
-//{
-//  dynamixel_driver_->writeRegister("torque_enable", 0);
+bool SingleDynamixelMonitor::shutdownSingleDynamixelMonitor()
+{
+  dynamixel_driver_->writeRegister(dxl_id_, "Torque Enable", false);
 
-//  ros::shutdown();
-//  return true;
-//}
+  ros::shutdown();
+  return true;
+}
 
 //bool SingleDynamixelMonitor::initDynamixelStatePublisher()
 //{

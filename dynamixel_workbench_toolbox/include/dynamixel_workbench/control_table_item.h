@@ -24,7 +24,7 @@
 typedef struct 
 {
   uint16_t    address;
-  char*       item_name;  
+  const char* item_name;
   uint8_t     data_length;
 } ControlTableItem;
 
