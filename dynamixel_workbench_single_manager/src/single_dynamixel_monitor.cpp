@@ -21,6 +21,8 @@
 using namespace single_dynamixel_monitor;
 
 SingleDynamixelMonitor::SingleDynamixelMonitor()
+  :dxl_baud_rate_(0),
+   dxl_id_(0)
 {
   // Check Dynamixel Ping or Scan (default : Scan (1~253))
 
@@ -46,30 +48,13 @@ SingleDynamixelMonitor::SingleDynamixelMonitor()
 
   dynamixel_driver_->begin(device_name.c_str(), dxl_baud_rate_);
 
-  if(!use_ping)
-  {
-    if (dynamixel_driver_->scan(&dxl_id_) != false)
-    {
-      printf("...Succeeded to find dynamixel\n");
-      printf("[ID] %u, [Model Name] %s, [BAUD RATE] %d [VERSION] %.2f\n",
-               dxl_id_, dynamixel_driver_->getModelName(dxl_id_), dxl_baud_rate_, dynamixel_driver_->getProtocolVersion());
-    }
-    else
-    {
-      printf("Please Check USB Port authorization and\n");
-      printf("Baudrate [ex : 57600, 115200, 1000000, 3000000]\n");
-      printf("...Failed to find dynamixel!\n");
-
-      ros::shutdown();
-    }
-  }
-  else
+  if(use_ping == true)
   {
     dxl_id_ = ping_id;
     if (dynamixel_driver_->ping(dxl_id_) != false)
     {
       printf("...Succeeded to ping dynamixel\n");
-      printf("[ID] %u, [Model Name] %s, [BAUD RATE] %d [VERSION] %.2f\n",
+      printf("[ID] %u, [Model Name] %s, [BAUD RATE] %d [VERSION] %.1f\n",
                dxl_id_, dynamixel_driver_->getModelName(dxl_id_), dxl_baud_rate_, dynamixel_driver_->getProtocolVersion());
     }
     else
@@ -79,6 +64,25 @@ SingleDynamixelMonitor::SingleDynamixelMonitor()
       printf("...Failed to find dynamixel!\n");
 
       ros::shutdown();
+      exit(1);
+    }
+  }
+  else
+  {
+    if (dynamixel_driver_->scan(&dxl_id_) != false)
+    {
+      printf("...Succeeded to find dynamixel\n");
+      printf("[ID] %u, [Model Name] %s, [BAUD RATE] %d [VERSION] %.1f\n",
+               dxl_id_, dynamixel_driver_->getModelName(dxl_id_), dxl_baud_rate_, dynamixel_driver_->getProtocolVersion());
+    }
+    else
+    {
+      printf("Please Check USB Port authorization and\n");
+      printf("Baudrate [ex : 57600, 115200, 1000000, 3000000]\n");
+      printf("...Failed to find dynamixel!\n");
+
+      ros::shutdown();
+      exit(1);
     }
   }
 

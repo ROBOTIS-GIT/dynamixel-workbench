@@ -246,7 +246,7 @@ uint8_t DynamixelDriver::scan(uint8_t *get_id, uint8_t num, float protocol_versi
       Serial.print(tools_[i].getID());
       Serial.print("  ");
 #else
-      printf("%d  ", id);
+      printf("%d  ", tools_[i].getID());
 #endif   
 #endif 
     }
