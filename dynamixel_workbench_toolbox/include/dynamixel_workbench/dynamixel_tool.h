@@ -23,11 +23,17 @@
 
 #include "dynamixel_item.h"
 
+typedef struct
+{
+  char model_name[64];
+  uint8_t id;
+} DXLInfo;
+
 class DynamixelTool
 {
  private:
-  char model_name_[64];
-  uint8_t id_;
+  DXLInfo dxl_info_[10];
+  uint8_t dxl_info_cnt_;
 
   ControlTableItem* item_ptr_;
   ModelInfo* info_ptr_;
@@ -44,8 +50,8 @@ class DynamixelTool
   DynamixelTool();
   ~DynamixelTool();
 
-  bool begin(const char* model_name);
-  bool begin(uint16_t model_num);
+  bool begin(const char* model_name, uint8_t id);
+  bool begin(uint16_t model_num, uint8_t id);
 
   void setControlTable(const char* name);
   void setControlTable(uint16_t num);

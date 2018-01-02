@@ -22,13 +22,21 @@ DynamixelTool::DynamixelTool(){}
 
 DynamixelTool::~DynamixelTool(){}
 
-bool DynamixelTool::begin(const char* model_name)
+bool DynamixelTool::begin(const char* model_name, uint8_t id)
+  : dxl_info_cnt_(0),
+    control_table_size_(0)
 {
-  strcpy(model_name_, model_name); 
+  uint8_t cnt = dxl_info_cnt_;
+
+  strcpy(dxl_info_[cnt].model_name, model_name);
+  dxl_info_[cnt].id = id;
+
   setControlTable(model_name);
 }
 
-bool DynamixelTool::begin(uint16_t model_num)
+bool DynamixelTool::begin(uint16_t model_num, uint8_t id)
+  : dxl_info_cnt_(0),
+    control_table_size_(0)
 {
   setControlTable(model_num);
 }
@@ -131,9 +139,6 @@ void DynamixelTool::setControlTable(uint16_t num)
     strcpy(model_name_, "RX-28");
   else if (num == RX_64)
     strcpy(model_name_, "RX-64");
-
-  else if (num == EX_106)
-    strcpy(model_name_, "EX-106");
 
   else if (num == EX_106)
     strcpy(model_name_, "EX-106");
