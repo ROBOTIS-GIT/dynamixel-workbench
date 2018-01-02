@@ -276,7 +276,7 @@ uint8_t DynamixelDriver::scan(uint8_t *get_id, uint8_t num, float protocol_versi
       }
       else if (!strncmp(dxl_, "MX", 2))
       {
-        if (!strcmp(dxl_, "MX-28-2") || !strcmp(dxl_, "MX-64-2") || !strcmp(dxl_, "MX-106-2"))
+        if (!strncmp(dxl_, "MX-28-2", strlen(dxl_)) || !strncmp(dxl_, "MX-64-2", strlen(dxl_)) || !strncmp(dxl_, "MX-106-2", strlen(dxl_)))
           packetHandler_ = dynamixel::PacketHandler::getPacketHandler(2.0);
         else
           packetHandler_ = dynamixel::PacketHandler::getPacketHandler(1.0);
@@ -351,7 +351,7 @@ uint16_t DynamixelDriver::ping(uint8_t id, float protocol_version)
     }
     else if (!strncmp(dxl_, "MX", 2))
     {
-      if (!strcmp(dxl_, "MX-28-2") || !strcmp(dxl_, "MX-64-2") || !strcmp(dxl_, "MX-106-2"))
+      if (!strncmp(dxl_, "MX-28-2", strlen(dxl_)) || !strncmp(dxl_, "MX-64-2", strlen(dxl_)) || !strncmp(dxl_, "MX-106-2", strlen(dxl_)))
         packetHandler_ = dynamixel::PacketHandler::getPacketHandler(2.0);
       else
         packetHandler_ = dynamixel::PacketHandler::getPacketHandler(1.0);
