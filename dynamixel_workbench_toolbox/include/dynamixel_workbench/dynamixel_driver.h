@@ -30,7 +30,7 @@
   #include "dynamixel_sdk/dynamixel_sdk.h"
 #endif
 
-#define DXL_MAX_NUM 16
+#define MAX_DXL_SERIES_NUM 3
 #define MAX_HANDLER 5
 
 #define BYTE  1
@@ -65,7 +65,7 @@ class DynamixelDriver
   dynamixel::GroupBulkRead  *groupBulkRead_;  
   dynamixel::GroupBulkWrite *groupBulkWrite_;  
  
-  DynamixelTool tools_[DXL_MAX_NUM];
+  DynamixelTool tools_[MAX_DXL_SERIES_NUM];
 
   uint8_t tools_cnt_;
   uint8_t sync_write_handler_cnt_;
@@ -116,8 +116,9 @@ class DynamixelDriver
 
  private:
   void setTools(uint16_t model_num, uint8_t id);
+  char* findModelName(uint16_t model_num);
   uint8_t findTools(uint8_t id);
-  uint8_t theNumberOfTools();
+//  uint8_t theNumberOfTools();
 };
 
 #endif //DYNAMIXEL_WORKBENCH_DYNAMIXEL_DRIVER_H

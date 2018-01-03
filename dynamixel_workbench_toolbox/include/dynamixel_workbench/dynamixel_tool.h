@@ -31,10 +31,11 @@ typedef struct
 
 class DynamixelTool
 {
- private:
+ public:
   DXLInfo dxl_info_[10];
   uint8_t dxl_info_cnt_;
 
+ private:
   ControlTableItem* item_ptr_;
   ModelInfo* info_ptr_;
 
@@ -53,13 +54,16 @@ class DynamixelTool
   bool begin(const char* model_name, uint8_t id);
   bool begin(uint16_t model_num, uint8_t id);
 
-  void setControlTable(const char* name);
-  void setControlTable(uint16_t num);
+  bool addDXL(uint16_t model_num, uint8_t id);
+  bool addDXL(const char* model_name, uint8_t id);
 
-  char* getModelName();
+  void setControlTable(const char* model_name);
+  void setControlTable(uint16_t model_num);
 
-  void setID(uint8_t id);
-  uint8_t getID();
+  void setModelName(uint16_t model_num);
+
+//  void setID(uint8_t id);
+//  uint8_t getID();
 
   float getVelocityToValueRatio();  
   float getTorqueToCurrentValueRatio();  

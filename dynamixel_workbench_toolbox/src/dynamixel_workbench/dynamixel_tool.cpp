@@ -18,31 +18,50 @@
 
 #include "../../include/dynamixel_workbench/dynamixel_tool.h"
 
-DynamixelTool::DynamixelTool(){}
+DynamixelTool::DynamixelTool() : dxl_info_cnt_(0), control_table_size_(0){}
 
 DynamixelTool::~DynamixelTool(){}
 
 bool DynamixelTool::begin(const char* model_name, uint8_t id)
-  : dxl_info_cnt_(0),
-    control_table_size_(0)
 {
-  uint8_t cnt = dxl_info_cnt_;
+  ++dxl_info_cnt_;
 
-  strcpy(dxl_info_[cnt].model_name, model_name);
-  dxl_info_[cnt].id = id;
+  strcpy(dxl_info_[dxl_info_cnt_].model_name, model_name);
+  dxl_info_[dxl_info_cnt_].id = id;
 
   setControlTable(model_name);
 }
 
 bool DynamixelTool::begin(uint16_t model_num, uint8_t id)
-  : dxl_info_cnt_(0),
-    control_table_size_(0)
 {
+  ++dxl_info_cnt_;
+
+  setModelName(model_num);
+  dxl_info_[dxl_info_cnt_].id = id;
+
   setControlTable(model_num);
 }
 
-void DynamixelTool::setControlTable(const char *name)
+bool DynamixelTool::addDXL(const char* model_name, uint8_t id)
+{
+  ++dxl_info_cnt_;
+
+  strcpy(dxl_info_[dxl_info_cnt_].model_name, model_name);
+  dxl_info_[dxl_info_cnt_].id = id;
+}
+
+bool DynamixelTool::addDXL(uint16_t model_num, uint8_t id)
+{
+  ++dxl_info_cnt_;
+
+  setModelName(model_num);
+  dxl_info_[dxl_info_cnt_].id = id;
+}
+
+void DynamixelTool::setControlTable(const char *model_name)
 {  
+  const char* name = model_name;
+
   if (!strncmp(name, "AX-12A", strlen(name))) 
     setControlTable(AX_12A);
   else if (!strncmp(name, "AX-12W", strlen(name)))
@@ -124,91 +143,11 @@ void DynamixelTool::setControlTable(const char *name)
     setControlTable(PRO_H54_200_S500_R);
 }
 
-void DynamixelTool::setControlTable(uint16_t num)
+void DynamixelTool::setControlTable(uint16_t model_num)
 {
-  if (num == AX_12A)
-    strcpy(model_name_, "AX-12A");
-  else if (num == AX_12W)
-    strcpy(model_name_, "AX-12W");
-  else if (num == AX_18A)
-    strcpy(model_name_, "AX-18A");
-
-  else if (num == RX_24F)
-    strcpy(model_name_, "RX-24F");
-  else if (num == RX_28)
-    strcpy(model_name_, "RX-28");
-  else if (num == RX_64)
-    strcpy(model_name_, "RX-64");
-
-  else if (num == EX_106)
-    strcpy(model_name_, "EX-106");
-
-  else if (num == MX_12W)
-    strcpy(model_name_, "MX-12W");
-  else if (num == MX_28)
-    strcpy(model_name_, "MX-28");
-  else if (num == MX_28_2)
-    strcpy(model_name_, "MX-28-2");
-  else if (num == MX_64)
-    strcpy(model_name_, "MX-64");
-  else if (num == MX_64_2)
-    strcpy(model_name_, "MX-64-2");
-  else if (num == MX_106)
-    strcpy(model_name_, "MX-106");
-  else if (num == MX_106_2)
-    strcpy(model_name_, "MX-106-2");
-
-  else if (num == XL_320)
-    strcpy(model_name_, "XL-320");
-  else if (num == XL430_W250)
-    strcpy(model_name_, "XL430-W250");
-
-  else if (num == XM430_W210)
-    strcpy(model_name_, "XM430-W210");
-  else if (num == XM430_W350)
-    strcpy(model_name_, "XM430-W350");
-  else if (num == XM540_W150)
-    strcpy(model_name_, "XM540-W150");
-  else if (num == XM540_W270)
-    strcpy(model_name_, "XM540-W270");
-
-  else if (num == XH430_V210)
-    strcpy(model_name_, "XH430-V210");
-  else if (num == XH430_V350)
-    strcpy(model_name_, "XH430-V350");
-  else if (num == XH430_W210)
-    strcpy(model_name_, "XH430-W210");
-  else if (num == XH430_W350)
-    strcpy(model_name_, "XH430-W350");
-
-  else if (num == PRO_L42_10_S300_R)
-    strcpy(model_name_, "PRO-L42-10-S300-R");
-  else if (num == PRO_L54_30_S400_R)
-    strcpy(model_name_, "PRO-L54-30-S400-R");
-  else if (num == PRO_L54_30_S500_R)
-    strcpy(model_name_, "PRO-L54-30-S500-R");
-  else if (num == PRO_L54_50_S290_R)
-    strcpy(model_name_, "PRO-L54-50-S290-R");
-  else if (num == PRO_L54_50_S500_R)
-    strcpy(model_name_, "PRO-L54-50-S500-R");
-
-  else if (num == PRO_M42_10_S260_R)
-    strcpy(model_name_, "PRO-M42-10-S260-R");
-  else if (num == PRO_M54_40_S250_R)
-    strcpy(model_name_, "PRO-M54-40-S250-R");
-  else if (num == PRO_M54_60_S250_R)
-    strcpy(model_name_, "PRO-M54-60-S250-R");
-  else if (num == PRO_H42_20_S300_R)
-    strcpy(model_name_, "PRO-H42-20-S300-R");
-  else if (num == PRO_H54_100_S500_R)
-    strcpy(model_name_, "PRO-H54-100-S500-R");
-
-  else if (num == PRO_H54_200_S500_R)
-    strcpy(model_name_, "PRO-H54-200-S500-R");
-
-  item_ptr_           = getItem(num);
+  item_ptr_           = getItem(model_num);
   control_table_size_ = getSize();
-  info_ptr_           = getInfo(num);
+  info_ptr_           = getInfo(model_num);
 
   for (int index = 0; index < control_table_size_; index++)
     item_[index] = item_ptr_[index];
@@ -224,10 +163,101 @@ void DynamixelTool::setControlTable(uint16_t num)
   info_.max_radian                      = info_ptr_->max_radian;
 }
 
-char* DynamixelTool::getModelName()
+void DynamixelTool::setModelName(uint16_t model_num)
 {
-  return model_name_;
+  uint16_t num = model_num;
+
+  if (num == AX_12A)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "AX-12A");
+  else if (num == AX_12W)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "AX-12W");
+  else if (num == AX_18A)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "AX-18A");
+
+  else if (num == RX_24F)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "RX-24F");
+  else if (num == RX_28)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "RX-28");
+  else if (num == RX_64)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "RX-64");
+
+  else if (num == EX_106)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "EX-106");
+
+  else if (num == MX_12W)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "MX-12W");
+  else if (num == MX_28)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "MX-28");
+  else if (num == MX_28_2)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "MX-28-2");
+  else if (num == MX_64)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "MX-64");
+  else if (num == MX_64_2)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "MX-64-2");
+  else if (num == MX_106)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "MX-106");
+  else if (num == MX_106_2)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "MX-106-2");
+
+  else if (num == XL_320)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "XL-320");
+  else if (num == XL430_W250)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "XL430-W250");
+
+  else if (num == XM430_W210)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "XM430-W210");
+  else if (num == XM430_W350)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "XM430-W350");
+  else if (num == XM540_W150)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "XM540-W150");
+  else if (num == XM540_W270)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "XM540-W270");
+
+  else if (num == XH430_V210)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "XH430-V210");
+  else if (num == XH430_V350)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "XH430-V350");
+  else if (num == XH430_W210)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "XH430-W210");
+  else if (num == XH430_W350)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "XH430-W350");
+
+  else if (num == PRO_L42_10_S300_R)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "PRO-L42-10-S300-R");
+  else if (num == PRO_L54_30_S400_R)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "PRO-L54-30-S400-R");
+  else if (num == PRO_L54_30_S500_R)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "PRO-L54-30-S500-R");
+  else if (num == PRO_L54_50_S290_R)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "PRO-L54-50-S290-R");
+  else if (num == PRO_L54_50_S500_R)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "PRO-L54-50-S500-R");
+
+  else if (num == PRO_M42_10_S260_R)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "PRO-M42-10-S260-R");
+  else if (num == PRO_M54_40_S250_R)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "PRO-M54-40-S250-R");
+  else if (num == PRO_M54_60_S250_R)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "PRO-M54-60-S250-R");
+
+  else if (num == PRO_H42_20_S300_R)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "PRO-H42-20-S300-R");
+  else if (num == PRO_H54_100_S500_R)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "PRO-H54-100-S500-R");
+  else if (num == PRO_H54_200_S500_R)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "PRO-H54-200-S500-R");
 }
+
+//const char *DynamixelTool::getModelName(uint8_t id)
+//{
+//  for (int num = 0; num < dxl_info_cnt_; num++)
+//  {
+//    if (dxl_info_[num].id == id)
+//      return dxl_info_[num].model_name;
+//  }
+
+//  return NULL;
+//}
 
 float DynamixelTool::getVelocityToValueRatio()
 {
@@ -269,15 +299,15 @@ uint8_t DynamixelTool::getControlTableSize()
   return control_table_size_;
 }
 
-void DynamixelTool::setID(uint8_t id)
-{
-  id_ = id;
-}
+//void DynamixelTool::setID(uint8_t id)
+//{
+//  id_ = id;
+//}
 
-uint8_t DynamixelTool::getID()
-{
-  return id_;
-}
+//uint8_t DynamixelTool::getID()
+//{
+//  return id_;
+//}
 
 ControlTableItem* DynamixelTool::getControlItem(const char* item_name)
 {

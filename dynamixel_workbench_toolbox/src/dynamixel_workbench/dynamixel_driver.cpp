@@ -18,35 +18,46 @@
 
 #include "../../include/dynamixel_workbench/dynamixel_driver.h"
 
-DynamixelDriver::DynamixelDriver()
-{
-  tools_cnt_ = 0;
-  sync_write_handler_cnt_ = 0;
-  sync_read_handler_cnt_  = 0;
-}
+DynamixelDriver::DynamixelDriver() : tools_cnt_(0), sync_write_handler_cnt_(0), sync_read_handler_cnt_(0) {}
 
 DynamixelDriver::~DynamixelDriver()
 {
   for (int i = 0; i < tools_cnt_; i++)
-    writeRegister(tools_[i].getID(), "Torque Enable", false);
+  {
+    for (int j = 0; j < tools_[i].dxl_info_cnt_; j++)
+    {
+      writeRegister(tools_[i].dxl_info_[j].id, "Torque Enable", false);
+    }
+  }
 
   portHandler_->closePort();
 }
 
 void DynamixelDriver::setTools(uint16_t model_num, uint8_t id)
 {
-  uint8_t cnt = tools_cnt_;
-
-  tools_[cnt].begin(model_num);
-  tools_[cnt].setID(id);
+  if (tools_cnt_ == 0)
+  {
+    tools_[tools_cnt_].begin(model_num, id);
+  }
+  else
+  {
+    if (!strncmp(tools_[tools_cnt_-1].dxl_info_[0].model_name, findModelName(model_num), strlen(findModelName(model_num))))
+    {
+      tools_[--tools_cnt_].addDXL(model_num, id);
+    }
+    else
+    {
+      tools_[tools_cnt_].begin(model_num, id);
+    }
+  }
 
   tools_cnt_++;
 }
 
-uint8_t DynamixelDriver::theNumberOfTools()
-{
-  return tools_cnt_;
-}
+//uint8_t DynamixelDriver::theNumberOfTools()
+//{
+//  return tools_cnt_;
+//}
 
 bool DynamixelDriver::begin(const char *device_name, uint32_t baud_rate)
 {
@@ -174,8 +185,23 @@ float DynamixelDriver::getProtocolVersion()
 
 char *DynamixelDriver::getModelName(uint8_t id)
 {
+//  for (int i = 0; i < tools_cnt_; i++)
+//  {
+//    for (int j = 0; j < tools_[i].dxl_info_cnt_; j++)
+//    {
+//      if (tools_[i].dxl_info_[j].id == id)
+//        return tools_[i].dxl_info_[j].model_name;
+//    }
+//  }
+
   uint8_t cnt = findTools(id);
-  return tools_[cnt].getModelName();
+
+  for (int i = 0; i < tools_[cnt].dxl_info_cnt_; i++)
+  {
+    if (tools_[cnt].dxl_info_[i].id == id)
+      return tools_[cnt].dxl_info_[i].model_name;
+  }
+//  return tools_[cnt].getModelName();
 }
 
 uint8_t DynamixelDriver::scan(uint8_t *get_id, uint8_t num, float protocol_version)
@@ -229,64 +255,49 @@ uint8_t DynamixelDriver::scan(uint8_t *get_id, uint8_t num, float protocol_versi
   }
   else
   {
-#if DEBUG
-#if defined(__OPENCR__) || defined(__OPENCM904__)
-    Serial.println("Succeeded to scan");
-    Serial.println("DXL ID : ");
-#else
-    printf("Succeeded to scan\n");
-    printf("DXL ID : \n");
-#endif  
-#endif  
-
-    for (int i = 0; i < theNumberOfTools(); i++)
+    for (int num = 0; num < id_cnt; num++)
     {
 #if DEBUG
 #if defined(__OPENCR__) || defined(__OPENCM904__)
-      Serial.print(tools_[i].getID());
-      Serial.print("  ");
+    Serial.print("ID : ");
+    Serial.println(get_id[num]);
 #else
-      printf("%d  ", tools_[i].getID());
-#endif   
-#endif 
-    }
-
-#if DEBUG
-#if defined(__OPENCR__) || defined(__OPENCM904__)
-    Serial.println("");
-#else
-    printf("\n");
-#endif  
+    printf("ID : %d\n", get_id[num]);
 #endif
-
-    strncpy(dxl_, tools_[0].getModelName(), 2);
-    if (protocol_version == 2.0)
-    {
-      packetHandler_ = dynamixel::PacketHandler::getPacketHandler(2.0);
-    }
-    else if (protocol_version == 1.0)
-    {
-      packetHandler_ = dynamixel::PacketHandler::getPacketHandler(1.0);
-    }
-    else
-    {
-      if (!strncmp(dxl_, "AX", 2) || !strncmp(dxl_, "RX", 2) || !strncmp(dxl_, "EX", 2))
-      {
-        packetHandler_ = dynamixel::PacketHandler::getPacketHandler(1.0);
-      }
-      else if (!strncmp(dxl_, "MX", 2))
-      {
-        if (!strncmp(dxl_, "MX-28-2", strlen(dxl_)) || !strncmp(dxl_, "MX-64-2", strlen(dxl_)) || !strncmp(dxl_, "MX-106-2", strlen(dxl_)))
-          packetHandler_ = dynamixel::PacketHandler::getPacketHandler(2.0);
-        else
-          packetHandler_ = dynamixel::PacketHandler::getPacketHandler(1.0);
-      }
-      else
-      {
-        packetHandler_ = dynamixel::PacketHandler::getPacketHandler(2.0);
-      }
+#endif
     }
   }
+
+//  printf("ddddd");
+//  strncpy(dxl_, getModelName(get_id[0]), strlen(dxl_));
+//  printf("%s\n", getModelName(get_id[0]));
+//  if (protocol_version == 2.0)
+//  {
+    packetHandler_ = dynamixel::PacketHandler::getPacketHandler(2.0);
+//  }
+//  else if (protocol_version == 1.0)
+//  {
+//    packetHandler_ = dynamixel::PacketHandler::getPacketHandler(1.0);
+//  }
+//  else
+//  {
+//    if (!strncmp(dxl_, "AX", 2) || !strncmp(dxl_, "RX", 2) || !strncmp(dxl_, "EX", 2))
+//    {
+//      packetHandler_ = dynamixel::PacketHandler::getPacketHandler(1.0);
+//    }
+//    else if (!strncmp(dxl_, "MX", 2))
+//    {
+//      if (!strncmp(dxl_, "MX-28-2", strlen(dxl_)) || !strncmp(dxl_, "MX-64-2", strlen(dxl_)) || !strncmp(dxl_, "MX-106-2", strlen(dxl_)))
+//        packetHandler_ = dynamixel::PacketHandler::getPacketHandler(2.0);
+//      else
+//        packetHandler_ = dynamixel::PacketHandler::getPacketHandler(1.0);
+//    }
+//    else
+//    {
+//      packetHandler_ = dynamixel::PacketHandler::getPacketHandler(2.0);
+//    }
+//  }
+
 
 #if DEBUG
 #if defined(__OPENCR__) || defined(__OPENCM904__)
@@ -321,20 +332,18 @@ uint16_t DynamixelDriver::ping(uint8_t id, float protocol_version)
 #endif
 #endif
     return false;
-  }
+  } 
 
 #if DEBUG
 #if defined(__OPENCR__) || defined(__OPENCM904__)
-  Serial.println("Succeeded to ping!");
-  Serial.print("DXL ID : ");
-  Serial.println(id);
+    Serial.print("ID : ");
+    Serial.println(id);
 #else
-  printf("Succeeded to ping \n");
-  printf("DXL ID : %d\n", id);
+    printf("ID : %d\n", id);
 #endif
-#endif    
+#endif
 
-  strncpy(dxl_, tools_[0].getModelName(), 2);
+  strncpy(dxl_, getModelName(id), strlen(getModelName(id)));
   if (protocol_version == 2.0)
   {
     packetHandler_ = dynamixel::PacketHandler::getPacketHandler(2.0);
@@ -483,15 +492,15 @@ bool DynamixelDriver::reset(uint8_t id)
 #endif
 #endif
 
-      for (int i = 0; i < theNumberOfTools(); i++)
+      for (int i = 0; i < tools_cnt_; i++)
       {
-        if (tools_[i].getID() == id)
-        {
-          if (!strncmp(tools_[i].getModelName(), "AX", 2) || !strncmp(tools_[i].getModelName(), "MX-12W", 6))
+//        if (tools_[i].getID() == id)
+//        {
+          if (!strncmp(getModelName(id), "AX", strlen("AX")) || !strncmp(getModelName(id), "MX-12W", strlen("MX-12W")))
             baud = 1000000;
           else
             baud = 57600;
-        }
+//        }
       }
 
       if (portHandler_->setBaudRate(baud) == false)
@@ -736,13 +745,104 @@ bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, int32_t *d
 
 uint8_t DynamixelDriver::findTools(uint8_t id)
 {
-  for (int i = 0; i < theNumberOfTools(); i++)
+  for (int i = 0; i < tools_cnt_; i++)
   {
-    if (tools_[i].getID() == id)
+    for (int j = 0; j < tools_[i].dxl_info_cnt_; j++)
     {
-      return i;
+      if (tools_[i].dxl_info_[j].id == id)
+      {
+        return i;
+      }
     }
   }
+}
+
+char *DynamixelDriver::findModelName(uint16_t model_num)
+{
+  uint16_t num = model_num;
+  char model_name[64];
+
+  if (num == AX_12A)
+    strcpy(model_name, "AX-12A");
+  else if (num == AX_12W)
+    strcpy(model_name, "AX-12W");
+  else if (num == AX_18A)
+    strcpy(model_name, "AX-18A");
+
+  else if (num == RX_24F)
+    strcpy(model_name, "RX-24F");
+  else if (num == RX_28)
+    strcpy(model_name, "RX-28");
+  else if (num == RX_64)
+    strcpy(model_name, "RX-64");
+
+  else if (num == EX_106)
+    strcpy(model_name, "EX-106");
+
+  else if (num == MX_12W)
+    strcpy(model_name, "MX-12W");
+  else if (num == MX_28)
+    strcpy(model_name, "MX-28");
+  else if (num == MX_28_2)
+    strcpy(model_name, "MX-28-2");
+  else if (num == MX_64)
+    strcpy(model_name, "MX-64");
+  else if (num == MX_64_2)
+    strcpy(model_name, "MX-64-2");
+  else if (num == MX_106)
+    strcpy(model_name, "MX-106");
+  else if (num == MX_106_2)
+    strcpy(model_name, "MX-106-2");
+
+  else if (num == XL_320)
+    strcpy(model_name, "XL-320");
+  else if (num == XL430_W250)
+    strcpy(model_name, "XL430-W250");
+
+  else if (num == XM430_W210)
+    strcpy(model_name, "XM430-W210");
+  else if (num == XM430_W350)
+    strcpy(model_name, "XM430-W350");
+  else if (num == XM540_W150)
+    strcpy(model_name, "XM540-W150");
+  else if (num == XM540_W270)
+    strcpy(model_name, "XM540-W270");
+
+  else if (num == XH430_V210)
+    strcpy(model_name, "XH430-V210");
+  else if (num == XH430_V350)
+    strcpy(model_name, "XH430-V350");
+  else if (num == XH430_W210)
+    strcpy(model_name, "XH430-W210");
+  else if (num == XH430_W350)
+    strcpy(model_name, "XH430-W350");
+
+  else if (num == PRO_L42_10_S300_R)
+    strcpy(model_name, "PRO-L42-10-S300-R");
+  else if (num == PRO_L54_30_S400_R)
+    strcpy(model_name, "PRO-L54-30-S400-R");
+  else if (num == PRO_L54_30_S500_R)
+    strcpy(model_name, "PRO-L54-30-S500-R");
+  else if (num == PRO_L54_50_S290_R)
+    strcpy(model_name, "PRO-L54-50-S290-R");
+  else if (num == PRO_L54_50_S500_R)
+    strcpy(model_name, "PRO-L54-50-S500-R");
+
+  else if (num == PRO_M42_10_S260_R)
+    strcpy(model_name, "PRO-M42-10-S260-R");
+  else if (num == PRO_M54_40_S250_R)
+    strcpy(model_name, "PRO-M54-40-S250-R");
+  else if (num == PRO_M54_60_S250_R)
+    strcpy(model_name, "PRO-M54-60-S250-R");
+
+  else if (num == PRO_H42_20_S300_R)
+    strcpy(model_name, "PRO-H42-20-S300-R");
+  else if (num == PRO_H54_100_S500_R)
+    strcpy(model_name, "PRO-H54-100-S500-R");
+  else if (num == PRO_H54_200_S500_R)
+    strcpy(model_name, "PRO-H54-200-S500-R");
+
+  return model_name;
 }
 
 void DynamixelDriver::addSyncWrite(const char *item_name)
@@ -767,8 +867,6 @@ bool DynamixelDriver::syncWrite(const char *item_name, int32_t *data)
 
   uint8_t data_byte[4] = {0, };
 
-  uint8_t cnt = theNumberOfTools();
-
   SyncWriteHandler swh;
 
   for (int index = 0; index < sync_write_handler_cnt_; index++)
@@ -780,24 +878,27 @@ bool DynamixelDriver::syncWrite(const char *item_name, int32_t *data)
     }
   }
 
-  for (int num = 0; num < cnt; ++num)
+  for (int i = 0; i < tools_cnt_; ++i)
   {
-    data_byte[0] = DXL_LOBYTE(DXL_LOWORD(data[num]));
-    data_byte[1] = DXL_HIBYTE(DXL_LOWORD(data[num]));
-    data_byte[2] = DXL_LOBYTE(DXL_HIWORD(data[num]));
-    data_byte[3] = DXL_HIBYTE(DXL_HIWORD(data[num]));
-
-    dxl_addparam_result = swh.groupSyncWrite->addParam(tools_[num].getID(), (uint8_t *)&data_byte);
-    if (dxl_addparam_result != true)
+    for (int j = 0; j < tools_[i].dxl_info_cnt_; j++)
     {
+      data_byte[0] = DXL_LOBYTE(DXL_LOWORD(data[i]));
+      data_byte[1] = DXL_HIBYTE(DXL_LOWORD(data[i]));
+      data_byte[2] = DXL_LOBYTE(DXL_HIWORD(data[i]));
+      data_byte[3] = DXL_HIBYTE(DXL_HIWORD(data[i]));
+
+      dxl_addparam_result = swh.groupSyncWrite->addParam(tools_[i].dxl_info_[j].id, (uint8_t *)&data_byte);
+      if (dxl_addparam_result != true)
+      {
 #if DEBUG
 #if defined(__OPENCR__) || defined(__OPENCM904__)
       Serial.print("groupSyncWrite addparam failed\n");
 #else
-      printf("[ID:%03d] groupSyncWrite addparam failed", tools_[num].getID());
+      printf("[ID:%03d] groupSyncWrite addparam failed", tools_[i].dxl_info_[j].id);
 #endif
 #endif
-      return false;
+        return false;
+      }
     }
   }
 
@@ -838,7 +939,7 @@ bool DynamixelDriver::syncRead(const char *item_name, int32_t *data)
   bool dxl_addparam_result = false;
   bool dxl_getdata_result = false;
 
-  uint8_t cnt = theNumberOfTools();
+  int data_num = 0;
 
   SyncReadHandler srh;
   
@@ -851,11 +952,14 @@ bool DynamixelDriver::syncRead(const char *item_name, int32_t *data)
     }
   }
 
-  for (int num = 0; num < cnt; ++num)
+  for (int i = 0; i < tools_cnt_; ++i)
   {
-    dxl_addparam_result = srh.groupSyncRead->addParam(tools_[num].getID());
-    if (dxl_addparam_result != true)
-      return false;
+    for (int j = 0; j < tools_[i].dxl_info_cnt_; j++)
+    {
+      dxl_addparam_result = srh.groupSyncRead->addParam(tools_[i].dxl_info_[j].id);
+      if (dxl_addparam_result != true)
+        return false;
+    }
   }
   
   dxl_comm_result = srh.groupSyncRead->txRxPacket();
@@ -871,19 +975,22 @@ bool DynamixelDriver::syncRead(const char *item_name, int32_t *data)
     return false;
   }
 
-  for (int num = 0; num < cnt; ++num)
+  for (int i = 0; i < tools_cnt_; ++i)
   {
-    uint8_t id = tools_[num].getID();
-
-    dxl_getdata_result = srh.groupSyncRead->isAvailable(id, srh.cti->address, srh.cti->data_length);
-
-    if (dxl_getdata_result)
+    for (int j = 0; j < tools_[i].dxl_info_cnt_; j++)
     {
-      data[num] = srh.groupSyncRead->getData(id, srh.cti->address, srh.cti->data_length);
-    }
-    else
-    {
-      return false;
+      uint8_t id = tools_[i].dxl_info_[j].id;
+
+      dxl_getdata_result = srh.groupSyncRead->isAvailable(id, srh.cti->address, srh.cti->data_length);
+
+      if (dxl_getdata_result)
+      {
+        data[data_num++] = srh.groupSyncRead->getData(id, srh.cti->address, srh.cti->data_length);
+      }
+      else
+      {
+        return false;
+      }
     }
   }
 
