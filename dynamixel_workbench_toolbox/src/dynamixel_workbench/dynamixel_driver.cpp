@@ -196,11 +196,16 @@ char *DynamixelDriver::getModelName(uint8_t id)
 
   uint8_t cnt = findTools(id);
 
-  for (int i = 0; i < tools_[cnt].dxl_info_cnt_; i++)
-  {
-    if (tools_[cnt].dxl_info_[i].id == id)
-      return tools_[cnt].dxl_info_[i].model_name;
-  }
+  printf("cnt  : %d\n", cnt);
+  printf("tools_[cnt].dxl_info_cnt_  : %d\n", tools_[0].dxl_info_cnt_);
+  printf("tools_[cnt].dxl_info_[i].id  : %d\n", tools_[0].dxl_info_[1].id);
+  printf("tools_[cnt].dxl_info_[i].model_name  : %s\n", tools_[0].dxl_info_[1].model_name);
+
+//  for (int i = 0; i < tools_[cnt].dxl_info_cnt_; i++)
+//  {
+//    if (tools_[cnt].dxl_info_[i].id == id)
+//      return tools_[cnt].dxl_info_[i].model_name;
+//  }
 //  return tools_[cnt].getModelName();
 }
 

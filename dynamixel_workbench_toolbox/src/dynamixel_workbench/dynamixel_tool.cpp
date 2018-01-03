@@ -39,6 +39,9 @@ bool DynamixelTool::begin(uint16_t model_num, uint8_t id)
   setModelName(model_num);
   dxl_info_[dxl_info_cnt_].id = id;
 
+
+  printf("%d,    %s\n", dxl_info_cnt_, dxl_info_[dxl_info_cnt_].model_name);
+
   setControlTable(model_num);
 }
 

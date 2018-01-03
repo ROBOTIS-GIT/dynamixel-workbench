@@ -22,6 +22,7 @@
 #include <string.h>
 
 #include "dynamixel_item.h"
+#include "stdio.h"
 
 typedef struct
 {
