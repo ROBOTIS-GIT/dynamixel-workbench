@@ -86,6 +86,9 @@ class DynamixelDriver
 
   float getProtocolVersion();
   char* getModelName(uint8_t id);
+  uint16_t getModelNum(uint8_t id);
+  ControlTableItem* getControlItemPtr(uint8_t id);
+  uint8_t getControlTableSize(uint8_t id);
 
   uint8_t  scan(uint8_t *get_id, uint8_t num = 200, float protocol_version = 0.0);
   uint16_t ping(uint8_t id, float protocol_version = 0.0);
@@ -118,7 +121,6 @@ class DynamixelDriver
   void setTools(uint16_t model_num, uint8_t id);
   const char *findModelName(uint16_t model_num);
   uint8_t findTools(uint8_t id);
-//  uint8_t theNumberOfTools();
 };
 
 #endif //DYNAMIXEL_WORKBENCH_DYNAMIXEL_DRIVER_H

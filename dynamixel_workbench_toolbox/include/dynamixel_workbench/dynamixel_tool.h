@@ -24,9 +24,16 @@
 #include "dynamixel_item.h"
 #include "stdio.h"
 
+#if defined(__OPENCR__) || defined(__OPENCM904__)
+  #define DXL_TABLE_ITEM_NUM 14
+#else
+  #define DXL_TABLE_ITEM_NUM 60
+#endif
+
 typedef struct
 {
   char model_name[64];
+  uint16_t model_num;
   uint8_t id;
 } DXLInfo;
 
@@ -41,9 +48,9 @@ class DynamixelTool
   ModelInfo* info_ptr_;
 
 #if defined(__OPENCR__) || defined(__OPENCM904__)
-  ControlTableItem item_[14];
+  ControlTableItem item_[DXL_TABLE_ITEM_NUM];
 #else
-  ControlTableItem item_[60];
+  ControlTableItem item_[DXL_TABLE_ITEM_NUM];
 #endif
   ModelInfo info_;
   uint8_t control_table_size_;
@@ -58,14 +65,6 @@ class DynamixelTool
   bool addDXL(uint16_t model_num, uint8_t id);
   bool addDXL(const char* model_name, uint8_t id);
 
-  void setControlTable(const char* model_name);
-  void setControlTable(uint16_t model_num);
-
-  void setModelName(uint16_t model_num);
-
-//  void setID(uint8_t id);
-//  uint8_t getID();
-
   float getVelocityToValueRatio();  
   float getTorqueToCurrentValueRatio();  
 
@@ -76,9 +75,16 @@ class DynamixelTool
   float getMinRadian();  
   float getMaxRadian();  
 
-  uint8_t getControlTableSize();    
+  uint8_t getControlTableSize();
   ControlTableItem* getControlItem(const char *item_name);
   ControlTableItem* getControlItemPtr(); 
   ModelInfo* getModelInfoPtr();
+
+ private:
+  void setControlTable(const char* model_name);
+  void setControlTable(uint16_t model_num);
+
+  void setModelName(uint16_t model_num);
+  void setModelNum(const char* model_name);
 };
 #endif //DYNAMIXEL_TOOL_H

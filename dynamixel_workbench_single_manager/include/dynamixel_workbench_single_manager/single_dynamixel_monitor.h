@@ -47,13 +47,11 @@ class SingleDynamixelMonitor
   ros::ServiceServer dynamixel_info_server_;
   ros::ServiceServer dynamixel_command_server_;
 
-//  dynamixel_driver::DynamixelInfo *dynamixel_info_;
-//  dynamixel_driver::DynamixelDriver *dynamixel_driver_;
-
   DynamixelDriver *dynamixel_driver_;
 
+  std::string device_name_;
   uint32_t dxl_baud_rate_;
-  uint8_t dxl_id_;
+  uint8_t dxl_id_;  
 
  public:
   SingleDynamixelMonitor();
@@ -71,18 +69,18 @@ class SingleDynamixelMonitor
 //  // TODO : Add new Dynamixel
 //  bool dynamixelStatePublish();
 
-//  bool showDynamixelControlTable();
-//  bool checkValidationCommand(std::string cmd);
+  bool showDynamixelControlTable();
+  bool checkValidationCommand(std::string cmd);
 //  bool checkValidAccess(std::string cmd);
-//  bool changeId(uint8_t id);
+  bool changeId(uint8_t new_id);
 //  bool changeBaudrate(uint64_t baud_rate);
 //  bool changeProtocolVersion(float ver);
 
-//  bool dynamixelInfoMsgCallback(dynamixel_workbench_msgs::GetDynamixelInfo::Request &req,
-//                                dynamixel_workbench_msgs::GetDynamixelInfo::Response &res);
+  bool dynamixelInfoMsgCallback(dynamixel_workbench_msgs::GetDynamixelInfo::Request &req,
+                                dynamixel_workbench_msgs::GetDynamixelInfo::Response &res);
 
-//  bool dynamixelCommandMsgCallback(dynamixel_workbench_msgs::DynamixelCommand::Request &req,
-//                                   dynamixel_workbench_msgs::DynamixelCommand::Response &res);
+  bool dynamixelCommandMsgCallback(dynamixel_workbench_msgs::DynamixelCommand::Request &req,
+                                   dynamixel_workbench_msgs::DynamixelCommand::Response &res);
 
 //  bool AX();
 //  bool RX();

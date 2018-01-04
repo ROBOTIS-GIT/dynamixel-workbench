@@ -198,12 +198,12 @@ bool SingleDynamixelController::controlLoop()
       }
       else if (strcmp(cmd, "torque_enable") == 0)
       {
-        if (!sendCommandMsg("addr", "torque_enable", 1))
+        if (!sendCommandMsg("torque", "on", 1))
           printf("It didn't works\n");
       }
       else if (strcmp(cmd, "torque_disable") == 0)
       {
-        if (!sendCommandMsg("addr", "torque_enable", 0))
+        if (!sendCommandMsg("torque", "off", 0))
           printf("It didn't works\n");
       }
       else if (num_param == 1)

@@ -54,11 +54,6 @@ void DynamixelDriver::setTools(uint16_t model_num, uint8_t id)
   tools_cnt_++;
 }
 
-//uint8_t DynamixelDriver::theNumberOfTools()
-//{
-//  return tools_cnt_;
-//}
-
 bool DynamixelDriver::begin(const char *device_name, uint32_t baud_rate)
 {
   bool error = false;
@@ -194,6 +189,31 @@ char *DynamixelDriver::getModelName(uint8_t id)
   }
 }
 
+uint16_t DynamixelDriver::getModelNum(uint8_t id)
+{
+  uint8_t cnt = findTools(id);
+
+  for (int i = 0; i < tools_[cnt].dxl_info_cnt_; i++)
+  {
+    if (tools_[cnt].dxl_info_[i].id == id)
+      return tools_[cnt].dxl_info_[i].model_num;
+  }
+}
+
+ControlTableItem* DynamixelDriver::getControlItemPtr(uint8_t id)
+{
+  uint8_t cnt = findTools(id);
+
+  return tools_[cnt].getControlItemPtr();
+}
+
+uint8_t DynamixelDriver::getControlTableSize(uint8_t id)
+{
+  uint8_t cnt = findTools(id);
+
+  return tools_[cnt].getControlTableSize();
+}
+
 uint8_t DynamixelDriver::scan(uint8_t *get_id, uint8_t num, float protocol_version)
 {
   uint8_t error = 0;
@@ -250,7 +270,8 @@ uint8_t DynamixelDriver::scan(uint8_t *get_id, uint8_t num, float protocol_versi
 #if DEBUG
 #if defined(__OPENCR__) || defined(__OPENCM904__)
     Serial.print("ID : ");
-    Serial.println(get_id[num]);
+    Serial.print(get_id[num]);
+    Serial.println(" ");
 #else
     printf("ID : %d\n", get_id[num]);
 #endif
@@ -258,9 +279,7 @@ uint8_t DynamixelDriver::scan(uint8_t *get_id, uint8_t num, float protocol_versi
     }
   }
 
-//  printf("ddddd");
-  strncpy(dxl_, getModelName(get_id[0]), strlen(dxl_));
-//  printf("%s\n", getModelName(get_id[0]));
+  strcpy(dxl_, getModelName(get_id[0]));
   if (protocol_version == 2.0)
   {
     packetHandler_ = dynamixel::PacketHandler::getPacketHandler(2.0);
@@ -277,7 +296,7 @@ uint8_t DynamixelDriver::scan(uint8_t *get_id, uint8_t num, float protocol_versi
     }
     else if (!strncmp(dxl_, "MX", 2))
     {
-      if (!strncmp(dxl_, "MX-28-2", strlen(dxl_)) || !strncmp(dxl_, "MX-64-2", strlen(dxl_)) || !strncmp(dxl_, "MX-106-2", strlen(dxl_)))
+      if (!strncmp(dxl_, "MX-28-2", strlen("MX-28-2")) || !strncmp(dxl_, "MX-64-2", strlen("MX-64-2")) || !strncmp(dxl_, "MX-106-2", strlen("MX-106-2")))
         packetHandler_ = dynamixel::PacketHandler::getPacketHandler(2.0);
       else
         packetHandler_ = dynamixel::PacketHandler::getPacketHandler(1.0);
@@ -333,7 +352,7 @@ uint16_t DynamixelDriver::ping(uint8_t id, float protocol_version)
 #endif
 #endif
 
-  strncpy(dxl_, getModelName(id), strlen(getModelName(id)));
+  strcpy(dxl_, getModelName(id));
   if (protocol_version == 2.0)
   {
     packetHandler_ = dynamixel::PacketHandler::getPacketHandler(2.0);
@@ -350,7 +369,7 @@ uint16_t DynamixelDriver::ping(uint8_t id, float protocol_version)
     }
     else if (!strncmp(dxl_, "MX", 2))
     {
-      if (!strncmp(dxl_, "MX-28-2", strlen(dxl_)) || !strncmp(dxl_, "MX-64-2", strlen(dxl_)) || !strncmp(dxl_, "MX-106-2", strlen(dxl_)))
+      if (!strncmp(dxl_, "MX-28-2", strlen("MX-28-2")) || !strncmp(dxl_, "MX-64-2", strlen("MX-64-2")) || !strncmp(dxl_, "MX-106-2", strlen("MX-106-2")))
         packetHandler_ = dynamixel::PacketHandler::getPacketHandler(2.0);
       else
         packetHandler_ = dynamixel::PacketHandler::getPacketHandler(1.0);
@@ -751,87 +770,6 @@ const char *DynamixelDriver::findModelName(uint16_t model_num)
 {
   uint16_t num = model_num;
   const char* model_name = NULL;
-  // static char model_name[64];
-
-  // if (num == AX_12A)
-  //   strcpy(model_name, "AX-12A");
-  // else if (num == AX_12W)
-  //   strcpy(model_name, "AX-12W");
-  // else if (num == AX_18A)
-  //   strcpy(model_name, "AX-18A");
-
-  // else if (num == RX_24F)
-  //   strcpy(model_name, "RX-24F");
-  // else if (num == RX_28)
-  //   strcpy(model_name, "RX-28");
-  // else if (num == RX_64)
-  //   strcpy(model_name, "RX-64");
-
-  // else if (num == EX_106)
-  //   strcpy(model_name, "EX-106");
-
-  // else if (num == MX_12W)
-  //   strcpy(model_name, "MX-12W");
-  // else if (num == MX_28)
-  //   strcpy(model_name, "MX-28");
-  // else if (num == MX_28_2)
-  //   strcpy(model_name, "MX-28-2");
-  // else if (num == MX_64)
-  //   strcpy(model_name, "MX-64");
-  // else if (num == MX_64_2)
-  //   strcpy(model_name, "MX-64-2");
-  // else if (num == MX_106)
-  //   strcpy(model_name, "MX-106");
-  // else if (num == MX_106_2)
-  //   strcpy(model_name, "MX-106-2");
-
-  // else if (num == XL_320)
-  //   strcpy(model_name, "XL-320");
-  // else if (num == XL430_W250)
-  //   strcpy(model_name, "XL430-W250");
-
-  // else if (num == XM430_W210)
-  //   strcpy(model_name, "XM430-W210");
-  // else if (num == XM430_W350)
-  //   strcpy(model_name, "XM430-W350");
-  // else if (num == XM540_W150)
-  //   strcpy(model_name, "XM540-W150");
-  // else if (num == XM540_W270)
-  //   strcpy(model_name, "XM540-W270");
-
-  // else if (num == XH430_V210)
-  //   strcpy(model_name, "XH430-V210");
-  // else if (num == XH430_V350)
-  //   strcpy(model_name, "XH430-V350");
-  // else if (num == XH430_W210)
-  //   strcpy(model_name, "XH430-W210");
-  // else if (num == XH430_W350)
-  //   strcpy(model_name, "XH430-W350");
-
-  // else if (num == PRO_L42_10_S300_R)
-  //   strcpy(model_name, "PRO-L42-10-S300-R");
-  // else if (num == PRO_L54_30_S400_R)
-  //   strcpy(model_name, "PRO-L54-30-S400-R");
-  // else if (num == PRO_L54_30_S500_R)
-  //   strcpy(model_name, "PRO-L54-30-S500-R");
-  // else if (num == PRO_L54_50_S290_R)
-  //   strcpy(model_name, "PRO-L54-50-S290-R");
-  // else if (num == PRO_L54_50_S500_R)
-  //   strcpy(model_name, "PRO-L54-50-S500-R");
-
-  // else if (num == PRO_M42_10_S260_R)
-  //   strcpy(model_name, "PRO-M42-10-S260-R");
-  // else if (num == PRO_M54_40_S250_R)
-  //   strcpy(model_name, "PRO-M54-40-S250-R");
-  // else if (num == PRO_M54_60_S250_R)
-  //   strcpy(model_name, "PRO-M54-60-S250-R");
-
-  // else if (num == PRO_H42_20_S300_R)
-  //   strcpy(model_name, "PRO-H42-20-S300-R");
-  // else if (num == PRO_H54_100_S500_R)
-  //   strcpy(model_name, "PRO-H54-100-S500-R");
-  // else if (num == PRO_H54_200_S500_R)
-  //   strcpy(model_name, "PRO-H54-200-S500-R");
 
   if (num == AX_12A)
     model_name = "AX-12A";
