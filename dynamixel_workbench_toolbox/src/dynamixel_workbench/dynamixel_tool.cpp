@@ -24,41 +24,36 @@ DynamixelTool::~DynamixelTool(){}
 
 bool DynamixelTool::begin(const char* model_name, uint8_t id)
 {
-  ++dxl_info_cnt_;
-
   strcpy(dxl_info_[dxl_info_cnt_].model_name, model_name);
   dxl_info_[dxl_info_cnt_].id = id;
 
   setControlTable(model_name);
+  dxl_info_cnt_++;
 }
 
 bool DynamixelTool::begin(uint16_t model_num, uint8_t id)
 {
-  ++dxl_info_cnt_;
-
   setModelName(model_num);
   dxl_info_[dxl_info_cnt_].id = id;
 
-
-  printf("%d,    %s\n", dxl_info_cnt_, dxl_info_[dxl_info_cnt_].model_name);
-
   setControlTable(model_num);
+  dxl_info_cnt_++;
 }
 
 bool DynamixelTool::addDXL(const char* model_name, uint8_t id)
 {
-  ++dxl_info_cnt_;
-
   strcpy(dxl_info_[dxl_info_cnt_].model_name, model_name);
   dxl_info_[dxl_info_cnt_].id = id;
+
+  dxl_info_cnt_++;
 }
 
 bool DynamixelTool::addDXL(uint16_t model_num, uint8_t id)
 {
-  ++dxl_info_cnt_;
-
   setModelName(model_num);
   dxl_info_[dxl_info_cnt_].id = id;
+
+  dxl_info_cnt_++;
 }
 
 void DynamixelTool::setControlTable(const char *model_name)

@@ -116,7 +116,7 @@ class DynamixelDriver
 
  private:
   void setTools(uint16_t model_num, uint8_t id);
-  char* findModelName(uint16_t model_num);
+  const char *findModelName(uint16_t model_num);
   uint8_t findTools(uint8_t id);
 //  uint8_t theNumberOfTools();
 };
