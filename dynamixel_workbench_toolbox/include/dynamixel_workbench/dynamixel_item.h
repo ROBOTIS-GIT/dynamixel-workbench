@@ -118,7 +118,7 @@ void setXHInfo(void);
 void setPROItem(void);
 void setPROInfo(void);
 
-uint8_t getTheNumberOfItem();
+uint8_t getTheNumberOfControlItem();
 ControlTableItem* getConrolTableItem(uint16_t model_number);
 ModelInfo* getModelInfo(uint16_t model_number);
 

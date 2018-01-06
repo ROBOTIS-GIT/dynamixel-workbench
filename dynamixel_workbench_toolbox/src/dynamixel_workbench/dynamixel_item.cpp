@@ -1219,7 +1219,7 @@ ModelInfo* getModelInfo(uint16_t model_number)
   return &model_info;
 }
 
-uint8_t getTheNumberOfItem()
+uint8_t getTheNumberOfControlItem()
 {
   return the_number_of_item;
 }

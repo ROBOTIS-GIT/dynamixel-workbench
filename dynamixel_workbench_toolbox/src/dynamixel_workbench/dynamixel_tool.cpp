@@ -148,7 +148,7 @@ void DynamixelTool::setControlTable(const char *model_name)
 void DynamixelTool::setControlTable(uint16_t model_number)
 {
   item_ptr_           = getConrolTableItem(model_number);
-  the_number_of_item_ = getTheNumberOfItem();
+  the_number_of_item_ = getTheNumberOfControlItem();
   info_ptr_           = getModelInfo(model_number);
 
   for (int index = 0; index < the_number_of_item_; index++)
