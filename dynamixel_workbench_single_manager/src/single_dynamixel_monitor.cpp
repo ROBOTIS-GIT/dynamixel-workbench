@@ -51,7 +51,7 @@ SingleDynamixelMonitor::SingleDynamixelMonitor()
     else
     {
       printf("Please Check USB Port authorization and\n");
-      printf("Baudrate [ex : 57600, 115200, 1000000, 3000000]\n");
+      printf("Baudrate [ex : 9600, 57600, 115200, 1000000, 2000000]\n");
       printf("...Failed to find dynamixel!\n");
 
       ros::shutdown();
@@ -69,7 +69,7 @@ SingleDynamixelMonitor::SingleDynamixelMonitor()
     else
     {
       printf("Please Check USB Port authorization and\n");
-      printf("Baudrate [ex : 57600, 115200, 1000000, 3000000]\n");
+      printf("Baudrate [ex : 9600, 57600, 115200, 1000000, 2000000]\n");
       printf("...Failed to find dynamixel!\n");
 
       ros::shutdown();
@@ -157,7 +157,7 @@ bool SingleDynamixelMonitor::showDynamixelControlTable()
 
   for (int item_num = 0; item_num < dynamixel_driver_->getTheNumberOfItem(dxl_id_); item_num++)
   {
-    if (!strncmp(item_ptr[item_num].item_name, "Torque Enable", strlen(item_ptr[item_num].item_name)))
+    if (!strncmp(item_ptr[item_num].item_name, "Torque Enable", strlen("Torque Enable")))
     {
       torque_enable_address = item_num;
     }
@@ -242,9 +242,82 @@ bool SingleDynamixelMonitor::changeId(uint8_t new_id)
   }
 }
 
-//bool SingleDynamixelMonitor::changeBaudrate(uint64_t baud_rate)
-//{
+bool SingleDynamixelMonitor::changeBaudrate(uint32_t new_baud_rate)
+{
 //  dynamixel_tool::DynamixelTool *dynamixel = dynamixel_driver_->dynamixel_;
+  bool error = false;
+  bool check_baud_rate = false;
+
+  uint64_t baud_rate_list[5] = {9600, 57600, 115200, 1000000, 2000000};
+
+  for (int i = 0; i < 5; i++)
+  {
+    if (baud_rate_list[i] == new_baud_rate)
+      check_baud_rate = true;
+  }
+
+  if (check_baud_rate == false)
+  {
+    printf(" Failed to change [ BAUD RATE: %d ]\n", new_baud_rate);
+    printf(" Valid baud rate is [9600, 57600, 115200, 1000000, 2000000]\n");
+    printf(" You can choose other baud rate in GUI,\n");
+  }
+  else
+  {
+    error = dynamixel_driver_->writeRegister(dxl_id_, "Torque Enable", false);
+
+    if (dynamixel_driver_->getProtocolVersion() == 1.0)
+    {
+      if (new_baud_rate == 9600)
+        error = dynamixel_driver_->writeRegister(dxl_id_, "Baud Rate", 207);
+      else if (new_baud_rate == 57600)
+        error = dynamixel_driver_->writeRegister(dxl_id_, "Baud Rate", 34);
+      else if (new_baud_rate == 115200)
+        error = dynamixel_driver_->writeRegister(dxl_id_, "Baud Rate", 16);
+      else if (new_baud_rate == 1000000)
+        error = dynamixel_driver_->writeRegister(dxl_id_, "Baud Rate", 1);
+      else if (new_baud_rate == 2000000)
+        error = dynamixel_driver_->writeRegister(dxl_id_, "Baud Rate", 9);
+      else
+        error = dynamixel_driver_->writeRegister(dxl_id_, "Baud Rate", 1);
+    }
+    else if (dynamixel_driver_->getProtocolVersion() == 2.0)
+    {
+      if (new_baud_rate == 9600)
+        error = dynamixel_driver_->writeRegister(dxl_id_, "Baud Rate", 0);
+      else if (new_baud_rate == 57600)
+        error = dynamixel_driver_->writeRegister(dxl_id_, "Baud Rate", 1);
+      else if (new_baud_rate == 115200)
+        error = dynamixel_driver_->writeRegister(dxl_id_, "Baud Rate", 2);
+      else if (new_baud_rate == 1000000)
+        error = dynamixel_driver_->writeRegister(dxl_id_, "Baud Rate", 3);
+      else if (new_baud_rate == 2000000)
+        error = dynamixel_driver_->writeRegister(dxl_id_, "Baud Rate", 4);
+      else
+        error = dynamixel_driver_->writeRegister(dxl_id_, "Baud Rate", 3);
+    }
+
+    usleep(1000*1000);
+
+    if (error == false)
+    {
+      dynamixel_driver_->setBaudrate(new_baud_rate, &error);
+
+      if(error == false)
+      {
+        printf(" Failed to change baudrate!\n");
+        return false;
+      }
+      else
+      {
+        printf(" Success to change baudrate! [ BAUD RATE: %d ]\n", new_baud_rate);
+        return true;
+      }
+    }
+  }
+
+
+
 
 //  if (dynamixel->baud_rate_table_.find(baud_rate)->second == dynamixel->baud_rate_table_.end()->second)
 //  {
@@ -298,7 +371,7 @@ bool SingleDynamixelMonitor::changeId(uint8_t new_id)
 //      return true;
 //    }
 //  }
-//}
+}
 
 //bool SingleDynamixelMonitor::changeProtocolVersion(float ver)
 //{
@@ -363,7 +436,10 @@ bool SingleDynamixelMonitor::dynamixelCommandMsgCallback(dynamixel_workbench_msg
   else if (req.command == "factory_reset")
   {
     if (dynamixel_driver_->reset(dxl_id_))
+    {
+      dxl_id_ = 1;
       res.comm_result = true;
+    }
     else
       res.comm_result = false;
   }
@@ -412,13 +488,13 @@ bool SingleDynamixelMonitor::dynamixelCommandMsgCallback(dynamixel_workbench_msg
       else
         res.comm_result = false;
     }
-//    else if (addr == "baud_rate")
-//    {
-//      if (changeBaudrate(value))
-//        res.comm_result = true;
-//      else
-//        res.comm_result = false;
-//    }
+    else if (addr == "baud_rate")
+    {
+      if (changeBaudrate(value))
+        res.comm_result = true;
+      else
+        res.comm_result = false;
+    }
 //    else if (addr == "protocol_version")
 //    {
 //      if (changeProtocolVersion(value))
