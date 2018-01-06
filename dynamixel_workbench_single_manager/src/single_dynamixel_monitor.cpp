@@ -38,9 +38,11 @@ SingleDynamixelMonitor::SingleDynamixelMonitor()
 
   dynamixel_driver_->begin(device_name_.c_str(), dxl_baud_rate_);
 
+
   if(use_ping == true)
   {
-    if (dynamixel_driver_->ping(dxl_id_) != false)
+    uint16_t model_number = 0;
+    if (dynamixel_driver_->ping(ping_id, &model_number))
     {
       dxl_id_ = ping_id;
       printf("[ID] %u, [Model Name] %s, [BAUD RATE] %d [VERSION] %.1f\n",
@@ -58,7 +60,8 @@ SingleDynamixelMonitor::SingleDynamixelMonitor()
   }
   else
   {
-    if (dynamixel_driver_->scan(&dxl_id_) != false)
+    uint8_t id_cnt = 0;
+    if (dynamixel_driver_->scan(&dxl_id_, &id_cnt))
     {
       printf("[ID] %u, [Model Name] %s, [BAUD RATE] %d [VERSION] %.1f\n",
                dxl_id_, dynamixel_driver_->getModelName(dxl_id_), dxl_baud_rate_, dynamixel_driver_->getProtocolVersion());
@@ -86,20 +89,19 @@ SingleDynamixelMonitor::~SingleDynamixelMonitor()
 
 }
 
-bool SingleDynamixelMonitor::initSingleDynamixelMonitor()
+void SingleDynamixelMonitor::initSingleDynamixelMonitor()
 {
 
 }
 
-bool SingleDynamixelMonitor::shutdownSingleDynamixelMonitor()
+void SingleDynamixelMonitor::shutdownSingleDynamixelMonitor()
 {
   dynamixel_driver_->writeRegister(dxl_id_, "Torque Enable", false);
 
   ros::shutdown();
-  return true;
 }
 
-bool SingleDynamixelMonitor::initDynamixelStatePublisher()
+void SingleDynamixelMonitor::initDynamixelStatePublisher()
 {
   char* model_name = dynamixel_driver_->getModelName(dxl_id_);
 
@@ -135,22 +137,16 @@ bool SingleDynamixelMonitor::initDynamixelStatePublisher()
   {
     dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::PRO>("dynamixel/" + std::string("PRO"), 10);
   }
-
-  return true;
 }
 
-bool SingleDynamixelMonitor::initDynamixelInfoServer()
+void SingleDynamixelMonitor::initDynamixelInfoServer()
 {
   dynamixel_info_server_ = node_handle_.advertiseService("dynamixel/info", &SingleDynamixelMonitor::dynamixelInfoMsgCallback, this);
-
-  return true;
 }
 
-bool SingleDynamixelMonitor::initDynamixelCommandServer()
+void SingleDynamixelMonitor::initDynamixelCommandServer()
 {
   dynamixel_command_server_ = node_handle_.advertiseService("dynamixel/command", &SingleDynamixelMonitor::dynamixelCommandMsgCallback, this);
-
-  return true;
 }
 
 bool SingleDynamixelMonitor::showDynamixelControlTable()
@@ -159,7 +155,7 @@ bool SingleDynamixelMonitor::showDynamixelControlTable()
   uint16_t torque_enable_address = 0;
   ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
 
-  for (int item_num = 0; item_num < dynamixel_driver_->getControlTableSize(dxl_id_); item_num++)
+  for (int item_num = 0; item_num < dynamixel_driver_->getTheNumberOfItem(dxl_id_); item_num++)
   {
     if (!strncmp(item_ptr[item_num].item_name, "Torque Enable", strlen(item_ptr[item_num].item_name)))
     {
@@ -169,7 +165,7 @@ bool SingleDynamixelMonitor::showDynamixelControlTable()
 
   dynamixel_driver_->readRegister(dxl_id_, "Torque Enable", &torque_status);
 
-  for (int item_num = 0; item_num < dynamixel_driver_->getControlTableSize(dxl_id_); item_num++)
+  for (int item_num = 0; item_num < dynamixel_driver_->getTheNumberOfItem(dxl_id_); item_num++)
   {
     if (torque_status == false)
     {
@@ -189,7 +185,7 @@ bool SingleDynamixelMonitor::checkValidationCommand(std::string cmd)
 {
   ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
 
-  for (int item_num = 0; item_num < dynamixel_driver_->getControlTableSize(dxl_id_); item_num++)
+  for (int item_num = 0; item_num < dynamixel_driver_->getTheNumberOfItem(dxl_id_); item_num++)
   {
     if (!strncmp(item_ptr[item_num].item_name, cmd.c_str(), strlen(item_ptr[item_num].item_name)))
       return true;
@@ -228,19 +224,12 @@ bool SingleDynamixelMonitor::changeId(uint8_t new_id)
 {
   if (new_id > 0 && new_id < 254)
   {
-//    dynamixel_tool::DynamixelTool *dynamixel = dynamixel_driver_->dynamixel_;
-//    dynamixel->item_ = dynamixel->ctrl_table_["id"];
-
-//    dynamixel_driver_->writeRegister("id", id);
-//    usleep(dynamixel->item_->data_length * 55 * 1000 * 10);
-
-//    dynamixel_driver_->ping(id);
-
     dynamixel_driver_->writeRegister(dxl_id_, "Torque Enable", false);
 
     dynamixel_driver_->writeRegister(dxl_id_, "ID", new_id);
 
-    if (dynamixel_driver_->ping(new_id))
+    uint16_t model_number = 0;
+    if (dynamixel_driver_->ping(new_id, &model_number))
       dxl_id_ = new_id;
 
     printf("...Succeeded to set dynamixel id [%u]\n", dxl_id_);
@@ -389,10 +378,7 @@ bool SingleDynamixelMonitor::dynamixelCommandMsgCallback(dynamixel_workbench_msg
   }
   else if (req.command == "exit")
   {
-    if (shutdownSingleDynamixelMonitor())
-      res.comm_result = true;
-    else
-      res.comm_result = false;
+    shutdownSingleDynamixelMonitor();
   }
   else if (req.command == "addr")
   {

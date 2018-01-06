@@ -59,13 +59,13 @@ class SingleDynamixelMonitor
 //  bool controlLoop();
 
  private:
-  bool initSingleDynamixelMonitor();
-  bool shutdownSingleDynamixelMonitor();
+  void initSingleDynamixelMonitor();
+  void shutdownSingleDynamixelMonitor();
 
   // TODO : Add new Dynamixel
-  bool initDynamixelStatePublisher();
-  bool initDynamixelInfoServer();
-  bool initDynamixelCommandServer();
+  void initDynamixelStatePublisher();
+  void initDynamixelInfoServer();
+  void initDynamixelCommandServer();
 //  // TODO : Add new Dynamixel
 //  bool dynamixelStatePublish();
 
