@@ -79,9 +79,9 @@ class DynamixelDriver
 
   bool begin(const char* device_name = "/dev/ttyUSB0", uint32_t baud_rate = 57600);
 
-  void setPortHandler(const char *device_name, bool *error = 0);
+  void setPortHandler(const char *device_name, bool *error);
   void setPacketHandler(bool *error);
-  void setPacketHandler(float protocol_version, bool *error = 0);
+  void setPacketHandler(float protocol_version, bool *error);
   void setBaudrate(uint32_t baud_rate, bool *error);
 
   float getProtocolVersion();
@@ -90,8 +90,8 @@ class DynamixelDriver
   ControlTableItem* getControlItemPtr(uint8_t id);
   uint8_t getTheNumberOfItem(uint8_t id);
 
-  bool scan(uint8_t *get_id, uint8_t *get_id_num = 0, uint8_t range = 200, float protocol_version = 0.0);
-  bool ping(uint8_t id, uint16_t *get_model_number = 0, float protocol_version = 0.0);
+  bool scan(uint8_t *get_id, uint8_t *get_id_num, uint8_t range = 200, float protocol_version = 0.0);
+  bool ping(uint8_t id, uint16_t *get_model_number, float protocol_version = 0.0);
 
   bool reboot(uint8_t id);
   bool reset(uint8_t id);

@@ -242,7 +242,7 @@ uint8_t DynamixelDriver::getTheNumberOfItem(uint8_t id)
   return tools_[factor].getTheNumberOfItem();
 }
 
-bool DynamixelDriver::scan(uint8_t *get_id,uint8_t *get_id_num, uint8_t range, float protocol_version)
+bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_id_num, uint8_t range, float protocol_version)
 {
   uint8_t id = 0;
   uint16_t model_number = 0;
@@ -266,8 +266,6 @@ bool DynamixelDriver::scan(uint8_t *get_id,uint8_t *get_id_num, uint8_t range, f
       setTools(model_number, id);
       id_cnt++;
     }
-    else
-      return false;
   }
 
   for (id = 1; id <= range; id++)
@@ -278,8 +276,6 @@ bool DynamixelDriver::scan(uint8_t *get_id,uint8_t *get_id_num, uint8_t range, f
       setTools(model_number, id);
       id_cnt++;
     }
-    else
-      return false;
   }
 
   if (id_cnt == 0)
