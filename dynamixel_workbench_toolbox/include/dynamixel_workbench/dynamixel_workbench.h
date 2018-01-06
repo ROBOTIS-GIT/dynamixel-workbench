@@ -48,8 +48,8 @@ class DynamixelWorkbench
 
   bool begin(const char* device_name = "/dev/ttyUSB0", uint32_t baud_rate = 57600);
  
-  uint8_t  scan(uint8_t *get_id, float protocol_version = 0.0);
-  uint16_t ping(uint8_t id, float protocol_version = 0.0);
+  bool scan(uint8_t *get_id, uint8_t *get_id_num = 0, float protocol_version = 0.0);
+  bool ping(uint8_t id, uint16_t *get_model_number = 0, float protocol_version = 0.0);
 
   bool reboot(uint8_t id);
   bool reset(uint8_t id);

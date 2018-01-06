@@ -33,21 +33,21 @@ DynamixelDriver::~DynamixelDriver()
   portHandler_->closePort();
 }
 
-void DynamixelDriver::setTools(uint16_t model_num, uint8_t id)
+void DynamixelDriver::setTools(uint16_t model_number, uint8_t id)
 {
   if (tools_cnt_ == 0)
   {
-    tools_[tools_cnt_].begin(model_num, id);
+    tools_[tools_cnt_].begin(model_number, id);
   }
   else
   {
-    if (!strncmp(tools_[tools_cnt_-1].dxl_info_[0].model_name, findModelName(model_num), strlen(findModelName(model_num))))
+    if (!strncmp(tools_[tools_cnt_-1].dxl_info_[0].model_name, findModelName(model_number), strlen(findModelName(model_number))))
     {
-      tools_[--tools_cnt_].addDXL(model_num, id);
+      tools_[--tools_cnt_].addDXL(model_number, id);
     }
     else
     {
-      tools_[tools_cnt_].begin(model_num, id);
+      tools_[tools_cnt_].begin(model_number, id);
     }
   }
 
@@ -62,7 +62,10 @@ bool DynamixelDriver::begin(const char *device_name, uint32_t baud_rate)
   setBaudrate(baud_rate, &error);
   setPacketHandler(&error);
 
-  return error;
+  if (error)
+    return false;
+  else
+    return true;
 }
 
 void DynamixelDriver::setPortHandler(const char *device_name, bool *error)
@@ -100,7 +103,7 @@ void DynamixelDriver::setPacketHandler(bool *error)
   packetHandler_1 = dynamixel::PacketHandler::getPacketHandler(1.0);
   packetHandler_2 = dynamixel::PacketHandler::getPacketHandler(2.0);
 
-  if (packetHandler_1->getProtocolVersion() == 0)
+  if (packetHandler_1->getProtocolVersion() != 1.0)
   {
 #if DEBUG
 #if defined(__OPENCR__) || defined(__OPENCM904__)
@@ -112,7 +115,7 @@ void DynamixelDriver::setPacketHandler(bool *error)
 
     *error = true;
   }
-  else if (packetHandler_2->getProtocolVersion() == 0)
+  else if (packetHandler_2->getProtocolVersion() != 2.0)
   {
 #if DEBUG
 #if defined(__OPENCR__) || defined(__OPENCM904__)
@@ -138,9 +141,34 @@ void DynamixelDriver::setPacketHandler(bool *error)
   }
 }
 
-void DynamixelDriver::setPacketHandler(float protocol_version)
+void DynamixelDriver::setPacketHandler(float protocol_version, bool *error)
 {
   packetHandler_ = dynamixel::PacketHandler::getPacketHandler(protocol_version);
+
+  if (packetHandler_->getProtocolVersion() != protocol_version)
+  {
+#if DEBUG
+#if defined(__OPENCR__) || defined(__OPENCM904__)
+    Serial.println("Failed to setPacketHandler!");
+#else
+    printf("Failed to setPacketHandler!\n");
+#endif
+#endif
+
+    *error = true;
+  }
+  else
+  {
+#if DEBUG
+#if defined(__OPENCR__) || defined(__OPENCM904__)
+    Serial.println("Succeeded to setPacketHandler!");
+#else
+    printf("Succeeded to setPacketHandler!\n");
+#endif
+#endif
+
+    *error = false;
+  }
 }
 
 void DynamixelDriver::setBaudrate(uint32_t baud_rate, bool *error)
@@ -180,45 +208,44 @@ float DynamixelDriver::getProtocolVersion()
 
 char *DynamixelDriver::getModelName(uint8_t id)
 {
-  uint8_t cnt = findTools(id);
+  uint8_t factor = getToolsFactor(id);
 
-  for (int i = 0; i < tools_[cnt].dxl_info_cnt_; i++)
+  for (int i = 0; i < tools_[factor].dxl_info_cnt_; i++)
   {
-    if (tools_[cnt].dxl_info_[i].id == id)
-      return tools_[cnt].dxl_info_[i].model_name;
+    if (tools_[factor].dxl_info_[i].id == id)
+      return tools_[factor].dxl_info_[i].model_name;
   }
 }
 
 uint16_t DynamixelDriver::getModelNum(uint8_t id)
 {
-  uint8_t cnt = findTools(id);
+  uint8_t factor = getToolsFactor(id);
 
-  for (int i = 0; i < tools_[cnt].dxl_info_cnt_; i++)
+  for (int i = 0; i < tools_[factor].dxl_info_cnt_; i++)
   {
-    if (tools_[cnt].dxl_info_[i].id == id)
-      return tools_[cnt].dxl_info_[i].model_num;
+    if (tools_[factor].dxl_info_[i].id == id)
+      return tools_[factor].dxl_info_[i].model_num;
   }
 }
 
 ControlTableItem* DynamixelDriver::getControlItemPtr(uint8_t id)
 {
-  uint8_t cnt = findTools(id);
+  uint8_t factor = getToolsFactor(id);
 
-  return tools_[cnt].getControlItemPtr();
+  return tools_[factor].getControlItemPtr();
 }
 
-uint8_t DynamixelDriver::getControlTableSize(uint8_t id)
+uint8_t DynamixelDriver::getTheNumberOfItem(uint8_t id)
 {
-  uint8_t cnt = findTools(id);
+  uint8_t factor = getToolsFactor(id);
 
-  return tools_[cnt].getControlTableSize();
+  return tools_[factor].getTheNumberOfItem();
 }
 
-uint8_t DynamixelDriver::scan(uint8_t *get_id, uint8_t num, float protocol_version)
+bool DynamixelDriver::scan(uint8_t *get_id,uint8_t *get_id_num, uint8_t range, float protocol_version)
 {
-  uint8_t error = 0;
   uint8_t id = 0;
-  uint16_t model_num = 0;
+  uint16_t model_number = 0;
   uint8_t id_cnt = 0;
 
   tools_cnt_ = 0;
@@ -231,24 +258,28 @@ uint8_t DynamixelDriver::scan(uint8_t *get_id, uint8_t num, float protocol_versi
 #endif
 #endif
 
-  for (id = 1; id <= num; id++)
+  for (id = 1; id <= range; id++)
   {
-    if (packetHandler_1->ping(portHandler_, id, &model_num, &error) == COMM_SUCCESS)
+    if (packetHandler_1->ping(portHandler_, id, &model_number) == COMM_SUCCESS)
     {
       get_id[id_cnt] = id;
-      setTools(model_num, id);
+      setTools(model_number, id);
       id_cnt++;
     }
+    else
+      return false;
   }
 
-  for (id = 1; id <= num; id++)
+  for (id = 1; id <= range; id++)
   {
-    if (packetHandler_2->ping(portHandler_, id, &model_num, &error) == COMM_SUCCESS)
+    if (packetHandler_2->ping(portHandler_, id, &model_number) == COMM_SUCCESS)
     {
       get_id[id_cnt] = id;
-      setTools(model_num, id);
+      setTools(model_number, id);
       id_cnt++;
     }
+    else
+      return false;
   }
 
   if (id_cnt == 0)
@@ -307,6 +338,8 @@ uint8_t DynamixelDriver::scan(uint8_t *get_id, uint8_t num, float protocol_versi
     }
   }
 
+  if (packetHandler_->getProtocolVersion() != 1.0 && packetHandler_->getProtocolVersion() != 2.0)
+    return false;
 
 #if DEBUG
 #if defined(__OPENCR__) || defined(__OPENCM904__)
@@ -317,20 +350,20 @@ uint8_t DynamixelDriver::scan(uint8_t *get_id, uint8_t num, float protocol_versi
 #endif
 #endif
 
-  return id_cnt;
+  *get_id_num = id_cnt;
+  return true;
 }
 
-uint16_t DynamixelDriver::ping(uint8_t id, float protocol_version)
+bool DynamixelDriver::ping(uint8_t id, uint16_t *get_model_number, float protocol_version)
 {
-  uint8_t error = 0;
-  uint16_t model_num = 0;
+  uint16_t model_number = 0;
 
   tools_cnt_ = 0;
 
-  if (packetHandler_1->ping(portHandler_, id, &model_num, &error) == COMM_SUCCESS)
-    setTools(model_num, id);
-  else if (packetHandler_2->ping(portHandler_, id, &model_num, &error) == COMM_SUCCESS)
-    setTools(model_num, id);
+  if (packetHandler_1->ping(portHandler_, id, &model_number) == COMM_SUCCESS)
+    setTools(model_number, id);
+  else if (packetHandler_2->ping(portHandler_, id, &model_number) == COMM_SUCCESS)
+    setTools(model_number, id);
   else
   {
 #if DEBUG
@@ -380,7 +413,11 @@ uint16_t DynamixelDriver::ping(uint8_t id, float protocol_version)
     }
   }
 
-  return model_num;
+  if (packetHandler_->getProtocolVersion() != 1.0 && packetHandler_->getProtocolVersion() != 2.0)
+    return false;
+
+  *get_model_number = model_number;
+  return true;
 }
 
 bool DynamixelDriver::reboot(uint8_t id)
@@ -491,7 +528,8 @@ bool DynamixelDriver::reset(uint8_t id)
 #else
         printf("%s\n", packetHandler_->getRxPacketError(error));
 #endif
-#endif    
+#endif
+        return false;
       }
 #if DEBUG
   #if defined(__OPENCR__) || defined(__OPENCM904__)
@@ -503,13 +541,10 @@ bool DynamixelDriver::reset(uint8_t id)
 
       for (int i = 0; i < tools_cnt_; i++)
       {
-//        if (tools_[i].getID() == id)
-//        {
-          if (!strncmp(getModelName(id), "AX", strlen("AX")) || !strncmp(getModelName(id), "MX-12W", strlen("MX-12W")))
-            baud = 1000000;
-          else
-            baud = 57600;
-//        }
+        if (!strncmp(getModelName(id), "AX", strlen("AX")) || !strncmp(getModelName(id), "MX-12W", strlen("MX-12W")))
+          baud = 1000000;
+        else
+          baud = 57600;
       }
 
       if (portHandler_->setBaudRate(baud) == false)
@@ -579,6 +614,7 @@ bool DynamixelDriver::reset(uint8_t id)
         printf("%s\n", packetHandler_->getRxPacketError(error));
 #endif
 #endif    
+        return false;
       }
 #if DEBUG
 #if defined(__OPENCR__) || defined(__OPENCM904__)
@@ -631,6 +667,7 @@ bool DynamixelDriver::reset(uint8_t id)
       return false;
     }
   }
+
   return true;
 }
 
@@ -640,7 +677,7 @@ bool DynamixelDriver::writeRegister(uint8_t id, const char *item_name, int32_t d
   int dxl_comm_result = COMM_TX_FAIL;
 
   ControlTableItem *cti;
-  cti = tools_[findTools(id)].getControlItem(item_name);  
+  cti = tools_[getToolsFactor(id)].getControlItem(item_name);
 
   if (cti->data_length == BYTE)
   {
@@ -696,7 +733,7 @@ bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, int32_t *d
   int32_t value_32_bit = 0;
 
   ControlTableItem *cti;
-  cti = tools_[findTools(id)].getControlItem(item_name);
+  cti = tools_[getToolsFactor(id)].getControlItem(item_name);
 
   if (cti->data_length == BYTE)
   {
@@ -752,7 +789,7 @@ bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, int32_t *d
   return true;
 }
 
-uint8_t DynamixelDriver::findTools(uint8_t id)
+uint8_t DynamixelDriver::getToolsFactor(uint8_t id)
 {
   for (int i = 0; i < tools_cnt_; i++)
   {
@@ -769,7 +806,7 @@ uint8_t DynamixelDriver::findTools(uint8_t id)
 const char *DynamixelDriver::findModelName(uint16_t model_num)
 {
   uint16_t num = model_num;
-  const char* model_name = NULL;
+  static const char* model_name = NULL;
 
   if (num == AX_12A)
     model_name = "AX-12A";
@@ -1019,7 +1056,7 @@ bool DynamixelDriver::addBulkWriteParam(uint8_t id, const char *item_name, int32
   uint8_t data_byte[4] = {0, };
 
   ControlTableItem *cti;
-  cti = tools_[findTools(id)].getControlItem(item_name);
+  cti = tools_[getToolsFactor(id)].getControlItem(item_name);
 
   data_byte[0] = DXL_LOBYTE(DXL_LOWORD(data));
   data_byte[1] = DXL_HIBYTE(DXL_LOWORD(data));
@@ -1075,7 +1112,7 @@ bool DynamixelDriver::addBulkReadParam(uint8_t id, const char *item_name)
   bool dxl_addparam_result = false;
 
   ControlTableItem *cti;
-  cti = tools_[findTools(id)].getControlItem(item_name);
+  cti = tools_[getToolsFactor(id)].getControlItem(item_name);
 
   dxl_addparam_result = groupBulkRead_->addParam(id, cti->address, cti->data_length);
   if (dxl_addparam_result != true)
@@ -1119,7 +1156,7 @@ bool DynamixelDriver::bulkRead(uint8_t id, const char *item_name, int32_t *data)
 {
   bool dxl_getdata_result = false;
   ControlTableItem *cti;
-  cti = tools_[findTools(id)].getControlItem(item_name);
+  cti = tools_[getToolsFactor(id)].getControlItem(item_name);
 
   dxl_getdata_result = groupBulkRead_->isAvailable(id, cti->address, cti->data_length);
   if (dxl_getdata_result != true)
@@ -1143,27 +1180,25 @@ bool DynamixelDriver::bulkRead(uint8_t id, const char *item_name, int32_t *data)
 int32_t DynamixelDriver::convertRadian2Value(int8_t id, float radian)
 {
   int32_t value = 0;
-  int8_t num = 0;
-
-  num = findTools(id);
+  int8_t factor = getToolsFactor(id);
 
   if (radian > 0)
   {
-    if (tools_[num].getValueOfMaxRadianPosition() <= tools_[num].getValueOfZeroRadianPosition())
-      return tools_[num].getValueOfMaxRadianPosition();
+    if (tools_[factor].getValueOfMaxRadianPosition() <= tools_[factor].getValueOfZeroRadianPosition())
+      return tools_[factor].getValueOfMaxRadianPosition();
 
-    value = (radian * (tools_[num].getValueOfMaxRadianPosition() - tools_[num].getValueOfZeroRadianPosition()) / tools_[num].getMaxRadian()) + tools_[num].getValueOfZeroRadianPosition();
+    value = (radian * (tools_[factor].getValueOfMaxRadianPosition() - tools_[factor].getValueOfZeroRadianPosition()) / tools_[factor].getMaxRadian()) + tools_[factor].getValueOfZeroRadianPosition();
   }
   else if (radian < 0)
   {
-    if (tools_[num].getValueOfMinRadianPosition() >= tools_[num].getValueOfZeroRadianPosition())
-      return tools_[num].getValueOfMinRadianPosition();
+    if (tools_[factor].getValueOfMinRadianPosition() >= tools_[factor].getValueOfZeroRadianPosition())
+      return tools_[factor].getValueOfMinRadianPosition();
 
-    value = (radian * (tools_[num].getValueOfMinRadianPosition() - tools_[num].getValueOfZeroRadianPosition()) / tools_[num].getMinRadian()) + tools_[num].getValueOfZeroRadianPosition();
+    value = (radian * (tools_[factor].getValueOfMinRadianPosition() - tools_[factor].getValueOfZeroRadianPosition()) / tools_[factor].getMinRadian()) + tools_[factor].getValueOfZeroRadianPosition();
   }
   else
   {
-    value = tools_[num].getValueOfZeroRadianPosition();
+    value = tools_[factor].getValueOfZeroRadianPosition();
   }
   // if (value[id-1] > tools_[num].getValueOfMaxRadianPosition())
   //   value[id-1] =  tools_[num].getValueOfMaxRadianPosition();
@@ -1176,23 +1211,21 @@ int32_t DynamixelDriver::convertRadian2Value(int8_t id, float radian)
 float DynamixelDriver::convertValue2Radian(int8_t id, int32_t value)
 {
   float radian = 0.0;
-  int8_t num = 0;
+  int8_t factor = getToolsFactor(id);
 
-  num = findTools(id);
-
-  if (value > tools_[num].getValueOfZeroRadianPosition())
+  if (value > tools_[factor].getValueOfZeroRadianPosition())
   {
-    if (tools_[num].getMaxRadian() <= 0)
-      return tools_[num].getMaxRadian();
+    if (tools_[factor].getMaxRadian() <= 0)
+      return tools_[factor].getMaxRadian();
 
-    radian = (float)(value - tools_[num].getValueOfZeroRadianPosition()) * tools_[num].getMaxRadian() / (float)(tools_[num].getValueOfMaxRadianPosition() - tools_[num].getValueOfZeroRadianPosition());
+    radian = (float)(value - tools_[factor].getValueOfZeroRadianPosition()) * tools_[factor].getMaxRadian() / (float)(tools_[factor].getValueOfMaxRadianPosition() - tools_[factor].getValueOfZeroRadianPosition());
   }
-  else if (value < tools_[num].getValueOfZeroRadianPosition())
+  else if (value < tools_[factor].getValueOfZeroRadianPosition())
   {
-    if (tools_[num].getMinRadian() >= 0)
-      return tools_[num].getMinRadian();
+    if (tools_[factor].getMinRadian() >= 0)
+      return tools_[factor].getMinRadian();
 
-    radian = (float)(value - tools_[num].getValueOfZeroRadianPosition()) * tools_[num].getMinRadian() / (float)(tools_[num].getValueOfMinRadianPosition() - tools_[num].getValueOfZeroRadianPosition());
+    radian = (float)(value - tools_[factor].getValueOfZeroRadianPosition()) * tools_[factor].getMinRadian() / (float)(tools_[factor].getValueOfMinRadianPosition() - tools_[factor].getValueOfZeroRadianPosition());
   }
   //  if (radian[id-1] > tools_[num].getMaxRadian())
   //    radian[id-1] =  tools_[num].getMaxRadian();

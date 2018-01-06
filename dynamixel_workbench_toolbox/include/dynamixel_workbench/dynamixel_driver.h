@@ -31,7 +31,7 @@
 #endif
 
 #define MAX_DXL_SERIES_NUM 3
-#define MAX_HANDLER 5
+#define MAX_HANDLER_NUM 5
 
 #define BYTE  1
 #define WORD  2
@@ -59,8 +59,8 @@ class DynamixelDriver
   dynamixel::PacketHandler *packetHandler_1;
   dynamixel::PacketHandler *packetHandler_2;
 
-  SyncWriteHandler syncWriteHandler_[MAX_HANDLER];
-  SyncReadHandler  syncReadHandler_[MAX_HANDLER];
+  SyncWriteHandler syncWriteHandler_[MAX_HANDLER_NUM];
+  SyncReadHandler  syncReadHandler_[MAX_HANDLER_NUM];
 
   dynamixel::GroupBulkRead  *groupBulkRead_;  
   dynamixel::GroupBulkWrite *groupBulkWrite_;  
@@ -71,7 +71,7 @@ class DynamixelDriver
   uint8_t sync_write_handler_cnt_;
   uint8_t sync_read_handler_cnt_;
 
-  char dxl_[64];
+  char dxl_[20];
 
  public:
   DynamixelDriver();
@@ -79,19 +79,19 @@ class DynamixelDriver
 
   bool begin(const char* device_name = "/dev/ttyUSB0", uint32_t baud_rate = 57600);
 
-  void setPortHandler(const char *device_name, bool *error);
+  void setPortHandler(const char *device_name, bool *error = 0);
   void setPacketHandler(bool *error);
-  void setPacketHandler(float protocol_version);
+  void setPacketHandler(float protocol_version, bool *error = 0);
   void setBaudrate(uint32_t baud_rate, bool *error);
 
   float getProtocolVersion();
   char* getModelName(uint8_t id);
   uint16_t getModelNum(uint8_t id);
   ControlTableItem* getControlItemPtr(uint8_t id);
-  uint8_t getControlTableSize(uint8_t id);
+  uint8_t getTheNumberOfItem(uint8_t id);
 
-  uint8_t  scan(uint8_t *get_id, uint8_t num = 200, float protocol_version = 0.0);
-  uint16_t ping(uint8_t id, float protocol_version = 0.0);
+  bool scan(uint8_t *get_id, uint8_t *get_id_num = 0, uint8_t range = 200, float protocol_version = 0.0);
+  bool ping(uint8_t id, uint16_t *get_model_number = 0, float protocol_version = 0.0);
 
   bool reboot(uint8_t id);
   bool reset(uint8_t id);
@@ -118,9 +118,9 @@ class DynamixelDriver
   float convertValue2Radian(int8_t id, int32_t value);
 
  private:
-  void setTools(uint16_t model_num, uint8_t id);
+  void setTools(uint16_t model_number, uint8_t id);
   const char *findModelName(uint16_t model_num);
-  uint8_t findTools(uint8_t id);
+  uint8_t getToolsFactor(uint8_t id);
 };
 
 #endif //DYNAMIXEL_WORKBENCH_DYNAMIXEL_DRIVER_H

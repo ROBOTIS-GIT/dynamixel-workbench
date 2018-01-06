@@ -18,15 +18,15 @@
 
 #include "../../include/dynamixel_workbench/dynamixel_item.h"
 
-static uint8_t control_table_size = 0;
+static uint8_t the_number_of_item = 0;
 
 #if defined(__OPENCR__) || defined(__OPENCM904__)
-  static ControlTableItem item[14]  = {0, };
+static ControlTableItem item[15]  = {0, };
 #else
-  static ControlTableItem item[60]  = {0, };
+static ControlTableItem item[60]  = {0, };
 #endif
 
-static ModelInfo model_info       = {0.0, };
+static ModelInfo model_info         = {0.0, };
 
 void setAXItem(void)
 {
@@ -46,7 +46,7 @@ void setAXItem(void)
   item[11] = {40 , "Present Load"                  , 2};
   item[12] = {46 , "Moving"                        , 1};
 
-  control_table_size = 13;
+  the_number_of_item = 13;
 #else
   item[0]  = {0  , "Model Number"                  , 2};
   item[1]  = {2  , "Firmware Version"              , 1};
@@ -82,7 +82,7 @@ void setAXItem(void)
   item[30] = {47 , "Lock"                          , 1};
   item[31] = {48 , "Punch"                         , 2};
 
-  control_table_size = 32;
+  the_number_of_item = 32;
 #endif  
 }
 
@@ -116,7 +116,7 @@ void setRXItem()
   item[11] = {40 , "Present Load"                  , 2};
   item[12] = {46 , "Moving"                        , 1};
 
-  control_table_size = 13;
+  the_number_of_item = 13;
 #else
   item[0]  = {0  , "Model Number"                  , 2};
   item[1]  = {2  , "Firmware Version"              , 1};
@@ -152,11 +152,11 @@ void setRXItem()
   item[30] = {47 , "Lock"                          , 1};
   item[31] = {48 , "Punch"                         , 2};
 
-  control_table_size = 32;
+  the_number_of_item = 32;
 #endif  
 }
 
-void setRXInfo()
+void setRXInfo(void)
 {
   model_info.velocity_to_value_ratio         = 86.03; // RX series don't support exact speed in wheel mode.
   
@@ -170,7 +170,7 @@ void setRXInfo()
 
 void setEXItem()
 {
-  #if defined(__OPENCR__) || defined(__OPENCM904__)
+#if defined(__OPENCR__) || defined(__OPENCM904__)
   item[0]  = {3  , "ID"                            , 1};
   item[1]  = {4  , "Baud Rate"                     , 1};
   item[2]  = {6  , "CW Angle Limit"                , 2};
@@ -187,7 +187,7 @@ void setEXItem()
   item[12] = {40 , "Present Load"                  , 2};
   item[13] = {46 , "Moving"                        , 1};
 
-  control_table_size = 14;
+  the_number_of_item = 14;
 #else
   item[0]  = {0  , "Model Number"                  , 2};
   item[1]  = {2  , "Firmware Version"              , 1};
@@ -225,7 +225,7 @@ void setEXItem()
   item[32] = {48 , "Punch"                         , 2};
   item[33] = {56 , "Sensored Current"              , 2};
 
-  control_table_size = 34;
+  the_number_of_item = 34;
 #endif  
 }
 
@@ -260,7 +260,7 @@ void setMXItem()
   item[12] = {46 , "Moving"                        , 1};
   item[13] = {73 , "Goal Acceleration"             , 1};
 
-  control_table_size = 14;
+  the_number_of_item = 14;
 #else
   item[0]  = {0  , "Model Number"                  , 2};
   item[1]  = {2  , "Firmware Version"              , 1};
@@ -298,7 +298,7 @@ void setMXItem()
   item[32] = {48 , "Punch"                         , 2};
   item[33] = {73 , "Goal Acceleration"             , 1};
 
-  control_table_size = 34;
+  the_number_of_item = 34;
 #endif  
 }
 
@@ -333,7 +333,7 @@ void setMX2Item(void)
   item[12] = {128, "Present Velocity"      , 4};
   item[13] = {132, "Present Position"      , 4};
 
-  control_table_size = 14;
+  the_number_of_item = 14;
 #else
   item[0]  = {0  , "Model Number"          , 2};
   item[1]  = {6  , "Firmware Version"      , 1};
@@ -386,7 +386,7 @@ void setMX2Item(void)
   item[47] = {144, "Present Input Voltage" , 2};
   item[48] = {146, "Present Temperature"   , 1};
 
-  control_table_size = 49;
+  the_number_of_item = 49;
 #endif  
 }
 
@@ -404,7 +404,7 @@ void setMX2Info(void)
 
 void setExtMXItem()
 {
-  #if defined(__OPENCR__) || defined(__OPENCM904__)
+#if defined(__OPENCR__) || defined(__OPENCM904__)
   item[0]  = {3  , "ID"                            , 1};
   item[1]  = {4  , "Baud Rate"                     , 1};
   item[2]  = {6  , "CW Angle Limit"                , 2};
@@ -424,7 +424,7 @@ void setExtMXItem()
   // item[15] = {71 , "Goal Torque"                   , 2};
   // item[16] = {73 , "Goal Acceleration"             , 1};
 
-  control_table_size = 13;
+  the_number_of_item = 13;
 #else
   item[0]  = {0  , "Model Number"                  , 2};
   item[1]  = {2  , "Firmware Version"              , 1};
@@ -465,7 +465,7 @@ void setExtMXItem()
   item[35] = {71 , "Goal Torque"                   , 2};
   item[36] = {73 , "Goal Acceleration"             , 1};
 
-  control_table_size = 37;
+  the_number_of_item = 37;
 #endif  
 }
 
@@ -500,7 +500,7 @@ void setExtMX2Item(void)
   item[12] = {128, "Present Velocity"      , 4};
   item[13] = {132, "Present Position"      , 4};
 
-  control_table_size = 14;
+  the_number_of_item = 14;
 #else
   item[0]  = {0  , "Model Number"          , 2};
   item[1]  = {6  , "Firmware Version"      , 1};
@@ -555,7 +555,7 @@ void setExtMX2Item(void)
   item[49] = {144, "Present Input Voltage" , 2};
   item[50] = {146, "Present Temperature"   , 1};
 
-  control_table_size = 51;
+  the_number_of_item = 51;
 #endif  
 }
 
@@ -590,7 +590,7 @@ void setXL320Item()
   item[12] = {41 , "Present Load"                  , 2};
   item[13] = {49 , "Moving"                        , 1};
 
-  control_table_size = 14;
+  the_number_of_item = 14;
 #else
   item[0]  = {0  , "Model Number"                  , 2};
   item[1]  = {2  , "Firmware Version"              , 1};
@@ -625,7 +625,7 @@ void setXL320Item()
   item[29] = {50 , "Hardware Error Status"         , 1};
   item[30] = {51 , "Punch"                         , 2};
 
-  control_table_size = 31;
+  the_number_of_item = 31;
 #endif  
 }
 
@@ -660,7 +660,7 @@ void setXLItem()
   item[12] = {128, "Present Velocity"      , 4};
   item[13] = {132, "Present Position"      , 4};
 
-  control_table_size = 14;
+  the_number_of_item = 14;
 #else
   item[0]  = {0  , "Model Number"          , 2};
   item[1]  = {6  , "Firmware Version"      , 1};
@@ -714,7 +714,7 @@ void setXLItem()
   item[48] = {144, "Present Input Voltage" , 2};
   item[49] = {146, "Present Temperature"   , 1};
 
-  control_table_size = 50;
+  the_number_of_item = 50;
 #endif  
 }
 
@@ -749,7 +749,7 @@ void setXMItem()
   item[12] = {128, "Present Velocity"      , 4};
   item[13] = {132, "Present Position"      , 4};
 
-  control_table_size = 14;
+  the_number_of_item = 14;
 #else
   item[0]  = {0  , "Model Number"          , 2};
   item[1]  = {6  , "Firmware Version"      , 1};
@@ -804,7 +804,7 @@ void setXMItem()
   item[49] = {144, "Present Input Voltage" , 2};
   item[50] = {146, "Present Temperature"   , 1};
 
-  control_table_size = 51;
+  the_number_of_item = 51;
 #endif  
 }
 
@@ -840,7 +840,7 @@ void setExtXMItem(void)
   item[12] = {128, "Present Velocity"      , 4};
   item[13] = {132, "Present Position"      , 4};
 
-  control_table_size = 14;
+  the_number_of_item = 14;
 #else
   item[0]  = {0  , "Model Number"          , 2};
   item[1]  = {6  , "Firmware Version"      , 1};
@@ -898,7 +898,7 @@ void setExtXMItem(void)
   item[52] = {144, "Present Input Voltage" , 2};
   item[53] = {146, "Present Temperature"   , 1};
 
-  control_table_size = 54;
+  the_number_of_item = 54;
 #endif  
 }
 
@@ -933,7 +933,7 @@ void setXHItem()
   item[12] = {128, "Present Velocity"      , 4};
   item[13] = {132, "Present Position"      , 4};
 
-  control_table_size = 14;
+  the_number_of_item = 14;
 #else
   item[0]  = {0  , "Model Number"          , 2};
   item[1]  = {6  , "Firmware Version"      , 1};
@@ -988,7 +988,7 @@ void setXHItem()
   item[49] = {144, "Present Input Voltage" , 2};
   item[50] = {146, "Present Temperature"   , 1};
 
-  control_table_size = 51;
+  the_number_of_item = 51;
 #endif  
 }
 
@@ -1022,7 +1022,7 @@ void setPROItem()
   item[11] = {615, "Present Velocity"      , 4};
   item[12] = {621, "Present Current"       , 2};
 
-  control_table_size = 13;
+  the_number_of_item = 13;
 #else
   item[0]  = {0  , "Model Number"          , 2};
   item[1]  = {6  , "Firmware Version"      , 1};
@@ -1071,7 +1071,7 @@ void setPROItem()
   item[42] = {891, "Status Return Level"   , 1};
   item[43] = {892, "Hardware Error Status" , 1};
 
-  control_table_size = 44;
+  the_number_of_item = 44;
 #endif  
 }
 
@@ -1087,8 +1087,10 @@ void setPROInfo()
   model_info.max_radian                      =  3.14159265;
 }
 
-ControlTableItem* getItem(uint16_t num)
+ControlTableItem* getConrolTableItem(uint16_t model_number)
 {
+  uint16_t num = model_number;
+
   if (num == AX_12A || num == AX_12W || num == AX_18A)
   {
     setAXItem();
@@ -1151,8 +1153,10 @@ ControlTableItem* getItem(uint16_t num)
   return item;
 }
 
-ModelInfo* getInfo(uint16_t num)
+ModelInfo* getModelInfo(uint16_t model_number)
 {  
+  uint16_t num = model_number;
+
   if (num == AX_12A || num == AX_12W || num == AX_18A)
   {
     setAXInfo();
@@ -1215,7 +1219,7 @@ ModelInfo* getInfo(uint16_t num)
   return &model_info;
 }
 
-uint8_t getSize()
+uint8_t getTheNumberOfItem()
 {
-  return control_table_size;
+  return the_number_of_item;
 }

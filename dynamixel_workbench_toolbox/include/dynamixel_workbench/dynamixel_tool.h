@@ -22,17 +22,16 @@
 #include <string.h>
 
 #include "dynamixel_item.h"
-#include "stdio.h"
 
 #if defined(__OPENCR__) || defined(__OPENCM904__)
-  #define DXL_TABLE_ITEM_NUM 14
+  #define ITEM_ARRAY_SIZE 14
 #else
-  #define DXL_TABLE_ITEM_NUM 60
+  #define ITEM_ARRAY_SIZE 60
 #endif
 
 typedef struct
 {
-  char model_name[64];
+  char model_name[20];
   uint16_t model_num;
   uint8_t id;
 } DXLInfo;
@@ -40,7 +39,7 @@ typedef struct
 class DynamixelTool
 {
  public:
-  DXLInfo dxl_info_[10];
+  DXLInfo dxl_info_[16];
   uint8_t dxl_info_cnt_;
 
  private:
@@ -48,43 +47,44 @@ class DynamixelTool
   ModelInfo* info_ptr_;
 
 #if defined(__OPENCR__) || defined(__OPENCM904__)
-  ControlTableItem item_[DXL_TABLE_ITEM_NUM];
+  ControlTableItem item_[ITEM_ARRAY_SIZE];
 #else
-  ControlTableItem item_[DXL_TABLE_ITEM_NUM];
+  ControlTableItem item_[ITEM_ARRAY_SIZE];
 #endif
+
   ModelInfo info_;
-  uint8_t control_table_size_;
+  uint8_t the_number_of_item_;
 
  public:
   DynamixelTool();
   ~DynamixelTool();
 
-  bool begin(const char* model_name, uint8_t id);
-  bool begin(uint16_t model_num, uint8_t id);
+  void begin(const char* model_name, uint8_t id);
+  void begin(uint16_t model_number, uint8_t id);
 
-  bool addDXL(uint16_t model_num, uint8_t id);
-  bool addDXL(const char* model_name, uint8_t id);
+  void addDXL(uint16_t model_number, uint8_t id);
+  void addDXL(const char* model_name, uint8_t id);
 
-  float getVelocityToValueRatio();  
-  float getTorqueToCurrentValueRatio();  
+  float getVelocityToValueRatio(void);
+  float getTorqueToCurrentValueRatio(void);
 
-  int32_t getValueOfMinRadianPosition();  
-  int32_t getValueOfMaxRadianPosition();  
-  int32_t getValueOfZeroRadianPosition();  
+  int32_t getValueOfMinRadianPosition(void);
+  int32_t getValueOfMaxRadianPosition(void);
+  int32_t getValueOfZeroRadianPosition(void);
 
-  float getMinRadian();  
-  float getMaxRadian();  
+  float getMinRadian(void);
+  float getMaxRadian(void);
 
-  uint8_t getControlTableSize();
+  uint8_t getTheNumberOfItem(void);
   ControlTableItem* getControlItem(const char *item_name);
-  ControlTableItem* getControlItemPtr(); 
-  ModelInfo* getModelInfoPtr();
+  ControlTableItem* getControlItemPtr(void);
+  ModelInfo* getModelInfoPtr(void);
 
  private:
   void setControlTable(const char* model_name);
-  void setControlTable(uint16_t model_num);
+  void setControlTable(uint16_t model_number);
 
-  void setModelName(uint16_t model_num);
+  void setModelName(uint16_t model_number);
   void setModelNum(const char* model_name);
 };
 #endif //DYNAMIXEL_TOOL_H

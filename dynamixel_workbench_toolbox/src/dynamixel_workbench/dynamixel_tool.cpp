@@ -18,11 +18,11 @@
 
 #include "../../include/dynamixel_workbench/dynamixel_tool.h"
 
-DynamixelTool::DynamixelTool() : dxl_info_cnt_(0), control_table_size_(0){}
+DynamixelTool::DynamixelTool() : dxl_info_cnt_(0), the_number_of_item_(0){}
 
 DynamixelTool::~DynamixelTool(){}
 
-bool DynamixelTool::begin(const char* model_name, uint8_t id)
+void DynamixelTool::begin(const char* model_name, uint8_t id)
 {
   strcpy(dxl_info_[dxl_info_cnt_].model_name, model_name);
   setModelNum(model_name);
@@ -32,17 +32,17 @@ bool DynamixelTool::begin(const char* model_name, uint8_t id)
   dxl_info_cnt_++;
 }
 
-bool DynamixelTool::begin(uint16_t model_num, uint8_t id)
+void DynamixelTool::begin(uint16_t model_number, uint8_t id)
 {
-  setModelName(model_num);
-  dxl_info_[dxl_info_cnt_].model_num = model_num;
+  setModelName(model_number);
+  dxl_info_[dxl_info_cnt_].model_num = model_number;
   dxl_info_[dxl_info_cnt_].id = id;
 
-  setControlTable(model_num);
+  setControlTable(model_number);
   dxl_info_cnt_++;
 }
 
-bool DynamixelTool::addDXL(const char* model_name, uint8_t id)
+void DynamixelTool::addDXL(const char* model_name, uint8_t id)
 {
   strcpy(dxl_info_[dxl_info_cnt_].model_name, model_name);
   setModelNum(model_name);
@@ -51,10 +51,10 @@ bool DynamixelTool::addDXL(const char* model_name, uint8_t id)
   dxl_info_cnt_++;
 }
 
-bool DynamixelTool::addDXL(uint16_t model_num, uint8_t id)
+void DynamixelTool::addDXL(uint16_t model_number, uint8_t id)
 {
-  setModelName(model_num);
-  dxl_info_[dxl_info_cnt_].model_num = model_num;
+  setModelName(model_number);
+  dxl_info_[dxl_info_cnt_].model_num = model_number;
   dxl_info_[dxl_info_cnt_].id = id;
 
   dxl_info_cnt_++;
@@ -145,13 +145,13 @@ void DynamixelTool::setControlTable(const char *model_name)
     setControlTable(PRO_H54_200_S500_R);
 }
 
-void DynamixelTool::setControlTable(uint16_t model_num)
+void DynamixelTool::setControlTable(uint16_t model_number)
 {
-  item_ptr_           = getItem(model_num);
-  control_table_size_ = getSize();
-  info_ptr_           = getInfo(model_num);
+  item_ptr_           = getConrolTableItem(model_number);
+  the_number_of_item_ = getTheNumberOfItem();
+  info_ptr_           = getModelInfo(model_number);
 
-  for (int index = 0; index < control_table_size_; index++)
+  for (int index = 0; index < the_number_of_item_; index++)
     item_[index] = item_ptr_[index];
 
 
@@ -166,9 +166,9 @@ void DynamixelTool::setControlTable(uint16_t model_num)
   info_.max_radian                      = info_ptr_->max_radian;
 }
 
-void DynamixelTool::setModelName(uint16_t model_num)
+void DynamixelTool::setModelName(uint16_t model_number)
 {
-  uint16_t num = model_num;
+  uint16_t num = model_number;
 
   if (num == AX_12A)
     strcpy(dxl_info_[dxl_info_cnt_].model_name, "AX-12A");
@@ -336,51 +336,51 @@ void DynamixelTool::setModelNum(const char* model_name)
     dxl_info_[dxl_info_cnt_].model_num = PRO_H54_200_S500_R;
 }
 
-float DynamixelTool::getVelocityToValueRatio()
+float DynamixelTool::getVelocityToValueRatio(void)
 {
   return info_.velocity_to_value_ratio;
 }
 
-float DynamixelTool::getTorqueToCurrentValueRatio()
+float DynamixelTool::getTorqueToCurrentValueRatio(void)
 {
   return info_.torque_to_current_value_ratio;
 }
 
-int32_t DynamixelTool::getValueOfMinRadianPosition()
+int32_t DynamixelTool::getValueOfMinRadianPosition(void)
 {
   return info_.value_of_min_radian_position;
 }
 
-int32_t DynamixelTool::getValueOfMaxRadianPosition()
+int32_t DynamixelTool::getValueOfMaxRadianPosition(void)
 {
   return info_.value_of_max_radian_position;
 }
 
-int32_t DynamixelTool::getValueOfZeroRadianPosition()
+int32_t DynamixelTool::getValueOfZeroRadianPosition(void)
 {
   return info_.value_of_0_radian_position;
 }
 
-float DynamixelTool::getMinRadian()
+float DynamixelTool::getMinRadian(void)
 {
   return info_.min_radian;
 }
 
-float DynamixelTool::getMaxRadian()
+float DynamixelTool::getMaxRadian(void)
 {
   return info_.max_radian;
 }
 
-uint8_t DynamixelTool::getControlTableSize()
+uint8_t DynamixelTool::getTheNumberOfItem(void)
 {
-  return control_table_size_;
+  return the_number_of_item_;
 }
 
 ControlTableItem* DynamixelTool::getControlItem(const char* item_name)
 {
   static ControlTableItem* cti;
 
-  for (int num = 0; num < control_table_size_; num++)
+  for (int num = 0; num < the_number_of_item_; num++)
   {
     if (!strncmp(item_name, item_[num].item_name, strlen(item_[num].item_name)))
     {
@@ -390,12 +390,12 @@ ControlTableItem* DynamixelTool::getControlItem(const char* item_name)
   }
 }
 
-ControlTableItem* DynamixelTool::getControlItemPtr()
+ControlTableItem* DynamixelTool::getControlItemPtr(void)
 {
   return item_ptr_;
 }
 
-ModelInfo* DynamixelTool::getModelInfoPtr()
+ModelInfo* DynamixelTool::getModelInfoPtr(void)
 {
   return info_ptr_;
 }

@@ -37,22 +37,22 @@ bool DynamixelWorkbench::begin(const char* device_name, uint32_t baud_rate)
   return error;
 }
 
-uint8_t  DynamixelWorkbench::scan(uint8_t *get_id, float protocol_version)
+bool DynamixelWorkbench::scan(uint8_t *get_id, uint8_t *get_id_num, float protocol_version)
 {
-  uint8_t id_cnt = 0;
+  bool error = false;
 
-  id_cnt = driver_.scan(get_id, 16, protocol_version);
+  error = driver_.scan(get_id, get_id_num, 16, protocol_version);
 
-  return id_cnt;
+  return error;
 }
 
-uint16_t DynamixelWorkbench::ping(uint8_t id, float protocol_version)
+bool DynamixelWorkbench::ping(uint8_t id, uint16_t *get_model_number, float protocol_version)
 {
-  uint16_t model_num = 0;
+  bool error = false;
 
-  model_num = driver_.ping(id, protocol_version);
+  error = driver_.ping(id, get_model_number, protocol_version);
 
-  return model_num;
+  return error;
 }
 
 bool DynamixelWorkbench::reboot(uint8_t id)
@@ -137,7 +137,11 @@ bool DynamixelWorkbench::setBaud(uint8_t id, uint32_t new_baud)
 
 bool DynamixelWorkbench::setPacketHandler(float protocol_version)
 {
-  driver_.setPacketHandler(protocol_version);
+  bool error = false;
+
+  driver_.setPacketHandler(protocol_version, &error);
+
+  return error;
 }
 
 char* DynamixelWorkbench::getModelName(uint8_t id)

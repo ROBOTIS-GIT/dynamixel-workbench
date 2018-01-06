@@ -70,11 +70,11 @@ typedef struct
 {
   float velocity_to_value_ratio;
   float torque_to_current_value_ratio;
-  
+
   int32_t value_of_min_radian_position;
   int32_t value_of_0_radian_position;
-  int32_t value_of_max_radian_position; 
-  
+  int32_t value_of_max_radian_position;
+
   float  min_radian;
   float  max_radian;
 } ModelInfo;
@@ -83,7 +83,7 @@ void setAXItem(void);
 void setAXInfo(void);
 
 void setRXItem(void);
-void setRXInfovoid();
+void setRXInfo(void);
 
 void setEXItem(void);
 void setEXInfo(void);
@@ -118,8 +118,8 @@ void setXHInfo(void);
 void setPROItem(void);
 void setPROInfo(void);
 
-ControlTableItem* getItem(uint16_t num);
-uint8_t getSize();
-ModelInfo* getInfo(uint16_t num);
+uint8_t getTheNumberOfItem();
+ControlTableItem* getConrolTableItem(uint16_t model_number);
+ModelInfo* getModelInfo(uint16_t model_number);
 
 #endif //DYNAMIXEL_H
