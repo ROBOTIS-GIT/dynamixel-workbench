@@ -92,15 +92,18 @@ void SingleDynamixelController::viewManagerMenu()
   printf("Single Manager supports GUI (dynamixel_workbench_single_manager_gui)  \n");
   printf("----------------------------------------------------------------------\n");
   printf("Command list :\n");
-  printf("[help|h|?]...........: help\n");
-  printf("[info]...............: information of a Dynamixel\n");
-  printf("[table]..............: check a control table of a Dynamixel\n");
-  printf("[torque_enable]......: torque on Dynamixel\n");
-  printf("[torque_disable].....: torque off Dynamixel\n");
-  printf("[reboot].............: reboot a Dynamixel(only protocol version 2.0)\n");
-  printf("[factory_reset]......: command for all data back to factory settings values\n");
-  printf("[[table_item] [value]: change address value of a Dynamixel\n");
-  printf("[exit]...............: shutdown\n");
+  printf("[help|h|?].........: help\n");
+  printf("[info].............: information of a Dynamixel\n");
+  printf("[table]............: check a control table of a Dynamixel\n");
+  printf("[torque_on]........: torque on Dynamixel\n");
+  printf("[torque_off].......: torque off Dynamixel\n");
+  printf("[id]...............: change id ex) id 3\n");
+  printf("[baud].............: change baud rate ex) baud 57600\n");
+  printf("[version]..........: change protocol version ex) version 2.0\n");
+  printf("[reboot]...........: reboot a Dynamixel(only protocol version 2.0)\n");
+  printf("[reset]............: command for all data back to factory settings values\n");
+  printf("[table_item].......: change address value of a Dynamixel ex) Goal_Position 1024\n");
+  printf("[exit].............: shutdown\n");
   printf("----------------------------------------------------------------------\n");
   printf("Press Enter Key To Command A Dynamixel\n");
 }
@@ -169,9 +172,10 @@ bool SingleDynamixelController::controlLoop()
 
         if (dynamixel_info_client_.call(get_dynamixel_info))
         {
-          printf("[ID] %u, [Model Name] %s, [BAUD RATE] %ld\n", get_dynamixel_info.response.dynamixel_info.model_id,
-                                                                get_dynamixel_info.response.dynamixel_info.model_name.c_str(),
-                                                                get_dynamixel_info.response.dynamixel_info.load_info.baud_rate);
+          printf("[ID] %u, [Model Name] %s, [Protocol Version] %1.f.0, [BAUD RATE] %ld\n", get_dynamixel_info.response.dynamixel_info.model_id,
+                                                                                         get_dynamixel_info.response.dynamixel_info.model_name.c_str(),
+                                                                                         get_dynamixel_info.response.dynamixel_info.load_info.protocol_version,
+                                                                                         get_dynamixel_info.response.dynamixel_info.load_info.baud_rate);
         }
       }
       else if (strcmp(cmd, "exit") == 0)
@@ -191,19 +195,34 @@ bool SingleDynamixelController::controlLoop()
         if (!sendCommandMsg("reboot"))
           printf("It didn't reboot to DYNAMIXEL\n");
       }
-      else if (strcmp(cmd, "factory_reset") == 0)
+      else if (strcmp(cmd, "reset") == 0)
       {
         if (!sendCommandMsg("factory_reset"))
           printf("It didn't factory reset to DYNAMIXEL\n");
       }
-      else if (strcmp(cmd, "torque_enable") == 0)
+      else if (strcmp(cmd, "torque_on") == 0)
       {
         if (!sendCommandMsg("torque", "on", 1))
           printf("It didn't works\n");
       }
-      else if (strcmp(cmd, "torque_disable") == 0)
+      else if (strcmp(cmd, "torque_off") == 0)
       {
         if (!sendCommandMsg("torque", "off", 0))
+          printf("It didn't works\n");
+      }
+      else if (strcmp(cmd, "id") == 0)
+      {
+        if (!sendCommandMsg("addr", "ID", atoi(param[0])))
+          printf("It didn't works\n");
+      }
+      else if (strcmp(cmd, "baud") == 0)
+      {
+        if (!sendCommandMsg("addr", "Baud_Rate", atoi(param[0])))
+          printf("It didn't works\n");
+      }
+      else if (strcmp(cmd, "version") == 0)
+      {
+        if (!sendCommandMsg("addr", "Protocol_Version", atof(param[0])))
           printf("It didn't works\n");
       }
       else if (num_param == 1)

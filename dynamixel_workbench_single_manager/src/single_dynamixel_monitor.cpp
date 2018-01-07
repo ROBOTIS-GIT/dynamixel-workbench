@@ -96,7 +96,7 @@ void SingleDynamixelMonitor::initSingleDynamixelMonitor()
 
 void SingleDynamixelMonitor::shutdownSingleDynamixelMonitor()
 {
-  dynamixel_driver_->writeRegister(dxl_id_, "Torque Enable", false);
+  dynamixel_driver_->writeRegister(dxl_id_, "Torque_Enable", false);
 
   ros::shutdown();
 }
@@ -151,19 +151,20 @@ void SingleDynamixelMonitor::initDynamixelCommandServer()
 
 bool SingleDynamixelMonitor::showDynamixelControlTable()
 {
+  bool isOK = false;
   int32_t torque_status = 0;
   uint16_t torque_enable_address = 0;
   ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
 
   for (int item_num = 0; item_num < dynamixel_driver_->getTheNumberOfItem(dxl_id_); item_num++)
   {
-    if (!strncmp(item_ptr[item_num].item_name, "Torque Enable", strlen("Torque Enable")))
+    if (!strncmp(item_ptr[item_num].item_name, "Torque_Enable", strlen("Torque_Enable")))
     {
       torque_enable_address = item_num;
     }
   }
 
-  dynamixel_driver_->readRegister(dxl_id_, "Torque Enable", &torque_status);
+  isOK = dynamixel_driver_->readRegister(dxl_id_, "Torque_Enable", &torque_status);
 
   for (int item_num = 0; item_num < dynamixel_driver_->getTheNumberOfItem(dxl_id_); item_num++)
   {
@@ -178,7 +179,7 @@ bool SingleDynamixelMonitor::showDynamixelControlTable()
     }
   }
 
-  return true;
+  return isOK;
 }
 
 bool SingleDynamixelMonitor::checkValidationCommand(std::string cmd)
@@ -195,57 +196,33 @@ bool SingleDynamixelMonitor::checkValidationCommand(std::string cmd)
   return false;
 }
 
-//bool SingleDynamixelMonitor::checkValidAccess(std::string cmd)
-//{
-//  dynamixel_tool::DynamixelTool *dynamixel = dynamixel_driver_->dynamixel_;
-//  int32_t torque_status = 0;
-
-//  dynamixel_driver_->readRegister("torque_enable", &torque_status);
-
-//  dynamixel->item_ = dynamixel->ctrl_table_[cmd];
-//  if (dynamixel->item_->access_type == dynamixel_tool::READ_WRITE)
-//  {
-//    if ((torque_status == true) && (dynamixel->item_->memory_type == dynamixel_tool::EEPROM))
-//    {
-//      printf("address in EEPROM can't be accessed when torque is on\n");
-//      printf("Check a 'table'");
-
-//      return false;
-//    }
-//    return true;
-//  }
-//  else
-//  {
-//    return false;
-//  }
-//}
-
 bool SingleDynamixelMonitor::changeId(uint8_t new_id)
 {
+  bool isOK = false;
+
   if (new_id > 0 && new_id < 254)
   {
-    dynamixel_driver_->writeRegister(dxl_id_, "Torque Enable", false);
+    isOK = dynamixel_driver_->writeRegister(dxl_id_, "Torque_Enable", false);
 
-    dynamixel_driver_->writeRegister(dxl_id_, "ID", new_id);
+    isOK = dynamixel_driver_->writeRegister(dxl_id_, "ID", new_id);
 
     uint16_t model_number = 0;
     if (dynamixel_driver_->ping(new_id, &model_number))
       dxl_id_ = new_id;
 
     printf("...Succeeded to set dynamixel id [%u]\n", dxl_id_);
-    return true;
+    return isOK;
   }
   else
   {
     printf("Dynamixel ID can be set 1~253\n");
-    return false;
+    return isOK;
   }
 }
 
 bool SingleDynamixelMonitor::changeBaudrate(uint32_t new_baud_rate)
 {
-//  dynamixel_tool::DynamixelTool *dynamixel = dynamixel_driver_->dynamixel_;
-  bool error = false;
+  bool isOK = false;
   bool check_baud_rate = false;
 
   uint64_t baud_rate_list[5] = {9600, 57600, 115200, 1000000, 2000000};
@@ -258,142 +235,107 @@ bool SingleDynamixelMonitor::changeBaudrate(uint32_t new_baud_rate)
 
   if (check_baud_rate == false)
   {
-    printf(" Failed to change [ BAUD RATE: %d ]\n", new_baud_rate);
-    printf(" Valid baud rate is [9600, 57600, 115200, 1000000, 2000000]\n");
-    printf(" You can choose other baud rate in GUI,\n");
+    printf("Failed to change [ BAUD RATE: %d ]\n", new_baud_rate);
+    printf("Valid baud rate is [9600, 57600, 115200, 1000000, 2000000]\n");
+    printf("You can choose other baud rate in GUI,\n");
+
+    return false;
   }
   else
   {
-    error = dynamixel_driver_->writeRegister(dxl_id_, "Torque Enable", false);
+    isOK = dynamixel_driver_->writeRegister(dxl_id_, "Torque_Enable", false);
 
     if (dynamixel_driver_->getProtocolVersion() == 1.0)
     {
       if (new_baud_rate == 9600)
-        error = dynamixel_driver_->writeRegister(dxl_id_, "Baud Rate", 207);
+        isOK = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 207);
       else if (new_baud_rate == 57600)
-        error = dynamixel_driver_->writeRegister(dxl_id_, "Baud Rate", 34);
+        isOK = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 34);
       else if (new_baud_rate == 115200)
-        error = dynamixel_driver_->writeRegister(dxl_id_, "Baud Rate", 16);
+        isOK = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 16);
       else if (new_baud_rate == 1000000)
-        error = dynamixel_driver_->writeRegister(dxl_id_, "Baud Rate", 1);
+        isOK = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 1);
       else if (new_baud_rate == 2000000)
-        error = dynamixel_driver_->writeRegister(dxl_id_, "Baud Rate", 9);
+        isOK = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 9);
       else
-        error = dynamixel_driver_->writeRegister(dxl_id_, "Baud Rate", 1);
+        isOK = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 1);
     }
     else if (dynamixel_driver_->getProtocolVersion() == 2.0)
     {
       if (new_baud_rate == 9600)
-        error = dynamixel_driver_->writeRegister(dxl_id_, "Baud Rate", 0);
+        isOK = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 0);
       else if (new_baud_rate == 57600)
-        error = dynamixel_driver_->writeRegister(dxl_id_, "Baud Rate", 1);
+        isOK = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 1);
       else if (new_baud_rate == 115200)
-        error = dynamixel_driver_->writeRegister(dxl_id_, "Baud Rate", 2);
+        isOK = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 2);
       else if (new_baud_rate == 1000000)
-        error = dynamixel_driver_->writeRegister(dxl_id_, "Baud Rate", 3);
+        isOK = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 3);
       else if (new_baud_rate == 2000000)
-        error = dynamixel_driver_->writeRegister(dxl_id_, "Baud Rate", 4);
+        isOK = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 4);
       else
-        error = dynamixel_driver_->writeRegister(dxl_id_, "Baud Rate", 3);
+        isOK = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 3);
     }
 
     usleep(1000*1000);
 
-    if (error == false)
+    if (isOK)
     {
+      bool error = false;
       dynamixel_driver_->setBaudrate(new_baud_rate, &error);
 
       if(error == false)
       {
-        printf(" Failed to change baudrate!\n");
-        return false;
+        printf("Success to change baudrate! [ BAUD RATE: %d ]\n", new_baud_rate);
+        return true;
       }
       else
       {
-        printf(" Success to change baudrate! [ BAUD RATE: %d ]\n", new_baud_rate);
-        return true;
+        printf("Failed to change baudrate!\n");
+        return false;
       }
     }
+    else
+    {
+      printf("Failed to change baudrate!\n");
+      return false;
+    }
   }
-
-
-
-
-//  if (dynamixel->baud_rate_table_.find(baud_rate)->second == dynamixel->baud_rate_table_.end()->second)
-//  {
-//    printf(" Failed to change [ BAUD RATE: %ld ]\n", baud_rate);
-//    printf(" Please check a valid baud rate at E-MANUAL\n");
-
-//    if (dynamixel_driver_->getProtocolVersion() == 2.0)
-//    {
-//      dynamixel_driver_->writeRegister("baud_rate", dynamixel->baud_rate_table_.find(57600)->second);
-//      usleep(dynamixel->item_->data_length* 55 * 1000 *10);
-
-//      if (dynamixel_driver_->setBaudrate(57600) == false)
-//      {
-//        printf(" Failed to change default baudrate(57600)!\n");
-//      }
-//      else
-//      {
-//        printf(" Success to change default baudrate! [ BAUD RATE: 57600 ]\n");
-//      }
-//    }
-//    else if (dynamixel_driver_->getProtocolVersion() == 1.0)
-//    {
-//      dynamixel_driver_->writeRegister("baud_rate", dynamixel->baud_rate_table_.find(1000000)->second);
-//      usleep(dynamixel->item_->data_length* 55 * 1000 *10);
-
-//      if (dynamixel_driver_->setBaudrate(1000000) == false)
-//      {
-//        printf(" Failed to change default baudrate(1000000)!\n");
-//      }
-//      else
-//      {
-//        printf(" Success to change default baudrate! [ BAUD RATE: 1000000 ]\n");
-//      }
-//    }
-
-//    return false;
-//  }
-//  else
-//  {
-//    dynamixel_driver_->writeRegister("baud_rate", dynamixel->baud_rate_table_.find(baud_rate)->second);
-//    usleep(dynamixel->item_->data_length* 55 * 1000 *10);
-
-//    if (dynamixel_driver_->setBaudrate(baud_rate) == false)
-//    {
-//      printf(" Failed to change baudrate!\n");
-//      return false;
-//    }
-//    else
-//    {
-//      printf(" Success to change baudrate! [ BAUD RATE: %d ]\n", dynamixel->baud_rate_table_.find(baud_rate)->first);
-//      return true;
-//    }
-//  }
 }
 
-//bool SingleDynamixelMonitor::changeProtocolVersion(float ver)
-//{
-//  dynamixel_tool::DynamixelTool *dynamixel = dynamixel_driver_->dynamixel_;
+bool SingleDynamixelMonitor::changeProtocolVersion(float ver)
+{
+  bool error = false;
+  bool isOK = false;
 
-//  if (ver == 1.0 || ver == 2.0)
-//  {
-//    // TODO
-//    dynamixel_driver_->writeRegister("protocol_version", (int)(ver));
-//    usleep(dynamixel->item_->data_length* 55 * 1000 *10);
+  if (ver == 1.0 || ver == 2.0)
+  {
+    isOK = dynamixel_driver_->writeRegister(dxl_id_, "Protocol_Version", (int)(ver));
+    usleep(1000*1000);
 
-//    dynamixel_driver_->setPacketHandler(ver);
+    if (isOK)
+    {
+      bool error = false;
+      dynamixel_driver_->setPacketHandler(ver, &error);
 
-//    printf(" Success to change protocol version [ PROTOCOL VERSION: %.1f]\n", dynamixel_driver_->getProtocolVersion());
-//    return true;
-//  }
-//  else
-//  {
-//    printf(" Dynamixel has '1.0' or '2.0' protocol version\n");
-//    return false;
-//  }
-//}
+      if (error == false)
+      {
+        printf("Success to change protocol version [ PROTOCOL VERSION: %.1f]\n", dynamixel_driver_->getProtocolVersion());
+        return true;
+      }
+      else
+        return false;
+    }
+    else
+    {
+      return false;
+    }
+  }
+  else
+  {
+    printf("Dynamixel supports protocol version [1.0] or [2.0]\n");
+    return false;
+  }
+}
 
 //bool SingleDynamixelMonitor::controlLoop()
 //{
@@ -406,7 +348,7 @@ bool SingleDynamixelMonitor::dynamixelInfoMsgCallback(dynamixel_workbench_msgs::
                                                    dynamixel_workbench_msgs::GetDynamixelInfo::Response &res)
 {
   res.dynamixel_info.load_info.device_name      = device_name_;
-  res.dynamixel_info.load_info.baud_rate        = dxl_baud_rate_;
+  res.dynamixel_info.load_info.baud_rate        = dynamixel_driver_->getBaudrate();
   res.dynamixel_info.load_info.protocol_version = dynamixel_driver_->getProtocolVersion();
 
   res.dynamixel_info.model_id         = dxl_id_;
@@ -447,7 +389,7 @@ bool SingleDynamixelMonitor::dynamixelCommandMsgCallback(dynamixel_workbench_msg
   {
     int32_t value = req.value;
 
-    if (dynamixel_driver_->writeRegister(dxl_id_, "Torque Enable", value))
+    if (dynamixel_driver_->writeRegister(dxl_id_, "Torque_Enable", value))
       res.comm_result = true;
     else
       res.comm_result = false;
@@ -468,18 +410,8 @@ bool SingleDynamixelMonitor::dynamixelCommandMsgCallback(dynamixel_workbench_msg
     else
     {
       res.comm_result = false;
-      return true;
+      return false;
     }
-
-//    if (checkValidAccess(addr))
-//    {
-//      res.comm_result = true;
-//    }
-//    else
-//    {
-//      res.comm_result = false;
-//      return true;
-//    }
 
     if (addr == "ID")
     {
@@ -488,20 +420,20 @@ bool SingleDynamixelMonitor::dynamixelCommandMsgCallback(dynamixel_workbench_msg
       else
         res.comm_result = false;
     }
-    else if (addr == "baud_rate")
+    else if (addr == "Baud_Rate")
     {
       if (changeBaudrate(value))
         res.comm_result = true;
       else
         res.comm_result = false;
     }
-//    else if (addr == "protocol_version")
-//    {
-//      if (changeProtocolVersion(value))
-//        res.comm_result = true;
-//      else
-//        res.comm_result = false;
-//    }
+    else if (addr == "Protocol_Version")
+    {
+      if (changeProtocolVersion(value))
+        res.comm_result = true;
+      else
+        res.comm_result = false;
+    }
     else
     {
       if (dynamixel_driver_->writeRegister(dxl_id_, addr.c_str(), value))

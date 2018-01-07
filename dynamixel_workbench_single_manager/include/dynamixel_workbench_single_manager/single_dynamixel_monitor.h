@@ -71,10 +71,9 @@ class SingleDynamixelMonitor
 
   bool showDynamixelControlTable();
   bool checkValidationCommand(std::string cmd);
-//  bool checkValidAccess(std::string cmd);
   bool changeId(uint8_t new_id);
   bool changeBaudrate(uint32_t new_baud_rate);
-//  bool changeProtocolVersion(float ver);
+  bool changeProtocolVersion(float ver);
 
   bool dynamixelInfoMsgCallback(dynamixel_workbench_msgs::GetDynamixelInfo::Request &req,
                                 dynamixel_workbench_msgs::GetDynamixelInfo::Response &res);
