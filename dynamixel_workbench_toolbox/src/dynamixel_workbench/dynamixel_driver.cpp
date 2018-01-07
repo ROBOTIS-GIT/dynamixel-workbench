@@ -26,7 +26,7 @@ DynamixelDriver::~DynamixelDriver()
   {
     for (int j = 0; j < tools_[i].dxl_info_cnt_; j++)
     {
-      writeRegister(tools_[i].dxl_info_[j].id, "Torque Enable", false);
+      writeRegister(tools_[i].dxl_info_[j].id, "Torque_Enable", false);
     }
   }
 
@@ -62,7 +62,7 @@ bool DynamixelDriver::begin(const char *device_name, uint32_t baud_rate)
   setBaudrate(baud_rate, &error);
   setPacketHandler(&error);
 
-  if (error)
+  if (error == true)
     return false;
   else
     return true;
@@ -204,6 +204,11 @@ void DynamixelDriver::setBaudrate(uint32_t baud_rate, bool *error)
 float DynamixelDriver::getProtocolVersion()
 {
   return packetHandler_->getProtocolVersion();
+}
+
+int DynamixelDriver::getBaudrate()
+{
+  return portHandler_->getBaudRate();
 }
 
 char *DynamixelDriver::getModelName(uint8_t id)
@@ -537,12 +542,13 @@ bool DynamixelDriver::reset(uint8_t id)
 
       for (int i = 0; i < tools_cnt_; i++)
       {
+
         if (!strncmp(getModelName(id), "AX", strlen("AX")) || !strncmp(getModelName(id), "MX-12W", strlen("MX-12W")))
           baud = 1000000;
         else
           baud = 57600;
       }
-
+//      baud = portHandler_->getBaudRate();
       if (portHandler_->setBaudRate(baud) == false)
       {
 #if DEBUG
@@ -564,7 +570,7 @@ bool DynamixelDriver::reset(uint8_t id)
         delay(1000);
         Serial.print("Succeeded to change baudrate!\n");
 #else
-        sleep(1);
+        usleep(1000*1000);
         printf("Succeeded to change baudrate!\n");
         printf("[ID] %u, [Model Name] %s, [BAUD RATE] %d\n", 1, getModelName(id), portHandler_->getBaudRate());
 #endif
@@ -620,7 +626,8 @@ bool DynamixelDriver::reset(uint8_t id)
 #endif
 #endif
 
-      if (portHandler_->setBaudRate(57600) == false)
+      baud = portHandler_->getBaudRate();
+      if (portHandler_->setBaudRate(baud) == false)
       {
 #if DEBUG
 #if defined(__OPENCR__) || defined(__OPENCM904__)

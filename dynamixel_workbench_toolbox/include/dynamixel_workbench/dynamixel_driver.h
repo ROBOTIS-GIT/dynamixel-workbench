@@ -85,6 +85,7 @@ class DynamixelDriver
   void setBaudrate(uint32_t baud_rate, bool *error);
 
   float getProtocolVersion();
+  int getBaudrate();
   char* getModelName(uint8_t id);
   uint16_t getModelNum(uint8_t id);
   ControlTableItem* getControlItemPtr(uint8_t id);

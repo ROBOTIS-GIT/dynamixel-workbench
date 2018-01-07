@@ -99,32 +99,32 @@ bool DynamixelWorkbench::setBaud(uint8_t id, uint32_t new_baud)
   if (driver_.getProtocolVersion() == 1.0)
   {
     if (new_baud == 9600)
-      error = driver_.writeRegister(id, "Baud Rate", 207);
+      error = driver_.writeRegister(id, "Baud_Rate", 207);
     else if (new_baud == 57600)
-      error = driver_.writeRegister(id, "Baud Rate", 34);
+      error = driver_.writeRegister(id, "Baud_Rate", 34);
     else if (new_baud == 115200)
-      error = driver_.writeRegister(id, "Baud Rate", 16);
+      error = driver_.writeRegister(id, "Baud_Rate", 16);
     else if (new_baud == 1000000)
-      error = driver_.writeRegister(id, "Baud Rate", 1);
+      error = driver_.writeRegister(id, "Baud_Rate", 1);
     else if (new_baud == 2000000)
-      error = driver_.writeRegister(id, "Baud Rate", 9);
+      error = driver_.writeRegister(id, "Baud_Rate", 9);
     else
-      error = driver_.writeRegister(id, "Baud Rate", 1);
+      error = driver_.writeRegister(id, "Baud_Rate", 1);
   }
   else if (driver_.getProtocolVersion() == 2.0)
   {    
     if (new_baud == 9600)
-      error = driver_.writeRegister(id, "Baud Rate", 0);
+      error = driver_.writeRegister(id, "Baud_Rate", 0);
     else if (new_baud == 57600)
-      error = driver_.writeRegister(id, "Baud Rate", 1);
+      error = driver_.writeRegister(id, "Baud_Rate", 1);
     else if (new_baud == 115200)
-      error = driver_.writeRegister(id, "Baud Rate", 2);
+      error = driver_.writeRegister(id, "Baud_Rate", 2);
     else if (new_baud == 1000000)
-      error = driver_.writeRegister(id, "Baud Rate", 3);
+      error = driver_.writeRegister(id, "Baud_Rate", 3);
     else if (new_baud == 2000000)
-      error = driver_.writeRegister(id, "Baud Rate", 4);
+      error = driver_.writeRegister(id, "Baud_Rate", 4);
     else
-      error = driver_.writeRegister(id, "Baud Rate", 3);
+      error = driver_.writeRegister(id, "Baud_Rate", 3);
   }
 #if defined(__OPENCR__) || defined(__OPENCM904__)
   delay(1000);
@@ -181,18 +181,18 @@ bool DynamixelWorkbench::jointMode(uint8_t id, uint16_t vel, uint16_t acc)
 
   if (driver_.getProtocolVersion() == 1.0)
   {
-    error = driver_.writeRegister(id, "Moving Speed", vel);
+    error = driver_.writeRegister(id, "Moving_Speed", vel);
   }
   else if (driver_.getProtocolVersion() == 2.0)
   {    
     if (!strncmp(dxl_, "XL-320", 6) || !strncmp(dxl_, "PRO", 3))
     {
-      error = driver_.writeRegister(id, "Moving Speed", vel);
+      error = driver_.writeRegister(id, "Moving_Speed", vel);
     }
     else
     {
-      error = driver_.writeRegister(id, "Profile Acceleration", acc);
-      error = driver_.writeRegister(id, "Profile Velocity", vel);
+      error = driver_.writeRegister(id, "Profile_Acceleration", acc);
+      error = driver_.writeRegister(id, "Profile_Velocity", vel);
     }
   }
 
@@ -213,8 +213,8 @@ bool DynamixelWorkbench::wheelMode(uint8_t id, uint16_t vel, uint16_t acc)
 
   if (driver_.getProtocolVersion() == 2.0 && (strncmp(dxl_, "PRO", 3) != 0))
   {   
-    error = driver_.writeRegister(id, "Profile Acceleration", acc);
-    error = driver_.writeRegister(id, "Profile Velocity", vel);
+    error = driver_.writeRegister(id, "Profile_Acceleration", acc);
+    error = driver_.writeRegister(id, "Profile_Velocity", vel);
   }
 
   return error;
@@ -234,7 +234,7 @@ bool DynamixelWorkbench::currentMode(uint8_t id, uint8_t cur)
 
   if (!strncmp(dxl_, "X", 1))
   {   
-    error = driver_.writeRegister(id, "Goal Current", cur);
+    error = driver_.writeRegister(id, "Goal_Current", cur);
   }
 
   return error;
@@ -244,7 +244,7 @@ bool DynamixelWorkbench::goalPosition(uint8_t id, uint16_t goal)
 {
   bool error = false;
   
-  error = driver_.writeRegister(id, "Goal Position", goal);
+  error = driver_.writeRegister(id, "Goal_Position", goal);
 
   return error;
 }
@@ -262,7 +262,7 @@ bool DynamixelWorkbench::goalSpeed(uint8_t id, int32_t goal)
       goal = (-1) * goal;
       goal |= 1024;
     }
-    error = driver_.writeRegister(id, "Moving Speed", goal);
+    error = driver_.writeRegister(id, "Moving_Speed", goal);
   }
   else if (driver_.getProtocolVersion() == 2.0)
   {
@@ -273,10 +273,10 @@ bool DynamixelWorkbench::goalSpeed(uint8_t id, int32_t goal)
         goal = (-1) * goal;
         goal |= 1024;
       }
-      error = driver_.writeRegister(id, "Moving Speed", goal);
+      error = driver_.writeRegister(id, "Moving_Speed", goal);
     }
     else
-      error = driver_.writeRegister(id, "Goal Velocity", goal);
+      error = driver_.writeRegister(id, "Goal_Velocity", goal);
   }
 
   return error;
@@ -387,7 +387,7 @@ bool DynamixelWorkbench::torque(uint8_t id, bool onoff)
 {
   bool error = false;
 
-  error = driver_.writeRegister(id, "Torque Enable", onoff);
+  error = driver_.writeRegister(id, "Torque_Enable", onoff);
 
   return error;
 }
@@ -402,25 +402,25 @@ bool DynamixelWorkbench::setPositionControlMode(uint8_t id)
   {
     if (!strncmp(dxl_, "AX", 2) || !strncmp(dxl_, "RX", 2))
     {
-      error = driver_.writeRegister(id, "CW Angle Limit", 0);
-      error = driver_.writeRegister(id, "CCW Angle Limit", 1023);
+      error = driver_.writeRegister(id, "CW_Angle_Limit", 0);
+      error = driver_.writeRegister(id, "CCW_Angle_Limit", 1023);
     }
     else
     {
-      error = driver_.writeRegister(id, "CW Angle Limit", 0);
-      error = driver_.writeRegister(id, "CCW Angle Limit", 4095);
+      error = driver_.writeRegister(id, "CW_Angle_Limit", 0);
+      error = driver_.writeRegister(id, "CCW_Angle_Limit", 4095);
     }
   }
   else if (driver_.getProtocolVersion() == 2.0)
   {
     if (!strncmp(dxl_, "XL-320", 6))
     {
-      error = driver_.writeRegister(id, "CW Angle Limit", 0);
-      error = driver_.writeRegister(id, "CCW Angle Limit", 1023);
-      error = driver_.writeRegister(id, "Control Mode", XL320_POSITION_CONTROL_MODE);
+      error = driver_.writeRegister(id, "CW_Angle_Limit", 0);
+      error = driver_.writeRegister(id, "CCW_Angle_Limit", 1023);
+      error = driver_.writeRegister(id, "Control_Mode", XL320_POSITION_CONTROL_MODE);
     }
     else
-      error = driver_.writeRegister(id, "Operating Mode", X_SERIES_POSITION_CONTROL_MODE);
+      error = driver_.writeRegister(id, "Operating_Mode", X_SERIES_POSITION_CONTROL_MODE);
   }
 #if defined(__OPENCR__) || defined(__OPENCM904__)
   delay(10);
@@ -439,19 +439,19 @@ bool DynamixelWorkbench::setVelocityControlMode(uint8_t id)
 
   if (driver_.getProtocolVersion() == 1.0)
   {
-    error = driver_.writeRegister(id, "CW Angle Limit", 0);
-    error = driver_.writeRegister(id, "CCW Angle Limit", 0);
+    error = driver_.writeRegister(id, "CW_Angle_Limit", 0);
+    error = driver_.writeRegister(id, "CCW_Angle_Limit", 0);
   }
   else if (driver_.getProtocolVersion() == 2.0)
   {
     if (!strncmp(dxl_, "XL-320", 6))
     {
-      error = driver_.writeRegister(id, "CW Angle Limit", 0);
-      error = driver_.writeRegister(id, "CCW Angle Limit", 0);
-      error = driver_.writeRegister(id, "Control Mode", XL320_VELOCITY_CONTROL_MODE);
+      error = driver_.writeRegister(id, "CW_Angle_Limit", 0);
+      error = driver_.writeRegister(id, "CCW_Angle_Limit", 0);
+      error = driver_.writeRegister(id, "Control_Mode", XL320_VELOCITY_CONTROL_MODE);
     }
     else
-      error = driver_.writeRegister(id, "Operating Mode", X_SERIES_VELOCITY_CONTROL_MODE);
+      error = driver_.writeRegister(id, "Operating_Mode", X_SERIES_VELOCITY_CONTROL_MODE);
   } 
 #if defined(__OPENCR__) || defined(__OPENCM904__)
   delay(10);
@@ -470,7 +470,7 @@ bool DynamixelWorkbench::setCurrentControlMode(uint8_t id)
   
   if (!strncmp(dxl_, "X", 1))
   {
-    error = driver_.writeRegister(id, "Operating Mode", X_SERIES_CURRENT_BASED_POSITION_CONTROL_MODE);
+    error = driver_.writeRegister(id, "Operating_Mode", X_SERIES_CURRENT_BASED_POSITION_CONTROL_MODE);
   }   
 
 #if defined(__OPENCR__) || defined(__OPENCM904__)
