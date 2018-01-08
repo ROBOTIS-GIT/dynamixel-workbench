@@ -60,7 +60,7 @@ class DynamixelWorkbench
 
   char* getModelName(uint8_t id);
 
-  bool ledOn(uint8_t id, int32_t data);
+  bool ledOn(uint8_t id);
   bool ledOff(uint8_t id);
 
   bool jointMode(uint8_t id, uint16_t vel = 0, uint16_t acc = 0);
