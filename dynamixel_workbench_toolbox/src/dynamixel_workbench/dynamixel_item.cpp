@@ -1095,7 +1095,7 @@ ControlTableItem* getConrolTableItem(uint16_t model_number)
   {
     setAXItem();
   }
-  else if (num == RX_24F || num == RX_28 || num == RX_64)
+  else if (num == RX_10 || num == RX_24F || num == RX_28 || num == RX_64)
   {
     setRXItem();
   }
@@ -1161,7 +1161,7 @@ ModelInfo* getModelInfo(uint16_t model_number)
   {
     setAXInfo();
   }
-  else if (num == RX_24F || num == RX_28 || num == RX_64)
+  else if (num == RX_10 || num == RX_24F || num == RX_28 || num == RX_64)
   {
     setRXInfo();
   }

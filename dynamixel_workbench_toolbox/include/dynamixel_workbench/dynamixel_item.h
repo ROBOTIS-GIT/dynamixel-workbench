@@ -25,6 +25,7 @@
 #define AX_12W     300
 #define AX_18A     18
 
+#define RX_10      10
 #define RX_24F     24
 #define RX_28      28
 #define RX_64      64
