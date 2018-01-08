@@ -443,12 +443,11 @@ bool DynamixelDriver::reboot(uint8_t id)
 #if DEBUG
 #if defined(__OPENCR__) || defined(__OPENCM904__)
     Serial.print("...wait for seconds\n");
-    delay(1000);
 #else
     printf("...wait for seconds\n");
-    usleep(1000*1000);
 #endif
 #endif
+    millis(2000);
 
     if (comm_result == COMM_SUCCESS)
     {
@@ -503,6 +502,7 @@ bool DynamixelDriver::reset(uint8_t id)
   uint8_t error = 0;
   uint16_t comm_result = COMM_RX_FAIL;
   int baud = 0;
+  uint8_t new_id = 1;
 
   if (packetHandler_->getProtocolVersion() == 1.0)
   {
@@ -512,12 +512,11 @@ bool DynamixelDriver::reset(uint8_t id)
 #if DEBUG
 #if defined(__OPENCR__) || defined(__OPENCM904__)
     Serial.print("...wait for seconds\n");
-    delay(1000);
 #else
     printf("...wait for seconds\n");
-    usleep(1000*1000);
 #endif
 #endif
+    millis(2000);
 
     if (comm_result == COMM_SUCCESS)
     {
@@ -540,9 +539,16 @@ bool DynamixelDriver::reset(uint8_t id)
 #endif
 #endif
 
+      uint8_t factor = getToolsFactor(id);
+
+      for (int i = 0; i < tools_[factor].dxl_info_cnt_; i++)
+      {
+        if (tools_[factor].dxl_info_[i].id == id)
+          tools_[factor].dxl_info_[i].id = new_id;
+      }
+
       for (int i = 0; i < tools_cnt_; i++)
       {
-
         if (!strncmp(getModelName(id), "AX", strlen("AX")) || !strncmp(getModelName(id), "MX-12W", strlen("MX-12W")))
           baud = 1000000;
         else
@@ -551,12 +557,11 @@ bool DynamixelDriver::reset(uint8_t id)
 
       if (portHandler_->setBaudRate(baud) == false)
       {
+        millis(2000);
 #if DEBUG
     #if defined(__OPENCR__) || defined(__OPENCM904__)
-        delay(1000);
         Serial.print("Failed to change baudrate!\n");
 #else
-        sleep(1);
         printf("Failed to change baudrate!\n");
 #endif
 #endif
@@ -565,16 +570,18 @@ bool DynamixelDriver::reset(uint8_t id)
       }
       else
       {
+        millis(2000);
+
 #if DEBUG
 #if defined(__OPENCR__) || defined(__OPENCM904__)
-        delay(1000);
         Serial.print("Succeeded to change baudrate!\n");
 #else
-        usleep(1000*1000);
         printf("Succeeded to change baudrate!\n");
-        printf("[ID] %u, [Model Name] %s, [BAUD RATE] %d\n", 1, getModelName(id), portHandler_->getBaudRate());
+        printf("[ID] %d, [Model Name] %s, [BAUD RATE] %d\n", new_id, getModelName(new_id), portHandler_->getBaudRate());
 #endif
 #endif
+
+        return true;
       }
     }
     else
@@ -598,12 +605,11 @@ bool DynamixelDriver::reset(uint8_t id)
 #if DEBUG
 #if defined(__OPENCR__) || defined(__OPENCM904__)
     Serial.print("...wait for seconds\n");
-    delay(1000);
 #else
     printf("...wait for seconds\n");
-    usleep(1000*1000);
 #endif
 #endif
+    millis(2000);
 
     if (comm_result == COMM_SUCCESS)
     {
@@ -626,14 +632,21 @@ bool DynamixelDriver::reset(uint8_t id)
 #endif
 #endif
 
+      uint8_t factor = getToolsFactor(id);
+
+      for (int i = 0; i < tools_[factor].dxl_info_cnt_; i++)
+      {
+        if (tools_[factor].dxl_info_[i].id == id)
+          tools_[factor].dxl_info_[i].id = new_id;
+      }
+
       if (portHandler_->setBaudRate(57600) == false)
       {
+        millis(2000);
 #if DEBUG
 #if defined(__OPENCR__) || defined(__OPENCM904__)
-        delay(1000);
         Serial.print("Failed to change baudrate!\n");
 #else
-        usleep(1000*1000);
         printf("Failed to change baudrate!\n");
 #endif
 #endif
@@ -642,16 +655,17 @@ bool DynamixelDriver::reset(uint8_t id)
       }
       else
       {
+        millis(2000);
 #if DEBUG
 #if defined(__OPENCR__) || defined(__OPENCM904__)
-        delay(1000);
         Serial.print("Succeeded to change baudrate!\n");
 #else
-        usleep(1000*1000);
         printf("Succeeded to change baudrate!\n");
-        printf("[ID] %u, [Model Name] %s, [BAUD RATE] %d\n", 1, getModelName(id), portHandler_->getBaudRate());
+        printf("[ID] %d, [Model Name] %s, [BAUD RATE] %d\n", new_id, getModelName(new_id), portHandler_->getBaudRate());
 #endif
 #endif
+
+        return true;
       }
     }
     else
@@ -669,8 +683,6 @@ bool DynamixelDriver::reset(uint8_t id)
       return false;
     }
   }
-
-  return true;
 }
 
 bool DynamixelDriver::writeRegister(uint8_t id, const char *item_name, int32_t data)
@@ -1235,4 +1247,13 @@ float DynamixelDriver::convertValue2Radian(int8_t id, int32_t value)
   //    radian[id-1] =  tools_[num].min_radian_;
 
   return radian;
+}
+
+void DynamixelDriver::millis(uint16_t msec)
+{
+#if defined(__OPENCR__) || defined(__OPENCM904__)
+    delay(msec);
+#else
+    usleep(1000*msec);
+#endif
 }

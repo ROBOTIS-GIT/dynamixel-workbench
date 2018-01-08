@@ -122,6 +122,8 @@ class DynamixelDriver
   void setTools(uint16_t model_number, uint8_t id);
   const char *findModelName(uint16_t model_num);
   uint8_t getToolsFactor(uint8_t id);
+
+  void millis(uint16_t msec);
 };
 
 #endif //DYNAMIXEL_WORKBENCH_DYNAMIXEL_DRIVER_H
