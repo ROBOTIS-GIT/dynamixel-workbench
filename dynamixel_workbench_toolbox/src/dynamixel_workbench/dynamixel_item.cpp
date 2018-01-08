@@ -342,7 +342,7 @@ void setMX2Item(void)
   item[4]  = {9  , "Return_Delay_Time"     , 1};
   item[5]  = {10 , "Drive_Mode"            , 1};
   item[6]  = {11 , "Operating_Mode"        , 1};
-  item[7]  = {12 , "Secondary(Shadow)_ID"  , 1};
+  item[7]  = {12 , "Secondary_ID"          , 1};
   item[8]  = {13 , "Protocol_Version"      , 1};
   item[9]  = {20 , "Homing_Offset"         , 4};
   item[10] = {24 , "Moving_Threshold"      , 4};
@@ -509,7 +509,7 @@ void setExtMX2Item(void)
   item[4]  = {9  , "Return_Delay_Time"     , 1};
   item[5]  = {10 , "Drive_Mode"            , 1};
   item[6]  = {11 , "Operating_Mode"        , 1};
-  item[7]  = {12 , "Secondary(Shadow)_ID"  , 1};
+  item[7]  = {12 , "Secondary_ID"          , 1};
   item[8]  = {13 , "Protocol_Version"      , 1};
   item[9]  = {20 , "Homing_Offset"         , 4};
   item[10] = {24 , "Moving_Threshold"      , 4};
@@ -604,8 +604,8 @@ void setXL320Item()
   item[9]  = {13 , "Min_Voltage_Limit"             , 1};
   item[10] = {14 , "Max_Voltage_Limit"             , 1};
   item[11] = {15 , "Max_Torque"                    , 2};
-  item[12] = {17 , "Return_Level"                  , 2};
-  item[13] = {18 , "Alarm_Shutdown"                , 2};
+  item[12] = {17 , "Status_Return_Level"           , 1};
+  item[13] = {18 , "Shutdown"                      , 1};
 
   item[14] = {24 , "Torque_Enable"                 , 1};
   item[15] = {25 , "LED"                           , 1};
@@ -669,7 +669,7 @@ void setXLItem()
   item[4]  = {9  , "Return_Delay_Time"     , 1};
   item[5]  = {10 , "Drive_Mode"            , 1};
   item[6]  = {11 , "Operating_Mode"        , 1};
-  item[7]  = {12 , "Secondary(Shadow)_ID"  , 1};
+  item[7]  = {12 , "Secondary_ID"          , 1};
   item[8]  = {13 , "Protocol_Version"      , 1};
   item[9]  = {20 , "Homing_Offset"         , 4};
   item[10] = {24 , "Moving_Threshold"      , 4};
@@ -697,24 +697,23 @@ void setXLItem()
   item[31] = {90 , "Feedforward_1st_Gain"  , 2};
   item[32] = {98 , "Bus_Watchdog"          , 1};
   item[33] = {100, "Goal_PWM"              , 2};
-  item[34] = {102, "Goal_Current"          , 2};
-  item[35] = {104, "Goal_Velocity"         , 4};
-  item[36] = {108, "Profile_Acceleration"  , 4};
-  item[37] = {112, "Profile_Velocity"      , 4};
-  item[38] = {116, "Goal_Position"         , 4};
-  item[39] = {120, "Realtime_Tick"         , 2};
-  item[40] = {122, "Moving"                , 1};
-  item[41] = {123, "Moving_Status"         , 1};
-  item[42] = {124, "Present_PWM"           , 2};
-  item[43] = {126, "Present_Load"          , 2};
-  item[44] = {128, "Present_Velocity"      , 4};
-  item[45] = {132, "Present_Position"      , 4};
-  item[46] = {136, "Velocity_Trajectory"   , 4};
-  item[47] = {140, "Position_Trajectory"   , 4};
-  item[48] = {144, "Present_Input_Voltage" , 2};
-  item[49] = {146, "Present_Temperature"   , 1};
+  item[34] = {104, "Goal_Velocity"         , 4};
+  item[35] = {108, "Profile_Acceleration"  , 4};
+  item[36] = {112, "Profile_Velocity"      , 4};
+  item[37] = {116, "Goal_Position"         , 4};
+  item[38] = {120, "Realtime_Tick"         , 2};
+  item[39] = {122, "Moving"                , 1};
+  item[40] = {123, "Moving_Status"         , 1};
+  item[41] = {124, "Present_PWM"           , 2};
+  item[42] = {126, "Present_Load"          , 2};
+  item[43] = {128, "Present_Velocity"      , 4};
+  item[44] = {132, "Present_Position"      , 4};
+  item[45] = {136, "Velocity_Trajectory"   , 4};
+  item[46] = {140, "Position_Trajectory"   , 4};
+  item[47] = {144, "Present_Input_Voltage" , 2};
+  item[48] = {146, "Present_Temperature"   , 1};
 
-  the_number_of_item = 50;
+  the_number_of_item = 49;
 #endif  
 }
 
@@ -758,7 +757,7 @@ void setXMItem()
   item[4]  = {9  , "Return_Delay_Time"     , 1};
   item[5]  = {10 , "Drive_Mode"            , 1};
   item[6]  = {11 , "Operating_Mode"        , 1};
-  item[7]  = {12 , "Secondary(Shadow)_ID"  , 1};
+  item[7]  = {12 , "Secondary_ID"          , 1};
   item[8]  = {13 , "Protocol_Version"      , 1};
   item[9]  = {20 , "Homing_Offset"         , 4};
   item[10] = {24 , "Moving_Threshold"      , 4};
@@ -849,7 +848,7 @@ void setExtXMItem(void)
   item[4]  = {9  , "Return_Delay_Time"     , 1};
   item[5]  = {10 , "Drive_Mode"            , 1};
   item[6]  = {11 , "Operating_Mode"        , 1};
-  item[7]  = {12 , "Secondary(Shadow)_ID"  , 1};
+  item[7]  = {12 , "Secondary_ID"          , 1};
   item[8]  = {13 , "Protocol_Version"      , 1};
   item[9]  = {20 , "Homing_Offset"         , 4};
   item[10] = {24 , "Moving_Threshold"      , 4};
@@ -942,7 +941,7 @@ void setXHItem()
   item[4]  = {9  , "Return_Delay_Time"     , 1};
   item[5]  = {10 , "Drive_Mode"            , 1};
   item[6]  = {11 , "Operating_Mode"        , 1};
-  item[7]  = {12 , "Secondary(Shadow)_ID"  , 1};
+  item[7]  = {12 , "Secondary_ID"          , 1};
   item[8]  = {13 , "Protocol_Version"      , 1};
   item[9]  = {20 , "Homing_Offset"         , 4};
   item[10] = {24 , "Moving_Threshold"      , 4};
