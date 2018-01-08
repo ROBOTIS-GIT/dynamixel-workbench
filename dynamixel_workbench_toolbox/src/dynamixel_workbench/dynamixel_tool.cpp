@@ -177,6 +177,8 @@ void DynamixelTool::setModelName(uint16_t model_number)
   else if (num == AX_18A)
     strcpy(dxl_info_[dxl_info_cnt_].model_name, "AX-18A");
 
+  else if (num == RX_10)
+    strcpy(dxl_info_[dxl_info_cnt_].model_name, "RX-10");
   else if (num == RX_24F)
     strcpy(dxl_info_[dxl_info_cnt_].model_name, "RX-24F");
   else if (num == RX_28)
@@ -262,6 +264,8 @@ void DynamixelTool::setModelNum(const char* model_name)
   else if (!strncmp(name, "AX-18A", strlen(name)))
     dxl_info_[dxl_info_cnt_].model_num = AX_18A;
 
+  else if (!strncmp(name, "RX-10", strlen(name)))
+    dxl_info_[dxl_info_cnt_].model_num = RX_10;
   else if (!strncmp(name, "RX-24F", strlen(name)))
     dxl_info_[dxl_info_cnt_].model_num = RX_24F;
   else if (!strncmp(name, "RX-28", strlen(name)))
