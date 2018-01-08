@@ -67,7 +67,7 @@ class SingleDynamixelMonitor
   void initDynamixelInfoServer(void);
   void initDynamixelCommandServer(void);
 //  // TODO : Add new Dynamixel
-  bool dynamixelStatePublish(void);
+  void dynamixelStatePublish(void);
 
   bool showDynamixelControlTable(void);
   bool checkValidationCommand(std::string cmd);
@@ -83,17 +83,17 @@ class SingleDynamixelMonitor
 
   void AX(void);
   void RX(void);
-//  void EX(void);
+  void EX(void);
   void MX(void);
   void MXExt(void);
   void MX2(void);
   void MX2Ext(void);
   void XL320(void);
   void XL(void);
-//  void XM(void);
-//  void XMExt(void);
-//  void XH(void);
-//  void PRO(void);
+  void XM(void);
+  void XMExt(void);
+  void XH(void);
+  void PRO(void);
 };
 }
 

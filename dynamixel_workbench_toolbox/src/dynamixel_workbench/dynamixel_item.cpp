@@ -1062,10 +1062,10 @@ void setPROItem()
   item[34] = {621, "Present_Current"       , 2};
   item[35] = {623, "Present_Input_Voltage" , 2};
   item[36] = {625, "Present_Temperature"   , 1};
-  item[37] = {626, "External_Port_Mode_1"  , 1};
-  item[38] = {628, "External_Port_Mode_2"  , 1};
-  item[39] = {630, "External_Port_Mode_3"  , 1};
-  item[40] = {632, "External_Port_Mode_4"  , 1};
+  item[37] = {626, "External_Port_Mode_1"  , 2};
+  item[38] = {628, "External_Port_Mode_2"  , 2};
+  item[39] = {630, "External_Port_Mode_3"  , 2};
+  item[40] = {632, "External_Port_Mode_4"  , 2};
   item[41] = {890, "Registered_Instruction", 1};
   item[42] = {891, "Status_Return_Level"   , 1};
   item[43] = {892, "Hardware_Error_Status" , 1};

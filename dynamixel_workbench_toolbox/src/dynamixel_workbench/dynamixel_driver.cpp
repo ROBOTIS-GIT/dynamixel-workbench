@@ -580,8 +580,6 @@ bool DynamixelDriver::reset(uint8_t id)
         printf("[ID] %d, [Model Name] %s, [BAUD RATE] %d\n", new_id, getModelName(new_id), portHandler_->getBaudRate());
 #endif
 #endif
-
-        return true;
       }
     }
     else
@@ -664,8 +662,6 @@ bool DynamixelDriver::reset(uint8_t id)
         printf("[ID] %d, [Model Name] %s, [BAUD RATE] %d\n", new_id, getModelName(new_id), portHandler_->getBaudRate());
 #endif
 #endif
-
-        return true;
       }
     }
     else
@@ -683,6 +679,33 @@ bool DynamixelDriver::reset(uint8_t id)
       return false;
     }
   }
+
+  if (!strncmp(dxl_, "AX", 2) || !strncmp(dxl_, "RX", 2) || !strncmp(dxl_, "EX", 2))
+  {
+    packetHandler_ = dynamixel::PacketHandler::getPacketHandler(1.0);
+  }
+  else if (!strncmp(dxl_, "MX", 2))
+  {
+    if (!strncmp(dxl_, "MX-28-2", strlen("MX-28-2")) || !strncmp(dxl_, "MX-64-2", strlen("MX-64-2")) || !strncmp(dxl_, "MX-106-2", strlen("MX-106-2")))
+      packetHandler_ = dynamixel::PacketHandler::getPacketHandler(2.0);
+    else
+      packetHandler_ = dynamixel::PacketHandler::getPacketHandler(1.0);
+  }
+  else
+  {
+    packetHandler_ = dynamixel::PacketHandler::getPacketHandler(2.0);
+  }
+
+#if DEBUG
+#if defined(__OPENCR__) || defined(__OPENCM904__)
+        Serial.print("[Protocol Version] : ");
+        Serial.println(packetHandler_->getProtocolVersion());
+#else
+        printf("[Protocol Version] %1.f.0\n", packetHandler_->getProtocolVersion());
+#endif
+#endif
+
+  return true;
 }
 
 bool DynamixelDriver::writeRegister(uint8_t id, const char *item_name, int32_t data)
