@@ -24,12 +24,18 @@
 #include "dynamixel_workbench_msgs/RX.h"
 
 #include "dynamixel_workbench_msgs/MX.h"
+#include "dynamixel_workbench_msgs/MXExt.h"
+#include "dynamixel_workbench_msgs/MX2.h"
+#include "dynamixel_workbench_msgs/MX2Ext.h"
 
 #include "dynamixel_workbench_msgs/EX.h"
 
+#include "dynamixel_workbench_msgs/XL320.h"
 #include "dynamixel_workbench_msgs/XL.h"
 
 #include "dynamixel_workbench_msgs/XM.h"
+#include "dynamixel_workbench_msgs/XMExt.h"
+
 #include "dynamixel_workbench_msgs/XH.h"
 
 #include "dynamixel_workbench_msgs/PRO.h"
