@@ -54,22 +54,22 @@ class SingleDynamixelMonitor
   uint8_t dxl_id_;  
 
  public:
-  SingleDynamixelMonitor();
-  ~SingleDynamixelMonitor();
-//  bool controlLoop();
+  SingleDynamixelMonitor(void);
+  ~SingleDynamixelMonitor(void);
+  bool controlLoop();
 
  private:
-  void initSingleDynamixelMonitor();
-  void shutdownSingleDynamixelMonitor();
+  void initSingleDynamixelMonitor(void);
+  void shutdownSingleDynamixelMonitor(void);
 
   // TODO : Add new Dynamixel
-  void initDynamixelStatePublisher();
-  void initDynamixelInfoServer();
-  void initDynamixelCommandServer();
+  void initDynamixelStatePublisher(void);
+  void initDynamixelInfoServer(void);
+  void initDynamixelCommandServer(void);
 //  // TODO : Add new Dynamixel
-//  bool dynamixelStatePublish();
+  bool dynamixelStatePublish(void);
 
-  bool showDynamixelControlTable();
+  bool showDynamixelControlTable(void);
   bool checkValidationCommand(std::string cmd);
   bool changeId(uint8_t new_id);
   bool changeBaudrate(uint32_t new_baud_rate);
@@ -81,15 +81,15 @@ class SingleDynamixelMonitor
   bool dynamixelCommandMsgCallback(dynamixel_workbench_msgs::DynamixelCommand::Request &req,
                                    dynamixel_workbench_msgs::DynamixelCommand::Response &res);
 
-//  bool AX();
-//  bool RX();
-//  bool EX();
-//  bool MX();
-//  bool XL320();
-//  bool XL();
-//  bool XM();
-//  bool XH();
-//  bool PRO();
+  void AX(void);
+//  void RX(void);
+//  void EX(void);
+//  void MX(void);
+//  void XL320(void);
+//  void XL(void);
+//  void XM(void);
+//  void XH(void);
+//  void PRO(void);
 };
 }
 

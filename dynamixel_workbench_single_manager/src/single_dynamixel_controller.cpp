@@ -97,6 +97,7 @@ void SingleDynamixelController::viewManagerMenu()
   printf("[table]............: check a control table of a Dynamixel\n");
   printf("[torque_on]........: torque on Dynamixel\n");
   printf("[torque_off].......: torque off Dynamixel\n");
+  printf("[goal].............: set data to goal position address ex) goal 1024\n");
   printf("[id]...............: change id ex) id 3\n");
   printf("[baud].............: change baud rate ex) baud 57600\n");
   printf("[version]..........: change protocol version ex) version 2.0\n");
@@ -173,9 +174,9 @@ bool SingleDynamixelController::controlLoop()
         if (dynamixel_info_client_.call(get_dynamixel_info))
         {
           printf("[ID] %u, [Model Name] %s, [Protocol Version] %1.f.0, [BAUD RATE] %ld\n", get_dynamixel_info.response.dynamixel_info.model_id,
-                                                                                         get_dynamixel_info.response.dynamixel_info.model_name.c_str(),
-                                                                                         get_dynamixel_info.response.dynamixel_info.load_info.protocol_version,
-                                                                                         get_dynamixel_info.response.dynamixel_info.load_info.baud_rate);
+                                                                                           get_dynamixel_info.response.dynamixel_info.model_name.c_str(),
+                                                                                           get_dynamixel_info.response.dynamixel_info.load_info.protocol_version,
+                                                                                           get_dynamixel_info.response.dynamixel_info.load_info.baud_rate);
         }
       }
       else if (strcmp(cmd, "exit") == 0)
@@ -208,6 +209,11 @@ bool SingleDynamixelController::controlLoop()
       else if (strcmp(cmd, "torque_off") == 0)
       {
         if (!sendCommandMsg("torque", "off", 0))
+          printf("It didn't works\n");
+      }
+      else if (strcmp(cmd, "goal") == 0)
+      {
+        if (!sendCommandMsg("addr", "Goal_Position", atoi(param[0])))
           printf("It didn't works\n");
       }
       else if (strcmp(cmd, "id") == 0)
