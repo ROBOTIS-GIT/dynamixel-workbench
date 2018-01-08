@@ -81,11 +81,7 @@ bool DynamixelWorkbench::setID(uint8_t id, uint8_t new_id)
 
   error = driver_.writeRegister(id, "ID", new_id);
 
-#if defined(__OPENCR__) || defined(__OPENCM904__)
-  delay(1000);
-#else
-  usleep(1000*1000);
-#endif
+  millis(2000);
 
   return error;
 }
@@ -126,11 +122,7 @@ bool DynamixelWorkbench::setBaud(uint8_t id, uint32_t new_baud)
     else
       error = driver_.writeRegister(id, "Baud_Rate", 3);
   }
-#if defined(__OPENCR__) || defined(__OPENCM904__)
-  delay(1000);
-#else
-  usleep(1000*1000);
-#endif
+  millis(2000);
 
   return error;
 }
@@ -422,11 +414,7 @@ bool DynamixelWorkbench::setPositionControlMode(uint8_t id)
     else
       error = driver_.writeRegister(id, "Operating_Mode", X_SERIES_POSITION_CONTROL_MODE);
   }
-#if defined(__OPENCR__) || defined(__OPENCM904__)
-  delay(10);
-#else
-  usleep(1000*10);
-#endif
+  millis(10);
 
   return error;
 }
@@ -453,11 +441,7 @@ bool DynamixelWorkbench::setVelocityControlMode(uint8_t id)
     else
       error = driver_.writeRegister(id, "Operating_Mode", X_SERIES_VELOCITY_CONTROL_MODE);
   } 
-#if defined(__OPENCR__) || defined(__OPENCM904__)
-  delay(10);
-#else
-  usleep(1000*10);
-#endif
+  millis(10);
 
   return error;
 }
@@ -473,11 +457,16 @@ bool DynamixelWorkbench::setCurrentControlMode(uint8_t id)
     error = driver_.writeRegister(id, "Operating_Mode", X_SERIES_CURRENT_BASED_POSITION_CONTROL_MODE);
   }   
 
-#if defined(__OPENCR__) || defined(__OPENCM904__)
-  delay(10);
-#else
-  usleep(1000*10);
-#endif
+  millis(10);
 
   return error;
+}
+
+void DynamixelWorkbench::millis(uint16_t msec)
+{
+#if defined(__OPENCR__) || defined(__OPENCM904__)
+    delay(msec);
+#else
+    usleep(1000*msec);
+#endif
 }

@@ -89,6 +89,8 @@ class DynamixelWorkbench
   bool setBulkRead();
 
  private:
+  void millis(uint16_t msec);
+
   bool torque(uint8_t id, bool onoff);
   bool setPositionControlMode(uint8_t id);
   bool setVelocityControlMode(uint8_t id);
