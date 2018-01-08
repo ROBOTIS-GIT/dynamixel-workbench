@@ -20,6 +20,11 @@
 
 using namespace single_dynamixel_monitor;
 
+inline void millis(uint16_t msec)
+{
+  usleep(1000*msec);
+}
+
 SingleDynamixelMonitor::SingleDynamixelMonitor(void)
   :dxl_baud_rate_(0),
    dxl_id_(0)
@@ -115,7 +120,25 @@ void SingleDynamixelMonitor::initDynamixelStatePublisher()
   }
   else if (!strncmp(model_name, "MX", strlen("MX")))
   {
-    dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::MX>("dynamixel/" + std::string("MX"), 10);
+    if (!strncmp(model_name, "MX-12W", strlen(model_name)) ||
+        !strncmp(model_name, "MX-28" , strlen(model_name)))
+    {
+      dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::MX>("dynamixel/" + std::string("MX"), 10);
+    }
+    else if (!strncmp(model_name, "MX-64", strlen(model_name)) ||
+             !strncmp(model_name, "MX-106" , strlen(model_name)))
+    {
+      dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::MXExt>("dynamixel/" + std::string("MX"), 10);
+    }
+    else if (!strncmp(model_name, "MX-28-2", strlen(model_name)))
+    {
+      dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::MX2>("dynamixel/" + std::string("MX"), 10);
+    }
+    else if (!strncmp(model_name, "MX-64-2", strlen(model_name)) ||
+             !strncmp(model_name, "MX-106-2" , strlen(model_name)))
+    {
+      dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::MX2Ext>("dynamixel/" + std::string("MX"), 10);
+    }
   }
   else if (!strncmp(model_name, "EX", strlen("EX")))
   {
@@ -205,13 +228,21 @@ bool SingleDynamixelMonitor::changeId(uint8_t new_id)
     isOK = dynamixel_driver_->writeRegister(dxl_id_, "Torque_Enable", false);
 
     isOK = dynamixel_driver_->writeRegister(dxl_id_, "ID", new_id);
+    millis(1000);
 
     uint16_t model_number = 0;
-    if (dynamixel_driver_->ping(new_id, &model_number))
+    if (isOK && dynamixel_driver_->ping(new_id, &model_number))
+    {
       dxl_id_ = new_id;
 
-    printf("...Succeeded to set dynamixel id [%u]\n", dxl_id_);
-    return isOK;
+      printf("...Succeeded to set Dynamixel ID [%u]\n", dxl_id_);
+      return true;
+    }
+    else
+    {
+      printf("...Failed to change ID!\n");
+      return false;
+    }
   }
   else
   {
@@ -276,7 +307,7 @@ bool SingleDynamixelMonitor::changeBaudrate(uint32_t new_baud_rate)
         isOK = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 3);
     }
 
-    usleep(1000*1000);
+    millis(2000);
 
     if (isOK)
     {
@@ -309,8 +340,10 @@ bool SingleDynamixelMonitor::changeProtocolVersion(float ver)
 
   if (ver == 1.0 || ver == 2.0)
   {
+    isOK = dynamixel_driver_->writeRegister(dxl_id_, "Torque_Enable", false);
+
     isOK = dynamixel_driver_->writeRegister(dxl_id_, "Protocol_Version", (int)(ver));
-    usleep(1000*1000);
+    millis(2000);
 
     if (isOK)
     {
@@ -319,7 +352,7 @@ bool SingleDynamixelMonitor::changeProtocolVersion(float ver)
 
       if (error == false)
       {
-        printf("Success to change protocol version [ PROTOCOL VERSION: %.1f]\n", dynamixel_driver_->getProtocolVersion());
+        printf("Success to change protocol version [PROTOCOL VERSION: %.1f]\n", dynamixel_driver_->getProtocolVersion());
         return true;
       }
       else
@@ -474,26 +507,45 @@ bool SingleDynamixelMonitor::dynamixelStatePublish(void)
 {
   char* model_name = dynamixel_driver_->getModelName(dxl_id_);
 
-  if (!strncmp(model_name, "AX", strlen("AX")))
+  if (!strncmp(model_name, "AX", strlen(model_name)))
   {
     AX();
   }
-//  else if (dynamixel->model_name_.find("RX") != std::string::npos)
-//  {
-//    RX();
-//  }
-//  else if (dynamixel->model_name_.find("MX") != std::string::npos)
-//  {
-//    MX();
-//  }
+  else if (!strncmp(model_name, "RX", strlen(model_name)))
+  {
+    RX();
+  }
+  else if (!strncmp(model_name, "MX-12W", strlen(model_name)) ||
+           !strncmp(model_name, "MX-28" , strlen(model_name)))
+  {
+    MX();
+  }
+  else if (!strncmp(model_name, "MX-64", strlen(model_name)) ||
+           !strncmp(model_name, "MX-106" , strlen(model_name)))
+  {
+    MXExt();
+  }
+  else if (!strncmp(model_name, "MX-28-2", strlen(model_name)))
+  {
+    MX2();
+  }
+  else if (!strncmp(model_name, "MX-64-2", strlen(model_name)) ||
+           !strncmp(model_name, "MX-106-2" , strlen(model_name)))
+  {
+    MX2Ext();
+  }
 //  else if (dynamixel->model_name_.find("EX") != std::string::npos)
 //  {
 //    EX();
 //  }
-//  else if (dynamixel->model_name_.find("XL") != std::string::npos)
-//  {
-//    XL();
-//  }
+  else if (!strncmp(model_name, "XL-320", strlen(model_name)))
+  {
+    XL320();
+  }
+  else if (!strncmp(model_name, "XL430-W250", strlen(model_name)))
+  {
+    XL();
+  }
 //  else if (dynamixel->model_name_.find("XM") != std::string::npos)
 //  {
 //    XM();
@@ -589,183 +641,486 @@ void SingleDynamixelMonitor::AX(void)
   dynamixel_status_pub_.publish(ax_state);
 }
 
-//bool SingleDynamixelMonitor::RX(void)
-//{
-//  int32_t read_value = 0;
+void SingleDynamixelMonitor::RX(void)
+{
+  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  dynamixel_workbench_msgs::RX rx_state;
 
-//  dynamixel_workbench_msgs::RX rx_state;
-//  dynamixel_tool::DynamixelTool *dynamixel = dynamixel_driver_->dynamixel_;
+  for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
+  {
+    int32_t read_value = 0;
+    dynamixel_driver_->readRegister(dxl_id_, item_ptr[index].item_name, &read_value);
 
-//  for (dynamixel->it_ctrl_ = dynamixel->ctrl_table_.begin();
-//       dynamixel->it_ctrl_ != dynamixel->ctrl_table_.end();
-//       dynamixel->it_ctrl_++)
-//  {
-//    dynamixel->item_ = dynamixel->ctrl_table_[dynamixel->it_ctrl_->first.c_str()];
-//    dynamixel_driver_->readRegister(dynamixel->item_->item_name ,&read_value);
+    if (!strncmp(item_ptr[index].item_name, "Model_Number", strlen("Model_Number")))
+      rx_state.Model_Number = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Firmware_Version", strlen("Firmware_Version")))
+      rx_state.Firmware_Version = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "ID", strlen("ID")))
+      rx_state.ID = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Baud_Rate", strlen("Baud_Rate")))
+      rx_state.Baud_Rate = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Return_Delay_Time", strlen("Return_Delay_Time")))
+      rx_state.Return_Delay_Time = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "CW_Angle_Limit", strlen("CW_Angle_Limit")))
+      rx_state.CW_Angle_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "CCW_Angle_Limit", strlen("CCW_Angle_Limit")))
+      rx_state.CCW_Angle_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Temperature_Limit", strlen("Temperature_Limit")))
+      rx_state.Temperature_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Min_Voltage_Limit", strlen("Min_Voltage_Limit")))
+      rx_state.Min_Voltage_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Max_Voltage_Limit", strlen("Max_Voltage_Limit")))
+      rx_state.Max_Voltage_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Max_Torque", strlen("Max_Torque")))
+      rx_state.Max_Torque = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Status_Return_Level", strlen("Status_Return_Level")))
+      rx_state.Status_Return_Level = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Alarm_LED", strlen("Alarm_LED")))
+      rx_state.Alarm_LED = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Shutdown", strlen("Shutdown")))
+      rx_state.Shutdown = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Torque_Enable", strlen("Torque_Enable")))
+      rx_state.Torque_Enable = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "LED", strlen("LED")))
+      rx_state.LED = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "CW_Compliance_Margin", strlen("CW_Compliance_Margin")))
+      rx_state.CW_Compliance_Margin = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "CCW_Compliance_Margin", strlen("CCW_Compliance_Margin")))
+      rx_state.CCW_Compliance_Margin = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "CW_Compliance_Slope", strlen("CW_Compliance_Slope")))
+      rx_state.CW_Compliance_Slope = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "CCW_Compliance_Slope", strlen("CCW_Compliance_Slope")))
+      rx_state.CCW_Compliance_Slope = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Goal_Position", strlen("Goal_Position")))
+      rx_state.Goal_Position = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Moving_Speed", strlen("Moving_Speed")))
+      rx_state.Moving_Speed = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Torque_Limit", strlen("Torque_Limit")))
+      rx_state.Torque_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Position", strlen("Present_Position")))
+      rx_state.Present_Position = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Speed", strlen("Present_Speed")))
+      rx_state.Present_Speed = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Load", strlen("Present_Load")))
+      rx_state.Present_Load = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Voltage", strlen("Present_Voltage")))
+      rx_state.Present_Voltage = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Temperature", strlen("Present_Temperature")))
+      rx_state.Present_Temperature = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Registered", strlen("Registered")))
+      rx_state.Registered = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Moving", strlen("Moving")))
+      rx_state.Moving = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Lock", strlen("Lock")))
+      rx_state.Lock = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Punch", strlen("Punch")))
+      rx_state.Punch = read_value;
+  }
 
-//    if ("model_number" == dynamixel->item_->item_name)
-//      rx_state.model_number = read_value;
-//    else if ("version_of_firmware" == dynamixel->item_->item_name)
-//      rx_state.version_of_firmware = read_value;
-//    else if ("id" == dynamixel->item_->item_name)
-//      rx_state.id = read_value;
-//    else if ("baud_rate" == dynamixel->item_->item_name)
-//      rx_state.baud_rate = read_value;
-//    else if ("return_delay_time" == dynamixel->item_->item_name)
-//      rx_state.return_delay_time = read_value;
-//    else if ("cw_angle_limit" == dynamixel->item_->item_name)
-//      rx_state.cw_angle_limit = read_value;
-//    else if ("ccw_angle_limit" == dynamixel->item_->item_name)
-//      rx_state.ccw_angle_limit = read_value;
-//    else if ("the_highest_limit_temperature" == dynamixel->item_->item_name)
-//      rx_state.the_highest_limit_temperature = read_value;
-//    else if ("the_lowest_limit_voltage" == dynamixel->item_->item_name)
-//      rx_state.the_lowest_limit_voltage = read_value;
-//    else if ("the_highest_limit_voltage" == dynamixel->item_->item_name)
-//      rx_state.the_highest_limit_voltage = read_value;
-//    else if ("max_torque" == dynamixel->item_->item_name)
-//      rx_state.max_torque = read_value;
-//    else if ("status_return_level" == dynamixel->item_->item_name)
-//      rx_state.status_return_level = read_value;
-//    else if ("alarm_led" == dynamixel->item_->item_name)
-//      rx_state.alarm_led = read_value;
-//    else if ("alarm_shutdown" == dynamixel->item_->item_name)
-//      rx_state.alarm_shutdown = read_value;
-//    else if ("torque_enable" == dynamixel->item_->item_name)
-//      rx_state.torque_enable = read_value;
-//    else if ("led" == dynamixel->item_->item_name)
-//      rx_state.led = read_value;
-//    else if ("cw_compliance_margin" == dynamixel->item_->item_name)
-//      rx_state.cw_compliance_margin = read_value;
-//    else if ("ccw_compliance_margin" == dynamixel->item_->item_name)
-//      rx_state.ccw_compliance_margin = read_value;
-//    else if ("cw_compliance_slope" == dynamixel->item_->item_name)
-//      rx_state.cw_compliance_slope = read_value;
-//    else if ("ccw_compliance_margin" == dynamixel->item_->item_name)
-//      rx_state.ccw_compliance_margin = read_value;
-//    else if ("goal_position" == dynamixel->item_->item_name)
-//      rx_state.goal_position = read_value;
-//    else if ("moving_speed" == dynamixel->item_->item_name)
-//      rx_state.moving_speed = read_value;
-//    else if ("torque_limit" == dynamixel->item_->item_name)
-//      rx_state.torque_limit = read_value;
-//    else if ("present_position" == dynamixel->item_->item_name)
-//      rx_state.present_position = read_value;
-//    else if ("present_speed" == dynamixel->item_->item_name)
-//      rx_state.present_speed = read_value;
-//    else if ("present_load" == dynamixel->item_->item_name)
-//      rx_state.present_load = read_value;
-//    else if ("present_voltage" == dynamixel->item_->item_name)
-//      rx_state.present_voltage = read_value;
-//    else if ("present_temperature" == dynamixel->item_->item_name)
-//      rx_state.present_temperature = read_value;
-//    else if ("registered" == dynamixel->item_->item_name)
-//      rx_state.registered = read_value;
-//    else if ("moving" == dynamixel->item_->item_name)
-//      rx_state.moving = read_value;
-//    else if ("lock" == dynamixel->item_->item_name)
-//      rx_state.lock = read_value;
-//    else if ("punch" == dynamixel->item_->item_name)
-//      rx_state.punch = read_value;
-//  }
+  dynamixel_status_pub_.publish(rx_state);
+}
 
-//  dynamixel_status_pub_.publish(rx_state);
-//}
+void SingleDynamixelMonitor::MX(void)
+{
+  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  dynamixel_workbench_msgs::MX mx_state;
 
-//bool SingleDynamixelMonitor::MX(void)
-//{
-//  int32_t read_value = 0;
+  for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
+  {
+    int32_t read_value = 0;
+    dynamixel_driver_->readRegister(dxl_id_, item_ptr[index].item_name, &read_value);
 
-//  dynamixel_workbench_msgs::MX mx_state;
-//  dynamixel_tool::DynamixelTool *dynamixel = dynamixel_driver_->dynamixel_;
+    if (!strncmp(item_ptr[index].item_name, "Model_Number", strlen("Model_Number")))
+      mx_state.Model_Number = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Firmware_Version", strlen("Firmware_Version")))
+      mx_state.Firmware_Version = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "ID", strlen("ID")))
+      mx_state.ID = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Baud_Rate", strlen("Baud_Rate")))
+      mx_state.Baud_Rate = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Return_Delay_Time", strlen("Return_Delay_Time")))
+      mx_state.Return_Delay_Time = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "CW_Angle_Limit", strlen("CW_Angle_Limit")))
+      mx_state.CW_Angle_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "CCW_Angle_Limit", strlen("CCW_Angle_Limit")))
+      mx_state.CCW_Angle_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Temperature_Limit", strlen("Temperature_Limit")))
+      mx_state.Temperature_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Min_Voltage_Limit", strlen("Min_Voltage_Limit")))
+      mx_state.Min_Voltage_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Max_Voltage_Limit", strlen("Max_Voltage_Limit")))
+      mx_state.Max_Voltage_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Max_Torque", strlen("Max_Torque")))
+      mx_state.Max_Torque = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Status_Return_Level", strlen("Status_Return_Level")))
+      mx_state.Status_Return_Level = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Alarm_LED", strlen("Alarm_LED")))
+      mx_state.Alarm_LED = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Shutdown", strlen("Shutdown")))
+      mx_state.Shutdown = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Multi_Turn_Offset", strlen("Multi_Turn_Offset")))
+      mx_state.Multi_Turn_Offset = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Resolution_Divider", strlen("Resolution_Divider")))
+      mx_state.Resolution_Divider = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Torque_Enable", strlen("Torque_Enable")))
+      mx_state.Torque_Enable = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "LED", strlen("LED")))
+      mx_state.LED = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "D_gain", strlen("D_gain")))
+      mx_state.D_gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "I_gain", strlen("I_gain")))
+      mx_state.I_gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "P_gain", strlen("P_gain")))
+      mx_state.P_gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Goal_Position", strlen("Goal_Position")))
+      mx_state.Goal_Position = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Moving_Speed", strlen("Moving_Speed")))
+      mx_state.Moving_Speed = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Torque_Limit", strlen("Torque_Limit")))
+      mx_state.Torque_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Position", strlen("Present_Position")))
+      mx_state.Present_Position = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Speed", strlen("Present_Speed")))
+      mx_state.Present_Speed = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Load", strlen("Present_Load")))
+      mx_state.Present_Load = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Voltage", strlen("Present_Voltage")))
+      mx_state.Present_Voltage = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Temperature", strlen("Present_Temperature")))
+      mx_state.Present_Temperature = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Registered", strlen("Registered")))
+      mx_state.Registered = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Moving", strlen("Moving")))
+      mx_state.Moving = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Lock", strlen("Lock")))
+      mx_state.Lock = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Punch", strlen("Punch")))
+      mx_state.Punch = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Goal_Acceleration", strlen("Goal_Acceleration")))
+      mx_state.Goal_Acceleration = read_value;
+  }
 
-//  for (dynamixel->it_ctrl_ = dynamixel->ctrl_table_.begin();
-//       dynamixel->it_ctrl_ != dynamixel->ctrl_table_.end();
-//       dynamixel->it_ctrl_++)
-//  {
-//    dynamixel->item_ = dynamixel->ctrl_table_[dynamixel->it_ctrl_->first.c_str()];
-//    dynamixel_driver_->readRegister(dynamixel->item_->item_name ,&read_value);
+  dynamixel_status_pub_.publish(mx_state);
+}
 
-//    if ("model_number" == dynamixel->item_->item_name)
-//      mx_state.model_number = read_value;
-//    else if ("version_of_firmware" == dynamixel->item_->item_name)
-//      mx_state.version_of_firmware = read_value;
-//    else if ("id" == dynamixel->item_->item_name)
-//      mx_state.id = read_value;
-//    else if ("baud_rate" == dynamixel->item_->item_name)
-//      mx_state.baud_rate = read_value;
-//    else if ("return_delay_time" == dynamixel->item_->item_name)
-//      mx_state.return_delay_time = read_value;
-//    else if ("cw_angle_limit" == dynamixel->item_->item_name)
-//      mx_state.cw_angle_limit = read_value;
-//    else if ("ccw_angle_limit" == dynamixel->item_->item_name)
-//      mx_state.ccw_angle_limit = read_value;
-//    else if ("drive_mode" == dynamixel->item_->item_name)
-//      mx_state.drive_mode = read_value;
-//    else if ("the_highest_limit_temperature" == dynamixel->item_->item_name)
-//      mx_state.the_highest_limit_temperature = read_value;
-//    else if ("the_lowest_limit_voltage" == dynamixel->item_->item_name)
-//      mx_state.the_lowest_limit_voltage = read_value;
-//    else if ("the_highest_limit_voltage" == dynamixel->item_->item_name)
-//      mx_state.the_highest_limit_voltage = read_value;
-//    else if ("max_torque" == dynamixel->item_->item_name)
-//      mx_state.max_torque = read_value;
-//    else if ("status_return_level" == dynamixel->item_->item_name)
-//      mx_state.status_return_level = read_value;
-//    else if ("alarm_led" == dynamixel->item_->item_name)
-//      mx_state.alarm_led = read_value;
-//    else if ("alarm_shutdown" == dynamixel->item_->item_name)
-//      mx_state.alarm_shutdown = read_value;
-//    else if ("multi_turn_offset" == dynamixel->item_->item_name)
-//      mx_state.multi_turn_offset = read_value;
-//    else if ("resolution_divider" == dynamixel->item_->item_name)
-//      mx_state.resolution_divider = read_value;
-//    else if ("torque_enable" == dynamixel->item_->item_name)
-//      mx_state.torque_enable = read_value;
-//    else if ("led" == dynamixel->item_->item_name)
-//      mx_state.led = read_value;
-//    else if ("d_gain" == dynamixel->item_->item_name)
-//      mx_state.d_gain = read_value;
-//    else if ("i_gain" == dynamixel->item_->item_name)
-//      mx_state.i_gain = read_value;
-//    else if ("p_gain" == dynamixel->item_->item_name)
-//      mx_state.p_gain = read_value;
-//    else if ("goal_position" == dynamixel->item_->item_name)
-//      mx_state.goal_position = read_value;
-//    else if ("moving_speed" == dynamixel->item_->item_name)
-//      mx_state.moving_speed = read_value;
-//    else if ("torque_limit" == dynamixel->item_->item_name)
-//      mx_state.torque_limit = read_value;
-//    else if ("present_position" == dynamixel->item_->item_name)
-//      mx_state.present_position = read_value;
-//    else if ("present_speed" == dynamixel->item_->item_name)
-//      mx_state.present_speed = read_value;
-//    else if ("present_load" == dynamixel->item_->item_name)
-//      mx_state.present_load = read_value;
-//    else if ("present_voltage" == dynamixel->item_->item_name)
-//      mx_state.present_voltage = read_value;
-//    else if ("present_temperature" == dynamixel->item_->item_name)
-//      mx_state.present_temperature = read_value;
-//    else if ("registered" == dynamixel->item_->item_name)
-//      mx_state.registered = read_value;
-//    else if ("moving" == dynamixel->item_->item_name)
-//      mx_state.moving = read_value;
-//    else if ("lock" == dynamixel->item_->item_name)
-//      mx_state.lock = read_value;
-//    else if ("punch" == dynamixel->item_->item_name)
-//      mx_state.punch = read_value;
-//    else if ("current" == dynamixel->item_->item_name)
-//      mx_state.current = read_value;
-//    else if ("torque_control_mode_enable" == dynamixel->item_->item_name)
-//      mx_state.torque_control_mode_enable = read_value;
-//    else if ("goal_torque" == dynamixel->item_->item_name)
-//      mx_state.goal_torque = read_value;
-//    else if ("goal_acceleration" == dynamixel->item_->item_name)
-//      mx_state.goal_acceleration = read_value;
-//}
+void SingleDynamixelMonitor::MXExt(void)
+{
+  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  dynamixel_workbench_msgs::MXExt mxext_state;
 
-//  dynamixel_status_pub_.publish(mx_state);
-//}
+  for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
+  {
+    int32_t read_value = 0;
+    dynamixel_driver_->readRegister(dxl_id_, item_ptr[index].item_name, &read_value);
+
+    if (!strncmp(item_ptr[index].item_name, "Model_Number", strlen("Model_Number")))
+      mxext_state.Model_Number = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Firmware_Version", strlen("Firmware_Version")))
+      mxext_state.Firmware_Version = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "ID", strlen("ID")))
+      mxext_state.ID = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Baud_Rate", strlen("Baud_Rate")))
+      mxext_state.Baud_Rate = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Return_Delay_Time", strlen("Return_Delay_Time")))
+      mxext_state.Return_Delay_Time = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "CW_Angle_Limit", strlen("CW_Angle_Limit")))
+      mxext_state.CW_Angle_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "CCW_Angle_Limit", strlen("CCW_Angle_Limit")))
+      mxext_state.CCW_Angle_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Temperature_Limit", strlen("Temperature_Limit")))
+      mxext_state.Temperature_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Min_Voltage_Limit", strlen("Min_Voltage_Limit")))
+      mxext_state.Min_Voltage_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Max_Voltage_Limit", strlen("Max_Voltage_Limit")))
+      mxext_state.Max_Voltage_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Max_Torque", strlen("Max_Torque")))
+      mxext_state.Max_Torque = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Status_Return_Level", strlen("Status_Return_Level")))
+      mxext_state.Status_Return_Level = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Alarm_LED", strlen("Alarm_LED")))
+      mxext_state.Alarm_LED = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Shutdown", strlen("Shutdown")))
+      mxext_state.Shutdown = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Multi_Turn_Offset", strlen("Multi_Turn_Offset")))
+      mxext_state.Multi_Turn_Offset = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Resolution_Divider", strlen("Resolution_Divider")))
+      mxext_state.Resolution_Divider = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Torque_Enable", strlen("Torque_Enable")))
+      mxext_state.Torque_Enable = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "LED", strlen("LED")))
+      mxext_state.LED = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "D_gain", strlen("D_gain")))
+      mxext_state.D_gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "I_gain", strlen("I_gain")))
+      mxext_state.I_gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "P_gain", strlen("P_gain")))
+      mxext_state.P_gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Goal_Position", strlen("Goal_Position")))
+      mxext_state.Goal_Position = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Moving_Speed", strlen("Moving_Speed")))
+      mxext_state.Moving_Speed = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Torque_Limit", strlen("Torque_Limit")))
+      mxext_state.Torque_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Position", strlen("Present_Position")))
+      mxext_state.Present_Position = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Speed", strlen("Present_Speed")))
+      mxext_state.Present_Speed = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Load", strlen("Present_Load")))
+      mxext_state.Present_Load = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Voltage", strlen("Present_Voltage")))
+      mxext_state.Present_Voltage = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Temperature", strlen("Present_Temperature")))
+      mxext_state.Present_Temperature = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Registered", strlen("Registered")))
+      mxext_state.Registered = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Moving", strlen("Moving")))
+      mxext_state.Moving = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Lock", strlen("Lock")))
+      mxext_state.Lock = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Punch", strlen("Punch")))
+      mxext_state.Punch = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Current", strlen("Current")))
+      mxext_state.Current = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Torque_Control_Mode_Enable", strlen("Torque_Control_Mode_Enable")))
+      mxext_state.Torque_Control_Mode_Enable = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Goal_Torque", strlen("Goal_Torque")))
+      mxext_state.Goal_Torque = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Goal_Acceleration", strlen("Goal_Acceleration")))
+      mxext_state.Goal_Acceleration = read_value;
+  }
+
+  dynamixel_status_pub_.publish(mxext_state);
+}
+
+void SingleDynamixelMonitor::MX2(void)
+{
+  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  dynamixel_workbench_msgs::MX2 mx2_state;
+
+  for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
+  {
+    int32_t read_value = 0;
+    dynamixel_driver_->readRegister(dxl_id_, item_ptr[index].item_name, &read_value);
+
+    if (!strncmp(item_ptr[index].item_name, "Model_Number", strlen("Model_Number")))
+      mx2_state.Model_Number = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Firmware_Version", strlen("Firmware_Version")))
+      mx2_state.Firmware_Version = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "ID", strlen("ID")))
+      mx2_state.ID = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Baud_Rate", strlen("Baud_Rate")))
+      mx2_state.Baud_Rate = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Return_Delay_Time", strlen("Return_Delay_Time")))
+      mx2_state.Return_Delay_Time = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Drive_Mode", strlen("Drive_Mode")))
+      mx2_state.Drive_Mode = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Operating_Mode", strlen("Operating_Mode")))
+      mx2_state.Operating_Mode = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Secondary_ID", strlen("Secondary_ID")))
+      mx2_state.Secondary_ID = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Protocol_Version", strlen("Protocol_Version")))
+      mx2_state.Protocol_Version = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Homing_Offset", strlen("Homing_Offset")))
+      mx2_state.Homing_Offset = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Moving_Threshold", strlen("Moving_Threshold")))
+      mx2_state.Moving_Threshold = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Temperature_Limit", strlen("Temperature_Limit")))
+      mx2_state.Temperature_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Max_Voltage_Limit", strlen("Max_Voltage_Limit")))
+      mx2_state.Max_Voltage_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Min_Voltage_Limit", strlen("Min_Voltage_Limit")))
+      mx2_state.Min_Voltage_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "PWM_Limit", strlen("PWM_Limit")))
+      mx2_state.PWM_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Acceleration_Limit", strlen("Acceleration_Limit")))
+      mx2_state.Acceleration_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Velocity_Limit", strlen("Velocity_Limit")))
+      mx2_state.Velocity_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Max_Position_Limit", strlen("Max_Position_Limit")))
+      mx2_state.Max_Position_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Min_Position_Limit", strlen("Min_Position_Limit")))
+      mx2_state.Min_Position_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Shutdown", strlen("Shutdown")))
+      mx2_state.Shutdown = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Torque_Enable", strlen("Torque_Enable")))
+      mx2_state.Torque_Enable = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "LED", strlen("LED")))
+      mx2_state.LED = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Status_Return_Level", strlen("Status_Return_Level")))
+      mx2_state.Status_Return_Level = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Registered_Instruction", strlen("Registered_Instruction")))
+      mx2_state.Registered_Instruction = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Hardware_Error_Status", strlen("Hardware_Error_Status")))
+      mx2_state.Hardware_Error_Status = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Velocity_I_Gain", strlen("Velocity_I_Gain")))
+      mx2_state.Velocity_I_Gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Velocity_P_Gain", strlen("Velocity_P_Gain")))
+      mx2_state.Velocity_P_Gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Position_D_Gain", strlen("Position_D_Gain")))
+      mx2_state.Position_D_Gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Position_I_Gain", strlen("Position_I_Gain")))
+      mx2_state.Position_I_Gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Position_P_Gain", strlen("Position_P_Gain")))
+      mx2_state.Position_P_Gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Feedforward_2nd_Gain", strlen("Feedforward_2nd_Gain")))
+      mx2_state.Feedforward_2nd_Gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Feedforward_1st_Gain", strlen("Feedforward_1st_Gain")))
+      mx2_state.Feedforward_1st_Gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Bus_Watchdog", strlen("Bus_Watchdog")))
+      mx2_state.Bus_Watchdog = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Goal_PWM", strlen("Goal_PWM")))
+      mx2_state.Goal_PWM = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Goal_Velocity", strlen("Goal_Velocity")))
+      mx2_state.Goal_Velocity = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Profile_Acceleration", strlen("Profile_Acceleration")))
+      mx2_state.Profile_Acceleration = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Profile_Velocity", strlen("Profile_Velocity")))
+      mx2_state.Profile_Velocity = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Goal_Position", strlen("Goal_Position")))
+      mx2_state.Goal_Position = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Realtime_Tick", strlen("Realtime_Tick")))
+      mx2_state.Realtime_Tick = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Moving", strlen("Moving")))
+      mx2_state.Moving = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Moving_Status", strlen("Moving_Status")))
+      mx2_state.Moving_Status = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_PWM", strlen("Present_PWM")))
+      mx2_state.Present_PWM = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Load", strlen("Present_Load")))
+      mx2_state.Present_Load = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Velocity", strlen("Present_Velocity")))
+      mx2_state.Present_Velocity = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Position", strlen("Present_Position")))
+      mx2_state.Present_Position = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Velocity_Trajectory", strlen("Velocity_Trajectory")))
+      mx2_state.Velocity_Trajectory = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Position_Trajectory", strlen("Position_Trajectory")))
+      mx2_state.Position_Trajectory = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Input_Voltage", strlen("Present_Input_Voltage")))
+      mx2_state.Present_Input_Voltage = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Temperature", strlen("Present_Temperature")))
+      mx2_state.Present_Temperature = read_value;
+  }
+
+  dynamixel_status_pub_.publish(mx2_state);
+}
+
+void SingleDynamixelMonitor::MX2Ext(void)
+{
+  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  dynamixel_workbench_msgs::MX2Ext mx2ext_state;
+
+  for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
+  {
+    int32_t read_value = 0;
+    dynamixel_driver_->readRegister(dxl_id_, item_ptr[index].item_name, &read_value);
+
+    if (!strncmp(item_ptr[index].item_name, "Model_Number", strlen("Model_Number")))
+      mx2ext_state.Model_Number = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Firmware_Version", strlen("Firmware_Version")))
+      mx2ext_state.Firmware_Version = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "ID", strlen("ID")))
+      mx2ext_state.ID = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Baud_Rate", strlen("Baud_Rate")))
+      mx2ext_state.Baud_Rate = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Return_Delay_Time", strlen("Return_Delay_Time")))
+      mx2ext_state.Return_Delay_Time = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Drive_Mode", strlen("Drive_Mode")))
+      mx2ext_state.Drive_Mode = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Operating_Mode", strlen("Operating_Mode")))
+      mx2ext_state.Operating_Mode = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Secondary_ID", strlen("Secondary_ID")))
+      mx2ext_state.Secondary_ID = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Protocol_Version", strlen("Protocol_Version")))
+      mx2ext_state.Protocol_Version = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Homing_Offset", strlen("Homing_Offset")))
+      mx2ext_state.Homing_Offset = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Moving_Threshold", strlen("Moving_Threshold")))
+      mx2ext_state.Moving_Threshold = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Temperature_Limit", strlen("Temperature_Limit")))
+      mx2ext_state.Temperature_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Max_Voltage_Limit", strlen("Max_Voltage_Limit")))
+      mx2ext_state.Max_Voltage_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Min_Voltage_Limit", strlen("Min_Voltage_Limit")))
+      mx2ext_state.Min_Voltage_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "PWM_Limit", strlen("PWM_Limit")))
+      mx2ext_state.PWM_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Current_Limit", strlen("Current_Limit")))
+      mx2ext_state.Current_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Acceleration_Limit", strlen("Acceleration_Limit")))
+      mx2ext_state.Acceleration_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Velocity_Limit", strlen("Velocity_Limit")))
+      mx2ext_state.Velocity_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Max_Position_Limit", strlen("Max_Position_Limit")))
+      mx2ext_state.Max_Position_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Min_Position_Limit", strlen("Min_Position_Limit")))
+      mx2ext_state.Min_Position_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Shutdown", strlen("Shutdown")))
+      mx2ext_state.Shutdown = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Torque_Enable", strlen("Torque_Enable")))
+      mx2ext_state.Torque_Enable = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "LED", strlen("LED")))
+      mx2ext_state.LED = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Status_Return_Level", strlen("Status_Return_Level")))
+      mx2ext_state.Status_Return_Level = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Registered_Instruction", strlen("Registered_Instruction")))
+      mx2ext_state.Registered_Instruction = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Hardware_Error_Status", strlen("Hardware_Error_Status")))
+      mx2ext_state.Hardware_Error_Status = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Velocity_I_Gain", strlen("Velocity_I_Gain")))
+      mx2ext_state.Velocity_I_Gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Velocity_P_Gain", strlen("Velocity_P_Gain")))
+      mx2ext_state.Velocity_P_Gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Position_D_Gain", strlen("Position_D_Gain")))
+      mx2ext_state.Position_D_Gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Position_I_Gain", strlen("Position_I_Gain")))
+      mx2ext_state.Position_I_Gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Position_P_Gain", strlen("Position_P_Gain")))
+      mx2ext_state.Position_P_Gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Feedforward_2nd_Gain", strlen("Feedforward_2nd_Gain")))
+      mx2ext_state.Feedforward_2nd_Gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Feedforward_1st_Gain", strlen("Feedforward_1st_Gain")))
+      mx2ext_state.Feedforward_1st_Gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Bus_Watchdog", strlen("Bus_Watchdog")))
+      mx2ext_state.Bus_Watchdog = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Goal_PWM", strlen("Goal_PWM")))
+      mx2ext_state.Goal_PWM = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Goal_Current", strlen("Goal_Current")))
+      mx2ext_state.Goal_Current = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Goal_Velocity", strlen("Goal_Velocity")))
+      mx2ext_state.Goal_Velocity = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Profile_Acceleration", strlen("Profile_Acceleration")))
+      mx2ext_state.Profile_Acceleration = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Profile_Velocity", strlen("Profile_Velocity")))
+      mx2ext_state.Profile_Velocity = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Goal_Position", strlen("Goal_Position")))
+      mx2ext_state.Goal_Position = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Realtime_Tick", strlen("Realtime_Tick")))
+      mx2ext_state.Realtime_Tick = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Moving", strlen("Moving")))
+      mx2ext_state.Moving = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Moving_Status", strlen("Moving_Status")))
+      mx2ext_state.Moving_Status = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_PWM", strlen("Present_PWM")))
+      mx2ext_state.Present_PWM = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Current", strlen("Present_Current")))
+      mx2ext_state.Present_Current = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Velocity", strlen("Present_Velocity")))
+      mx2ext_state.Present_Velocity = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Position", strlen("Present_Position")))
+      mx2ext_state.Present_Position = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Velocity_Trajectory", strlen("Velocity_Trajectory")))
+      mx2ext_state.Velocity_Trajectory = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Position_Trajectory", strlen("Position_Trajectory")))
+      mx2ext_state.Position_Trajectory = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Input_Voltage", strlen("Present_Input_Voltage")))
+      mx2ext_state.Present_Input_Voltage = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Temperature", strlen("Present_Temperature")))
+      mx2ext_state.Present_Temperature = read_value;
+  }
+
+  dynamixel_status_pub_.publish(mx2ext_state);
+}
 
 //bool SingleDynamixelMonitor::EX(void)
 //{
@@ -854,124 +1209,193 @@ void SingleDynamixelMonitor::AX(void)
 //  dynamixel_status_pub_.publish(ex_state);
 //}
 
-//bool SingleDynamixelMonitor::XL(void)
-//{
-//  int32_t read_value = 0;
+void SingleDynamixelMonitor::XL320(void)
+{
+  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  dynamixel_workbench_msgs::XL320 xl320_state;
 
-//  dynamixel_workbench_msgs::XL xl_state;
-//  dynamixel_tool::DynamixelTool *dynamixel = dynamixel_driver_->dynamixel_;
+  for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
+  {
+    int32_t read_value = 0;
+    dynamixel_driver_->readRegister(dxl_id_, item_ptr[index].item_name, &read_value);
 
-//  for (dynamixel->it_ctrl_ = dynamixel->ctrl_table_.begin();
-//       dynamixel->it_ctrl_ != dynamixel->ctrl_table_.end();
-//       dynamixel->it_ctrl_++)
-//  {
-//    dynamixel->item_ = dynamixel->ctrl_table_[dynamixel->it_ctrl_->first.c_str()];
-//    dynamixel_driver_->readRegister(dynamixel->item_->item_name ,&read_value);
+    if (!strncmp(item_ptr[index].item_name, "Model_Number", strlen("Model_Number")))
+      xl320_state.Model_Number = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Firmware_Version", strlen("Firmware_Version")))
+      xl320_state.Firmware_Version = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "ID", strlen("ID")))
+      xl320_state.ID = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Baud_Rate", strlen("Baud_Rate")))
+      xl320_state.Baud_Rate = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Return_Delay_Time", strlen("Return_Delay_Time")))
+      xl320_state.Return_Delay_Time = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "CW_Angle_Limit", strlen("CW_Angle_Limit")))
+      xl320_state.CW_Angle_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "CCW_Angle_Limit", strlen("CCW_Angle_Limit")))
+      xl320_state.CCW_Angle_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Temperature_Limit", strlen("Temperature_Limit")))
+      xl320_state.Temperature_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Min_Voltage_Limit", strlen("Min_Voltage_Limit")))
+      xl320_state.Min_Voltage_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Max_Voltage_Limit", strlen("Max_Voltage_Limit")))
+      xl320_state.Max_Voltage_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Max_Torque", strlen("Max_Torque")))
+      xl320_state.Max_Torque = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Status_Return_Level", strlen("Status_Return_Level")))
+      xl320_state.Status_Return_Level = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Shutdown", strlen("Shutdown")))
+      xl320_state.Shutdown = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Torque_Enable", strlen("Torque_Enable")))
+      xl320_state.Torque_Enable = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "LED", strlen("LED")))
+      xl320_state.LED = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "D_gain", strlen("D_gain")))
+      xl320_state.D_gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "I_gain", strlen("I_gain")))
+      xl320_state.I_gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "P_gain", strlen("P_gain")))
+      xl320_state.P_gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Goal_Position", strlen("Goal_Position")))
+      xl320_state.Goal_Position = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Moving_Speed", strlen("Moving_Speed")))
+      xl320_state.Moving_Speed = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Torque_Limit", strlen("Torque_Limit")))
+      xl320_state.Torque_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Position", strlen("Present_Position")))
+      xl320_state.Present_Position = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Speed", strlen("Present_Speed")))
+      xl320_state.Present_Speed = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Load", strlen("Present_Load")))
+      xl320_state.Present_Load = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Voltage", strlen("Present_Voltage")))
+      xl320_state.Present_Voltage = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Temperature", strlen("Present_Temperature")))
+      xl320_state.Present_Temperature = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Registered", strlen("Registered")))
+      xl320_state.Registered = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Moving", strlen("Moving")))
+      xl320_state.Moving = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Hardware_Error_Status", strlen("Hardware_Error_Status")))
+      xl320_state.Hardware_Error_Status = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Punch", strlen("Punch")))
+      xl320_state.Punch = read_value;
+  }
 
-//    if ("model_number" == dynamixel->item_->item_name)
-//      xl_state.model_number = read_value;
-//    else if ("version_of_firmware" == dynamixel->item_->item_name)
-//      xl_state.version_of_firmware = read_value;
-//    else if ("id" == dynamixel->item_->item_name)
-//      xl_state.id = read_value;
-//    else if ("baud_rate" == dynamixel->item_->item_name)
-//      xl_state.baud_rate = read_value;
-//    else if ("return_delay_time" == dynamixel->item_->item_name)
-//      xl_state.return_delay_time = read_value;
-//    else if ("drive_mode" == dynamixel->item_->item_name)
-//      xl_state.drive_mode = read_value;
-//    else if ("operating_mode" == dynamixel->item_->item_name)
-//      xl_state.operating_mode = read_value;
-//    else if ("secondary_id" == dynamixel->item_->item_name)
-//      xl_state.secondary_id = read_value;
-//    else if ("protocol_version" == dynamixel->item_->item_name)
-//      xl_state.protocol_version = read_value;
-//    else if ("homing_offset" == dynamixel->item_->item_name)
-//      xl_state.homing_offset = read_value;
-//    else if ("moving_threshold" == dynamixel->item_->item_name)
-//      xl_state.moving_threshold = read_value;
-//    else if ("max_temperature_limit" == dynamixel->item_->item_name)
-//      xl_state.temperature_limit = read_value;
-//    else if ("max_voltage_limit" == dynamixel->item_->item_name)
-//      xl_state.max_voltage_limit = read_value;
-//    else if ("min_voltage_limit" == dynamixel->item_->item_name)
-//      xl_state.min_voltage_limit = read_value;
-//    else if ("pwm_limit" == dynamixel->item_->item_name)
-//      xl_state.pwm_limit = read_value;
-//    else if ("acceleration_limit" == dynamixel->item_->item_name)
-//      xl_state.acceleration_limit = read_value;
-//    else if ("velocity_limit" == dynamixel->item_->item_name)
-//      xl_state.velocity_limit = read_value;
-//    else if ("max_position_limit" == dynamixel->item_->item_name)
-//      xl_state.max_position_limit = read_value;
-//    else if ("min_position_limit" == dynamixel->item_->item_name)
-//      xl_state.min_position_limit = read_value;
-//    else if ("shutdown" == dynamixel->item_->item_name)
-//      xl_state.shutdown = read_value;
-//    else if ("torque_enable" == dynamixel->item_->item_name)
-//      xl_state.torque_enable = read_value;
-//    else if ("led" == dynamixel->item_->item_name)
-//      xl_state.led = read_value;
-//    else if ("status_return_level" == dynamixel->item_->item_name)
-//      xl_state.status_return_level = read_value;
-//    else if ("registered_instruction" == dynamixel->item_->item_name)
-//      xl_state.registered_instruction = read_value;
-//    else if ("hardware_error_status" == dynamixel->item_->item_name)
-//      xl_state.hardware_error_status = read_value;
-//    else if ("velocity_i_gain" == dynamixel->item_->item_name)
-//      xl_state.velocity_i_gain = read_value;
-//    else if ("velocity_p_gain" == dynamixel->item_->item_name)
-//      xl_state.velocity_p_gain = read_value;
-//    else if ("position_d_gain" == dynamixel->item_->item_name)
-//      xl_state.position_d_gain = read_value;
-//    else if ("position_i_gain" == dynamixel->item_->item_name)
-//      xl_state.position_i_gain = read_value;
-//    else if ("position_p_gain" == dynamixel->item_->item_name)
-//      xl_state.position_p_gain = read_value;
-//    else if ("feedforward_2nd_gain" == dynamixel->item_->item_name)
-//      xl_state.feedforward_2nd_gain = read_value;
-//    else if ("feedforward_1st_gain" == dynamixel->item_->item_name)
-//      xl_state.feedforward_1st_gain = read_value;
-//    else if ("bus_watchdog" == dynamixel->item_->item_name)
-//      xl_state.bus_watchdog = read_value;
-//    else if ("goal_pwm" == dynamixel->item_->item_name)
-//      xl_state.goal_pwm = read_value;
-//    else if ("goal_velocity" == dynamixel->item_->item_name)
-//      xl_state.goal_velocity = read_value;
-//    else if ("profile_acceleration" == dynamixel->item_->item_name)
-//      xl_state.profile_acceleration = read_value;
-//    else if ("profile_velocity" == dynamixel->item_->item_name)
-//      xl_state.profile_velocity = read_value;
-//    else if ("goal_position" == dynamixel->item_->item_name)
-//      xl_state.goal_position = read_value;
-//    else if ("realtime_tick" == dynamixel->item_->item_name)
-//      xl_state.realtime_tick = read_value;
-//    else if ("moving" == dynamixel->item_->item_name)
-//      xl_state.moving = read_value;
-//    else if ("moving_status" == dynamixel->item_->item_name)
-//      xl_state.moving_status = read_value;
-//    else if ("present_pwm" == dynamixel->item_->item_name)
-//      xl_state.present_pwm = read_value;
-//    else if ("present_load" == dynamixel->item_->item_name)
-//      xl_state.present_load = read_value;
-//    else if ("present_current" == dynamixel->item_->item_name)
-//      xl_state.present_current = read_value;
-//    else if ("present_velocity" == dynamixel->item_->item_name)
-//      xl_state.present_velocity = read_value;
-//    else if ("present_position" == dynamixel->item_->item_name)
-//      xl_state.present_position = read_value;
-//    else if ("velocity_trajectory" == dynamixel->item_->item_name)
-//      xl_state.velocity_trajectory = read_value;
-//    else if ("position_trajectory" == dynamixel->item_->item_name)
-//      xl_state.position_trajectory = read_value;
-//    else if ("present_input_voltage" == dynamixel->item_->item_name)
-//      xl_state.present_input_voltage = read_value;
-//    else if ("present_temperature" == dynamixel->item_->item_name)
-//      xl_state.present_temperature = read_value;
-//  }
+  dynamixel_status_pub_.publish(xl320_state);
+}
 
-//  dynamixel_status_pub_.publish(xl_state);
-//}
+void SingleDynamixelMonitor::XL(void)
+{
+  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  dynamixel_workbench_msgs::XL xl_state;
+
+  for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
+  {
+    int32_t read_value = 0;
+    dynamixel_driver_->readRegister(dxl_id_, item_ptr[index].item_name, &read_value);
+
+    if (!strncmp(item_ptr[index].item_name, "Model_Number", strlen("Model_Number")))
+      xl_state.Model_Number = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Firmware_Version", strlen("Firmware_Version")))
+      xl_state.Firmware_Version = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "ID", strlen("ID")))
+      xl_state.ID = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Baud_Rate", strlen("Baud_Rate")))
+      xl_state.Baud_Rate = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Return_Delay_Time", strlen("Return_Delay_Time")))
+      xl_state.Return_Delay_Time = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Drive_Mode", strlen("Drive_Mode")))
+      xl_state.Drive_Mode = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Operating_Mode", strlen("Operating_Mode")))
+      xl_state.Operating_Mode = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Secondary_ID", strlen("Secondary_ID")))
+      xl_state.Secondary_ID = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Protocol_Version", strlen("Protocol_Version")))
+      xl_state.Protocol_Version = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Homing_Offset", strlen("Homing_Offset")))
+      xl_state.Homing_Offset = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Moving_Threshold", strlen("Moving_Threshold")))
+      xl_state.Moving_Threshold = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Temperature_Limit", strlen("Temperature_Limit")))
+      xl_state.Temperature_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Max_Voltage_Limit", strlen("Max_Voltage_Limit")))
+      xl_state.Max_Voltage_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Min_Voltage_Limit", strlen("Min_Voltage_Limit")))
+      xl_state.Min_Voltage_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "PWM_Limit", strlen("PWM_Limit")))
+      xl_state.PWM_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Acceleration_Limit", strlen("Acceleration_Limit")))
+      xl_state.Acceleration_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Velocity_Limit", strlen("Velocity_Limit")))
+      xl_state.Velocity_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Max_Position_Limit", strlen("Max_Position_Limit")))
+      xl_state.Max_Position_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Min_Position_Limit", strlen("Min_Position_Limit")))
+      xl_state.Min_Position_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Shutdown", strlen("Shutdown")))
+      xl_state.Shutdown = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Torque_Enable", strlen("Torque_Enable")))
+      xl_state.Torque_Enable = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "LED", strlen("LED")))
+      xl_state.LED = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Status_Return_Level", strlen("Status_Return_Level")))
+      xl_state.Status_Return_Level = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Registered_Instruction", strlen("Registered_Instruction")))
+      xl_state.Registered_Instruction = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Hardware_Error_Status", strlen("Hardware_Error_Status")))
+      xl_state.Hardware_Error_Status = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Velocity_I_Gain", strlen("Velocity_I_Gain")))
+      xl_state.Velocity_I_Gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Velocity_P_Gain", strlen("Velocity_P_Gain")))
+      xl_state.Velocity_P_Gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Position_D_Gain", strlen("Position_D_Gain")))
+      xl_state.Position_D_Gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Position_I_Gain", strlen("Position_I_Gain")))
+      xl_state.Position_I_Gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Position_P_Gain", strlen("Position_P_Gain")))
+      xl_state.Position_P_Gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Feedforward_2nd_Gain", strlen("Feedforward_2nd_Gain")))
+      xl_state.Feedforward_2nd_Gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Feedforward_1st_Gain", strlen("Feedforward_1st_Gain")))
+      xl_state.Feedforward_1st_Gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Bus_Watchdog", strlen("Bus_Watchdog")))
+      xl_state.Bus_Watchdog = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Goal_PWM", strlen("Goal_PWM")))
+      xl_state.Goal_PWM = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Goal_Velocity", strlen("Goal_Velocity")))
+      xl_state.Goal_Velocity = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Profile_Acceleration", strlen("Profile_Acceleration")))
+      xl_state.Profile_Acceleration = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Profile_Velocity", strlen("Profile_Velocity")))
+      xl_state.Profile_Velocity = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Goal_Position", strlen("Goal_Position")))
+      xl_state.Goal_Position = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Realtime_Tick", strlen("Realtime_Tick")))
+      xl_state.Realtime_Tick = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Moving", strlen("Moving")))
+      xl_state.Moving = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Moving_Status", strlen("Moving_Status")))
+      xl_state.Moving_Status = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_PWM", strlen("Present_PWM")))
+      xl_state.Present_PWM = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Load", strlen("Present_Load")))
+      xl_state.Present_Load = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Velocity", strlen("Present_Velocity")))
+      xl_state.Present_Velocity = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Position", strlen("Present_Position")))
+      xl_state.Present_Position = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Velocity_Trajectory", strlen("Velocity_Trajectory")))
+      xl_state.Velocity_Trajectory = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Position_Trajectory", strlen("Position_Trajectory")))
+      xl_state.Position_Trajectory = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Input_Voltage", strlen("Present_Input_Voltage")))
+      xl_state.Present_Input_Voltage = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Temperature", strlen("Present_Temperature")))
+      xl_state.Present_Temperature = read_value;
+  }
+
+  dynamixel_status_pub_.publish(xl_state);
+}
 
 //bool SingleDynamixelMonitor::XM(void)
 //{

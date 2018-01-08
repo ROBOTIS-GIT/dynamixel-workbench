@@ -82,12 +82,16 @@ class SingleDynamixelMonitor
                                    dynamixel_workbench_msgs::DynamixelCommand::Response &res);
 
   void AX(void);
-//  void RX(void);
+  void RX(void);
 //  void EX(void);
-//  void MX(void);
-//  void XL320(void);
-//  void XL(void);
+  void MX(void);
+  void MXExt(void);
+  void MX2(void);
+  void MX2Ext(void);
+  void XL320(void);
+  void XL(void);
 //  void XM(void);
+//  void XMExt(void);
 //  void XH(void);
 //  void PRO(void);
 };
