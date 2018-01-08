@@ -548,7 +548,7 @@ bool DynamixelDriver::reset(uint8_t id)
         else
           baud = 57600;
       }
-//      baud = portHandler_->getBaudRate();
+
       if (portHandler_->setBaudRate(baud) == false)
       {
 #if DEBUG
@@ -626,8 +626,7 @@ bool DynamixelDriver::reset(uint8_t id)
 #endif
 #endif
 
-      baud = portHandler_->getBaudRate();
-      if (portHandler_->setBaudRate(baud) == false)
+      if (portHandler_->setBaudRate(57600) == false)
       {
 #if DEBUG
 #if defined(__OPENCR__) || defined(__OPENCM904__)
