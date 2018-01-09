@@ -545,13 +545,10 @@ bool DynamixelDriver::reset(uint8_t id)
           tools_[factor].dxl_info_[i].id = new_id;
       }
 
-      for (int i = 0; i < tools_cnt_; i++)
-      {
-        if (!strncmp(getModelName(id), "AX", strlen("AX")) || !strncmp(getModelName(id), "MX-12W", strlen("MX-12W")))
-          baud = 1000000;
-        else
-          baud = 57600;
-      }
+      if (!strncmp(getModelName(new_id), "AX", strlen("AX")) || !strncmp(getModelName(new_id), "MX-12W", strlen("MX-12W")))
+        baud = 1000000;
+      else
+        baud = 57600;
 
       if (portHandler_->setBaudRate(baud) == false)
       {
