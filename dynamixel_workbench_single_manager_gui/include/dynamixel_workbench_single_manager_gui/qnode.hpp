@@ -53,13 +53,24 @@ class QNode : public QThread
 
   // TODO : Add new Dynamixel
   void AXStatusMsgCallback(const dynamixel_workbench_msgs::AX::ConstPtr &msg);
+
   void RXStatusMsgCallback(const dynamixel_workbench_msgs::RX::ConstPtr &msg);
+
   void MXStatusMsgCallback(const dynamixel_workbench_msgs::MX::ConstPtr &msg);
+  void MXExtStatusMsgCallback(const dynamixel_workbench_msgs::MXExt::ConstPtr &msg);
+  void MX2StatusMsgCallback(const dynamixel_workbench_msgs::MX2::ConstPtr &msg);
+  void MX2ExtStatusMsgCallback(const dynamixel_workbench_msgs::MX2Ext::ConstPtr &msg);
+
   void EXStatusMsgCallback(const dynamixel_workbench_msgs::EX::ConstPtr &msg);
 
+  void XL320StatusMsgCallback(const dynamixel_workbench_msgs::XL320::ConstPtr &msg);
   void XLStatusMsgCallback(const dynamixel_workbench_msgs::XL::ConstPtr &msg);
+
   void XMStatusMsgCallback(const dynamixel_workbench_msgs::XM::ConstPtr &msg);
+  void XMExtStatusMsgCallback(const dynamixel_workbench_msgs::XMExt::ConstPtr &msg);
+
   void XHStatusMsgCallback(const dynamixel_workbench_msgs::XH::ConstPtr &msg);
+
   void PROStatusMsgCallback(const dynamixel_workbench_msgs::PRO::ConstPtr &msg);
 
   bool sendSetIdMsg(uint8_t set_id);

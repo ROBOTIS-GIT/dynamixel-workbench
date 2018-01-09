@@ -112,9 +112,13 @@ void MainWindow::on_factory_reset_push_button_clicked(bool check)
 
 void MainWindow::on_set_position_zero_push_button_clicked(bool check)
 {
-  qnode_.setPositionZeroMsg(dynamixel_->value_of_0_radian_position_);
-  ui_.set_address_value_spin_box->setValue(dynamixel_->value_of_0_radian_position_);
-  ui_.set_address_value_dial->setValue(dynamixel_->value_of_0_radian_position_);
+  qnode_.setPositionZeroMsg(dynamixel_tool_->getValueOfZeroRadianPosition());
+  ui_.set_address_value_spin_box->setValue(dynamixel_tool_->getValueOfZeroRadianPosition());
+  ui_.set_address_value_dial->setValue(dynamixel_tool_->getValueOfZeroRadianPosition());
+
+  //  qnode_.setPositionZeroMsg(dynamixel_->value_of_0_radian_position_);
+  //  ui_.set_address_value_spin_box->setValue(dynamixel_->value_of_0_radian_position_);
+  //  ui_.set_address_value_dial->setValue(dynamixel_->value_of_0_radian_position_);
 }
 
 void MainWindow::changeID()
@@ -149,7 +153,8 @@ void MainWindow::changeOperatingMode()
   {
     if (!qnode_.sendSetOperatingModeMsg(ui_.set_operating_mode_combo_box->currentText().toStdString(), dynamixel_info_->lode_info.protocol_version,
                                                                                                        dynamixel_info_->model_name,
-                                                                                                       dynamixel_->value_of_max_radian_position_))
+                                                                                                       dynamixel_tool_->getValueOfMaxRadianPosition()))
+//                                                                                                       dynamixel_->value_of_max_radian_position_))
       errorMsg();
     else
       rightMsg();
@@ -176,8 +181,10 @@ void MainWindow::setEachAddressFunction(QString index)
   {
     ui_.set_position_zero_push_button->setVisible(true);
     ui_.set_address_value_dial->setEnabled(true);
-    ui_.set_address_value_dial->setRange(dynamixel_->value_of_min_radian_position_, dynamixel_->value_of_max_radian_position_);
-    ui_.set_address_value_spin_box->setRange(dynamixel_->value_of_min_radian_position_, dynamixel_->value_of_max_radian_position_);
+    ui_.set_address_value_dial->setRange(dynamixel_tool_->getValueOfMinRadianPosition(), dynamixel_tool_->getValueOfMaxRadianPosition());
+    ui_.set_address_value_spin_box->setRange(dynamixel_tool_->getValueOfMinRadianPosition(), dynamixel_tool_->getValueOfMaxRadianPosition());
+//    ui_.set_address_value_dial->setRange(dynamixel_->value_of_min_radian_position_, dynamixel_->value_of_max_radian_position_);
+//    ui_.set_address_value_spin_box->setRange(dynamixel_->value_of_min_radian_position_, dynamixel_->value_of_max_radian_position_);
   }
   else
   {
@@ -200,8 +207,10 @@ void MainWindow::updateDynamixelInfoLineEdit(dynamixel_workbench_msgs::Dynamixel
   dynamixel_info_->model_number = dynamixel_info.model_number;
   dynamixel_info_->model_name   = dynamixel_info.model_name;
 
-  dynamixel_ = new dynamixel_tool::DynamixelTool(dynamixel_info_->model_id,
-                                                 dynamixel_info_->model_number);
+//  dynamixel_ = new dynamixel_tool::DynamixelTool(dynamixel_info_->model_id,
+//                                                 dynamixel_info_->model_number);
+  dynamixel_tool_ = new DynamixelTool();
+  dynamixel_tool_->addTool(dynamixel_info_->model_number, dynamixel_info_->model_id);
 
   ui_.get_device_name_line_edit->setText(QString::fromStdString(dynamixel_info_->lode_info.device_name));
   ui_.get_id_line_edit->setText(QString::number(dynamixel_info_->model_id));
@@ -272,13 +281,13 @@ void MainWindow::setBaudRateComboBox()
 
   ui_.set_baud_rate_combo_box->addItem((QString("Select Baudrate")));
 
-  for (std::vector<uint32_t>::size_type num = 0; num < baud_rate.size(); ++num)
-  {
-    if (dynamixel_->baud_rate_table_.find(baud_rate[num])->second != 0)
-    {
-      ui_.set_baud_rate_combo_box->addItem(QString::number(baud_rate[num]));
-    }
-  }
+//  for (std::vector<uint32_t>::size_type num = 0; num < baud_rate.size(); ++num)
+//  {
+//    if (dynamixel_->baud_rate_table_.find(baud_rate[num])->second != 0)
+//    {
+//      ui_.set_baud_rate_combo_box->addItem(QString::number(baud_rate[num]));
+//    }
+//  }
 }
 
 void MainWindow::setOperatingModeComboBox()
@@ -353,27 +362,51 @@ void MainWindow::setAddressComboBox(bool torque_enable)
     ui_.set_address_name_combo_box->removeItem(0);
   }
 
-  // Add item on combo box
-  for (dynamixel_->it_ctrl_ = dynamixel_->ctrl_table_.begin();
-       dynamixel_->it_ctrl_ != dynamixel_->ctrl_table_.end();
-       dynamixel_->it_ctrl_++)
+  uint16_t torque_enable_address = 0;
+  ControlTableItem* item_ptr = dynamixel_tool_->getControlItemPtr();
+
+  for (int item_num = 0; item_num < dynamixel_tool_->getTheNumberOfItem(); item_num++)
   {
-    dynamixel_->item_ = dynamixel_->ctrl_table_[dynamixel_->it_ctrl_->first.c_str()];
+    if (!strncmp(item_ptr[item_num].item_name, "Torque_Enable", strlen("Torque_Enable")))
+    {
+      torque_enable_address = item_num;
+    }
+  }
+
+  // Add item on combo box
+  for (int item_num = 0; item_num < dynamixel_tool_->getTheNumberOfItem(); item_num++)
+  {
     if (torque_enable)
     {
-      if ((dynamixel_->item_->access_type == dynamixel_tool::READ_WRITE) && (dynamixel_->item_->memory_type == dynamixel_tool::RAM))
-      {
-        ui_.set_address_name_combo_box->addItem(QString::fromStdString(dynamixel_->item_->item_name));
-      }
+      ui_.set_address_name_combo_box->addItem(QString::fromStdString(item_ptr[item_num].item_name));
     }
     else
     {
-      if (dynamixel_->item_->access_type == dynamixel_tool::READ_WRITE)
-      {
-        ui_.set_address_name_combo_box->addItem(QString::fromStdString(dynamixel_->item_->item_name));
-      }
+      if (item_num >= torque_enable_address)
+        ui_.set_address_name_combo_box->addItem(QString::fromStdString(item_ptr[item_num].item_name));
     }
   }
+
+//  for (dynamixel_->it_ctrl_ = dynamixel_->ctrl_table_.begin();
+//       dynamixel_->it_ctrl_ != dynamixel_->ctrl_table_.end();
+//       dynamixel_->it_ctrl_++)
+//  {
+//    dynamixel_->item_ = dynamixel_->ctrl_table_[dynamixel_->it_ctrl_->first.c_str()];
+//    if (torque_enable)
+//    {
+//      if ((dynamixel_->item_->access_type == dynamixel_tool::READ_WRITE) && (dynamixel_->item_->memory_type == dynamixel_tool::RAM))
+//      {
+//        ui_.set_address_name_combo_box->addItem(QString::fromStdString(dynamixel_->item_->item_name));
+//      }
+//    }
+//    else
+//    {
+//      if (dynamixel_->item_->access_type == dynamixel_tool::READ_WRITE)
+//      {
+//        ui_.set_address_name_combo_box->addItem(QString::fromStdString(dynamixel_->item_->item_name));
+//      }
+//    }
+//  }
 }
 
 void MainWindow::InitUserInterface()

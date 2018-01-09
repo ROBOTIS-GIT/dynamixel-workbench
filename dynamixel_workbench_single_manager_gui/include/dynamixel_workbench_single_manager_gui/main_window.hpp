@@ -26,7 +26,7 @@
 #include "qnode.hpp"
 
 #include "dynamixel_workbench_msgs/DynamixelCommand.h"
-#include "dynamixel_workbench_toolbox/dynamixel_tool.h"
+#include "dynamixel_driver.h"
 
 #endif
 
@@ -79,7 +79,7 @@ class MainWindow : public QMainWindow
   qnode::QNode qnode_;
 
   DynamixelInfo *dynamixel_info_;
-  dynamixel_tool::DynamixelTool *dynamixel_;
+  DynamixelTool *dynamixel_tool_;
 
   bool reboot_button_;
   bool operating_mode_spinbox_;
