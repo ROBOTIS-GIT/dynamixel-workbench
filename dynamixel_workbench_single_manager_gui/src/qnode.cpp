@@ -127,8 +127,10 @@ bool QNode::sendSetOperatingModeMsg(std::string index, float protocol_version, s
   }
   else
   {
-    if (model_name.find("XM") != std::string::npos ||
-        model_name.find("XH") != std::string::npos)
+    if (model_name.find("XM") != std::string::npos      ||
+        model_name.find("XH") != std::string::npos      ||
+        model_name.find("MX-64-2") != std::string::npos ||
+        model_name.find("MX-106-2") != std::string::npos )
     {
       if (index == "current_control")
       {
@@ -158,7 +160,7 @@ bool QNode::sendSetOperatingModeMsg(std::string index, float protocol_version, s
         else
           return false;
       }
-      else if (index == "position_control_based_on_current")
+      else if (index == "current_based_position_control")
       {
         if (sendCommandMsg("addr", "Operating_Mode", 5))
           return true;
@@ -190,7 +192,8 @@ bool QNode::sendSetOperatingModeMsg(std::string index, float protocol_version, s
           return false;
       }
     }
-    else if (model_name.find("XL430-W250") != std::string::npos)
+    else if (model_name.find("XL430-W250") != std::string::npos ||
+             model_name.find("MX-28-2") != std::string::npos     )
     {
       if (index == "velocity_control")
       {
@@ -372,12 +375,12 @@ void QNode::initDynamixelStateSubscriber()
     if (dynamixel_info_.model_name.find("XM430-W210") != std::string::npos ||
         dynamixel_info_.model_name.find("XM430-W350") != std::string::npos)
     {
-      dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + std::string("XL"), 10, &QNode::XMStatusMsgCallback, this);
+      dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + std::string("XM"), 10, &QNode::XMStatusMsgCallback, this);
     }
     else if (dynamixel_info_.model_name.find("XM540-W150") != std::string::npos ||
              dynamixel_info_.model_name.find("XM540-W270") != std::string::npos)
     {
-      dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + std::string("XL"), 10, &QNode::XMExtStatusMsgCallback, this);
+      dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + std::string("XM"), 10, &QNode::XMExtStatusMsgCallback, this);
     }
   }
   else if (dynamixel_info_.model_name.find("XH") != std::string::npos)
