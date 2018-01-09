@@ -41,7 +41,7 @@ SingleDynamixelMonitor::SingleDynamixelMonitor(void)
   // Init Dynamixel Driver
   dynamixel_driver_ = new DynamixelDriver;
 
-  dynamixel_driver_->begin(device_name_.c_str(), dxl_baud_rate_);
+  dynamixel_driver_->init(device_name_.c_str(), dxl_baud_rate_);
 
 
   if(use_ping == true)
@@ -327,10 +327,7 @@ bool SingleDynamixelMonitor::changeBaudrate(uint32_t new_baud_rate)
 
     if (isOK)
     {
-      bool error = false;
-      dynamixel_driver_->setBaudrate(new_baud_rate, &error);
-
-      if(error == false)
+      if (dynamixel_driver_->setBaudrate(new_baud_rate))
       {
         printf("Success to change baudrate! [ BAUD RATE: %d ]\n", new_baud_rate);
         return true;
@@ -363,10 +360,7 @@ bool SingleDynamixelMonitor::changeProtocolVersion(float ver)
 
     if (isOK)
     {
-      bool error = false;
-      dynamixel_driver_->setPacketHandler(ver, &error);
-
-      if (error == false)
+      if (dynamixel_driver_->setPacketHandler(ver))
       {
         printf("Success to change protocol version [PROTOCOL VERSION: %.1f]\n", dynamixel_driver_->getProtocolVersion());
         return true;

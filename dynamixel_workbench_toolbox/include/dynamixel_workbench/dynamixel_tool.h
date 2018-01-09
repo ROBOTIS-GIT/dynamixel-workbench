@@ -59,8 +59,8 @@ class DynamixelTool
   DynamixelTool();
   ~DynamixelTool();
 
-  void begin(const char* model_name, uint8_t id);
-  void begin(uint16_t model_number, uint8_t id);
+  void addTool(const char* model_name, uint8_t id);
+  void addTool(uint16_t model_number, uint8_t id);
 
   void addDXL(uint16_t model_number, uint8_t id);
   void addDXL(const char* model_name, uint8_t id);

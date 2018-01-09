@@ -37,7 +37,7 @@ void DynamixelDriver::setTools(uint16_t model_number, uint8_t id)
 {
   if (tools_cnt_ == 0)
   {
-    tools_[tools_cnt_].begin(model_number, id);
+    tools_[tools_cnt_].addTool(model_number, id);
   }
   else
   {
@@ -47,28 +47,26 @@ void DynamixelDriver::setTools(uint16_t model_number, uint8_t id)
     }
     else
     {
-      tools_[tools_cnt_].begin(model_number, id);
+      tools_[tools_cnt_].addTool(model_number, id);
     }
   }
 
   tools_cnt_++;
 }
 
-bool DynamixelDriver::begin(const char *device_name, uint32_t baud_rate)
+bool DynamixelDriver::init(const char *device_name, uint32_t baud_rate)
 {
-  bool error = false;
-
-  setPortHandler(device_name, &error);
-  setBaudrate(baud_rate, &error);
-  setPacketHandler(&error);
-
-  if (error == true)
+  if (setPortHandler(device_name) == false)
     return false;
-  else
-    return true;
+
+  if (setBaudrate(baud_rate) == false)
+    return false;
+
+  if (setPacketHandler() == false)
+    return false;
 }
 
-void DynamixelDriver::setPortHandler(const char *device_name, bool *error)
+bool DynamixelDriver::setPortHandler(const char *device_name)
 {
   portHandler_ = dynamixel::PortHandler::getPortHandler(device_name);
 
@@ -82,7 +80,7 @@ void DynamixelDriver::setPortHandler(const char *device_name, bool *error)
 #endif
 #endif
 
-    *error = false;
+    return true;
   }
   else
   {
@@ -94,11 +92,11 @@ void DynamixelDriver::setPortHandler(const char *device_name, bool *error)
 #endif
 #endif
 
-    *error = true;
+    return false;
   }
 }
 
-void DynamixelDriver::setPacketHandler(bool *error)
+bool DynamixelDriver::setPacketHandler(void)
 {
   packetHandler_1 = dynamixel::PacketHandler::getPacketHandler(1.0);
   packetHandler_2 = dynamixel::PacketHandler::getPacketHandler(2.0);
@@ -113,7 +111,7 @@ void DynamixelDriver::setPacketHandler(bool *error)
 #endif
 #endif
 
-    *error = true;
+    return false;
   }
   else if (packetHandler_2->getProtocolVersion() != 2.0)
   {
@@ -125,7 +123,7 @@ void DynamixelDriver::setPacketHandler(bool *error)
 #endif
 #endif
 
-    *error = true;
+    return false;
   }
   else
   {
@@ -137,11 +135,11 @@ void DynamixelDriver::setPacketHandler(bool *error)
 #endif
 #endif
 
-    *error = false;
+    return true;
   }
 }
 
-void DynamixelDriver::setPacketHandler(float protocol_version, bool *error)
+bool DynamixelDriver::setPacketHandler(float protocol_version)
 {
   packetHandler_ = dynamixel::PacketHandler::getPacketHandler(protocol_version);
 
@@ -155,7 +153,7 @@ void DynamixelDriver::setPacketHandler(float protocol_version, bool *error)
 #endif
 #endif
 
-    *error = true;
+    return false;
   }
   else
   {
@@ -167,11 +165,11 @@ void DynamixelDriver::setPacketHandler(float protocol_version, bool *error)
 #endif
 #endif
 
-    *error = false;
+    return true;
   }
 }
 
-void DynamixelDriver::setBaudrate(uint32_t baud_rate, bool *error)
+bool DynamixelDriver::setBaudrate(uint32_t baud_rate)
 {
   if (portHandler_->setBaudRate(baud_rate))
   {
@@ -185,7 +183,7 @@ void DynamixelDriver::setBaudrate(uint32_t baud_rate, bool *error)
 #endif
 #endif
 
-    *error = false;
+    return true;
   }
   else
   {
@@ -197,16 +195,16 @@ void DynamixelDriver::setBaudrate(uint32_t baud_rate, bool *error)
 #endif
 #endif
 
-    *error = true;
+    return false;
   }
 }
 
-float DynamixelDriver::getProtocolVersion()
+float DynamixelDriver::getProtocolVersion(void)
 {
   return packetHandler_->getProtocolVersion();
 }
 
-int DynamixelDriver::getBaudrate()
+int DynamixelDriver::getBaudrate(void)
 {
   return portHandler_->getBaudRate();
 }

@@ -77,15 +77,15 @@ class DynamixelDriver
   DynamixelDriver();
   ~DynamixelDriver();
 
-  bool begin(const char* device_name = "/dev/ttyUSB0", uint32_t baud_rate = 57600);
+  bool init(const char* device_name = "/dev/ttyUSB0", uint32_t baud_rate = 57600);
 
-  void setPortHandler(const char *device_name, bool *error);
-  void setPacketHandler(bool *error);
-  void setPacketHandler(float protocol_version, bool *error);
-  void setBaudrate(uint32_t baud_rate, bool *error);
+  bool setPortHandler(const char *device_name);
+  bool setPacketHandler(void);
+  bool setPacketHandler(float protocol_version);
+  bool setBaudrate(uint32_t baud_rate);
 
-  float getProtocolVersion();
-  int getBaudrate();
+  float getProtocolVersion(void);
+  int getBaudrate(void);
   char* getModelName(uint8_t id);
   uint16_t getModelNum(uint8_t id);
   ControlTableItem* getControlItemPtr(uint8_t id);

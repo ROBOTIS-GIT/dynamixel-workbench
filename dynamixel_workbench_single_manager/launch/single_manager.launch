@@ -1,5 +1,5 @@
 <launch>
-  <arg name="use_ping"         default="true"/>
+  <arg name="use_ping"         default="false"/>
   <arg name="id"               default="1"/>
 
   <arg name="device_name"      default="/dev/ttyUSB0"/>

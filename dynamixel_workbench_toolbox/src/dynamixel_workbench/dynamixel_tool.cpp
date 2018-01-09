@@ -22,7 +22,7 @@ DynamixelTool::DynamixelTool() : dxl_info_cnt_(0), the_number_of_item_(0){}
 
 DynamixelTool::~DynamixelTool(){}
 
-void DynamixelTool::begin(const char* model_name, uint8_t id)
+void DynamixelTool::addTool(const char* model_name, uint8_t id)
 {
   strcpy(dxl_info_[dxl_info_cnt_].model_name, model_name);
   setModelNum(model_name);
@@ -32,7 +32,7 @@ void DynamixelTool::begin(const char* model_name, uint8_t id)
   dxl_info_cnt_++;
 }
 
-void DynamixelTool::begin(uint16_t model_number, uint8_t id)
+void DynamixelTool::addTool(uint16_t model_number, uint8_t id)
 {
   setModelName(model_number);
   dxl_info_[dxl_info_cnt_].model_num = model_number;
