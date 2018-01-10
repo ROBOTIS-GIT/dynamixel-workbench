@@ -82,7 +82,7 @@ class DynamixelTool
   int32_t convertRadian2Value(double radian);
   double convertValue2Velocity(int32_t value);
   int32_t convertVelocity2Value(double velocity);
-  double convertValue2Torque(int32_t value);
+  double convertValue2Torque(int16_t value);
   int32_t convertTorque2Value(double torque);
 
  private:

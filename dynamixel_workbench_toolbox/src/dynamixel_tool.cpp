@@ -179,7 +179,7 @@ int32_t DynamixelTool::convertVelocity2Value(double velocity)
   return (int32_t) (velocity * velocity_to_value_ratio_);
 }
 
-double DynamixelTool::convertValue2Torque(int32_t value)
+double DynamixelTool::convertValue2Torque(int16_t value)
 {
   return (double) value / torque_to_current_value_ratio_;
 }
