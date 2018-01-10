@@ -31,7 +31,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
  INCLUDE_DIRS include
  LIBRARIES dynamixel_workbench_controllers
- CATKIN_DEPENDS roscpp std_msgs dynamixel_workbench_msgs
+ CATKIN_DEPENDS roscpp std_msgs dynamixel_sdk dynamixel_workbench_msgs dynamixel_workbench_toolbox
 )
 
 ################################################################################
@@ -42,9 +42,9 @@ include_directories(
   include
 )
 
-#add_executable(position_control src/position_control.cpp)
-#add_dependencies(position_control ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-#target_link_libraries(position_control ${catkin_LIBRARIES})
+add_executable(position_control src/position_control.cpp)
+add_dependencies(position_control ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(position_control ${catkin_LIBRARIES})
 
 #add_executable(velocity_control src/velocity_control.cpp)
 #add_dependencies(velocity_control ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
@@ -61,11 +61,11 @@ include_directories(
 #################################################################################
 ## Install
 #################################################################################
-#install(TARGETS position_control
-#  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-#)
+install(TARGETS position_control
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 #install(TARGETS velocity_control
 #  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
