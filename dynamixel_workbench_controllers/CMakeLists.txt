@@ -38,8 +38,8 @@ catkin_package(
 # Build
 ################################################################################
 include_directories(
-  ${catkin_INCLUDE_DIRS}
   include
+  ${catkin_INCLUDE_DIRS}
 )
 
 add_executable(position_control src/position_control.cpp)
