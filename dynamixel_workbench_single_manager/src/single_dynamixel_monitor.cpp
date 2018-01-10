@@ -190,7 +190,7 @@ void SingleDynamixelMonitor::initDynamixelCommandServer(void)
 
 bool SingleDynamixelMonitor::showDynamixelControlTable(void)
 {
-  bool isOK = false;
+  bool comm_result = false;
   int32_t torque_status = 0;
   uint16_t torque_enable_address = 0;
   ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
@@ -203,7 +203,7 @@ bool SingleDynamixelMonitor::showDynamixelControlTable(void)
     }
   }
 
-  isOK = dynamixel_driver_->readRegister(dxl_id_, "Torque_Enable", &torque_status);
+  comm_result = dynamixel_driver_->readRegister(dxl_id_, "Torque_Enable", &torque_status);
 
   for (int item_num = 0; item_num < dynamixel_driver_->getTheNumberOfItem(dxl_id_); item_num++)
   {
@@ -218,7 +218,7 @@ bool SingleDynamixelMonitor::showDynamixelControlTable(void)
     }
   }
 
-  return isOK;
+  return comm_result;
 }
 
 bool SingleDynamixelMonitor::checkValidationCommand(std::string cmd)
@@ -237,17 +237,17 @@ bool SingleDynamixelMonitor::checkValidationCommand(std::string cmd)
 
 bool SingleDynamixelMonitor::changeId(uint8_t new_id)
 {
-  bool isOK = false;
+  bool comm_result = false;
 
   if (new_id > 0 && new_id < 254)
   {
-    isOK = dynamixel_driver_->writeRegister(dxl_id_, "Torque_Enable", false);
+    comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Torque_Enable", false);
 
-    isOK = dynamixel_driver_->writeRegister(dxl_id_, "ID", new_id);
+    comm_result = dynamixel_driver_->writeRegister(dxl_id_, "ID", new_id);
     millis(1000);
 
     uint16_t model_number = 0;
-    if (isOK && dynamixel_driver_->ping(new_id, &model_number))
+    if (comm_result && dynamixel_driver_->ping(new_id, &model_number))
     {
       dxl_id_ = new_id;
 
@@ -263,18 +263,19 @@ bool SingleDynamixelMonitor::changeId(uint8_t new_id)
   else
   {
     printf("Dynamixel ID can be set 1~253\n");
-    return isOK;
+    return comm_result;
   }
 }
 
 bool SingleDynamixelMonitor::changeBaudrate(uint32_t new_baud_rate)
 {
-  bool isOK = false;
+  bool comm_result = false;
   bool check_baud_rate = false;
 
-  uint64_t baud_rate_list[5] = {9600, 57600, 115200, 1000000, 2000000};
+  uint64_t baud_rate_list[14] = {9600, 19200, 57600, 115200, 200000, 250000, 400000, 500000,
+                                 1000000, 2000000, 3000000, 4000000, 4500000, 10500000};
 
-  for (int i = 0; i < 5; i++)
+  for (int i = 0; i < 14; i++)
   {
     if (baud_rate_list[i] == new_baud_rate)
       check_baud_rate = true;
@@ -283,49 +284,65 @@ bool SingleDynamixelMonitor::changeBaudrate(uint32_t new_baud_rate)
   if (check_baud_rate == false)
   {
     printf("Failed to change [ BAUD RATE: %d ]\n", new_baud_rate);
-    printf("Valid baud rate is [9600, 57600, 115200, 1000000, 2000000]\n");
+    printf("Valid baud rate is [9600, 57600, 115200, 1000000, 2000000,...]\n");
     printf("You can choose other baud rate in GUI,\n");
 
     return false;
   }
   else
   {
-    isOK = dynamixel_driver_->writeRegister(dxl_id_, "Torque_Enable", false);
+    comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Torque_Enable", false);
 
     if (dynamixel_driver_->getProtocolVersion() == 1.0)
     {
       if (new_baud_rate == 9600)
-        isOK = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 207);
+        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 207);
+      else if (new_baud_rate == 19200)
+        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 103);
       else if (new_baud_rate == 57600)
-        isOK = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 34);
+        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 34);
       else if (new_baud_rate == 115200)
-        isOK = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 16);
+        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 16);
+      else if (new_baud_rate == 200000)
+        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 9);
+      else if (new_baud_rate == 250000)
+        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 7);
+      else if (new_baud_rate == 400000)
+        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 4);
+      else if (new_baud_rate == 500000)
+        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 3);
       else if (new_baud_rate == 1000000)
-        isOK = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 1);
-      else if (new_baud_rate == 2000000)
-        isOK = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 9);
+        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 1);
       else
-        isOK = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 1);
+        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 34);
     }
     else if (dynamixel_driver_->getProtocolVersion() == 2.0)
     {
       if (new_baud_rate == 9600)
-        isOK = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 0);
+        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 0);
       else if (new_baud_rate == 57600)
-        isOK = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 1);
+        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 1);
       else if (new_baud_rate == 115200)
-        isOK = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 2);
+        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 2);
       else if (new_baud_rate == 1000000)
-        isOK = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 3);
+        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 3);
       else if (new_baud_rate == 2000000)
-        isOK = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 4);
+        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 4);
+      else if (new_baud_rate == 3000000)
+        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 5);
+      else if (new_baud_rate == 4000000)
+        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 6);
+      else if (new_baud_rate == 4500000)
+        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 7);
+      else if (new_baud_rate == 10500000)
+        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 8);
       else
-        isOK = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 3);
+        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 1);
     }
 
     millis(2000);
 
-    if (isOK)
+    if (comm_result)
     {
       if (dynamixel_driver_->setBaudrate(new_baud_rate))
       {
@@ -349,16 +366,16 @@ bool SingleDynamixelMonitor::changeBaudrate(uint32_t new_baud_rate)
 bool SingleDynamixelMonitor::changeProtocolVersion(float ver)
 {
   bool error = false;
-  bool isOK = false;
+  bool comm_result = false;
 
   if (ver == 1.0 || ver == 2.0)
   {
-    isOK = dynamixel_driver_->writeRegister(dxl_id_, "Torque_Enable", false);
+    comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Torque_Enable", false);
 
-    isOK = dynamixel_driver_->writeRegister(dxl_id_, "Protocol_Version", (int)(ver));
+    comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Protocol_Version", (int)(ver));
     millis(2000);
 
-    if (isOK)
+    if (comm_result)
     {
       if (dynamixel_driver_->setPacketHandler(ver))
       {

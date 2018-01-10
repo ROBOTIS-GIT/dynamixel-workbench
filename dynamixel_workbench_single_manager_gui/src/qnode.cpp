@@ -105,7 +105,7 @@ bool QNode::sendSetOperatingModeMsg(std::string index, float protocol_version, s
   {
     if (index == "position_control")
     {
-      if (sendCommandMsg("addr", "CW_Angle_Limit", 0) && sendCommandMsg("addr", "CCW_Angle_Limit", value_of_max_radian_position-1))
+      if (sendCommandMsg("addr", "CW_Angle_Limit", 0) && sendCommandMsg("addr", "CCW_Angle_Limit", value_of_max_radian_position))
         return true;
       else
         return false;
@@ -127,10 +127,139 @@ bool QNode::sendSetOperatingModeMsg(std::string index, float protocol_version, s
   }
   else
   {
-    if (model_name.find("XM") != std::string::npos      ||
-        model_name.find("XH") != std::string::npos      ||
-        model_name.find("MX-64-2") != std::string::npos ||
-        model_name.find("MX-106-2") != std::string::npos )
+    if (model_name.find("MX") != std::string::npos)
+    {
+      if (model_name.find("MX-28-2") != std::string::npos)
+      {
+        if (index == "velocity_control")
+        {
+          if (sendCommandMsg("addr", "Operating_Mode", 1))
+            return true;
+          else
+            return false;
+        }
+        else if (index == "position_control")
+        {
+          if (sendCommandMsg("addr", "Operating_Mode", 3))
+            return true;
+          else
+            return false;
+        }
+        else if (index == "extended_position_control")
+        {
+          if (sendCommandMsg("addr", "Operating_Mode", 4))
+            return true;
+          else
+            return false;
+        }
+        else if (index == "pwm_control")
+        {
+          if (sendCommandMsg("addr", "Operating_Mode", 16))
+            return true;
+          else
+            return false;
+        }
+      }
+      else if (model_name.find("MX-64-2") != std::string::npos ||
+               model_name.find("MX-106-2") != std::string::npos )
+      {
+        if (index == "current_control")
+        {
+          if (sendCommandMsg("addr", "Operating_Mode", 0))
+            return true;
+          else
+            return false;
+        }
+        else if (index == "velocity_control")
+        {
+          if (sendCommandMsg("addr", "Operating_Mode", 1))
+            return true;
+          else
+            return false;
+        }
+        else if (index == "position_control")
+        {
+          if (sendCommandMsg("addr", "Operating_Mode", 3))
+            return true;
+          else
+            return false;
+        }
+        else if (index == "extended_position_control")
+        {
+          if (sendCommandMsg("addr", "Operating_Mode", 4))
+            return true;
+          else
+            return false;
+        }
+        else if (index == "current_based_position_control")
+        {
+          if (sendCommandMsg("addr", "Operating_Mode", 5))
+            return true;
+          else
+            return false;
+        }
+        else if (index == "pwm_control")
+        {
+          if (sendCommandMsg("addr", "Operating_Mode", 16))
+            return true;
+          else
+            return false;
+        }
+      }
+    }
+    if (model_name.find("XL") != std::string::npos)
+    {
+      if (model_name.find("XL-320") != std::string::npos)
+      {
+        if (index == "position_control")
+        {
+          if (sendCommandMsg("addr", "CW_Angle_Limit", 0) && sendCommandMsg("addr", "CCW_Angle_Limit", value_of_max_radian_position-1))
+            return true;
+          else
+            return false;
+        }
+        else if (index == "velocity_control")
+        {
+          if (sendCommandMsg("addr", "CW_Angle_Limit", 0) && sendCommandMsg("addr", "CCW_Angle_Limit", 0))
+            return true;
+          else
+            return false;
+        }
+      }
+      else if (model_name.find("XL430-W250") != std::string::npos)
+      {
+        if (index == "velocity_control")
+        {
+          if (sendCommandMsg("addr", "Operating_Mode", 1))
+            return true;
+          else
+            return false;
+        }
+        else if (index == "position_control")
+        {
+          if (sendCommandMsg("addr", "Operating_Mode", 3))
+            return true;
+          else
+            return false;
+        }
+        else if (index == "extended_position_control")
+        {
+          if (sendCommandMsg("addr", "Operating_Mode", 4))
+            return true;
+          else
+            return false;
+        }
+        else if (index == "pwm_control")
+        {
+          if (sendCommandMsg("addr", "Operating_Mode", 16))
+            return true;
+          else
+            return false;
+        }
+      }
+    }
+    if (model_name.find("XM") != std::string::npos  ||
+        model_name.find("XH") != std::string::npos   )
     {
       if (index == "current_control")
       {
@@ -163,55 +292,6 @@ bool QNode::sendSetOperatingModeMsg(std::string index, float protocol_version, s
       else if (index == "current_based_position_control")
       {
         if (sendCommandMsg("addr", "Operating_Mode", 5))
-          return true;
-        else
-          return false;
-      }
-      else if (index == "pwm_control")
-      {
-        if (sendCommandMsg("addr", "Operating_Mode", 16))
-          return true;
-        else
-          return false;
-      }
-    }
-    else if (model_name.find("XL-320") != std::string::npos)
-    {
-      if (index == "position_control")
-      {
-        if (sendCommandMsg("addr", "CW_Angle_Limit", 0) && sendCommandMsg("addr", "CCW_Angle_Limit", value_of_max_radian_position-1))
-          return true;
-        else
-          return false;
-      }
-      else if (index == "velocity_control")
-      {
-        if (sendCommandMsg("addr", "CW_Angle_Limit", 0) && sendCommandMsg("addr", "CCW_Angle_Limit", 0))
-          return true;
-        else
-          return false;
-      }
-    }
-    else if (model_name.find("XL430-W250") != std::string::npos ||
-             model_name.find("MX-28-2") != std::string::npos     )
-    {
-      if (index == "velocity_control")
-      {
-        if (sendCommandMsg("addr", "Operating_Mode", 1))
-          return true;
-        else
-          return false;
-      }
-      else if (index == "position_control")
-      {
-        if (sendCommandMsg("addr", "Operating_Mode", 3))
-          return true;
-        else
-          return false;
-      }
-      else if (index == "extended_position_control")
-      {
-        if (sendCommandMsg("addr", "Operating_Mode", 4))
           return true;
         else
           return false;
@@ -335,7 +415,16 @@ void QNode::initDynamixelStateSubscriber()
   }
   else if (dynamixel_info_.model_name.find("MX") != std::string::npos)
   {
-    if (dynamixel_info_.model_name.find("MX-12W") != std::string::npos ||
+    if (dynamixel_info_.model_name.find("MX-28-2") != std::string::npos)
+    {
+      dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + std::string("MX"), 10, &QNode::MX2StatusMsgCallback, this);
+    }
+    else if (dynamixel_info_.model_name.find("MX-64-2") != std::string::npos ||
+             dynamixel_info_.model_name.find("MX-106-2") != std::string::npos)
+    {
+      dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + std::string("MX"), 10, &QNode::MX2ExtStatusMsgCallback, this);
+    }
+    else if (dynamixel_info_.model_name.find("MX-12W") != std::string::npos ||
         dynamixel_info_.model_name.find("MX-28") != std::string::npos)
     {
       dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + std::string("MX"), 10, &QNode::MXStatusMsgCallback, this);
@@ -344,15 +433,6 @@ void QNode::initDynamixelStateSubscriber()
              dynamixel_info_.model_name.find("MX-106") != std::string::npos)
     {
       dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + std::string("MX"), 10, &QNode::MXExtStatusMsgCallback, this);
-    }
-    else if (dynamixel_info_.model_name.find("MX-28-2") != std::string::npos)
-    {
-      dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + std::string("MX"), 10, &QNode::MX2StatusMsgCallback, this);
-    }
-    else if (dynamixel_info_.model_name.find("MX-64-2") != std::string::npos ||
-             dynamixel_info_.model_name.find("MX-106-2") != std::string::npos)
-    {
-      dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + std::string("MX"), 10, &QNode::MX2ExtStatusMsgCallback, this);
     }
   }
   else if (dynamixel_info_.model_name.find("EX") != std::string::npos)

@@ -545,7 +545,8 @@ bool DynamixelDriver::reset(uint8_t id)
           tools_[factor].dxl_info_[i].id = new_id;
       }
 
-      if (!strncmp(getModelName(new_id), "AX", strlen("AX")) || !strncmp(getModelName(new_id), "MX-12W", strlen("MX-12W")))
+      if (!strncmp(getModelName(new_id), "AX", strlen("AX")) ||
+          !strncmp(getModelName(new_id), "MX-12W", strlen("MX-12W")))
         baud = 1000000;
       else
         baud = 57600;

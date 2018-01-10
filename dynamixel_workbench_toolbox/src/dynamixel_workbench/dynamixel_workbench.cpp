@@ -96,16 +96,24 @@ bool DynamixelWorkbench::setBaud(uint8_t id, uint32_t new_baud)
   {
     if (new_baud == 9600)
       comm_result = driver_.writeRegister(id, "Baud_Rate", 207);
+    else if (new_baud == 19200)
+      comm_result = driver_.writeRegister(id, "Baud_Rate", 103);
     else if (new_baud == 57600)
       comm_result = driver_.writeRegister(id, "Baud_Rate", 34);
     else if (new_baud == 115200)
       comm_result = driver_.writeRegister(id, "Baud_Rate", 16);
+    else if (new_baud == 200000)
+      comm_result = driver_.writeRegister(id, "Baud_Rate", 9);
+    else if (new_baud == 250000)
+      comm_result = driver_.writeRegister(id, "Baud_Rate", 7);
+    else if (new_baud == 400000)
+      comm_result = driver_.writeRegister(id, "Baud_Rate", 4);
+    else if (new_baud == 500000)
+      comm_result = driver_.writeRegister(id, "Baud_Rate", 3);
     else if (new_baud == 1000000)
       comm_result = driver_.writeRegister(id, "Baud_Rate", 1);
-    else if (new_baud == 2000000)
-      comm_result = driver_.writeRegister(id, "Baud_Rate", 9);
     else
-      comm_result = driver_.writeRegister(id, "Baud_Rate", 1);
+      comm_result = driver_.writeRegister(id, "Baud_Rate", 34);
   }
   else if (driver_.getProtocolVersion() == 2.0)
   {    
@@ -119,8 +127,16 @@ bool DynamixelWorkbench::setBaud(uint8_t id, uint32_t new_baud)
       comm_result = driver_.writeRegister(id, "Baud_Rate", 3);
     else if (new_baud == 2000000)
       comm_result = driver_.writeRegister(id, "Baud_Rate", 4);
+    else if (new_baud == 3000000)
+      comm_result = driver_.writeRegister(id, "Baud_Rate", 5);
+    else if (new_baud == 4000000)
+      comm_result = driver_.writeRegister(id, "Baud_Rate", 6);
+    else if (new_baud == 4500000)
+      comm_result = driver_.writeRegister(id, "Baud_Rate", 7);
+    else if (new_baud == 10500000)
+      comm_result = driver_.writeRegister(id, "Baud_Rate", 8);
     else
-      comm_result = driver_.writeRegister(id, "Baud_Rate", 3);
+      comm_result = driver_.writeRegister(id, "Baud_Rate", 1);
   }
   millis(2000);
 

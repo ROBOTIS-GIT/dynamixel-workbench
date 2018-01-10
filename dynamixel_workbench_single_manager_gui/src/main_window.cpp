@@ -124,9 +124,10 @@ void MainWindow::changeID()
     if (!qnode_.sendSetIdMsg(ui_.set_id_combo_box->currentText().toInt()))
       errorMsg();
     else
+    {
       rightMsg();
-
-    ui_.get_id_line_edit->setText(QString::number(ui_.set_id_combo_box->currentText().toInt()));
+      ui_.get_id_line_edit->setText(QString::number(ui_.set_id_combo_box->currentText().toInt()));
+    }
   }
 }
 
@@ -137,9 +138,10 @@ void MainWindow::changeBaudrate()
     if (!qnode_.sendSetBaudrateMsg(ui_.set_baud_rate_combo_box->currentText().toLongLong()))
       errorMsg();
     else
+    {
       rightMsg();
-
-    ui_.get_baud_rate_line_edit->setText(QString::number(ui_.set_baud_rate_combo_box->currentText().toLongLong()));
+      ui_.get_baud_rate_line_edit->setText(QString::number(ui_.set_baud_rate_combo_box->currentText().toLongLong()));
+    }
   }
 }
 
@@ -255,20 +257,39 @@ void MainWindow::setBaudRateComboBox()
 {
   ui_.set_baud_rate_combo_box->addItem((QString("Select Baudrate")));
 
-  ui_.set_baud_rate_combo_box->addItem(QString::number(9600));
-  ui_.set_baud_rate_combo_box->addItem(QString::number(57600));
-  ui_.set_baud_rate_combo_box->addItem(QString::number(115200));
-  ui_.set_baud_rate_combo_box->addItem(QString::number(1000000));
-  ui_.set_baud_rate_combo_box->addItem(QString::number(2000000));
+  if (dynamixel_info_->lode_info.protocol_version == 1.0)
+  {
+    ui_.set_baud_rate_combo_box->addItem(QString::number(9600));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(19200));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(57600));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(115200));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(200000));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(250000));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(400000));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(500000));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(1000000));
+  }
+  else
+  {
+    ui_.set_baud_rate_combo_box->addItem(QString::number(9600));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(57600));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(115200));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(1000000));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(2000000));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(3000000));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(4000000));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(4500000));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(10500000));
+  }
 }
 
 void MainWindow::setOperatingModeComboBox()
 {
   ui_.set_operating_mode_combo_box->addItem((QString("Select Mode")));
 
-  if(dynamixel_info_->model_name.find("AX") != std::string::npos ||
-     dynamixel_info_->model_name.find("RX") != std::string::npos ||
-     dynamixel_info_->model_name.find("EX") != std::string::npos)
+  if (dynamixel_info_->model_name.find("AX") != std::string::npos ||
+      dynamixel_info_->model_name.find("RX") != std::string::npos ||
+      dynamixel_info_->model_name.find("EX") != std::string::npos)
   {
     ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
     ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
