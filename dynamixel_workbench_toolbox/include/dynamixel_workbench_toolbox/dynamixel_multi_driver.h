@@ -32,6 +32,7 @@ class DynamixelMultiDriver : public dynamixel_driver::DynamixelDriver
   dynamixel::PortHandler   *portHandler_;
   dynamixel::PacketHandler *packetHandler_;
 
+  dynamixel::GroupSyncWrite *groupSyncWriteOperating_;
   dynamixel::GroupSyncWrite *groupSyncWritePosition_;
   dynamixel::GroupSyncWrite *groupSyncWriteVelocity_;
   dynamixel::GroupSyncWrite *groupSyncWriteMovingSpeed_;
@@ -41,6 +42,8 @@ class DynamixelMultiDriver : public dynamixel_driver::DynamixelDriver
   dynamixel::GroupSyncWrite *groupSyncWriteProfileAcceleration_;
 
   dynamixel::GroupSyncRead  *groupSyncReadPosition_;
+  dynamixel::GroupSyncRead  *groupSyncReadVelocity_;
+  dynamixel::GroupSyncRead  *groupSyncReadCurrent_;
 
  public:
   DynamixelMultiDriver(std::string device_name, int baud_rate, float protocol_version);
@@ -55,14 +58,24 @@ class DynamixelMultiDriver : public dynamixel_driver::DynamixelDriver
   bool readMultiRegister(std::string addr_name);
 
   bool syncWriteTorque(std::vector<uint8_t> &onoff);
+  bool syncWriteOperating(std::vector<uint8_t> mode);
+
   bool syncWritePosition(std::vector<uint32_t> pos);
+  bool syncWritePosition(const std::vector<double> &pos_in_rad);
+
   bool syncWriteVelocity(std::vector<int32_t> vel);
+  bool syncWriteVelocity(std::vector<double>& vel_in_rad_s);
   bool syncWriteMovingSpeed(std::vector<uint16_t> spd);
   bool syncWriteCurrent(std::vector<int16_t> cur);
+  bool syncWriteCurrent(std::vector<double>& torque_in_Nm);
   bool syncWriteProfileVelocity(std::vector<uint32_t> vel);
   bool syncWriteProfileAcceleration(std::vector<uint32_t> acc);
 
   bool syncReadPosition(std::vector<uint32_t> &pos);
+  bool syncReadPosition(std::vector<double> &pos_in_rad);
+  bool syncReadVelocity(std::vector<double> &vel_in_rad_s);
+  bool syncReadTorque(std::vector<double> &torque_in_Nm);
+
 };
 }
 
