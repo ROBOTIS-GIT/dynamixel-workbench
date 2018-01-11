@@ -37,8 +37,6 @@
 #define WORD  2
 #define DWORD 4
 
-#define DEBUG true
-
 typedef struct 
 {
   ControlTableItem *cti; 
@@ -91,8 +89,8 @@ class DynamixelDriver
   ControlTableItem* getControlItemPtr(uint8_t id);
   uint8_t getTheNumberOfItem(uint8_t id);
 
-  bool scan(uint8_t *get_id, uint8_t *get_id_num, uint8_t range = 200, float protocol_version = 0.0);
-  bool ping(uint8_t id, uint16_t *get_model_number, float protocol_version = 0.0);
+  bool scan(uint8_t *get_id, uint8_t *get_id_num, uint8_t range = 200);
+  bool ping(uint8_t id, uint16_t *get_model_number);
 
   bool reboot(uint8_t id);
   bool reset(uint8_t id);

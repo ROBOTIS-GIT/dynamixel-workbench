@@ -37,20 +37,20 @@ bool DynamixelWorkbench::begin(const char* device_name, uint32_t baud_rate)
   return isOK;
 }
 
-bool DynamixelWorkbench::scan(uint8_t *get_id, uint8_t *get_id_num, float protocol_version)
+bool DynamixelWorkbench::scan(uint8_t *get_id, uint8_t *get_id_num)
 {
   bool isOK = false;
 
-  isOK = driver_.scan(get_id, get_id_num, 16, protocol_version);
+  isOK = driver_.scan(get_id, get_id_num, 16);
 
   return isOK;
 }
 
-bool DynamixelWorkbench::ping(uint8_t id, uint16_t *get_model_number, float protocol_version)
+bool DynamixelWorkbench::ping(uint8_t id, uint16_t *get_model_number)
 {
   bool isOK = false;
 
-  isOK = driver_.ping(id, get_model_number, protocol_version);
+  isOK = driver_.ping(id, get_model_number);
 
   return isOK;
 }
