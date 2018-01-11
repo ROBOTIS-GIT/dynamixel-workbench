@@ -277,7 +277,7 @@ bool DynamixelDriver::reset(uint8_t id)
   uint16_t comm_result = COMM_RX_FAIL;
   bool isOK = false;
 
-  int baud = 0;
+  uint32_t baud = 0;
   uint8_t new_id = 1;
 
   if (packetHandler_->getProtocolVersion() == 1.0)
@@ -342,7 +342,16 @@ bool DynamixelDriver::reset(uint8_t id)
           tools_[factor].dxl_info_[i].id = new_id;
       }
 
-      if (portHandler_->setBaudRate(57600) == false)
+      if (!strncmp(getModelName(new_id), "XL-320", strlen("XL-320")))
+      {
+        baud = 1000000;
+      }
+      else
+      {
+        baud = 57600;
+      }
+
+      if (portHandler_->setBaudRate(baud) == false)
       {
         millis(2000);
         return false;
@@ -358,13 +367,13 @@ bool DynamixelDriver::reset(uint8_t id)
     }
   }
 
-  if (!strncmp(dxl_, "AX", 2) || !strncmp(dxl_, "RX", 2) || !strncmp(dxl_, "EX", 2))
+  if (!strncmp(getModelName(new_id), "AX", 2) || !strncmp(getModelName(new_id), "RX", 2) || !strncmp(getModelName(new_id), "EX", 2))
   {
     isOK = setPacketHandler(1.0);
   }
-  else if (!strncmp(dxl_, "MX", 2))
+  else if (!strncmp(getModelName(new_id), "MX", 2))
   {
-    if (!strncmp(dxl_, "MX-28-2", strlen("MX-28-2")) || !strncmp(dxl_, "MX-64-2", strlen("MX-64-2")) || !strncmp(dxl_, "MX-106-2", strlen("MX-106-2")))
+    if (!strncmp(getModelName(new_id), "MX-28-2", strlen("MX-28-2")) || !strncmp(getModelName(new_id), "MX-64-2", strlen("MX-64-2")) || !strncmp(getModelName(new_id), "MX-106-2", strlen("MX-106-2")))
       isOK = setPacketHandler(2.0);
     else
       isOK = setPacketHandler(1.0);
@@ -604,7 +613,7 @@ bool DynamixelDriver::syncWrite(const char *item_name, int32_t *data)
     }
   }
 
-  for (int i = 0; i < tools_cnt_; ++i)
+  for (int i = 0; i < tools_cnt_; i++)
   {
     for (int j = 0; j < tools_[i].dxl_info_cnt_; j++)
     {
@@ -664,7 +673,7 @@ bool DynamixelDriver::syncRead(const char *item_name, int32_t *data)
     }
   }
 
-  for (int i = 0; i < tools_cnt_; ++i)
+  for (int i = 0; i < tools_cnt_; i++)
   {
     for (int j = 0; j < tools_[i].dxl_info_cnt_; j++)
     {
@@ -673,21 +682,20 @@ bool DynamixelDriver::syncRead(const char *item_name, int32_t *data)
         return false;
     }
   }
-  
+
   dxl_comm_result = srh.groupSyncRead->txRxPacket();
   if (dxl_comm_result != COMM_SUCCESS)
   {
     return false;
   }
 
-  for (int i = 0; i < tools_cnt_; ++i)
+  for (int i = 0; i < tools_cnt_; i++)
   {
     for (int j = 0; j < tools_[i].dxl_info_cnt_; j++)
     {
       uint8_t id = tools_[i].dxl_info_[j].id;
 
       dxl_getdata_result = srh.groupSyncRead->isAvailable(id, srh.cti->address, srh.cti->data_length);
-
       if (dxl_getdata_result)
       {
         data[data_num++] = srh.groupSyncRead->getData(id, srh.cti->address, srh.cti->data_length);

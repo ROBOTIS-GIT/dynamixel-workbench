@@ -37,11 +37,11 @@ bool DynamixelWorkbench::begin(const char* device_name, uint32_t baud_rate)
   return isOK;
 }
 
-bool DynamixelWorkbench::scan(uint8_t *get_id, uint8_t *get_id_num)
+bool DynamixelWorkbench::scan(uint8_t *get_id, uint8_t *get_id_num, uint8_t range)
 {
   bool isOK = false;
 
-  isOK = driver_.scan(get_id, get_id_num, 16);
+  isOK = driver_.scan(get_id, get_id_num, range);
 
   return isOK;
 }
@@ -427,7 +427,6 @@ bool DynamixelWorkbench::setPositionControlMode(uint8_t id)
     {
       comm_result = driver_.writeRegister(id, "CW_Angle_Limit", 0);
       comm_result = driver_.writeRegister(id, "CCW_Angle_Limit", 1023);
-      comm_result = driver_.writeRegister(id, "Control_Mode", XL320_POSITION_CONTROL_MODE);
     }
     else
       comm_result = driver_.writeRegister(id, "Operating_Mode", X_SERIES_POSITION_CONTROL_MODE);
@@ -454,7 +453,6 @@ bool DynamixelWorkbench::setVelocityControlMode(uint8_t id)
     {
       comm_result = driver_.writeRegister(id, "CW_Angle_Limit", 0);
       comm_result = driver_.writeRegister(id, "CCW_Angle_Limit", 0);
-      comm_result = driver_.writeRegister(id, "Control_Mode", XL320_VELOCITY_CONTROL_MODE);
     }
     else
       comm_result = driver_.writeRegister(id, "Operating_Mode", X_SERIES_VELOCITY_CONTROL_MODE);

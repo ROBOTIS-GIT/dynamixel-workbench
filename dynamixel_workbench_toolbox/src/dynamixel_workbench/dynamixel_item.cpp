@@ -635,7 +635,7 @@ void setXL320Info()
   
   model_info.value_of_0_radian_position      = 512;
   model_info.value_of_min_radian_position    = 0;
-  model_info.value_of_max_radian_position    = 1024;
+  model_info.value_of_max_radian_position    = 1023;
 
   model_info.min_radian                      = -2.61799;
   model_info.max_radian                      =  2.61799;

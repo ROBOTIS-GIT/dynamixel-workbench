@@ -69,8 +69,6 @@ class DynamixelDriver
   uint8_t sync_write_handler_cnt_;
   uint8_t sync_read_handler_cnt_;
 
-  char dxl_[20];
-
  public:
   DynamixelDriver();
   ~DynamixelDriver();

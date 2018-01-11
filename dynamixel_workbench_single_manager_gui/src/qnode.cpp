@@ -213,7 +213,7 @@ bool QNode::sendSetOperatingModeMsg(std::string index, float protocol_version, s
       {
         if (index == "position_control")
         {
-          if (sendCommandMsg("addr", "CW_Angle_Limit", 0) && sendCommandMsg("addr", "CCW_Angle_Limit", value_of_max_radian_position-1))
+          if (sendCommandMsg("addr", "CW_Angle_Limit", 0) && sendCommandMsg("addr", "CCW_Angle_Limit", value_of_max_radian_position))
             return true;
           else
             return false;

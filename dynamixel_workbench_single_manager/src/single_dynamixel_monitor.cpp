@@ -431,19 +431,29 @@ bool SingleDynamixelMonitor::dynamixelCommandMsgCallback(dynamixel_workbench_msg
   else if (req.command == "reboot")
   {
     if (dynamixel_driver_->reboot(dxl_id_))
+    {
+      printf("Succeed to reboot\n");
       res.comm_result = true;
+    }
     else
+    {
+      printf("Failed to reboot\n");
       res.comm_result = false;
+    }
   }
   else if (req.command == "factory_reset")
   {
     if (dynamixel_driver_->reset(dxl_id_))
     {
       dxl_id_ = 1;
+      printf("Succeed to reset\n");
       res.comm_result = true;
     }
     else
+    {
+      printf("Failed to reboot\n");
       res.comm_result = false;
+    }
   }
   else if (req.command == "torque")
   {
