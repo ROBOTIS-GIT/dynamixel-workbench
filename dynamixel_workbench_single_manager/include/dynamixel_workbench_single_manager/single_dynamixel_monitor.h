@@ -66,7 +66,7 @@ class SingleDynamixelMonitor
   void initDynamixelStatePublisher(void);
   void initDynamixelInfoServer(void);
   void initDynamixelCommandServer(void);
-//  // TODO : Add new Dynamixel
+  // TODO : Add new Dynamixel
   void dynamixelStatePublish(void);
 
   bool showDynamixelControlTable(void);

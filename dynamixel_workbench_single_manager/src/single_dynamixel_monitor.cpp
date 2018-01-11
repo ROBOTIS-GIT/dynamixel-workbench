@@ -32,8 +32,9 @@ SingleDynamixelMonitor::SingleDynamixelMonitor(void)
   // Check Dynamixel Ping or Scan (default : Scan (1~253))
 
   // Dynamixel Monitor variable
-  bool use_ping = node_handle_.param<bool>("ping", false);
-  int ping_id  = node_handle_.param<int>("ping_id", 1);
+  bool use_ping  = node_handle_.param<bool>("ping", false);
+  int ping_id    = node_handle_.param<int>("ping_id", 1);
+  int scan_range = node_handle_.param<int>("scan_range", 200);
 
   device_name_   = node_handle_.param<std::string>("device_name", "/dev/ttyUSB0");
   dxl_baud_rate_ = node_handle_.param<int>("baud_rate", 57600);
@@ -66,7 +67,7 @@ SingleDynamixelMonitor::SingleDynamixelMonitor(void)
   else
   {
     uint8_t id_cnt = 0;
-    if (dynamixel_driver_->scan(&dxl_id_, &id_cnt))
+    if (dynamixel_driver_->scan(&dxl_id_, &id_cnt, scan_range))
     {
       printf("[ID] %u, [Model Name] %s, [BAUD RATE] %d [VERSION] %.1f\n",
                dxl_id_, dynamixel_driver_->getModelName(dxl_id_), dxl_baud_rate_, dynamixel_driver_->getProtocolVersion());
