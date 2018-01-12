@@ -136,7 +136,10 @@ int main(int argc, char **argv)
 
       if (wheel_command_client.call(wheel_command))
       {
-        ROS_INFO("[LEFT_VELOCITY]: %.2f, [RIGHT_VELOCITY]: %.2f", wheel_command.response.left_vel, wheel_command.response.right_vel);
+        if (wheel_command.response.result)
+          ROS_INFO("Succeed to write goal_velocity");
+        else
+          ROS_WARN("Failed to write goal_velocity");
       }
       else
       {

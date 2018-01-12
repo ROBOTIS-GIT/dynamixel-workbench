@@ -27,21 +27,24 @@ int main(int argc, char **argv)
   ros::NodeHandle node_handle;
 
   ros::ServiceClient joint_command_client =
-                node_handle.serviceClient<dynamixel_workbench_msgs::JointCommand>("/joint_command");
+                node_handle.serviceClient<dynamixel_workbench_msgs::JointCommand>("joint_command");
 
   if (argc != 4)
   {
-    ROS_ERROR("rosrun dynamixel_workbench_operator joint_operator [mode] [pan_pos] [tilt_pos]");
+    ROS_ERROR("rosrun dynamixel_workbench_operator joint_operator [mode] [id] [goal_position]");
     return 1;
   }
 
   joint_command.request.unit = argv[1];
-  joint_command.request.pan_pos = atof(argv[2]);
-  joint_command.request.tilt_pos = atof(argv[3]);
+  joint_command.request.id = atoi(argv[2]);
+  joint_command.request.goal_position = atof(argv[3]);
 
   if (joint_command_client.call(joint_command))
   {
-    ROS_INFO("[pan_pos: %.2f (value)] [tilt_pos: %.2f (value)]", joint_command.response.pan_pos, joint_command.response.tilt_pos);
+    if (joint_command.response.result)
+      ROS_INFO("Succeed to write goal_position");
+    else
+      ROS_WARN("Failed to write goal_position");
   }
   else
   {

@@ -21,83 +21,58 @@
 
 #include <ros/ros.h>
 
-#include <dynamixel_workbench_toolbox/dynamixel_multi_driver.h>
 #include "message_header.h"
+
+#include <dynamixel_workbench.h>
 #include <dynamixel_workbench_msgs/DynamixelStateList.h>
 #include <dynamixel_workbench_msgs/JointCommand.h>
 
-namespace torque_control
-{
-#define MOTOR 0
-#define PAN   0
-#define TILT  1
-
-typedef struct
-{
-  std::vector<uint8_t>  torque;
-  std::vector<int16_t>  current;
-}WriteValue;
-
-typedef struct
-{
-  std::vector<uint32_t> cur_pos;
-  std::vector<uint32_t> des_pos;
-}MotorPos;
+#define PAN 0
+#define TILT 1
 
 class TorqueControl
 {
  private:
   // ROS NodeHandle
   ros::NodeHandle node_handle_;
-  ros::NodeHandle node_handle_priv_;
 
   // ROS Parameters
-  float p_gain_;
-  float d_gain_;
 
   // ROS Topic Publisher
   ros::Publisher dynamixel_state_list_pub_;
+
   // ROS Topic Subscriber
 
   // ROS Service Server
-  ros::ServiceServer joint_command_server;
+  ros::ServiceServer joint_command_server_;
+
   // ROS Service Client
 
   // Dynamixel Workbench Parameters
-  std::vector<dynamixel_driver::DynamixelInfo*> dynamixel_info_;
-  dynamixel_multi_driver::DynamixelMultiDriver *multi_driver_;
+  DynamixelWorkbench *dxl_wb_;
+  uint8_t dxl_id_[2];
+  uint8_t dxl_cnt_;
 
-  WriteValue *writeValue_;
-  MotorPos   *motorPos_;
+  float p_gain_;
+  float d_gain_;
+  int32_t goal_position_[2];
 
  public:
   TorqueControl();
   ~TorqueControl();
-  bool controlLoop(void);
+  void controlLoop(void);
 
  private:
-  bool loadDynamixel();
-  bool checkLoadDynamixel();
-  bool initDynamixelStatePublisher();
-  bool initDynamixelInfoServer();
+  void initMsg();
 
-  bool setTorque(bool onoff);
-  bool setCurrent(int16_t pan_cur, int16_t tilt_cur);
+  void initPublisher();
+  void dynamixelStatePublish();
 
-  bool readDynamixelState();
-  bool dynamixelStatePublish();
-
-  float  convertValue2Torque(int16_t value);
-  int16_t convertTorque2Value(float torque);
-
-  uint32_t convertRadian2Value(float radian);
-  float convertValue2Radian(int32_t value);
-
-  bool gravityCompensation();
-
+  void initServer();
   bool jointCommandMsgCallback(dynamixel_workbench_msgs::JointCommand::Request &req,
                                dynamixel_workbench_msgs::JointCommand::Response &res);
+
+  void gravityCompensation();
 };
-}
 
 #endif //DYNAMIXEL_WORKBENCH_TORQUE_CONTROL_H

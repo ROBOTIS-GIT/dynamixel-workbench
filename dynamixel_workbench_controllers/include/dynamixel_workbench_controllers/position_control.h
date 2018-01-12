@@ -21,72 +21,49 @@
 
 #include <ros/ros.h>
 
-#include <dynamixel_workbench.h>
 #include "message_header.h"
+
+#include <dynamixel_workbench.h>
 #include <dynamixel_workbench_msgs/DynamixelStateList.h>
 #include <dynamixel_workbench_msgs/JointCommand.h>
-
-namespace position_control
-{
-#define MOTOR 0
-#define PAN   0
-#define TILT  1
-
-typedef struct
-{
-  std::vector<uint8_t>  torque;
-  std::vector<uint32_t> pos;
-  std::vector<uint32_t> prof_vel;
-  std::vector<uint32_t> prof_acc;
-}WriteValue;
 
 class PositionControl
 {
  private:
   // ROS NodeHandle
   ros::NodeHandle node_handle_;
-  ros::NodeHandle node_handle_priv_;
 
   // ROS Parameters
-  int profile_velocity_;
-  int profile_acceleration_;
+
   // ROS Topic Publisher
   ros::Publisher dynamixel_state_list_pub_;
+
   // ROS Topic Subscriber
 
   // ROS Service Server
-  ros::ServiceServer joint_command_server;
+  ros::ServiceServer joint_command_server_;
+
   // ROS Service Client
 
   // Dynamixel Workbench Parameters
-  std::vector<dynamixel_driver::DynamixelInfo*> dynamixel_info_;
-  dynamixel_multi_driver::DynamixelMultiDriver *multi_driver_;
-
-  WriteValue *writeValue_;
+  DynamixelWorkbench *dxl_wb_;
+  uint8_t dxl_id_[16];
+  uint8_t dxl_cnt_;
 
  public:
   PositionControl();
   ~PositionControl();
-  bool controlLoop(void);
+  void controlLoop(void);
 
  private:
-  bool loadDynamixel();
-  bool checkLoadDynamixel();
-  bool initDynamixelStatePublisher();
-  bool initDynamixelInfoServer();
+  void initMsg();
 
-  bool setTorque(bool onoff);
-  bool setProfileValue(uint32_t prof_vel, uint32_t prof_acc);
-  bool setPosition(uint32_t pan_pos, uint32_t tilt_pos);
+  void initPublisher();
+  void dynamixelStatePublish();
 
-  bool readDynamixelState();
-  bool dynamixelStatePublish();
-
-  uint32_t convertRadian2Value(float radian);
-
+  void initServer();
   bool jointCommandMsgCallback(dynamixel_workbench_msgs::JointCommand::Request &req,
                                dynamixel_workbench_msgs::JointCommand::Response &res);
 };
-}
 
 #endif //DYNAMIXEL_WORKBENCH_POSITION_CONTROL_H
