@@ -13,7 +13,6 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   dynamixel_workbench_msgs
   dynamixel_workbench_toolbox
-  dynamixel_sdk
 )
 
 ################################################################################
@@ -30,7 +29,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES dynamixel_workbench_single_manager
-  CATKIN_DEPENDS roscpp dynamixel_workbench_msgs
+  CATKIN_DEPENDS roscpp dynamixel_workbench_msgs dynamixel_workbench_toolbox
 )
 
 ################################################################################

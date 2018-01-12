@@ -35,7 +35,7 @@ include_directories(${catkin_INCLUDE_DIRS})
 
 catkin_package(
     INCLUDE_DIRS include
-    CATKIN_DEPENDS qt_build roscpp
+    CATKIN_DEPENDS qt_build roscpp dynamixel_workbench_msgs dynamixel_workbench_toolbox
 )
 
 ################################################################################
