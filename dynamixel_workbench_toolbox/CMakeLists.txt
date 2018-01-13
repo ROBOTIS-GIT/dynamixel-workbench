@@ -28,11 +28,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
  INCLUDE_DIRS include/dynamixel_workbench
  LIBRARIES dynamixel_workbench_toolbox
-<<<<<<< HEAD
  CATKIN_DEPENDS roscpp dynamixel_sdk
-=======
- CATKIN_DEPENDS roscpp roslib dynamixel_sdk
->>>>>>> master
 )
 
 ################################################################################
