@@ -48,9 +48,9 @@ add_executable(velocity_control src/velocity_control.cpp)
 add_dependencies(velocity_control ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(velocity_control ${catkin_LIBRARIES})
 
-#add_executable(multi_port src/multi_port.cpp)
-#add_dependencies(multi_port ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-#target_link_libraries(multi_port ${catkin_LIBRARIES})
+add_executable(multi_port src/multi_port.cpp)
+add_dependencies(multi_port ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(multi_port ${catkin_LIBRARIES})
 
 add_executable(torque_control src/torque_control.cpp)
 add_dependencies(torque_control ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
@@ -71,11 +71,11 @@ install(TARGETS velocity_control
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-#install(TARGETS multi_port
-#  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-#)
+install(TARGETS multi_port
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 install(TARGETS torque_control
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}

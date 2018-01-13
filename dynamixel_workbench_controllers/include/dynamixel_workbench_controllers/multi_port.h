@@ -21,75 +21,54 @@
 
 #include <ros/ros.h>
 
-#include <dynamixel_workbench_toolbox/dynamixel_driver.h>
 #include "message_header.h"
-#include <dynamixel_workbench_msgs/DynamixelState.h>
+
+#include <dynamixel_workbench.h>
+#include <dynamixel_workbench_msgs/DynamixelStateList.h>
 #include <dynamixel_workbench_msgs/JointCommand.h>
 
-namespace multi_port
-{
-#define MOTOR 0
-#define PAN   0
-#define TILT  1
+#define FIRST  0
+#define SECOND 1
 
-typedef struct
-{
-  std::vector<uint8_t>  torque;
-  std::vector<uint32_t> pos;
-}WriteValue;
+#define PORT_NUM 2
 
 class MultiPort
 {
  private:
   // ROS NodeHandle
   ros::NodeHandle node_handle_;
-  ros::NodeHandle node_handle_priv_;
 
   // ROS Parameters
 
   // ROS Topic Publisher
-  ros::Publisher pan_state_pub_;
-  ros::Publisher tilt_state_pub_;
+  ros::Publisher dynamixel_state_list_pub_;
+
   // ROS Topic Subscriber
 
   // ROS Service Server
-  ros::ServiceServer joint_command_server;
+  ros::ServiceServer joint_command_server_;
+
   // ROS Service Client
 
   // Dynamixel Workbench Parameters
-  std::vector<dynamixel_driver::DynamixelInfo* > dynamixel_info_;
-
-  dynamixel_driver::DynamixelDriver* pan_driver_;
-  dynamixel_driver::DynamixelDriver* tilt_driver_;
-
-  WriteValue *writeValue_;
-
-  std::map<std::string, int32_t> pan_data_;
-  std::map<std::string, int32_t> tilt_data_;
+  DynamixelWorkbench *dxl_wb_[2];
+  uint8_t dxl_id_[2][16];
+  uint8_t dxl_cnt_[2];
 
  public:
   MultiPort();
   ~MultiPort();
-  bool controlLoop(void);
+  void controlLoop(void);
 
  private:
-  bool loadDynamixel();
-  bool checkLoadDynamixel();
-  bool initDynamixelStatePublisher();
-  bool initDynamixelInfoServer();
+  void initMsg();
 
-  bool setTorque(bool onoff);
-  bool setPosition(uint32_t pan_pos, uint32_t tilt_pos);
+  void initPublisher();
+  void dynamixelStatePublish();
 
-  bool readValue(uint8_t motor, std::string addr_name);
-  bool readDynamixelState(uint8_t motor);
-  bool dynamixelStatePublish(uint8_t motor);
-
-  uint32_t convertRadian2Value(uint8_t motor, float radian);
-
+  void initServer();
   bool jointCommandMsgCallback(dynamixel_workbench_msgs::JointCommand::Request &req,
                                dynamixel_workbench_msgs::JointCommand::Response &res);
 };
-}
 
 #endif //DYNAMIXEL_WORKBENCH_MULTI_PORT_H
