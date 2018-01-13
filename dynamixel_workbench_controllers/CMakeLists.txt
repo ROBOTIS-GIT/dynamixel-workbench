@@ -29,7 +29,11 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
  INCLUDE_DIRS include
  LIBRARIES dynamixel_workbench_controllers
+<<<<<<< HEAD
  CATKIN_DEPENDS roscpp dynamixel_workbench_msgs dynamixel_workbench_toolbox
+=======
+ CATKIN_DEPENDS roscpp std_msgs dynamixel_sdk dynamixel_workbench_msgs dynamixel_workbench_toolbox
+>>>>>>> master
 )
 
 ################################################################################
@@ -88,7 +92,7 @@ install(DIRECTORY include/${PROJECT_NAME}/
 )
 
 install(DIRECTORY launch/
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
 )
 
 ################################################################################
