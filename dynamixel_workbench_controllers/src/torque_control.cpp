@@ -52,6 +52,9 @@ TorqueControl::TorqueControl()
   dxl_wb_->addSyncWrite("Goal_Current");
   dxl_wb_->addSyncRead("Present_Position");
 
+  goal_position_[PAN]   = dxl_wb_->convertRadian2Value(dxl_id_[PAN],  0.0);
+  goal_position_[TILT]  = dxl_wb_->convertRadian2Value(dxl_id_[TILT], 0.0);
+
   initPublisher();
   initServer();
 }
@@ -125,49 +128,31 @@ void TorqueControl::gravityCompensation()
   const float gravity         = 9.8;
   const float link_length     = 0.018;
 
-  int32_t error[2] = {0, 0};
-  static int32_t pre_error[2] = {0, 0};
+  int32_t position_error[2] = {0, 0};
+  static int32_t pre_position_error[2] = {0, 0};
   float calc_torque[2] = {0.0, 0.0};
   int32_t goal_torque[2] = {0, 0};
 
   int32_t* present_position = dxl_wb_->syncRead("Present_Position");
 
-  printf("present_position[PAN]  = %d  present_position[TILT] = %d\n", present_position[PAN], present_position[TILT]);
+  position_error[PAN]  = goal_position_[PAN]  - present_position[PAN];
+  position_error[TILT] = goal_position_[TILT] - present_position[TILT];
 
-  error[PAN]  = goal_position_[PAN]  - present_position[PAN];
-  error[TILT] = goal_position_[TILT] - present_position[TILT];
+  calc_torque[PAN]  = p_gain_ * position_error[PAN] +
+                      d_gain_ * ((position_error[PAN] - pre_position_error[PAN]) / 0.004);
 
-  calc_torque[PAN]  = p_gain_ * error[PAN] +
-                      d_gain_ * ((error[PAN] - pre_error[PAN]) / 0.004);
-
-  calc_torque[TILT] = p_gain_ * error[TILT] +
-                      d_gain_ * ((error[TILT] - pre_error[TILT]) / 0.004) +
+  calc_torque[TILT] = p_gain_ * position_error[TILT] +
+                      d_gain_ * ((position_error[TILT] - pre_position_error[TILT]) / 0.004) +
                       tilt_motor_mass * gravity * link_length * cos(dxl_wb_->convertValue2Radian(dxl_id_[TILT], present_position[TILT]));
 
 
   goal_torque[PAN]  = (int32_t)(dxl_wb_->convertTorque2Value(dxl_id_[PAN] , calc_torque[PAN]));
   goal_torque[TILT] = (int32_t)(dxl_wb_->convertTorque2Value(dxl_id_[TILT], calc_torque[TILT]));
 
-  printf("goal_torque[PAN]  = %d  goal_torque[TILT] = %d\n", goal_torque[PAN], goal_torque[TILT]);
-
   dxl_wb_->syncWrite("Goal_Current", goal_torque);
 
-  pre_error[PAN]  = error[PAN];
-  pre_error[TILT] = error[TILT];
-
-//  error[pan]  = motorPos_->des_pos.at(PAN)  - motorPos_->cur_pos.at(PAN);
-//  error[tilt] = motorPos_->des_pos.at(TILT) - motorPos_->cur_pos.at(TILT);
-
-//  torque[PAN]  = p_gain_ * error[PAN] +
-//                 d_gain_ * ((error[PAN] - pre_error[PAN]) / 0.004);
-//  torque[TILT] = p_gain_ * error[TILT] +
-//                 d_gain_ * ((error[TILT] - pre_error[TILT]) / 0.004) +
-//                 tilt_motor_mass * gravity * link_length * cos(convertValue2Radian((int32_t)motorPos_->cur_pos.at(TILT)));
-
-//  setCurrent(convertTorque2Value(torque[PAN]), convertTorque2Value(torque[TILT]));
-
-//  pre_error[PAN]  = error[PAN];
-//  pre_error[TILT] = error[TILT];
+  pre_position_error[PAN]  = position_error[PAN];
+  pre_position_error[TILT] = position_error[TILT];
 }
 
 bool TorqueControl::jointCommandMsgCallback(dynamixel_workbench_msgs::JointCommand::Request &req,
