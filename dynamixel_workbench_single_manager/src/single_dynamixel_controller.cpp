@@ -140,6 +140,7 @@ bool SingleDynamixelController::controlLoop()
     if (getchar() == ENTER_ASCII_VALUE)
     {
       viewManagerMenu();
+
       printf("[CMD]");
       fgets(input, sizeof(input), stdin);
 
@@ -193,7 +194,7 @@ bool SingleDynamixelController::controlLoop()
       }
       else if (strcmp(cmd, "reboot") == 0)
       {
-        if (!sendCommandMsg("reboot"))
+        if (sendCommandMsg("reboot"))
           printf("It didn't reboot to DYNAMIXEL\n");
       }
       else if (strcmp(cmd, "reset") == 0)
@@ -205,16 +206,22 @@ bool SingleDynamixelController::controlLoop()
       {
         if (!sendCommandMsg("torque", "on", 1))
           printf("It didn't works\n");
+        else
+          printf("Torque On");
       }
       else if (strcmp(cmd, "torque_off") == 0)
       {
         if (!sendCommandMsg("torque", "off", 0))
           printf("It didn't works\n");
+        else
+          printf("Torque Off");
       }
       else if (strcmp(cmd, "goal") == 0)
       {
         if (!sendCommandMsg("addr", "Goal_Position", atoi(param[0])))
           printf("It didn't works\n");
+        else
+          printf("Move!!");
       }
       else if (strcmp(cmd, "id") == 0)
       {
