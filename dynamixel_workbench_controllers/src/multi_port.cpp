@@ -38,15 +38,14 @@ MultiPort::MultiPort()
   dxl_wb_[FIRST]  = new DynamixelWorkbench;
   dxl_wb_[SECOND] = new DynamixelWorkbench;
 
-  for (int port_cnt = 0; port_cnt < PORT_NUM; port_cnt)
+  for (int port_cnt = 0; port_cnt < PORT_NUM; port_cnt++)
   {
     dxl_wb_[port_cnt]->begin(device_name[port_cnt].c_str(), dxl_baud_rate[port_cnt]);
     dxl_wb_[port_cnt]->scan(dxl_id_[port_cnt], &dxl_cnt_[port_cnt], scan_range);
   }
-
   initMsg();
 
-  for (int port_cnt = 0; port_cnt < PORT_NUM; port_cnt)
+  for (int port_cnt = 0; port_cnt < PORT_NUM; port_cnt++)
   {
     for (int index = 0; index < dxl_cnt_[port_cnt]; index++)
       dxl_wb_[port_cnt]->jointMode(dxl_id_[port_cnt][index], profile_velocity, profile_acceleration);
@@ -58,7 +57,7 @@ MultiPort::MultiPort()
 
 MultiPort::~MultiPort()
 {
-  for (int port_cnt = 0; port_cnt < PORT_NUM; port_cnt)
+  for (int port_cnt = 0; port_cnt < PORT_NUM; port_cnt++)
   {
     for (int index = 0; index < dxl_cnt_[port_cnt]; index++)
       dxl_wb_[port_cnt]->itemWrite(dxl_id_[port_cnt][index], "Torque_Enable", 0);
@@ -74,7 +73,7 @@ void MultiPort::initMsg()
   printf("-----------------------------------------------------------------------\n");
   printf("\n");
 
-  for (int port_cnt = 0; port_cnt < PORT_NUM; port_cnt)
+  for (int port_cnt = 0; port_cnt < PORT_NUM; port_cnt++)
   {
     for (int index = 0; index < dxl_cnt_[port_cnt]; index++)
     {
@@ -82,9 +81,8 @@ void MultiPort::initMsg()
       printf("ID      : %d\n", dxl_id_[port_cnt][index]);
       printf("\n");
     }
-    printf("-----------------------------------------------------------------------\n");
+    printf("-----------------------------------------------------------------------\n\n");
   }
-  printf("-----------------------------------------------------------------------\n");
 }
 
 void MultiPort::initPublisher()
@@ -105,7 +103,7 @@ void MultiPort::dynamixelStatePublish()
   dynamixel_workbench_msgs::DynamixelState     dynamixel_state[dxl_num];
   dynamixel_workbench_msgs::DynamixelStateList dynamixel_state_list;
 
-  for (int port_cnt = 0; port_cnt < PORT_NUM; port_cnt)
+  for (int port_cnt = 0; port_cnt < PORT_NUM; port_cnt++)
   {
     for (int index = 0; index < dxl_cnt_[port_cnt]; index++)
     {
@@ -138,7 +136,7 @@ bool MultiPort::jointCommandMsgCallback(dynamixel_workbench_msgs::JointCommand::
 
   uint8_t port = 0;
 
-  for (int port_cnt = 0; port_cnt < PORT_NUM; port_cnt)
+  for (int port_cnt = 0; port_cnt < PORT_NUM; port_cnt++)
   {
     for (int index = 0; index < dxl_cnt_[port_cnt]; index++)
     {
