@@ -14,24 +14,18 @@
 * limitations under the License.
 *******************************************************************************/
 
-/* Authors: Taehoon Lim (Darby) */
+/* Authors: Taehun Lim (Darby) */
 
-#ifndef DYNAMIXEL_WORKBENCH_MESSAGE_HEADER_H
-#define DYNAMIXEL_WORKBENCH_MESSAGE_HEADER_H
+#ifndef CONTROL_TABLE_ITEM_H
+#define CONTROL_TABLE_ITEM_H
 
-#include "dynamixel_workbench_msgs/AX.h"
+#include <stdint.h>
 
-#include "dynamixel_workbench_msgs/RX.h"
+typedef struct 
+{
+  uint16_t    address;
+  const char* item_name;
+  uint8_t     data_length;
+} ControlTableItem;
 
-#include "dynamixel_workbench_msgs/MX.h"
-
-#include "dynamixel_workbench_msgs/EX.h"
-
-#include "dynamixel_workbench_msgs/XL.h"
-
-#include "dynamixel_workbench_msgs/XM.h"
-#include "dynamixel_workbench_msgs/XH.h"
-
-#include "dynamixel_workbench_msgs/PRO.h"
-
-#endif //DYNAMIXEL_WORKBENCH_MESSAGE_HEADER_H
+#endif //CONTROL_TABLE_ITEM_H

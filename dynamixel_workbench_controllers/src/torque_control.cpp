@@ -18,336 +18,190 @@
 
 #include "dynamixel_workbench_controllers/torque_control.h"
 
-using namespace torque_control;
-
 TorqueControl::TorqueControl()
     :node_handle_(""),
-     node_handle_priv_("~")
+     dxl_cnt_(2)
 {
-  if (loadDynamixel())
+  std::string device_name   = node_handle_.param<std::string>("device_name", "/dev/ttyUSB0");
+  uint32_t dxl_baud_rate    = node_handle_.param<int>("baud_rate", 3000000);
+
+  p_gain_ = node_handle_.param<float>("p_gain", 0.003);
+  d_gain_ = node_handle_.param<float>("d_gain", 0.00002);
+
+  dxl_id_[PAN] = node_handle_.param<int>("pan_id", 1);
+  dxl_id_[TILT] = node_handle_.param<int>("tilt_id", 2);
+
+  dxl_wb_ = new DynamixelWorkbench;
+
+  dxl_wb_->begin(device_name.c_str(), dxl_baud_rate);
+  for (int index = 0; index < dxl_cnt_; index++)
   {
-    checkLoadDynamixel();
+    uint16_t get_model_number;
+    dxl_wb_->ping(dxl_id_[index], &get_model_number);
   }
-  else
+
+  initMsg();
+
+  for (int index = 0; index < dxl_cnt_; index++)
   {
-    ROS_ERROR("Cant' Load Dynamixel, Please check Parameter");
+    dxl_wb_->itemWrite(dxl_id_[index], "Torque_Enable", 0);
+    dxl_wb_->itemWrite(dxl_id_[index], "Operating_Mode", X_SERIES_CURRENT_CONTROL_MODE);
+    dxl_wb_->itemWrite(dxl_id_[index], "Torque_Enable", 1);
   }
 
-  if (!multi_driver_->initSyncWrite())
-    ROS_ERROR("Init SyncWrite Failed!");
+  dxl_wb_->addSyncWrite("Goal_Current");
+  dxl_wb_->addSyncRead("Present_Position");
 
-  if (!multi_driver_->initSyncRead())
-    ROS_ERROR("Init SyncRead Failed!");
+  goal_position_[PAN]   = dxl_wb_->convertRadian2Value(dxl_id_[PAN],  0.0);
+  goal_position_[TILT]  = dxl_wb_->convertRadian2Value(dxl_id_[TILT], 0.0);
 
-  writeValue_ = new WriteValue;
-  motorPos_   = new MotorPos;
-
-  motorPos_->des_pos.clear();
-  motorPos_->des_pos.push_back(2048);
-  motorPos_->des_pos.push_back(2048);
-
-  setTorque(true);
-
-  initDynamixelStatePublisher();
-  initDynamixelInfoServer();
+  initPublisher();
+  initServer();
 }
 
 TorqueControl::~TorqueControl()
 {
-  setTorque(false);
+  for (int index = 0; index < 2; index++)
+    dxl_wb_->itemWrite(dxl_id_[index], "Torque_Enable", 0);
 
   ros::shutdown();
 }
 
-bool TorqueControl::loadDynamixel()
+void TorqueControl::initMsg()
 {
-  bool ret = false;
+  printf("-----------------------------------------------------------------------\n");
+  printf("  dynamixel_workbench controller; torque control example               \n");
+  printf("-----------------------------------------------------------------------\n");
+  printf("\n");
 
-  dynamixel_driver::DynamixelInfo *pan_info = new dynamixel_driver::DynamixelInfo;
-
-  pan_info->lode_info.device_name      = node_handle_.param<std::string>("device_name", "/dev/ttyUSB0");
-  pan_info->lode_info.baud_rate        = node_handle_.param<int>("baud_rate", 57600);
-  pan_info->lode_info.protocol_version = node_handle_.param<float>("protocol_version", 2.0);
-
-  pan_info->model_id                   = node_handle_.param<int>("pan_id", 1);
-
-  dynamixel_info_.push_back(pan_info);
-
-  dynamixel_driver::DynamixelInfo *tilt_info = new dynamixel_driver::DynamixelInfo;
-
-  tilt_info->lode_info.device_name      = node_handle_.param<std::string>("device_name", "/dev/ttyUSB0");
-  tilt_info->lode_info.baud_rate        = node_handle_.param<int>("baud_rate", 57600);
-  tilt_info->lode_info.protocol_version = node_handle_.param<float>("protocol_version", 2.0);
-
-  tilt_info->model_id                   = node_handle_.param<int>("tilt_id", 1);
-
-  dynamixel_info_.push_back(tilt_info);
-
-  node_handle_priv_.getParam("p_gain", p_gain_);
-  node_handle_priv_.getParam("d_gain", d_gain_);
-
-  multi_driver_ = new dynamixel_multi_driver::DynamixelMultiDriver(dynamixel_info_[MOTOR]->lode_info.device_name,
-                                                                   dynamixel_info_[MOTOR]->lode_info.baud_rate,
-                                                                   dynamixel_info_[MOTOR]->lode_info.protocol_version);
-
- ret =  multi_driver_->loadDynamixel(dynamixel_info_);
-
- return ret;
-}
-
-bool TorqueControl::setTorque(bool onoff)
-{
-  writeValue_->torque.clear();
-  writeValue_->torque.push_back(onoff);
-  writeValue_->torque.push_back(onoff);
-
-  if (!multi_driver_->syncWriteTorque(writeValue_->torque))
+  for (int index = 0; index < dxl_cnt_; index++)
   {
-    ROS_ERROR("SyncWrite Torque Failed!");
-    return false;
+    printf("MODEL   : %s\n", dxl_wb_->getModelName(dxl_id_[index]));
+    printf("ID      : %d\n", dxl_id_[index]);
+    printf("\n");
   }
-
-  return true;
+  printf("-----------------------------------------------------------------------\n");
 }
 
-bool TorqueControl::setCurrent(int16_t pan_cur, int16_t tilt_cur)
+void TorqueControl::initPublisher()
 {
-  writeValue_->current.clear();
-  writeValue_->current.push_back(pan_cur);
-  writeValue_->current.push_back(tilt_cur);
-
-  if (!multi_driver_->syncWriteCurrent(writeValue_->current))
-  {
-    ROS_ERROR("SyncWrite Current Failed!");
-    return false;
-  }
-
-  return true;
+  dynamixel_state_list_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::DynamixelStateList>("dynamixel_state", 10);
 }
 
-bool TorqueControl::checkLoadDynamixel()
+void TorqueControl::initServer()
 {
-  ROS_INFO("-----------------------------------------------------------------------");
-  ROS_INFO("  dynamixel_workbench controller; torque control example(Pan & Tilt)   ");
-  ROS_INFO("-----------------------------------------------------------------------");
-  ROS_INFO("PAN MOTOR INFO");
-  ROS_INFO("ID    : %d", dynamixel_info_[PAN]->model_id);
-  ROS_INFO("MODEL : %s", dynamixel_info_[PAN]->model_name.c_str());
-  ROS_INFO(" ");
-  ROS_INFO("TILT MOTOR INFO");
-  ROS_INFO("ID    : %d", dynamixel_info_[TILT]->model_id);
-  ROS_INFO("MODEL : %s", dynamixel_info_[TILT]->model_name.c_str());
-  ROS_INFO("-----------------------------------------------------------------------");
+  joint_command_server_ = node_handle_.advertiseService("joint_command", &TorqueControl::jointCommandMsgCallback, this);
 }
 
-bool TorqueControl::initDynamixelStatePublisher()
+void TorqueControl::dynamixelStatePublish()
 {
-  dynamixel_state_list_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::DynamixelStateList>("/torque_control/dynamixel_state", 10);
-}
-
-bool TorqueControl::initDynamixelInfoServer()
-{
-  joint_command_server = node_handle_.advertiseService("/joint_command", &TorqueControl::jointCommandMsgCallback, this);
-
-}
-
-bool TorqueControl::readDynamixelState()
-{
-  multi_driver_->readMultiRegister("torque_enable");
-
-  multi_driver_->readMultiRegister("present_position");
-
-  multi_driver_->readMultiRegister("goal_position");
-  multi_driver_->readMultiRegister("moving");
-
-  if (multi_driver_->getProtocolVersion() == 2.0)
-  {
-    if (multi_driver_->multi_dynamixel_[MOTOR]->model_name_.find("XM") != std::string::npos)
-    {
-      multi_driver_->readMultiRegister("goal_current");
-
-      multi_driver_->readMultiRegister("present_current");
-    }
-    multi_driver_->readMultiRegister("goal_velocity");
-    multi_driver_->readMultiRegister("present_velocity");
-  }
-  else
-  {
-    multi_driver_->readMultiRegister("moving_speed");
-    multi_driver_->readMultiRegister("present_speed");
-  }
-}
-
-bool TorqueControl::dynamixelStatePublish()
-{
-  readDynamixelState();
-
-  dynamixel_workbench_msgs::DynamixelState     dynamixel_state[multi_driver_->multi_dynamixel_.size()];
+  dynamixel_workbench_msgs::DynamixelState     dynamixel_state[dxl_cnt_];
   dynamixel_workbench_msgs::DynamixelStateList dynamixel_state_list;
 
-  for (std::vector<dynamixel_tool::DynamixelTool *>::size_type num = 0; num < multi_driver_->multi_dynamixel_.size(); ++num)
+  for (int index = 0; index < dxl_cnt_; index++)
   {
-    dynamixel_state[num].model_name          = multi_driver_->multi_dynamixel_[num]->model_name_;
-    dynamixel_state[num].id                  = multi_driver_->multi_dynamixel_[num]->id_;
-    dynamixel_state[num].torque_enable       = multi_driver_->read_value_["torque_enable"]      ->at(num);
-    dynamixel_state[num].present_position    = multi_driver_->read_value_["present_position"]   ->at(num);
-    dynamixel_state[num].goal_position       = multi_driver_->read_value_["goal_position"]      ->at(num);
-    dynamixel_state[num].moving              = multi_driver_->read_value_["moving"]             ->at(num);
+    dynamixel_state[index].model_name          = std::string(dxl_wb_->getModelName(dxl_id_[index]));
+    dynamixel_state[index].id                  = dxl_id_[index];
+    dynamixel_state[index].torque_enable       = dxl_wb_->itemRead(dxl_id_[index], "Torque_Enable");
+    dynamixel_state[index].present_position    = dxl_wb_->itemRead(dxl_id_[index], "Present_Position");
+    dynamixel_state[index].present_velocity    = dxl_wb_->itemRead(dxl_id_[index], "Present_Velocity");
+    dynamixel_state[index].present_current     = dxl_wb_->itemRead(dxl_id_[index], "Present_Current");
+    dynamixel_state[index].goal_position       = dxl_wb_->itemRead(dxl_id_[index], "Goal_Position");
+    dynamixel_state[index].goal_velocity       = dxl_wb_->itemRead(dxl_id_[index], "Goal_Velocity");
+    dynamixel_state[index].goal_current        = dxl_wb_->itemRead(dxl_id_[index], "Goal_Current");
+    dynamixel_state[index].moving              = dxl_wb_->itemRead(dxl_id_[index], "Moving");
 
-    if (multi_driver_->getProtocolVersion() == 2.0)
-    {
-      if (multi_driver_->multi_dynamixel_[MOTOR]->model_name_.find("XM") != std::string::npos)
-      {
-        dynamixel_state[num].goal_current    = multi_driver_->read_value_["goal_current"]   ->at(num);
-        dynamixel_state[num].present_current = multi_driver_->read_value_["present_current"]->at(num);
-      }
-
-      dynamixel_state[num].goal_velocity    = multi_driver_->read_value_["goal_velocity"]->at(num);
-      dynamixel_state[num].present_velocity = multi_driver_->read_value_["present_velocity"]->at(num);
-    }
-    else
-    {
-      dynamixel_state[num].goal_velocity    = multi_driver_->read_value_["moving_speed"]->at(num);
-      dynamixel_state[num].present_velocity = multi_driver_->read_value_["present_speed"]->at(num);
-    }
-
-    dynamixel_state_list.dynamixel_state.push_back(dynamixel_state[num]);
+    dynamixel_state_list.dynamixel_state.push_back(dynamixel_state[index]);
   }
   dynamixel_state_list_pub_.publish(dynamixel_state_list);
-
 }
 
-float TorqueControl::convertValue2Torque(int16_t value)
-{
-  return (float) value / multi_driver_->multi_dynamixel_[MOTOR]->torque_to_current_value_ratio_;
-}
-
-int16_t TorqueControl::convertTorque2Value(float torque)
-{
-  return (int16_t) (torque * multi_driver_->multi_dynamixel_[MOTOR]->torque_to_current_value_ratio_);
-}
-
-uint32_t TorqueControl::convertRadian2Value(float radian)
-{
-  uint32_t value = 0;
-
-  if (radian > 0)
-  {
-    if (multi_driver_->multi_dynamixel_[MOTOR]->value_of_max_radian_position_ <= multi_driver_->multi_dynamixel_[MOTOR]->value_of_0_radian_position_)
-      return multi_driver_->multi_dynamixel_[MOTOR]->value_of_max_radian_position_;
-
-    value = (radian * (multi_driver_->multi_dynamixel_[MOTOR]->value_of_max_radian_position_ - multi_driver_->multi_dynamixel_[MOTOR]->value_of_0_radian_position_) / multi_driver_->multi_dynamixel_[MOTOR]->max_radian_)
-                + multi_driver_->multi_dynamixel_[MOTOR]->value_of_0_radian_position_;
-  }
-  else if (radian < 0)
-  {
-    if (multi_driver_->multi_dynamixel_[MOTOR]->value_of_min_radian_position_ >= multi_driver_->multi_dynamixel_[MOTOR]->value_of_0_radian_position_)
-      return multi_driver_->multi_dynamixel_[MOTOR]->value_of_min_radian_position_;
-
-    value = (radian * (multi_driver_->multi_dynamixel_[MOTOR]->value_of_min_radian_position_ - multi_driver_->multi_dynamixel_[MOTOR]->value_of_0_radian_position_) / multi_driver_->multi_dynamixel_[MOTOR]->min_radian_)
-                + multi_driver_->multi_dynamixel_[MOTOR]->value_of_0_radian_position_;
-  }
-  else
-    value = multi_driver_->multi_dynamixel_[MOTOR]->value_of_0_radian_position_;
-
-//  if (value > multi_driver_->multi_dynamixel_[MOTOR]->value_of_max_radian_position_)
-//    return multi_driver_->multi_dynamixel_[MOTOR]->value_of_max_radian_position_;
-//  else if (value < multi_driver_->multi_dynamixel_[MOTOR]->value_of_min_radian_position_)
-//    return multi_driver_->multi_dynamixel_[MOTOR]->value_of_min_radian_position_;
-
-  return value;
-}
-
-float TorqueControl::convertValue2Radian(int32_t value)
-{
-  float radian = 0.0;
-
-  if (value > multi_driver_->multi_dynamixel_[MOTOR]->value_of_0_radian_position_)
-  {
-    if (multi_driver_->multi_dynamixel_[MOTOR]->max_radian_ <= 0)
-      return multi_driver_->multi_dynamixel_[MOTOR]->max_radian_;
-
-    radian = (float) (value - multi_driver_->multi_dynamixel_[MOTOR]->value_of_0_radian_position_) * multi_driver_->multi_dynamixel_[MOTOR]->max_radian_
-               / (float) (multi_driver_->multi_dynamixel_[MOTOR]->value_of_max_radian_position_ - multi_driver_->multi_dynamixel_[MOTOR]->value_of_0_radian_position_);
-  }
-  else if (value < multi_driver_->multi_dynamixel_[MOTOR]->value_of_0_radian_position_)
-  {
-    if (multi_driver_->multi_dynamixel_[MOTOR]->min_radian_ >= 0)
-      return multi_driver_->multi_dynamixel_[MOTOR]->min_radian_;
-
-    radian = (float) (value - multi_driver_->multi_dynamixel_[MOTOR]->value_of_0_radian_position_) * multi_driver_->multi_dynamixel_[MOTOR]->min_radian_
-               / (float) (multi_driver_->multi_dynamixel_[MOTOR]->value_of_min_radian_position_ - multi_driver_->multi_dynamixel_[MOTOR]->value_of_0_radian_position_);
-  }
-
-//  if (radian > dynamixel_[PAN_TILT_MOTOR]->max_radian_)
-//    return dynamixel_[PAN_TILT_MOTOR]->max_radian_;
-//  else if (radian < dynamixel_[PAN_TILT_MOTOR]->min_radian_)
-//    return dynamixel_[PAN_TILT_MOTOR]->min_radian_;
-
-  return radian;
-}
-
-bool TorqueControl::controlLoop()
+void TorqueControl::controlLoop()
 {
   dynamixelStatePublish();
   gravityCompensation();
 }
 
-bool TorqueControl::gravityCompensation()
+void TorqueControl::gravityCompensation()
 {
   const float tilt_motor_mass = 0.082;
   const float gravity         = 9.8;
   const float link_length     = 0.018;
 
-  int32_t error[2] = {0, 0};
-  static int32_t pre_error[2] = {0, 0};
-  float torque[2] = {0.0, 0.0};
+  int32_t position_error[2] = {0, 0};
+  static int32_t pre_position_error[2] = {0, 0};
+  float calc_torque[2] = {0.0, 0.0};
+  int32_t goal_torque[2] = {0, 0};
 
-  node_handle_priv_.getParam("p_gain", p_gain_);
-  node_handle_priv_.getParam("d_gain", d_gain_);
+  int32_t* present_position = dxl_wb_->syncRead("Present_Position");
 
-  motorPos_->cur_pos.clear();
-  if (!multi_driver_->syncReadPosition(motorPos_->cur_pos))
-    ROS_ERROR("Sync Read Failed!");
+  position_error[PAN]  = goal_position_[PAN]  - present_position[PAN];
+  position_error[TILT] = goal_position_[TILT] - present_position[TILT];
 
-  error[PAN]  = motorPos_->des_pos.at(PAN)  - motorPos_->cur_pos.at(PAN);
-  error[TILT] = motorPos_->des_pos.at(TILT) - motorPos_->cur_pos.at(TILT);
+  calc_torque[PAN]  = p_gain_ * position_error[PAN] +
+                      d_gain_ * ((position_error[PAN] - pre_position_error[PAN]) / 0.004);
 
-  torque[PAN]  = p_gain_ * error[PAN] +
-                 d_gain_ * ((error[PAN] - pre_error[PAN]) / 0.004);
-  torque[TILT] = p_gain_ * error[TILT] +
-                 d_gain_ * ((error[TILT] - pre_error[TILT]) / 0.004) +
-                 tilt_motor_mass * gravity * link_length * cos(convertValue2Radian((int32_t)motorPos_->cur_pos.at(TILT)));
+  calc_torque[TILT] = p_gain_ * position_error[TILT] +
+                      d_gain_ * ((position_error[TILT] - pre_position_error[TILT]) / 0.004) +
+                      tilt_motor_mass * gravity * link_length * cos(dxl_wb_->convertValue2Radian(dxl_id_[TILT], present_position[TILT]));
 
-  setCurrent(convertTorque2Value(torque[PAN]), convertTorque2Value(torque[TILT]));
 
-  pre_error[PAN]  = error[PAN];
-  pre_error[TILT] = error[TILT];
+  goal_torque[PAN]  = (int32_t)(dxl_wb_->convertTorque2Value(dxl_id_[PAN] , calc_torque[PAN]));
+  goal_torque[TILT] = (int32_t)(dxl_wb_->convertTorque2Value(dxl_id_[TILT], calc_torque[TILT]));
+
+  dxl_wb_->syncWrite("Goal_Current", goal_torque);
+
+  pre_position_error[PAN]  = position_error[PAN];
+  pre_position_error[TILT] = position_error[TILT];
 }
 
 bool TorqueControl::jointCommandMsgCallback(dynamixel_workbench_msgs::JointCommand::Request &req,
-                                              dynamixel_workbench_msgs::JointCommand::Response &res)
+                                            dynamixel_workbench_msgs::JointCommand::Response &res)
 {
-  motorPos_->des_pos.clear();
-
   if (req.unit == "rad")
   {
-    motorPos_->des_pos.push_back(convertRadian2Value(req.pan_pos));
-    motorPos_->des_pos.push_back(convertRadian2Value(req.tilt_pos));
+    if (dxl_id_[PAN] == req.id)
+      goal_position_[PAN] = dxl_wb_->convertRadian2Value(req.id, req.goal_position);
+    else
+      goal_position_[TILT] = dxl_wb_->convertRadian2Value(req.id, req.goal_position);
   }
   else if (req.unit == "raw")
   {
-    motorPos_->des_pos.push_back(req.pan_pos);
-    motorPos_->des_pos.push_back(req.tilt_pos);
+    if (dxl_id_[PAN] == req.id)
+      goal_position_[PAN] = req.goal_position;
+    else
+      goal_position_[TILT] = req.goal_position;
   }
   else
   {
-    motorPos_->des_pos.push_back(req.pan_pos);
-    motorPos_->des_pos.push_back(req.tilt_pos);
+    if (dxl_id_[PAN] == req.id)
+      goal_position_[PAN] = req.goal_position;
+    else
+      goal_position_[TILT] = req.goal_position;
   }
 
-  res.pan_pos  = motorPos_->des_pos.at(PAN);
-  res.tilt_pos = motorPos_->des_pos.at(TILT);
+  res.result = true;
+
+//  motorPos_->des_pos.clear();
+
+//  if (req.unit == "rad")
+//  {
+//    motorPos_->des_pos.push_back(convertRadian2Value(req.pan_pos));
+//    motorPos_->des_pos.push_back(convertRadian2Value(req.tilt_pos));
+//  }
+//  else if (req.unit == "raw")
+//  {
+//    motorPos_->des_pos.push_back(req.pan_pos);
+//    motorPos_->des_pos.push_back(req.tilt_pos);
+//  }
+//  else
+//  {
+//    motorPos_->des_pos.push_back(req.pan_pos);
+//    motorPos_->des_pos.push_back(req.tilt_pos);
+//  }
+
+//  res.pan_pos  = motorPos_->des_pos.at(PAN);
+//  res.tilt_pos = motorPos_->des_pos.at(TILT);
 }
 
 int main(int argc, char **argv)

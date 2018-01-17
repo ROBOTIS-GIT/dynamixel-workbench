@@ -88,21 +88,25 @@ int SingleDynamixelController::kbhit()
 
 void SingleDynamixelController::viewManagerMenu()
 {
-  ROS_INFO("----------------------------------------------------------------------");
-  ROS_INFO("Single Manager supports GUI (dynamixel_workbench_single_manager_gui)  ");
-  ROS_INFO("----------------------------------------------------------------------");
-  ROS_INFO("Command list :");
-  ROS_INFO("[help|h|?]...........: help");
-  ROS_INFO("[info]...............: information of a Dynamixel");
-  ROS_INFO("[table]..............: check a control table of a Dynamixel");
-  ROS_INFO("[torque_enable]......: torque on Dynamixel");
-  ROS_INFO("[torque_disable].....: torque off Dynamixel");
-  ROS_INFO("[reboot].............: reboot a Dynamixel(only protocol version 2.0)");
-  ROS_INFO("[factory_reset]......: command for all data back to factory settings values");
-  ROS_INFO("[[table_item] [value]: change address value of a Dynamixel");
-  ROS_INFO("[exit]...............: shutdown");
-  ROS_INFO("----------------------------------------------------------------------");
-  ROS_INFO("Press Enter Key To Command A Dynamixel");
+  printf("----------------------------------------------------------------------\n");
+  printf("Single Manager supports GUI (dynamixel_workbench_single_manager_gui)  \n");
+  printf("----------------------------------------------------------------------\n");
+  printf("Command list :\n");
+  printf("[help|h|?].........: help\n");
+  printf("[info].............: information of a Dynamixel\n");
+  printf("[table]............: check a control table of a Dynamixel\n");
+  printf("[torque_on]........: torque on Dynamixel\n");
+  printf("[torque_off].......: torque off Dynamixel\n");
+  printf("[goal].............: set data to goal position address ex) goal 1024\n");
+  printf("[id]...............: change id ex) id 3\n");
+  printf("[baud].............: change baud rate ex) baud 57600\n");
+  printf("[version]..........: change protocol version ex) version 2.0\n");
+  printf("[reboot]...........: reboot a Dynamixel(only protocol version 2.0)\n");
+  printf("[reset]............: command for all data back to factory settings values\n");
+  printf("[table_item].......: change address value of a Dynamixel ex) Goal_Position 1024\n");
+  printf("[exit].............: shutdown\n");
+  printf("----------------------------------------------------------------------\n");
+  printf("Press Enter Key To Command A Dynamixel\n");
 }
 
 bool SingleDynamixelController::sendCommandMsg(std::string cmd, std::string addr, int64_t value)
@@ -136,7 +140,8 @@ bool SingleDynamixelController::controlLoop()
     if (getchar() == ENTER_ASCII_VALUE)
     {
       viewManagerMenu();
-      printf("[ CMD ]");
+
+      printf("[CMD]");
       fgets(input, sizeof(input), stdin);
 
       char *p;
@@ -169,9 +174,10 @@ bool SingleDynamixelController::controlLoop()
 
         if (dynamixel_info_client_.call(get_dynamixel_info))
         {
-          ROS_INFO("[ID] %u, [Model Name] %s, [BAUD RATE] %ld", get_dynamixel_info.response.dynamixel_info.model_id,
-                                                                get_dynamixel_info.response.dynamixel_info.model_name.c_str(),
-                                                                get_dynamixel_info.response.dynamixel_info.load_info.baud_rate);
+          printf("[ID] %u, [Model Name] %s, [Protocol Version] %1.f.0, [BAUD RATE] %ld\n", get_dynamixel_info.response.dynamixel_info.model_id,
+                                                                                           get_dynamixel_info.response.dynamixel_info.model_name.c_str(),
+                                                                                           get_dynamixel_info.response.dynamixel_info.load_info.protocol_version,
+                                                                                           get_dynamixel_info.response.dynamixel_info.load_info.baud_rate);
         }
       }
       else if (strcmp(cmd, "exit") == 0)
@@ -184,38 +190,64 @@ bool SingleDynamixelController::controlLoop()
       else if (strcmp(cmd, "table") == 0)
       {
         if (!sendCommandMsg("table"))
-          ROS_ERROR("It didn't load DYNAMIXEL Control Table");
+          printf("It didn't load DYNAMIXEL Control Table\n");
       }
       else if (strcmp(cmd, "reboot") == 0)
       {
-        if (!sendCommandMsg("reboot"))
-          ROS_ERROR("It didn't reboot to DYNAMIXEL");
+        if (sendCommandMsg("reboot"))
+          printf("It didn't reboot to DYNAMIXEL\n");
       }
-      else if (strcmp(cmd, "factory_reset") == 0)
+      else if (strcmp(cmd, "reset") == 0)
       {
         if (!sendCommandMsg("factory_reset"))
-          ROS_ERROR("It didn't factory reset to DYNAMIXEL");
+          printf("It didn't factory reset to DYNAMIXEL\n");
       }
-      else if (strcmp(cmd, "torque_enable") == 0)
+      else if (strcmp(cmd, "torque_on") == 0)
       {
-        if (!sendCommandMsg("addr", "torque_enable", 1))
-          ROS_ERROR("It didn't works");
+        if (!sendCommandMsg("torque", "on", 1))
+          printf("It didn't works\n");
+        else
+          printf("Torque On");
       }
-      else if (strcmp(cmd, "torque_disable") == 0)
+      else if (strcmp(cmd, "torque_off") == 0)
       {
-        if (!sendCommandMsg("addr", "torque_enable", 0))
-          ROS_ERROR("It didn't works");
+        if (!sendCommandMsg("torque", "off", 0))
+          printf("It didn't works\n");
+        else
+          printf("Torque Off");
+      }
+      else if (strcmp(cmd, "goal") == 0)
+      {
+        if (!sendCommandMsg("addr", "Goal_Position", atoi(param[0])))
+          printf("It didn't works\n");
+        else
+          printf("Move!!");
+      }
+      else if (strcmp(cmd, "id") == 0)
+      {
+        if (!sendCommandMsg("addr", "ID", atoi(param[0])))
+          printf("It didn't works\n");
+      }
+      else if (strcmp(cmd, "baud") == 0)
+      {
+        if (!sendCommandMsg("addr", "Baud_Rate", atoi(param[0])))
+          printf("It didn't works\n");
+      }
+      else if (strcmp(cmd, "version") == 0)
+      {
+        if (!sendCommandMsg("addr", "Protocol_Version", atof(param[0])))
+          printf("It didn't works\n");
       }
       else if (num_param == 1)
       {
         if (sendCommandMsg("addr", cmd, atoi(param[0])))
-          ROS_INFO("It works!!");
+          printf("It works!!\n");
         else
-          ROS_ERROR("It didn't works!!");
+          printf("It didn't works!!\n");
       }
       else
       {
-        ROS_ERROR("Invalid command. Please check menu[help, h, ?]");
+        printf("Invalid command. Please check menu[help, h, ?]\n");
       }
     }
   }
