@@ -45,7 +45,7 @@ VelocityControl::VelocityControl()
   for (int index = 0; index < dxl_cnt_; index++)
     dxl_wb_->wheelMode(dxl_id_[index], profile_velocity, profile_acceleration);
 
-  dxl_wb_->addSyncWrite("Goal_Velocity"); // "Goal_Velocity" or "Moving_Speed"
+  dxl_wb_->addSyncWrite("Goal_Velocity");
 
   initPublisher();
   initServer();
@@ -96,9 +96,9 @@ void VelocityControl::dynamixelStatePublish()
     dynamixel_state[index].id                  = dxl_id_[index];
     dynamixel_state[index].torque_enable       = dxl_wb_->itemRead(dxl_id_[index], "Torque_Enable");
     dynamixel_state[index].present_position    = dxl_wb_->itemRead(dxl_id_[index], "Present_Position");
-    dynamixel_state[index].present_velocity    = dxl_wb_->itemRead(dxl_id_[index], "Present_Velocity"); // "Present_Velocity" or "Present_Speed"
+    dynamixel_state[index].present_velocity    = dxl_wb_->itemRead(dxl_id_[index], "Present_Velocity");
     dynamixel_state[index].goal_position       = dxl_wb_->itemRead(dxl_id_[index], "Goal_Position");
-    dynamixel_state[index].goal_velocity       = dxl_wb_->itemRead(dxl_id_[index], "Goal_Velocity");    // "Goal_Velocity" or "Moving_Speed"
+    dynamixel_state[index].goal_velocity       = dxl_wb_->itemRead(dxl_id_[index], "Goal_Velocity");
     dynamixel_state[index].moving              = dxl_wb_->itemRead(dxl_id_[index], "Moving");
 
     dynamixel_state_list.dynamixel_state.push_back(dynamixel_state[index]);
