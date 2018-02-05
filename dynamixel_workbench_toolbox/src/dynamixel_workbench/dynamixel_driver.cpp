@@ -33,6 +33,14 @@ DynamixelDriver::~DynamixelDriver()
   portHandler_->closePort();
 }
 
+void DynamixelDriver::initDXLinfo(void)
+{
+  for (int i = 0; i <= tools_cnt_; i++)
+  {
+    tools_[i].dxl_info_cnt_ = 0;
+  }
+}
+
 void DynamixelDriver::setTools(uint16_t model_number, uint8_t id)
 {
   if (tools_cnt_ == 0)
