@@ -45,6 +45,7 @@ void DynamixelDriver::setTools(uint16_t model_number, uint8_t id)
 {
   if (tools_cnt_ == 0)
   {
+    initDXLinfo();
     tools_[tools_cnt_].addTool(model_number, id);
   }
   else
