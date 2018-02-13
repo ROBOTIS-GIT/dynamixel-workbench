@@ -64,7 +64,7 @@ class DynamixelWorkbench
   bool wheelMode(uint8_t id, uint16_t vel = 0, uint16_t acc = 0);
   bool currentMode(uint8_t id, uint8_t cur = 50);
 
-  bool goalPosition(uint8_t id, uint16_t goal);
+  bool goalPosition(uint8_t id, int32_t goal);
   bool goalSpeed(uint8_t id, int32_t goal);
 
   bool itemWrite(uint8_t id, const char* item_name, int32_t value);  // write value to item

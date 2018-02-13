@@ -278,7 +278,7 @@ bool DynamixelWorkbench::currentMode(uint8_t id, uint8_t cur)
   return comm_result;
 }
 
-bool DynamixelWorkbench::goalPosition(uint8_t id, uint16_t goal)
+bool DynamixelWorkbench::goalPosition(uint8_t id, int32_t goal)
 {
   bool comm_result = false;
   
