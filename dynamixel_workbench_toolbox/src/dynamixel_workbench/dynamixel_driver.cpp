@@ -33,10 +33,19 @@ DynamixelDriver::~DynamixelDriver()
   portHandler_->closePort();
 }
 
+void DynamixelDriver::initDXLinfo(void)
+{
+  for (int i = 0; i <= tools_cnt_; i++)
+  {
+    tools_[i].dxl_info_cnt_ = 0;
+  }
+}
+
 void DynamixelDriver::setTools(uint16_t model_number, uint8_t id)
 {
   if (tools_cnt_ == 0)
   {
+    initDXLinfo();
     tools_[tools_cnt_].addTool(model_number, id);
   }
   else
@@ -811,26 +820,16 @@ int32_t DynamixelDriver::convertRadian2Value(uint8_t id, float radian)
 
   if (radian > 0)
   {
-    if (tools_[factor].getValueOfMaxRadianPosition() <= tools_[factor].getValueOfZeroRadianPosition())
-      return tools_[factor].getValueOfMaxRadianPosition();
-
     value = (radian * (tools_[factor].getValueOfMaxRadianPosition() - tools_[factor].getValueOfZeroRadianPosition()) / tools_[factor].getMaxRadian()) + tools_[factor].getValueOfZeroRadianPosition();
   }
   else if (radian < 0)
   {
-    if (tools_[factor].getValueOfMinRadianPosition() >= tools_[factor].getValueOfZeroRadianPosition())
-      return tools_[factor].getValueOfMinRadianPosition();
-
     value = (radian * (tools_[factor].getValueOfMinRadianPosition() - tools_[factor].getValueOfZeroRadianPosition()) / tools_[factor].getMinRadian()) + tools_[factor].getValueOfZeroRadianPosition();
   }
   else
   {
     value = tools_[factor].getValueOfZeroRadianPosition();
   }
-  // if (value[id-1] > tools_[num].getValueOfMaxRadianPosition())
-  //   value[id-1] =  tools_[num].getValueOfMaxRadianPosition();
-  // else if (value[id-1] < tools_[num].getValueOfMinRadianPosition())
-  //   value[id-1] =  tools_[num].getValueOfMinRadianPosition();
 
   return value;
 }
@@ -842,22 +841,12 @@ float DynamixelDriver::convertValue2Radian(uint8_t id, int32_t value)
 
   if (value > tools_[factor].getValueOfZeroRadianPosition())
   {
-    if (tools_[factor].getMaxRadian() <= 0)
-      return tools_[factor].getMaxRadian();
-
     radian = (float)(value - tools_[factor].getValueOfZeroRadianPosition()) * tools_[factor].getMaxRadian() / (float)(tools_[factor].getValueOfMaxRadianPosition() - tools_[factor].getValueOfZeroRadianPosition());
   }
   else if (value < tools_[factor].getValueOfZeroRadianPosition())
   {
-    if (tools_[factor].getMinRadian() >= 0)
-      return tools_[factor].getMinRadian();
-
     radian = (float)(value - tools_[factor].getValueOfZeroRadianPosition()) * tools_[factor].getMinRadian() / (float)(tools_[factor].getValueOfMinRadianPosition() - tools_[factor].getValueOfZeroRadianPosition());
   }
-  //  if (radian[id-1] > tools_[num].getMaxRadian())
-  //    radian[id-1] =  tools_[num].getMaxRadian();
-  //  else if (radian[id-1] < tools_[num].min_radian_)
-  //    radian[id-1] =  tools_[num].min_radian_;
 
   return radian;
 }
