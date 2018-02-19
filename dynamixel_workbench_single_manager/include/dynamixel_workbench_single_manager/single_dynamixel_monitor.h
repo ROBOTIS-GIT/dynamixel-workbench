@@ -21,11 +21,12 @@
 
 #include <ros/ros.h>
 
-#include "dynamixel_workbench_toolbox/dynamixel_driver.h"
+#include "dynamixel_driver.h"
+#include "dynamixel_sdk/dynamixel_sdk.h"
 
 #include "dynamixel_workbench_msgs/DynamixelCommand.h"
 #include "dynamixel_workbench_msgs/GetDynamixelInfo.h"
-#include "dynamixel_workbench_toolbox//message_header.h"
+#include "message_header.h"
 
 namespace single_dynamixel_monitor
 {
@@ -46,34 +47,32 @@ class SingleDynamixelMonitor
   ros::ServiceServer dynamixel_info_server_;
   ros::ServiceServer dynamixel_command_server_;
 
-  // Dynamixel Monitor variable
-  bool use_ping_;
-  int ping_id_;
+  DynamixelDriver *dynamixel_driver_;
 
-  dynamixel_driver::DynamixelInfo *dynamixel_info_;
-  dynamixel_driver::DynamixelDriver *dynamixel_driver_;
+  std::string device_name_;
+  uint32_t dxl_baud_rate_;
+  uint8_t dxl_id_;  
 
  public:
-  SingleDynamixelMonitor();
-  ~SingleDynamixelMonitor();
+  SingleDynamixelMonitor(void);
+  ~SingleDynamixelMonitor(void);
   bool controlLoop();
 
  private:
-  bool initSingleDynamixelMonitor();
-  bool shutdownSingleDynamixelMonitor();
+  void initSingleDynamixelMonitor(void);
+  void shutdownSingleDynamixelMonitor(void);
 
   // TODO : Add new Dynamixel
-  bool initDynamixelStatePublisher();
-  bool initDynamixelInfoServer();
-  bool initDynamixelCommandServer();
+  void initDynamixelStatePublisher(void);
+  void initDynamixelInfoServer(void);
+  void initDynamixelCommandServer(void);
   // TODO : Add new Dynamixel
-  bool dynamixelStatePublish();
+  void dynamixelStatePublish(void);
 
-  bool showDynamixelControlTable();
+  bool showDynamixelControlTable(void);
   bool checkValidationCommand(std::string cmd);
-  bool checkValidAccess(std::string cmd);
-  bool changeId(uint8_t id);
-  bool changeBaudrate(uint64_t baud_rate);
+  bool changeId(uint8_t new_id);
+  bool changeBaudrate(uint32_t new_baud_rate);
   bool changeProtocolVersion(float ver);
 
   bool dynamixelInfoMsgCallback(dynamixel_workbench_msgs::GetDynamixelInfo::Request &req,
@@ -82,15 +81,19 @@ class SingleDynamixelMonitor
   bool dynamixelCommandMsgCallback(dynamixel_workbench_msgs::DynamixelCommand::Request &req,
                                    dynamixel_workbench_msgs::DynamixelCommand::Response &res);
 
-  bool AX();
-  bool RX();
-  bool EX();
-  bool MX();
-  bool XL320();
-  bool XL();
-  bool XM();
-  bool XH();
-  bool PRO();
+  void AX(void);
+  void RX(void);
+  void EX(void);
+  void MX(void);
+  void MXExt(void);
+  void MX2(void);
+  void MX2Ext(void);
+  void XL320(void);
+  void XL(void);
+  void XM(void);
+  void XMExt(void);
+  void XH(void);
+  void PRO(void);
 };
 }
 

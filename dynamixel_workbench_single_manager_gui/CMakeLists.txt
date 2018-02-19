@@ -56,9 +56,9 @@ add_executable(dynamixel_workbench_single_manager_gui ${QT_SOURCES} ${QT_RESOURC
 target_link_libraries(dynamixel_workbench_single_manager_gui ${QT_LIBRARIES} ${catkin_LIBRARIES})
 install(TARGETS dynamixel_workbench_single_manager_gui RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
-################################################################################
-# Build
-################################################################################
+#################################################################################
+## Build
+#################################################################################
 install(TARGETS dynamixel_workbench_single_manager_gui
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}

@@ -46,9 +46,9 @@ add_executable(wheel_operator src/wheel_operator.cpp)
 add_dependencies(wheel_operator ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(wheel_operator ${catkin_LIBRARIES})
 
-################################################################################
-# Install
-################################################################################
+#################################################################################
+## Install
+#################################################################################
 install(TARGETS joint_operator
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}

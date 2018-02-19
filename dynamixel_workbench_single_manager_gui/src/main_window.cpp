@@ -112,9 +112,9 @@ void MainWindow::on_factory_reset_push_button_clicked(bool check)
 
 void MainWindow::on_set_position_zero_push_button_clicked(bool check)
 {
-  qnode_.setPositionZeroMsg(dynamixel_->value_of_0_radian_position_);
-  ui_.set_address_value_spin_box->setValue(dynamixel_->value_of_0_radian_position_);
-  ui_.set_address_value_dial->setValue(dynamixel_->value_of_0_radian_position_);
+  qnode_.setPositionZeroMsg(dynamixel_tool_->getValueOfZeroRadianPosition());
+  ui_.set_address_value_spin_box->setValue(dynamixel_tool_->getValueOfZeroRadianPosition());
+  ui_.set_address_value_dial->setValue(dynamixel_tool_->getValueOfZeroRadianPosition());
 }
 
 void MainWindow::changeID()
@@ -124,9 +124,10 @@ void MainWindow::changeID()
     if (!qnode_.sendSetIdMsg(ui_.set_id_combo_box->currentText().toInt()))
       errorMsg();
     else
+    {
       rightMsg();
-
-    ui_.get_id_line_edit->setText(QString::number(ui_.set_id_combo_box->currentText().toInt()));
+      ui_.get_id_line_edit->setText(QString::number(ui_.set_id_combo_box->currentText().toInt()));
+    }
   }
 }
 
@@ -137,9 +138,10 @@ void MainWindow::changeBaudrate()
     if (!qnode_.sendSetBaudrateMsg(ui_.set_baud_rate_combo_box->currentText().toLongLong()))
       errorMsg();
     else
+    {
       rightMsg();
-
-    ui_.get_baud_rate_line_edit->setText(QString::number(ui_.set_baud_rate_combo_box->currentText().toLongLong()));
+      ui_.get_baud_rate_line_edit->setText(QString::number(ui_.set_baud_rate_combo_box->currentText().toLongLong()));
+    }
   }
 }
 
@@ -147,9 +149,10 @@ void MainWindow::changeOperatingMode()
 {
   if (ui_.set_operating_mode_combo_box->currentText().toStdString() != "Select Mode")
   {
-    if (!qnode_.sendSetOperatingModeMsg(ui_.set_operating_mode_combo_box->currentText().toStdString(), dynamixel_info_->lode_info.protocol_version,
-                                                                                                       dynamixel_info_->model_name,
-                                                                                                       dynamixel_->value_of_max_radian_position_))
+    if (!qnode_.sendSetOperatingModeMsg(ui_.set_operating_mode_combo_box->currentText().toStdString(),
+                                        dynamixel_info_->lode_info.protocol_version,
+                                        dynamixel_info_->model_name,
+                                        dynamixel_tool_->getValueOfMaxRadianPosition()))
       errorMsg();
     else
       rightMsg();
@@ -158,7 +161,7 @@ void MainWindow::changeOperatingMode()
 
 void MainWindow::changeControlTableValue()
 {
-  if (ui_.set_address_name_combo_box->currentText().toStdString() == "torque_enable")
+  if (ui_.set_address_name_combo_box->currentText().toStdString() == "Torque_Enable")
   {
     if (ui_.set_address_value_spin_box->value() == true)
       ui_.torque_enable_toggle_button->setChecked(true);
@@ -172,12 +175,12 @@ void MainWindow::changeControlTableValue()
 
 void MainWindow::setEachAddressFunction(QString index)
 {
-  if (index.toStdString() == "goal_position")
+  if (index.toStdString() == "Goal_Position")
   {
     ui_.set_position_zero_push_button->setVisible(true);
     ui_.set_address_value_dial->setEnabled(true);
-    ui_.set_address_value_dial->setRange(dynamixel_->value_of_min_radian_position_, dynamixel_->value_of_max_radian_position_);
-    ui_.set_address_value_spin_box->setRange(dynamixel_->value_of_min_radian_position_, dynamixel_->value_of_max_radian_position_);
+    ui_.set_address_value_dial->setRange(dynamixel_tool_->getValueOfMinRadianPosition(), dynamixel_tool_->getValueOfMaxRadianPosition());
+    ui_.set_address_value_spin_box->setRange(dynamixel_tool_->getValueOfMinRadianPosition(), dynamixel_tool_->getValueOfMaxRadianPosition());
   }
   else
   {
@@ -200,8 +203,8 @@ void MainWindow::updateDynamixelInfoLineEdit(dynamixel_workbench_msgs::Dynamixel
   dynamixel_info_->model_number = dynamixel_info.model_number;
   dynamixel_info_->model_name   = dynamixel_info.model_name;
 
-  dynamixel_ = new dynamixel_tool::DynamixelTool(dynamixel_info_->model_id,
-                                                 dynamixel_info_->model_number);
+  dynamixel_tool_ = new DynamixelTool();
+  dynamixel_tool_->addTool(dynamixel_info_->model_number, dynamixel_info_->model_id);
 
   ui_.get_device_name_line_edit->setText(QString::fromStdString(dynamixel_info_->lode_info.device_name));
   ui_.get_id_line_edit->setText(QString::number(dynamixel_info_->model_id));
@@ -237,7 +240,7 @@ void MainWindow::setIdComboBox()
 
   ui_.set_id_combo_box->addItem((QString("Select ID")));
 
-  for (id = 1; id < 254; id++)
+  for (id = 1; id < 16; id++)
   {
     ui_.set_id_combo_box->addItem(QString::number(id));
   }
@@ -252,32 +255,31 @@ void MainWindow::setIdComboBox()
 
 void MainWindow::setBaudRateComboBox()
 {
-  std::vector<uint32_t> baud_rate;
-
-  baud_rate.push_back(19200);
-  baud_rate.push_back(57600);
-  baud_rate.push_back(115200);
-  baud_rate.push_back(200000);
-  baud_rate.push_back(250000);
-  baud_rate.push_back(400000);
-  baud_rate.push_back(500000);
-  baud_rate.push_back(1000000);
-  baud_rate.push_back(2000000);
-  baud_rate.push_back(3000000);
-  baud_rate.push_back(4000000);
-  baud_rate.push_back(4500000);
-  baud_rate.push_back(2500000);
-  baud_rate.push_back(2250000);
-  baud_rate.push_back(10500000);
-
   ui_.set_baud_rate_combo_box->addItem((QString("Select Baudrate")));
 
-  for (std::vector<uint32_t>::size_type num = 0; num < baud_rate.size(); ++num)
+  if (dynamixel_info_->lode_info.protocol_version == 1.0)
   {
-    if (dynamixel_->baud_rate_table_.find(baud_rate[num])->second != 0)
-    {
-      ui_.set_baud_rate_combo_box->addItem(QString::number(baud_rate[num]));
-    }
+    ui_.set_baud_rate_combo_box->addItem(QString::number(9600));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(19200));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(57600));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(115200));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(200000));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(250000));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(400000));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(500000));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(1000000));
+  }
+  else
+  {
+    ui_.set_baud_rate_combo_box->addItem(QString::number(9600));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(57600));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(115200));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(1000000));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(2000000));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(3000000));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(4000000));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(4500000));
+    ui_.set_baud_rate_combo_box->addItem(QString::number(10500000));
   }
 }
 
@@ -285,25 +287,56 @@ void MainWindow::setOperatingModeComboBox()
 {
   ui_.set_operating_mode_combo_box->addItem((QString("Select Mode")));
 
-  if(dynamixel_info_->model_name.find("AX") != std::string::npos ||
-     dynamixel_info_->model_name.find("RX") != std::string::npos ||
-     dynamixel_info_->model_name.find("EX") != std::string::npos)
+  if (dynamixel_info_->model_name.find("AX") != std::string::npos ||
+      dynamixel_info_->model_name.find("RX") != std::string::npos ||
+      dynamixel_info_->model_name.find("EX") != std::string::npos)
   {
     ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
     ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
   }
   else if (dynamixel_info_->model_name.find("MX") != std::string::npos)
   {
-    ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
-    ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
-    ui_.set_operating_mode_combo_box->addItem(QString("extended_position_control"));
+    if (dynamixel_info_->model_name.find("MX-12W") != std::string::npos ||
+        dynamixel_info_->model_name.find("MX-28") != std::string::npos  ||
+        dynamixel_info_->model_name.find("MX-64") != std::string::npos  ||
+        dynamixel_info_->model_name.find("MX-106") != std::string::npos  )
+    {
+      ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
+      ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
+      ui_.set_operating_mode_combo_box->addItem(QString("extended_position_control"));
+    }
+    else if (dynamixel_info_->model_name.find("MX-28-2") != std::string::npos)
+    {
+      ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
+      ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
+      ui_.set_operating_mode_combo_box->addItem(QString("extended_position_control"));
+      ui_.set_operating_mode_combo_box->addItem(QString("pwm_control"));
+    }
+    else if (dynamixel_info_->model_name.find("MX-64-2") != std::string::npos ||
+             dynamixel_info_->model_name.find("MX-106-2") != std::string::npos)
+    {
+      ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
+      ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
+      ui_.set_operating_mode_combo_box->addItem(QString("current_control"));
+      ui_.set_operating_mode_combo_box->addItem(QString("extended_position_control"));
+      ui_.set_operating_mode_combo_box->addItem(QString("current_based_position_control"));
+      ui_.set_operating_mode_combo_box->addItem(QString("pwm_control"));
+    }
   }
   else if (dynamixel_info_->model_name.find("XL") != std::string::npos)
   {
-    ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
-    ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
-    ui_.set_operating_mode_combo_box->addItem(QString("extended_position_control"));
-    ui_.set_operating_mode_combo_box->addItem(QString("pwm_control"));
+    if (dynamixel_info_->model_name.find("XL430-W250") != std::string::npos)
+    {
+      ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
+      ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
+      ui_.set_operating_mode_combo_box->addItem(QString("extended_position_control"));
+      ui_.set_operating_mode_combo_box->addItem(QString("pwm_control"));
+    }
+    else if (dynamixel_info_->model_name.find("XL-320") != std::string::npos)
+    {
+      ui_.set_operating_mode_combo_box->addItem(QString("position_control"));
+      ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
+    }
   }
   else if (dynamixel_info_->model_name.find("XM") != std::string::npos ||
            dynamixel_info_->model_name.find("XH") != std::string::npos)
@@ -312,7 +345,7 @@ void MainWindow::setOperatingModeComboBox()
     ui_.set_operating_mode_combo_box->addItem(QString("velocity_control"));
     ui_.set_operating_mode_combo_box->addItem(QString("current_control"));
     ui_.set_operating_mode_combo_box->addItem(QString("extended_position_control"));
-    ui_.set_operating_mode_combo_box->addItem(QString("position_control_based_on_current"));
+    ui_.set_operating_mode_combo_box->addItem(QString("current_based_position_control"));
     ui_.set_operating_mode_combo_box->addItem(QString("pwm_control"));
   }
   else if (dynamixel_info_->model_name.find("PRO") != std::string::npos)
@@ -353,25 +386,28 @@ void MainWindow::setAddressComboBox(bool torque_enable)
     ui_.set_address_name_combo_box->removeItem(0);
   }
 
-  // Add item on combo box
-  for (dynamixel_->it_ctrl_ = dynamixel_->ctrl_table_.begin();
-       dynamixel_->it_ctrl_ != dynamixel_->ctrl_table_.end();
-       dynamixel_->it_ctrl_++)
+  uint16_t torque_enable_address = 0;
+  ControlTableItem* item_ptr = dynamixel_tool_->getControlItemPtr();
+
+  for (int item_num = 0; item_num < dynamixel_tool_->getTheNumberOfItem(); item_num++)
   {
-    dynamixel_->item_ = dynamixel_->ctrl_table_[dynamixel_->it_ctrl_->first.c_str()];
+    if (!strncmp(item_ptr[item_num].item_name, "Torque_Enable", strlen("Torque_Enable")))
+    {
+      torque_enable_address = item_num;
+    }
+  }
+
+  // Add item on combo box
+  for (int item_num = 0; item_num < dynamixel_tool_->getTheNumberOfItem(); item_num++)
+  {
     if (torque_enable)
     {
-      if ((dynamixel_->item_->access_type == dynamixel_tool::READ_WRITE) && (dynamixel_->item_->memory_type == dynamixel_tool::RAM))
-      {
-        ui_.set_address_name_combo_box->addItem(QString::fromStdString(dynamixel_->item_->item_name));
-      }
+      if (item_num >= torque_enable_address)
+        ui_.set_address_name_combo_box->addItem(QString::fromStdString(item_ptr[item_num].item_name));
     }
     else
     {
-      if (dynamixel_->item_->access_type == dynamixel_tool::READ_WRITE)
-      {
-        ui_.set_address_name_combo_box->addItem(QString::fromStdString(dynamixel_->item_->item_name));
-      }
+      ui_.set_address_name_combo_box->addItem(QString::fromStdString(item_ptr[item_num].item_name));
     }
   }
 }

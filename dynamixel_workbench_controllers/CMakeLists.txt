@@ -11,8 +11,6 @@ set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 ################################################################################
 find_package(catkin REQUIRED COMPONENTS
   roscpp
-  std_msgs
-  dynamixel_sdk
   dynamixel_workbench_msgs
   dynamixel_workbench_toolbox
 )
@@ -31,7 +29,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
  INCLUDE_DIRS include
  LIBRARIES dynamixel_workbench_controllers
- CATKIN_DEPENDS roscpp std_msgs dynamixel_sdk dynamixel_workbench_msgs dynamixel_workbench_toolbox
+ CATKIN_DEPENDS roscpp dynamixel_workbench_msgs dynamixel_workbench_toolbox
 )
 
 ################################################################################
@@ -58,9 +56,9 @@ add_executable(torque_control src/torque_control.cpp)
 add_dependencies(torque_control ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(torque_control ${catkin_LIBRARIES})
 
-################################################################################
-# Install
-################################################################################
+#################################################################################
+## Install
+#################################################################################
 install(TARGETS position_control
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}

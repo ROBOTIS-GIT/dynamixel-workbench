@@ -35,74 +35,49 @@
 
 #include <ros/ros.h>
 
-#include <dynamixel_workbench_toolbox/dynamixel_multi_driver.h>
+#include "message_header.h"
 
+#include <dynamixel_workbench.h>
 #include <dynamixel_workbench_msgs/DynamixelStateList.h>
 #include <dynamixel_workbench_msgs/WheelCommand.h>
-
-namespace velocity_control
-{
-#define MOTOR  0
-#define LEFT   0
-#define RIGHT  1
-
-typedef struct
-{
-  std::vector<uint8_t> torque;
-  std::vector<int32_t> vel;
-  std::vector<uint16_t> spd;
-}WriteValue;
 
 class VelocityControl
 {
  private:
   // ROS NodeHandle
   ros::NodeHandle node_handle_;
-  ros::NodeHandle node_handle_priv_;
 
   // ROS Parameters
 
   // ROS Topic Publisher
   ros::Publisher dynamixel_state_list_pub_;
+
   // ROS Topic Subscriber
 
   // ROS Service Server
-  ros::ServiceServer wheel_command_server;
+  ros::ServiceServer wheel_command_server_;
+
   // ROS Service Client
 
-  // ROS Topic Publisher
-
-  // ROS Service Server
-
   // Dynamixel Workbench Parameters
-  std::vector<dynamixel_driver::DynamixelInfo*> dynamixel_info_;
-  dynamixel_multi_driver::DynamixelMultiDriver *multi_driver_;
-
-  WriteValue *writeValue_;
+  DynamixelWorkbench *dxl_wb_;
+  uint8_t dxl_id_[2];
+  uint8_t dxl_cnt_;
 
  public:
   VelocityControl();
   ~VelocityControl();
-  bool controlLoop(void);
+  void controlLoop(void);
 
  private:
-  bool loadDynamixel();
-  bool checkLoadDynamixel();
-  bool initDynamixelStatePublisher();
-  bool initDynamixelInfoServer();
+  void initMsg();
 
-  bool setTorque(bool onoff);
-  bool setVelocity(int32_t left_vel, int32_t right_vel);
-  bool setMovingSpeed(uint16_t left_spd, uint16_t right_spd);
+  void initPublisher();
+  void dynamixelStatePublish();
 
-  bool readDynamixelState();
-  bool dynamixelStatePublish();
-
-  int32_t convertVelocity2Value(float velocity);
-
+  void initServer();
   bool wheelCommandMsgCallback(dynamixel_workbench_msgs::WheelCommand::Request &req,
                                dynamixel_workbench_msgs::WheelCommand::Response &res);
 };
-}
 
 #endif //DYNAMIXEL_WORKBENCH_VELOCITY_CONTROL_H
