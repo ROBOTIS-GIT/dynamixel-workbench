@@ -2,6 +2,10 @@
 Changelog for package dynamixel_workbench_tutorials
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.9 (2017-11-03)
+-----------
+* none
+
 0.1.8 (2017-11-01)
 -----------
 * deleted install inst

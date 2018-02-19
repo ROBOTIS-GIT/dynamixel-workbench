@@ -2,6 +2,11 @@
 Changelog for package dynamixel_workbench_single_manager
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.9 (2017-11-03)
+-----------
+* modified dependency
+* Contributors: Darby Lim
+
 0.1.8 (2017-11-01)
 -----------
 * None
