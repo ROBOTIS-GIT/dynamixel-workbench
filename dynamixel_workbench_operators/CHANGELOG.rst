@@ -2,6 +2,12 @@
 Changelog for package dynamixel_workbench_tutorials
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.0 (2018-02-19)
+-----------
+* modified example
+* deleted build
+* Contributors: Darby Lim, Karl D. Hansen
+
 0.1.9 (2017-11-03)
 -----------
 * none

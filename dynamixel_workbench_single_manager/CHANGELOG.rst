@@ -2,6 +2,26 @@
 Changelog for package dynamixel_workbench_single_manager
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.0 (2018-02-19)
+-----------
+* added debug code
+* added scan range param
+* added baudrate sorting
+* added all dynamixel series
+* added publisher
+* added new msg header
+* added AX Message
+* added protocol version function
+* added linux build and example
+* modified merge conflict
+* modified make file
+* modified function name and return variable name
+* modified factory rest and added baud rate function
+* modified function for ROS depend
+* modified linux version
+* deleted warning
+* Contributors: Darby Lim, Yoonseok Pyo
+
 0.1.9 (2017-11-03)
 -----------
 * modified dependency

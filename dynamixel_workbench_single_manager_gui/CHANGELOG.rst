@@ -2,6 +2,17 @@
 Changelog for package dynamixel_workbench_single_manager_gui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.0 (2018-02-19)
+-----------
+* added baudrate sorting
+* added baud rate item and operating mode item
+* added linux build and example
+* modified dynamixel workbench lib
+* modified make file
+* modified function
+* deleted build
+* Contributors: Darby Lim
+
 0.1.9 (2017-11-03)
 -----------
 * deleted libqt4
