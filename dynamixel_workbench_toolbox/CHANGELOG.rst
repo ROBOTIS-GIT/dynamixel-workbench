@@ -2,6 +2,72 @@
 Changelog for package dynamixel_workbench_toolbox
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.0 (2018-02-19)
+-----------
+* added conver function to PRO user
+* added dxl_info_cnt init function
+* added compatibility for different protocol
+* added static
+* added convert function
+* added baudrate sorting
+* added all dynamixel series
+* added RX-10
+* added millis
+* added init dynamixel example
+* added setting for packet handler
+* added monitor example
+* added item
+* added dynamixel_item
+* added toolbox_ros and modified arduino path
+* added linux build and example
+* added begin and getprotocolversion function
+* modified linux version
+* modified description
+* modified model_info
+* modified variable range
+* modified setTools function
+* modified sync function
+* modified merge conflict
+* modified variable name
+* modified reset function
+* modified function name and return variable name
+* modified name of return var
+* modified item name
+* modified reset function
+* modified item name (added underscore)
+* modified function name
+* modified function for ROS depend
+* modified function to make space
+* modified begin function to reduce storage space
+* modified MX (2.0) protocol setting bug
+* modified example
+* modified sync and bulk comm
+* modified lib
+* modified begin
+* modified variable
+* modified begin function
+* modified joint and wheel mode
+* modified variable name
+* modified begin function
+* modified set function
+* modified dynamixel item
+* modified scan function
+* modified folder tree
+* modified dynamixel_tool
+* modified toolbox structure
+* modified .device and modified funtion for opencm and opencr
+* modified ifdef
+* modified get file
+* modified arduino version
+* modified get device in arduino
+* fixed reset bug
+* deleted dead code
+* deleted empty space
+* deleted xl define
+* deleted debug code and update ping func
+* test OpenCM
+* Contributors: Darby Lim, Yoonseok Pyo
+
 0.1.9 (2017-11-03)
 -----------
 * modified dependency
