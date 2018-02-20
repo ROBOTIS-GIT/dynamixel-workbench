@@ -2,6 +2,26 @@
 Changelog for package dynamixel_workbench_controllers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.0 (2018-02-19)
+-----------
+* added blank
+* added linux build and example
+* added multi port example
+* modified bug
+* modified torque example
+* modified example
+* modified controllers
+* modified linux version
+* deleted build
+* deleted footnote
+* deleted annotation
+* Contributors: Darby Lim, Yoonseok Pyo
+
+0.1.9 (2017-11-03)
+-----------
+* modified dependency
+* Contributors: Darby Lim
+
 0.1.8 (2017-11-01)
 -----------
 * None
