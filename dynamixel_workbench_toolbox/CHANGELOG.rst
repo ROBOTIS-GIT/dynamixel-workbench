@@ -2,6 +2,11 @@
 Changelog for package dynamixel_workbench_toolbox
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.1 (2018-02-22)
+-----------
+* modified the CMakeLists.txt to fix wrong path
+* Contributors: Pyo
+
 0.2.0 (2018-02-19)
 -----------
 * added conver function to PRO user

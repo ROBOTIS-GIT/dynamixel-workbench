@@ -2,6 +2,10 @@
 Changelog for package dynamixel_workbench_controllers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.1 (2018-02-22)
+-----------
+* None
+
 0.2.0 (2018-02-19)
 -----------
 * added blank

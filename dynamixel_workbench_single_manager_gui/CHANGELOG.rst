@@ -2,6 +2,9 @@
 Changelog for package dynamixel_workbench_single_manager_gui
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.2.0 (2018-02-19)
 -----------
 * added baudrate sorting
