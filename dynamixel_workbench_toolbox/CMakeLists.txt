@@ -26,7 +26,7 @@ find_package(catkin REQUIRED COMPONENTS
 # Catkin specific configuration
 ################################################################################
 catkin_package(
- INCLUDE_DIRS include/dynamixel_workbench
+ INCLUDE_DIRS include
  LIBRARIES dynamixel_workbench_toolbox
  CATKIN_DEPENDS roscpp dynamixel_sdk
 )
@@ -35,8 +35,8 @@ catkin_package(
 # Build
 ################################################################################
 include_directories(
-  include/dynamixel_workbench
   ${catkin_INCLUDE_DIRS}
+  include/dynamixel_workbench
 )
 
 add_library(dynamixel_workbench_toolbox
