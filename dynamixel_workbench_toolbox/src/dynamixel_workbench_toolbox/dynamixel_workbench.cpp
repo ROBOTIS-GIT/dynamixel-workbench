@@ -16,7 +16,7 @@
 
 /* Authors: Taehun Lim (Darby) */
 
-#include "../../include/dynamixel_workbench/dynamixel_workbench.h"
+#include "../../include/dynamixel_workbench_toolbox/dynamixel_workbench.h"
 
 DynamixelWorkbench::DynamixelWorkbench()
 {

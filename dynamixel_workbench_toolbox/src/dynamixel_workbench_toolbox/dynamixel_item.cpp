@@ -16,7 +16,7 @@
 
 /* Authors: Taehun Lim (Darby) */
 
-#include "../../include/dynamixel_workbench/dynamixel_item.h"
+#include "../../include/dynamixel_workbench_toolbox/dynamixel_item.h"
 
 static uint8_t the_number_of_item = 0;
 

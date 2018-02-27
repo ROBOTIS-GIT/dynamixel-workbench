@@ -21,8 +21,8 @@
 
 #include <ros/ros.h>
 
-#include "dynamixel_driver.h"
 #include "dynamixel_sdk/dynamixel_sdk.h"
+#include "dynamixel_workbench_toolbox/dynamixel_driver.h"
 
 #include "dynamixel_workbench_msgs/DynamixelCommand.h"
 #include "dynamixel_workbench_msgs/GetDynamixelInfo.h"

@@ -27,20 +27,19 @@ find_package(catkin REQUIRED COMPONENTS
 ################################################################################
 # Catkin specific configuration
 ################################################################################
+catkin_package(
+  INCLUDE_DIRS include
+  CATKIN_DEPENDS qt_build roscpp dynamixel_workbench_msgs dynamixel_workbench_toolbox
+)
 
 ################################################################################
 # Build
 ################################################################################
-include_directories(${catkin_INCLUDE_DIRS})
-
-catkin_package(
-    INCLUDE_DIRS include
-    CATKIN_DEPENDS qt_build roscpp dynamixel_workbench_msgs dynamixel_workbench_toolbox
+include_directories(
+  ${catkin_INCLUDE_DIRS}
+  include
 )
 
-################################################################################
-# Qt Environment
-################################################################################
 rosbuild_prepare_qt4(QtCore QtGui)
 
 file(GLOB_RECURSE QT_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS src/*.cpp)
@@ -57,7 +56,7 @@ target_link_libraries(dynamixel_workbench_single_manager_gui ${QT_LIBRARIES} ${c
 install(TARGETS dynamixel_workbench_single_manager_gui RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 #################################################################################
-## Build
+## Install
 #################################################################################
 install(TARGETS dynamixel_workbench_single_manager_gui
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
@@ -68,3 +67,7 @@ install(TARGETS dynamixel_workbench_single_manager_gui
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 )
+
+################################################################################
+# Test
+################################################################################
