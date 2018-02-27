@@ -1,10 +1,13 @@
 # This config file for Travis CI utilizes ros-industrial/industrial_ci package.
 # For more info for the package, see https://github.com/ros-industrial/industrial_ci/blob/master/README.rst
-sudo: required 
-dist: xenial 
+
+dist: trusty
+sudo: required
 services:
   - docker
-language: generic 
+language: generic
+python:
+  - "2.7"
 compiler:
   - gcc
 notifications:
@@ -23,9 +26,9 @@ matrix:
 branches:
   only:
     - master
+    - develop
     - kinetic-devel
 install:
   - git clone https://github.com/ros-industrial/industrial_ci.git .ci_config
-script: 
-  - .ci_config/travis.sh
-
+script:
+  - source .ci_config/travis.sh

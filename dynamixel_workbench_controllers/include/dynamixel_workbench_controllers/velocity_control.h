@@ -37,7 +37,7 @@
 
 #include "message_header.h"
 
-#include <dynamixel_workbench.h>
+#include <dynamixel_workbench_toolbox/dynamixel_workbench.h>
 #include <dynamixel_workbench_msgs/DynamixelStateList.h>
 #include <dynamixel_workbench_msgs/WheelCommand.h>
 
