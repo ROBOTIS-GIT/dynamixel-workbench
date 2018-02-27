@@ -26,7 +26,7 @@
 #include "qnode.hpp"
 
 #include "dynamixel_workbench_msgs/DynamixelCommand.h"
-#include "dynamixel_driver.h"
+#include "dynamixel_workbench_toolbox/dynamixel_driver.h"
 
 #endif
 
