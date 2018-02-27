@@ -37,7 +37,7 @@ catkin_package(
 ################################################################################
 include_directories(
   ${catkin_INCLUDE_DIRS}
-  include/${PROJECT_NAME}
+  include
 )
 
 add_executable(single_dynamixel_controller src/single_dynamixel_controller.cpp)

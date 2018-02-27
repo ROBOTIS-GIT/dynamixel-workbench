@@ -37,7 +37,7 @@ catkin_package(
 ################################################################################
 include_directories(
   ${catkin_INCLUDE_DIRS}
-  include/${PROJECT_NAME}
+  include
 )
 
 rosbuild_prepare_qt4(QtCore QtGui)
