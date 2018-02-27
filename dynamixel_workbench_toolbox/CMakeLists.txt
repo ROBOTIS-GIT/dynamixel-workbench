@@ -40,10 +40,10 @@ include_directories(
 )
 
 add_library(dynamixel_workbench_toolbox
-  src/dynamixel_workbench/dynamixel_item.cpp
-  src/dynamixel_workbench/dynamixel_driver.cpp
-  src/dynamixel_workbench/dynamixel_tool.cpp
-  src/dynamixel_workbench/dynamixel_workbench.cpp
+  src/dynamixel_workbench_toolbox/dynamixel_item.cpp
+  src/dynamixel_workbench_toolbox/dynamixel_driver.cpp
+  src/dynamixel_workbench_toolbox/dynamixel_tool.cpp
+  src/dynamixel_workbench_toolbox/dynamixel_workbench.cpp
 )
 
 add_dependencies(dynamixel_workbench_toolbox ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
@@ -58,7 +58,7 @@ install(TARGETS dynamixel_workbench_toolbox
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-install(DIRECTORY include/dynamixel_workbench/
+install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 )
 
