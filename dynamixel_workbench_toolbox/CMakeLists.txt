@@ -35,6 +35,7 @@ catkin_package(
 # Build
 ################################################################################
 include_directories(
+  include/dynamixel_workbench
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -57,10 +58,9 @@ install(TARGETS dynamixel_workbench_toolbox
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-install(DIRECTORY include/${PROJECT_NAME}/
+install(DIRECTORY include/dynamixel_workbench/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 )
-
 
 ################################################################################
 # Test
