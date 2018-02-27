@@ -28,7 +28,7 @@ find_package(catkin REQUIRED COMPONENTS
 ################################################################################
 catkin_package(
  INCLUDE_DIRS include
- LIBRARIES dynamixel_workbench_controllers
+ LIBRARIES ${PROJECT_NAME}
  CATKIN_DEPENDS roscpp dynamixel_workbench_msgs dynamixel_workbench_toolbox
 )
 
@@ -37,7 +37,7 @@ catkin_package(
 ################################################################################
 include_directories(
   ${catkin_INCLUDE_DIRS}
-  include/dynamixel_wdynamixel_workbench_controllersorkbench
+  include/${PROJECT_NAME}
 )
 
 add_executable(position_control src/position_control.cpp)

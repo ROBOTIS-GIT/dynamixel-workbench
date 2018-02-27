@@ -26,8 +26,7 @@ find_package(catkin REQUIRED COMPONENTS
 # Catkin specific configuration
 ################################################################################
 catkin_package(
- INCLUDE_DIRS
- LIBRARIES dynamixel_workbench_operators
+ LIBRARIES ${PROJECT_NAME}
  CATKIN_DEPENDS roscpp dynamixel_workbench_msgs
 )
 

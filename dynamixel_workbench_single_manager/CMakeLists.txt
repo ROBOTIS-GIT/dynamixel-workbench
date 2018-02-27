@@ -28,7 +28,7 @@ find_package(catkin REQUIRED COMPONENTS
 ################################################################################
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES dynamixel_workbench_single_manager
+  LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS roscpp dynamixel_workbench_msgs dynamixel_workbench_toolbox
 )
 
@@ -37,7 +37,7 @@ catkin_package(
 ################################################################################
 include_directories(
   ${catkin_INCLUDE_DIRS}
-  include
+  include/${PROJECT_NAME}
 )
 
 add_executable(single_dynamixel_controller src/single_dynamixel_controller.cpp)
