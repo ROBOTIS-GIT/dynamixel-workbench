@@ -489,6 +489,22 @@ bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, int32_t *d
   }
 }
 
+bool DynamixelDriver::readMultipleRegisters(uint8_t id, uint8_t start_address, uint8_t data_length, uint8_t *data){
+    uint8_t error = 0;
+    int dxl_comm_result = COMM_RX_FAIL;
+
+
+    dxl_comm_result = packetHandler_->readTxRx(portHandler_, id, start_address, data_length, data, &error);
+    if(dxl_comm_result == COMM_SUCCESS){
+        if (error != 0){
+          return false;
+        }
+        return true;
+    }else{
+        return false;
+    }
+}
+
 uint8_t DynamixelDriver::getToolsFactor(uint8_t id)
 {
   for (int i = 0; i < tools_cnt_; i++)
@@ -717,6 +733,56 @@ bool DynamixelDriver::syncRead(const char *item_name, int32_t *data)
 
   srh.groupSyncRead->clearParam();
 
+  return true;
+}
+
+bool DynamixelDriver::syncReadMultipleRegisters(uint8_t start_address, uint8_t data_length, std::vector<uint8_t> *data)
+{
+  int dxl_comm_result = COMM_RX_FAIL;
+  bool dxl_addparam_result = false;
+  bool dxl_getdata_result = false;
+
+  data->clear();
+
+  dynamixel::GroupSyncRead *groupSyncRead = new dynamixel::GroupSyncRead(portHandler_, packetHandler_, start_address, data_length);
+
+  for (int i = 0; i < tools_cnt_; i++)
+  {
+    for (int j = 0; j < tools_[i].dxl_info_cnt_; j++)
+    {
+      dxl_addparam_result = groupSyncRead->addParam(tools_[i].dxl_info_[j].id);
+      if (dxl_addparam_result != true)
+        return false;
+    }
+  }
+
+  dxl_comm_result = groupSyncRead->txRxPacket();
+
+  if (dxl_comm_result != COMM_SUCCESS)
+  {
+    return false;
+  }
+  for (int i = 0; i < tools_cnt_; i++)
+  {
+    for (int j = 0; j < tools_[i].dxl_info_cnt_; j++)
+    {
+      uint8_t id = tools_[i].dxl_info_[j].id;
+
+      dxl_getdata_result = groupSyncRead->isAvailable(id, start_address, data_length);
+      if (dxl_getdata_result)
+      {
+        std::vector<uint8_t> d;
+        groupSyncRead->getMultipleWordsData(id, start_address, data_length, &d);
+        for(int k =0; k < d.size(); k++){
+            data->push_back(d[k]);
+        }
+      }
+      else
+      {
+        return false;
+      }
+    }
+  }
   return true;
 }
 

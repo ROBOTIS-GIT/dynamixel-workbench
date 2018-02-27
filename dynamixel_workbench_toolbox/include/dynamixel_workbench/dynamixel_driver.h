@@ -95,12 +95,14 @@ class DynamixelDriver
 
   bool writeRegister(uint8_t id, const char *item_name, int32_t data);
   bool readRegister(uint8_t id, const char *item_name, int32_t *data);
+  bool readMultipleRegisters(uint8_t id, uint8_t start_address, uint8_t data_length, uint8_t *data);
 
   void addSyncWrite(const char *item_name);
   bool syncWrite(const char *item_name, int32_t *data);
 
   void addSyncRead(const char *item_name);
   bool syncRead(const char *item_name, int32_t *data);
+  bool syncReadMultipleRegisters(uint8_t start_address, uint8_t data_length, std::vector<uint8_t> *data);
 
   void initBulkWrite();
   bool addBulkWriteParam(uint8_t id, const char *item_name, int32_t data);
