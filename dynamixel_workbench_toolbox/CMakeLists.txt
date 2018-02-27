@@ -36,7 +36,7 @@ catkin_package(
 ################################################################################
 include_directories(
   ${catkin_INCLUDE_DIRS}
-  include/dynamixel_workbench
+  include/dynamixel_workbench_toolbox
 )
 
 add_library(dynamixel_workbench_toolbox
