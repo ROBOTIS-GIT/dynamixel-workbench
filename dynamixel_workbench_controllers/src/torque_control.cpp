@@ -37,7 +37,13 @@ TorqueControl::TorqueControl()
   for (int index = 0; index < dxl_cnt_; index++)
   {
     uint16_t get_model_number;
-    dxl_wb_->ping(dxl_id_[index], &get_model_number);
+    if (dxl_wb_->ping(dxl_id_[index], &get_model_number) != true)
+    {
+      ROS_ERROR("Not found Motors, Please check id and baud rate");
+
+      ros::shutdown();
+      return;
+    }
   }
 
   initMsg();

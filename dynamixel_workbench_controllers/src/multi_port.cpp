@@ -41,7 +41,12 @@ MultiPort::MultiPort()
   for (int port_cnt = 0; port_cnt < PORT_NUM; port_cnt++)
   {
     dxl_wb_[port_cnt]->begin(device_name[port_cnt].c_str(), dxl_baud_rate[port_cnt]);
-    dxl_wb_[port_cnt]->scan(dxl_id_[port_cnt], &dxl_cnt_[port_cnt], scan_range);
+    if (dxl_wb_[port_cnt]->scan(dxl_id_[port_cnt], &dxl_cnt_[port_cnt], scan_range) != true)
+    {
+      ROS_ERROR("Not found Motors, Please check scan range and baud rate");
+      ros::shutdown();
+      return;
+    }
   }
   initMsg();
 
