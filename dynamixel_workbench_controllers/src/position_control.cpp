@@ -32,7 +32,13 @@ PositionControl::PositionControl()
   dxl_wb_ = new DynamixelWorkbench;
 
   dxl_wb_->begin(device_name.c_str(), dxl_baud_rate);
-  dxl_wb_->scan(dxl_id_, &dxl_cnt_, scan_range);
+  
+  if (dxl_wb_->scan(dxl_id_, &dxl_cnt_, scan_range) != true)
+  {
+    ROS_ERROR("Not found Motors, Please check scan range and baud rate");
+    ros::shutdown();
+    return;
+  }
 
   initMsg();
 
