@@ -2,6 +2,17 @@
 Changelog for package dynamixel_workbench_toolbox
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.2 (2018-02-28)
+-----------
+* modified the CI configurations (`#117 <https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues/117>`_)
+* modified the CMakeLists.txt to fix wrong path (`ros/rosdistro#17019 <https://github.com/ros/rosdistro/pull/17019>`_)
+* Contributors: Pyo
+
+0.2.1 (2018-02-22)
+-----------
+* modified the CMakeLists.txt to fix wrong path
+* Contributors: Pyo
+
 0.2.0 (2018-02-19)
 -----------
 * added conver function to PRO user

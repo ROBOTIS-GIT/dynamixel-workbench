@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>dynamixel_workbench_controllers</name>
-  <version>0.2.0</version>
+  <version>0.2.2</version>
   <description>
     This package contains examples of applying the 'dynamixel_workbench_toolbox' library developed on the basis of dynamixel_sdk to various operating modes of Dynamixel.
   </description>

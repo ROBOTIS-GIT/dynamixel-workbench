@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>dynamixel_workbench_single_manager_gui</name>
-  <version>0.2.0</version>
+  <version>0.2.2</version>
   <description>
     It provides a grapic user interface to check the status of Dynamixel and control it before using Dynamixel
   </description>
