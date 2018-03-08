@@ -186,8 +186,8 @@ void MainWindow::setEachAddressFunction(QString index)
   {
     ui_.set_position_zero_push_button->setVisible(false);
     ui_.set_address_value_dial->setEnabled(false);
-    ui_.set_address_value_dial->setRange(-2147483647, 2147483647);
-    ui_.set_address_value_spin_box->setRange(-2147483647, 2147483647);
+    ui_.set_address_value_dial->setRange(-2048, 2048);
+    ui_.set_address_value_spin_box->setRange(-2048, 2048);
   }
 }
 

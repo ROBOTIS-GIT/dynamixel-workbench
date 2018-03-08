@@ -41,7 +41,12 @@ MultiPort::MultiPort()
   for (int port_cnt = 0; port_cnt < PORT_NUM; port_cnt++)
   {
     dxl_wb_[port_cnt]->begin(device_name[port_cnt].c_str(), dxl_baud_rate[port_cnt]);
-    dxl_wb_[port_cnt]->scan(dxl_id_[port_cnt], &dxl_cnt_[port_cnt], scan_range);
+    if (dxl_wb_[port_cnt]->scan(dxl_id_[port_cnt], &dxl_cnt_[port_cnt], scan_range) != true)
+    {
+      ROS_ERROR("Not found Motors, Please check scan range and baud rate");
+      ros::shutdown();
+      return;
+    }
   }
   initMsg();
 
@@ -111,9 +116,9 @@ void MultiPort::dynamixelStatePublish()
       dynamixel_state[cnt].id                  = dxl_id_[port_cnt][index];
       dynamixel_state[cnt].torque_enable       = dxl_wb_[port_cnt]->itemRead(dxl_id_[port_cnt][index], "Torque_Enable");
       dynamixel_state[cnt].present_position    = dxl_wb_[port_cnt]->itemRead(dxl_id_[port_cnt][index], "Present_Position");
-//      dynamixel_state[cnt].present_velocity    = dxl_wb_[port_cnt]->itemRead(dxl_id_[port_cnt][index], "Present_Velocity"); // "Present_Velocity" or "Present_Speed"
+      dynamixel_state[cnt].present_velocity    = dxl_wb_[port_cnt]->itemRead(dxl_id_[port_cnt][index], "Present_Velocity");
       dynamixel_state[cnt].goal_position       = dxl_wb_[port_cnt]->itemRead(dxl_id_[port_cnt][index], "Goal_Position");
-//      dynamixel_state[cnt].goal_velocity       = dxl_wb_[port_cnt]->itemRead(dxl_id_[port_cnt][index], "Goal_Velocity");    // "Goal_Velocity" or "Moving_Speed"
+      dynamixel_state[cnt].goal_velocity       = dxl_wb_[port_cnt]->itemRead(dxl_id_[port_cnt][index], "Goal_Velocity");
       dynamixel_state[cnt].moving              = dxl_wb_[port_cnt]->itemRead(dxl_id_[port_cnt][index], "Moving");
 
       dynamixel_state_list.dynamixel_state.push_back(dynamixel_state[cnt]);

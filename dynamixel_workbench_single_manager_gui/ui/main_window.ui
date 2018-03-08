@@ -419,6 +419,18 @@
                <height>16777215</height>
               </size>
              </property>
+             <property name="maximum">
+              <number>256</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="invertedAppearance">
+              <bool>true</bool>
+             </property>
+             <property name="invertedControls">
+              <bool>false</bool>
+             </property>
             </widget>
            </item>
            <item row="1" column="0">
