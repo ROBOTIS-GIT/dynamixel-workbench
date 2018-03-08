@@ -12,6 +12,7 @@ set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 find_package(catkin REQUIRED COMPONENTS
   qt_build
   roscpp
+  dynamixel_sdk
   dynamixel_workbench_msgs
   dynamixel_workbench_toolbox
 )
@@ -29,7 +30,7 @@ find_package(catkin REQUIRED COMPONENTS
 ################################################################################
 catkin_package(
   INCLUDE_DIRS include
-  CATKIN_DEPENDS qt_build roscpp dynamixel_workbench_msgs dynamixel_workbench_toolbox
+  CATKIN_DEPENDS qt_build roscpp dynamixel_workbench_msgs dynamixel_workbench_toolbox dynamixel_sdk
 )
 
 ################################################################################
