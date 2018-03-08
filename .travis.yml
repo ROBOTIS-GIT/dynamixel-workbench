@@ -20,6 +20,7 @@ env:
   matrix:
     - ROS_DISTRO=kinetic UPSTREAM_WORKSPACE=debian ROS_REPOSITORY_PATH=http://packages.ros.org/ros/ubuntu
     - ROS_DISTRO=kinetic UPSTREAM_WORKSPACE=debian ROS_REPOSITORY_PATH=http://packages.ros.org/ros/ubuntu OS_NAME=debian OS_CODE_NAME=jessie
+    - ROS_DISTRO=kinetic UPSTREAM_WORKSPACE=file $ROSINSTALL_FILENAME=".dynamixel_workbench.rosinstall"
 branches:
   only:
     - master
