@@ -10,10 +10,10 @@ set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 # Packages
 ################################################################################
 find_package(catkin REQUIRED COMPONENTS
-    qt_build
-    roscpp
-    dynamixel_workbench_msgs
-    dynamixel_workbench_toolbox
+  qt_build
+  roscpp
+  dynamixel_workbench_msgs
+  dynamixel_workbench_toolbox
 )
 
 ################################################################################

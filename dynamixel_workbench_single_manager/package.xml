@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>dynamixel_workbench_single_manager</name>
-  <version>0.2.0</version>
+  <version>0.2.2</version>
   <description>
     This package is single manager for a Dynamixel.
     It provides a terminal environment to check the status of Dynamixel and control it before using Dynamixel

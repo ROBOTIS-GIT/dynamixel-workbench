@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>dynamixel_workbench_operators</name>
-  <version>0.2.0</version>
+  <version>0.2.2</version>
   <description>
     This package contains nodes that control the Dynamixel by communicating with the server registered in the 'dynamixel_workbench_controllers' package
   </description>
