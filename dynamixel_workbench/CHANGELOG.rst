@@ -2,6 +2,14 @@
 Changelog for package dynamixel_workbench
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.3 (2018-03-09)
+-----------
+* modified dialog rotate direction
+* added dynamixel_sdk lib
+* added debug code
+* deleted anotation
+* Contributors: Darby Lim
+
 0.2.2 (2018-02-28)
 -----------
 * modified the CI configurations (`#117 <https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues/117>`_)

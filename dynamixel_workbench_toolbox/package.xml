@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>dynamixel_workbench_toolbox</name>
-  <version>0.2.2</version>
+  <version>0.2.3</version>
   <description>
     This package is composed of 'dynamixel_item', 'dynamixel_tool', 'dynamixel_driver' and 'dynamixel_workbench' class.
     The 'dynamixel_item' is saved as control table item and information of Dynamixels.
