@@ -14,9 +14,11 @@
   <url type="website">http://wiki.ros.org/dynamixel_workbench</url>
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>
+  <build_depend>dynamixel_sdk</build_depend>
   <build_depend>dynamixel_workbench_msgs</build_depend>
   <build_depend>dynamixel_workbench_toolbox</build_depend>
   <run_depend>roscpp</run_depend>
+  <run_depend>dynamixel_sdk</run_depend>
   <run_depend>dynamixel_workbench_msgs</run_depend>
   <run_depend>dynamixel_workbench_toolbox</run_depend>
   <export></export>
