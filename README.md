@@ -4,6 +4,11 @@
 # Documents for dynamixel_workbench packages
 - [ROBOTIS e-Manual](http://emanual.robotis.com/docs/en/software/dynamixel/dynamixel_workbench/#package-description)
 - http://wiki.ros.org/dynamixel_workbench
+- http://wiki.ros.org/dynamixel_workbench_controllers
+- http://wiki.ros.org/dynamixel_workbench_operators
+- http://wiki.ros.org/dynamixel_workbench_single_manager
+- http://wiki.ros.org/dynamixel_workbench_single_manager_gui
+- http://wiki.ros.org/dynamixel_workbench_toolbox
 
 # ROS packages related to Dynamixel Workbench
 - [dynamixel_sdk](https://github.com/ROBOTIS-GIT/DynamixelSDK)
