@@ -2,23 +2,28 @@
 Changelog for package dynamixel_workbench_toolbox
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.4 (2018-03-20)
+------------------
+* changed package.xml to format v2
+* Contributors: Pyo
+
 0.2.3 (2018-03-09)
------------
+------------------
 * None
 
 0.2.2 (2018-02-28)
------------
+------------------
 * modified the CI configurations (`#117 <https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues/117>`_)
 * modified the CMakeLists.txt to fix wrong path (`ros/rosdistro#17019 <https://github.com/ros/rosdistro/pull/17019>`_)
 * Contributors: Pyo
 
 0.2.1 (2018-02-22)
------------
+------------------
 * modified the CMakeLists.txt to fix wrong path
 * Contributors: Pyo
 
 0.2.0 (2018-02-19)
------------
+------------------
 * added conver function to PRO user
 * added dxl_info_cnt init function
 * added compatibility for different protocol
@@ -84,21 +89,21 @@ Changelog for package dynamixel_workbench_toolbox
 * Contributors: Darby Lim, Yoonseok Pyo
 
 0.1.9 (2017-11-03)
------------
+------------------
 * modified dependency
 * Contributors: Darby Lim
 
 0.1.8 (2017-11-01)
------------
+------------------
 * None
 
 0.1.7 (2017-10-30)
------------
+------------------
 * added rospy for the issue https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues/77
 * Contributors: Darby Lim
 
 0.1.6 (2017-08-09)
------------
+------------------
 * bug fixed
 * updated error msg
 * updated get model path
@@ -118,12 +123,12 @@ Changelog for package dynamixel_workbench_toolbox
 * Contributors: Darby Lim
 
 0.1.5 (2017-05-23)
------------
+------------------
 * modified the cmake of toolbox
 * Contributors: Darby Lim
 
 0.1.4 (2017-04-24)
------------
+------------------
 * toolbox bug fixed
 * added dynamixel new model: XL430_W250
 * added dynamixel new model: XH
@@ -131,25 +136,25 @@ Changelog for package dynamixel_workbench_toolbox
 * Contributors: Darby Lim
 
 0.1.3 (2016-11-29)
------------
+------------------
 * modifiy folder path
 * add drive_mode in XM series
 * Contributors: Darby Lim
 
 0.1.2 (2016-10-31)
------------
+------------------
 * modify beta test feedback
 * Contributors: Darby Lim
 
 0.1.1 (2016-10-21)
------------
+------------------
 * Revert "add baudrate combobox and modify velocity controller"
   This reverts commit f4f83761d687c40660a2c864aa4fcbebe1df4ea4.
 * add baudrate combobox and modify velocity controller
 * Contributors: Darby Lim
 
 0.1.0 (2016-09-23)
-------------------
+-------------------------
 * modified the package information for release
 * edit cmake and xml files
 * modify message

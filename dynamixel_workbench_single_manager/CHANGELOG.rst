@@ -2,23 +2,28 @@
 Changelog for package dynamixel_workbench_single_manager
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.4 (2018-03-20)
+------------------
+* changed package.xml to format v2
+* Contributors: Pyo
+
 0.2.3 (2018-03-09)
------------
+------------------
 * added dynamixel_sdk lib
 * Contributors: Darby Lim
 
 0.2.2 (2018-02-28)
------------
+------------------
 * modified the CI configurations (`#117 <https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues/117>`_)
 * modified the CMakeLists.txt to fix wrong path (`ros/rosdistro#17019 <https://github.com/ros/rosdistro/pull/17019>`_)
 * Contributors: Pyo
 
 0.2.1 (2018-02-22)
------------
+------------------
 * None
 
 0.2.0 (2018-02-19)
------------
+------------------
 * added debug code
 * added scan range param
 * added baudrate sorting
@@ -38,21 +43,21 @@ Changelog for package dynamixel_workbench_single_manager
 * Contributors: Darby Lim, Yoonseok Pyo
 
 0.1.9 (2017-11-03)
------------
+------------------
 * modified dependency
 * Contributors: Darby Lim
 
 0.1.8 (2017-11-01)
------------
+------------------
 * None
 
 0.1.7 (2017-10-30)
------------
+------------------
 * added rospy for the issue https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues/77
 * Contributors: Darby Lim
 
 0.1.6 (2017-08-09)
------------
+------------------
 * bug fixed
 * updated error msg
 * updated get model path
@@ -72,32 +77,32 @@ Changelog for package dynamixel_workbench_single_manager
 * Contributors: Darby Lim
 
 0.1.5 (2017-05-23)
------------
+------------------
 * modified the cmake of toolbox
 * Contributors: Darby Lim
 
 0.1.4 (2017-04-24)
------------
+------------------
 * added dynamixel new model: XL430_W250
 * added dynamixel new model: XH
 * Contributors: Darby Lim
 
 0.1.3 (2016-11-29)
------------
+------------------
 * add drive_mode in XM series
 * update single manager and GUI
 * modified msgs files
 * Contributors: Darby Lim
 
 0.1.2 (2016-10-31)
------------
+------------------
 * add comment in msgs file
 * add stop sign in velocity controller
 * modify beta test feedback
 * Contributors: Darby Lim
 
 0.1.1 (2016-10-21)
------------
+------------------
 * modified single manager and gui
 * modified factory reset
 * modified baudrate, factory reset, reboot and velocity controller
@@ -107,7 +112,7 @@ Changelog for package dynamixel_workbench_single_manager
 * Contributors: Darby Lim
 
 0.1.0 (2016-09-23)
-------------------
+-------------------------
 * modified the package information for release
 * edit cmake and xml files
 * edit launch file
