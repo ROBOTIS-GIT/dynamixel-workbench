@@ -12,14 +12,14 @@ compiler:
   - gcc
 notifications:
   email:
-    on_success: always
+    on_success: change
     on_failure: always
     recipients:
       - pyo@robotis.com
 env:
   matrix:
     - ROS_DISTRO=kinetic ROS_REPO=ros-shadow-fixed UPSTREAM_WORKSPACE=debian
-    - ROS_DISTRO=kinetic ROS_REPO=ros-shadow-fixed UPSTREAM_WORKSPACE=debian OS_NAME=debian OS_CODE_NAME=jessie
+#   - ROS_DISTRO=kinetic ROS_REPO=ros-shadow-fixed UPSTREAM_WORKSPACE=debian OS_NAME=debian OS_CODE_NAME=jessie
 branches:
   only:
     - master
