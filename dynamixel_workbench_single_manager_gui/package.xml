@@ -1,27 +1,21 @@
 <?xml version="1.0"?>
-<package>
+<package format="2">
   <name>dynamixel_workbench_single_manager_gui</name>
-  <version>0.2.3</version>
+  <version>0.2.4</version>
   <description>
     It provides a grapic user interface to check the status of Dynamixel and control it before using Dynamixel
   </description>
-  <license>Apache License 2.0</license>
+  <license>Apache 2.0</license>
   <author email="thlim@robotis.com">Darby Lim</author>
   <maintainer email="pyo@robotis.com">Pyo</maintainer>
-  <url type="bugtracker">https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues</url>
+  <url type="website">http://wiki.ros.org/dynamixel_workbench_single_manager_gui</url>
+  <url type="emanual">http://emanual.robotis.com/docs/en/software/dynamixel/dynamixel_workbench/</url>
   <url type="repository">https://github.com/ROBOTIS-GIT/dynamixel-workbench</url>
-  <url type="website">http://wiki.ros.org/dynamixel_workbench</url>
+  <url type="bugtracker">https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues</url>
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>qt_build</build_depend>
-  <build_depend>roscpp</build_depend>
-  <build_depend>dynamixel_sdk</build_depend>
-  <build_depend>libqt4-dev</build_depend>
-  <build_depend>dynamixel_workbench_msgs</build_depend>
-  <build_depend>dynamixel_workbench_toolbox</build_depend>
-  <run_depend>qt_build</run_depend>
-  <run_depend>roscpp</run_depend>
-  <run_depend>dynamixel_sdk</run_depend>
-  <run_depend>libqt4-dev</run_depend>
-  <run_depend>dynamixel_workbench_msgs</run_depend>
-  <run_depend>dynamixel_workbench_toolbox</run_depend>
+  <depend>roscpp</depend>
+  <depend>qt_build</depend>
+  <depend>libqt4-dev</depend>
+  <depend>dynamixel_workbench_msgs</depend>
+  <depend>dynamixel_workbench_toolbox</depend>
 </package>

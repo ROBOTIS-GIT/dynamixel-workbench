@@ -1,19 +1,18 @@
 <?xml version="1.0"?>
-<package>
+<package format="2">
   <name>dynamixel_workbench_operators</name>
-  <version>0.2.3</version>
+  <version>0.2.4</version>
   <description>
     This package contains nodes that control the Dynamixel by communicating with the server registered in the 'dynamixel_workbench_controllers' package
   </description>
-  <license>Apache License 2.0</license>
+  <license>Apache 2.0</license>
   <author email="thlim@robotis.com">Darby Lim</author>
   <maintainer email="pyo@robotis.com">Pyo</maintainer>
-  <url type="bugtracker">https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues</url>
+  <url type="website">http://wiki.ros.org/dynamixel_workbench_operators</url>
+  <url type="emanual">http://emanual.robotis.com/docs/en/software/dynamixel/dynamixel_workbench/</url>
   <url type="repository">https://github.com/ROBOTIS-GIT/dynamixel-workbench</url>
-  <url type="website">http://wiki.ros.org/dynamixel_workbench</url>
+  <url type="bugtracker">https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues</url>
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>roscpp</build_depend>
-  <build_depend>dynamixel_workbench_msgs</build_depend>
-  <run_depend>roscpp</run_depend>
-  <run_depend>dynamixel_workbench_msgs</run_depend>
+  <depend>roscpp</depend>
+  <depend>dynamixel_workbench_msgs</depend>
 </package>
