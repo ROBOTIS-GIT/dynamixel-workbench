@@ -476,6 +476,7 @@ static void setExtMXInfo()
   model_info.value_of_0_radian_position      = 2048;
   model_info.value_of_min_radian_position    = 0;
   model_info.value_of_max_radian_position    = 4095;
+  model_info.torque_to_current_value_ratio   = 149.795386991;
 
   model_info.min_radian                      = -3.14159265;
   model_info.max_radian                      =  3.14159265;
