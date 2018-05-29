@@ -4,7 +4,7 @@
 cmake_minimum_required(VERSION 2.8.0)
 project(dynamixel_workbench_single_manager_gui)
 
-set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
+add_compile_options(-std=c++11)
 
 ################################################################################
 # Packages
