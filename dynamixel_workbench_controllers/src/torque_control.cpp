@@ -187,27 +187,6 @@ bool TorqueControl::jointCommandMsgCallback(dynamixel_workbench_msgs::JointComma
   }
 
   res.result = true;
-
-//  motorPos_->des_pos.clear();
-
-//  if (req.unit == "rad")
-//  {
-//    motorPos_->des_pos.push_back(convertRadian2Value(req.pan_pos));
-//    motorPos_->des_pos.push_back(convertRadian2Value(req.tilt_pos));
-//  }
-//  else if (req.unit == "raw")
-//  {
-//    motorPos_->des_pos.push_back(req.pan_pos);
-//    motorPos_->des_pos.push_back(req.tilt_pos);
-//  }
-//  else
-//  {
-//    motorPos_->des_pos.push_back(req.pan_pos);
-//    motorPos_->des_pos.push_back(req.tilt_pos);
-//  }
-
-//  res.pan_pos  = motorPos_->des_pos.at(PAN);
-//  res.tilt_pos = motorPos_->des_pos.at(TILT);
 }
 
 int main(int argc, char **argv)
