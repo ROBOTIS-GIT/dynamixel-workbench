@@ -30,7 +30,7 @@
   #include "dynamixel_sdk/dynamixel_sdk.h"
 #endif
 
-#define MAX_DXL_SERIES_NUM 3
+#define MAX_DXL_SERIES_NUM 5
 #define MAX_HANDLER_NUM 5
 
 #define BYTE  1
