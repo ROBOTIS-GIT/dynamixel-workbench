@@ -62,6 +62,7 @@ TorqueControl::TorqueControl()
   goal_position_[TILT]  = dxl_wb_->convertRadian2Value(dxl_id_[TILT], 0.0);
 
   initPublisher();
+  initSubscriber();
   initServer();
 }
 
@@ -76,7 +77,8 @@ TorqueControl::~TorqueControl()
 void TorqueControl::initMsg()
 {
   printf("-----------------------------------------------------------------------\n");
-  printf("  dynamixel_workbench controller; torque control example               \n");
+  printf("         dynamixel_workbench controller; torque control example        \n");
+  printf("               -This example supports XM430-W350 only-                 \n");
   printf("-----------------------------------------------------------------------\n");
   printf("\n");
 
@@ -92,6 +94,12 @@ void TorqueControl::initMsg()
 void TorqueControl::initPublisher()
 {
   dynamixel_state_list_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::DynamixelStateList>("dynamixel_state", 10);
+  joint_states_pub_ = node_handle_.advertise<sensor_msgs::JointState>("joint_states", 10);
+}
+
+void TorqueControl::initSubscriber()
+{
+  joint_command_sub_ = node_handle_.subscribe("goal_dynamixel_position", 10, &TorqueControl::goalJointPositionCallback, this);
 }
 
 void TorqueControl::initServer()
@@ -122,9 +130,44 @@ void TorqueControl::dynamixelStatePublish()
   dynamixel_state_list_pub_.publish(dynamixel_state_list);
 }
 
+void TorqueControl::jointStatePublish()
+{
+  int32_t present_position[dxl_cnt_] = {0, };
+
+  for (int index = 0; index < dxl_cnt_; index++)
+    present_position[index] = dxl_wb_->itemRead(dxl_id_[index], "Present_Position");
+
+  int32_t present_velocity[dxl_cnt_] = {0, };
+
+  for (int index = 0; index < dxl_cnt_; index++)
+    present_velocity[index] = dxl_wb_->itemRead(dxl_id_[index], "Present_Velocity");
+
+  int16_t present_current[dxl_cnt_] = {0, };
+
+  for (int index = 0; index < dxl_cnt_; index++)
+    present_current[index] = dxl_wb_->itemRead(dxl_id_[index], "Present_Current");
+
+  sensor_msgs::JointState dynamixel_;
+  dynamixel_.header.stamp = ros::Time::now();
+
+  for (int index = 0; index < dxl_cnt_; index++)
+  {
+    std::stringstream id_num;
+    id_num << "id_" << (int)(dxl_id_[index]);
+
+    dynamixel_.name.push_back(id_num.str());
+
+    dynamixel_.position.push_back(dxl_wb_->convertValue2Radian(dxl_id_[index], present_position[index]));
+    dynamixel_.velocity.push_back(dxl_wb_->convertValue2Velocity(dxl_id_[index], present_velocity[index]));
+    dynamixel_.effort.push_back(dxl_wb_->convertValue2Torque(dxl_id_[index], present_current[index]));
+  }
+  joint_states_pub_.publish(dynamixel_);
+}
+
 void TorqueControl::controlLoop()
 {
   dynamixelStatePublish();
+  jointStatePublish();
   gravityCompensation();
 }
 
@@ -187,6 +230,19 @@ bool TorqueControl::jointCommandMsgCallback(dynamixel_workbench_msgs::JointComma
   }
 
   res.result = true;
+}
+
+void TorqueControl::goalJointPositionCallback(const sensor_msgs::JointState::ConstPtr &msg)
+{
+  double goal_position[dxl_cnt_] = {0.0, };
+
+  for (int index = 0; index < dxl_cnt_; index++)
+    goal_position[index] = msg->position.at(index);
+
+  for (int index = 0; index < dxl_cnt_; index++)
+  {
+    goal_position_[index] = dxl_wb_->convertRadian2Value(dxl_id_[index], goal_position[index]);
+  }
 }
 
 int main(int argc, char **argv)
