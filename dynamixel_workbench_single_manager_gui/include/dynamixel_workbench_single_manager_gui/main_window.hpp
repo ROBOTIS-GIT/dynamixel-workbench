@@ -21,7 +21,7 @@
 
 #ifndef Q_MOC_RUN
 
-#include <QtGui/QMainWindow>
+#include <QMainWindow>
 #include "ui_main_window.h"
 #include "qnode.hpp"
 

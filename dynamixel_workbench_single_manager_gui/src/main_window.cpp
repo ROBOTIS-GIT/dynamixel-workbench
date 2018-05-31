@@ -16,7 +16,6 @@
 
 /* Authors: Taehoon Lim (Darby) */
 
-#include <QtGui>
 #include <QMessageBox>
 #include <iostream>
 
