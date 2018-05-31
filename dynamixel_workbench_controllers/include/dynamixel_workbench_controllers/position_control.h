@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 
-/* Authors: Taehoon Lim (Darby) */
+/* Authors: Taehun Lim (Darby) */
 
 #ifndef DYNAMIXEL_WORKBENCH_POSITION_CONTROL_H
 #define DYNAMIXEL_WORKBENCH_POSITION_CONTROL_H
