@@ -5,6 +5,9 @@
   <arg name="left_wheel"              default="1"/>
   <arg name="right_wheel"             default="2"/>
 
+  <arg name="wheel_separation"        default="0.160"/> <!--Refer to TurtleBot3 Burger-->
+  <arg name="wheel_radius"            default="0.033"/> <!--Refer to TurtleBot3 Burger-->
+
   <arg name="profile_velocity"        default="200"/>
   <arg name="profile_acceleration"    default="50"/>
 

@@ -14,14 +14,14 @@
 * limitations under the License.
 *******************************************************************************/
 
-/* Authors: Taehoon Lim (Darby) */
+/* Authors: Taehun Lim (Darby) */
 
 #ifndef DYNAMIXEL_WORKBENCH_SINGLE_MANAGER_GUI_MAIN_WINDOW_H
 #define DYNAMIXEL_WORKBENCH_SINGLE_MANAGER_GUI_MAIN_WINDOW_H
 
 #ifndef Q_MOC_RUN
 
-#include <QtGui/QMainWindow>
+#include <QMainWindow>
 #include "ui_main_window.h"
 #include "qnode.hpp"
 

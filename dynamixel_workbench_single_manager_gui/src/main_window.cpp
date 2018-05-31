@@ -14,9 +14,8 @@
 * limitations under the License.
 *******************************************************************************/
 
-/* Authors: Taehoon Lim (Darby) */
+/* Authors: Taehun Lim (Darby) */
 
-#include <QtGui>
 #include <QMessageBox>
 #include <iostream>
 

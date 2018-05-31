@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 
-/* Authors: Taehoon Lim (Darby) */
+/* Authors: Taehun Lim (Darby) */
 
 #include "dynamixel_workbench_controllers/velocity_control.h"
 
@@ -27,6 +27,9 @@ VelocityControl::VelocityControl()
 
   uint32_t profile_velocity     = node_handle_.param<int>("profile_velocity", 200);
   uint32_t profile_acceleration = node_handle_.param<int>("profile_acceleration", 50);
+
+  wheel_separation_ = node_handle_.param<float>("wheel_separation", 0.160);
+  wheel_radius_     = node_handle_.param<float>("wheel_radius", 0.033);
 
   dxl_id_[0] = node_handle_.param<int>("left_wheel", 1);
   dxl_id_[1] = node_handle_.param<int>("right_wheel", 2);
@@ -49,12 +52,16 @@ VelocityControl::VelocityControl()
 
   initMsg();
 
+  // Set Reverse Mode to Right Motor(ID : 2)
+  dxl_wb_->itemWrite(dxl_id_[1], "Drive_Mode", 1);
+
   for (int index = 0; index < dxl_cnt_; index++)
     dxl_wb_->wheelMode(dxl_id_[index], profile_velocity, profile_acceleration);
 
   dxl_wb_->addSyncWrite("Goal_Velocity");
 
   initPublisher();
+  initSubscriber();
   initServer();
 }
 
@@ -69,7 +76,8 @@ VelocityControl::~VelocityControl()
 void VelocityControl::initMsg()
 {
   printf("-----------------------------------------------------------------------\n");
-  printf("  dynamixel_workbench controller; velocity control example             \n");
+  printf("        dynamixel_workbench controller; velocity control example       \n");
+  printf("              -This example supports MX2.0 and X Series-               \n");
   printf("-----------------------------------------------------------------------\n");
   printf("\n");
 
@@ -85,6 +93,11 @@ void VelocityControl::initMsg()
 void VelocityControl::initPublisher()
 {
   dynamixel_state_list_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::DynamixelStateList>("dynamixel_state", 10);
+}
+
+void VelocityControl::initSubscriber()
+{
+  cmd_vel_sub_ = node_handle_.subscribe("cmd_vel", 10, &VelocityControl::commandVelocityCallback, this);
 }
 
 void VelocityControl::initServer()
@@ -129,6 +142,28 @@ bool VelocityControl::wheelCommandMsgCallback(dynamixel_workbench_msgs::WheelCom
   bool ret = dxl_wb_->syncWrite("Goal_Velocity", goal_velocity);
 
   res.result = ret;
+}
+
+void VelocityControl::commandVelocityCallback(const geometry_msgs::Twist::ConstPtr &msg)
+{
+  bool dxl_comm_result = false;
+
+  float wheel_velocity[2] = {0.0, 0.0};
+  int32_t dynamixel_velocity[2] = {0, 0};
+
+  float lin_vel = msg->linear.x;
+  float ang_vel = msg->angular.z;
+
+  const float RPM_OF_DXL = 0.229;
+  const float VELOCITY_CONSTANT_VALUE = 1 / (wheel_radius_ * RPM_OF_DXL * 0.10472);
+
+  wheel_velocity[0]  = lin_vel - (ang_vel * wheel_separation_ / 2);
+  wheel_velocity[1]  = lin_vel + (ang_vel * wheel_separation_ / 2);
+
+  dynamixel_velocity[0] = wheel_velocity[0] * VELOCITY_CONSTANT_VALUE;
+  dynamixel_velocity[1] = wheel_velocity[1] * VELOCITY_CONSTANT_VALUE;
+
+  dxl_wb_->syncWrite("Goal_Velocity", dynamixel_velocity);
 }
 
 int main(int argc, char **argv)

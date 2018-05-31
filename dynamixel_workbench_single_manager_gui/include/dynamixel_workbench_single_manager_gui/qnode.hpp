@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 
-/* Authors: Taehoon Lim (Darby) */
+/* Authors: Taehun Lim (Darby) */
 
 #ifndef DYNAMIXEL_WORKBENCH_SINGLE_MANAGER_GUI_QNODE_HPP
 #define DYNAMIXEL_WORKBENCH_SINGLE_MANAGER_GUI_QNODE_HPP
@@ -22,6 +22,7 @@
 #ifndef Q_MOC_RUN
 
 #include <ros/ros.h>
+#include <rqt_gui_cpp/plugin.h>
 #include <string>
 #include <QThread>
 #include <QStringListModel>

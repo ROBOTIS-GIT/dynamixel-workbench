@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 
-/* Authors: Taehoon Lim (Darby) */
+/* Authors: Taehun Lim (Darby) */
 
 #ifndef DYNAMIXEL_WORKBENCH_POSITION_CONTROL_H
 #define DYNAMIXEL_WORKBENCH_POSITION_CONTROL_H
@@ -22,6 +22,8 @@
 #include <ros/ros.h>
 
 #include "message_header.h"
+
+#include <sensor_msgs/JointState.h>
 
 #include <dynamixel_workbench_toolbox/dynamixel_workbench.h>
 #include <dynamixel_workbench_msgs/DynamixelStateList.h>
@@ -37,8 +39,10 @@ class PositionControl
 
   // ROS Topic Publisher
   ros::Publisher dynamixel_state_list_pub_;
+  ros::Publisher joint_states_pub_;
 
   // ROS Topic Subscriber
+  ros::Subscriber joint_command_sub_;
 
   // ROS Service Server
   ros::ServiceServer joint_command_server_;
@@ -59,11 +63,14 @@ class PositionControl
   void initMsg();
 
   void initPublisher();
+  void initSubscriber();
   void dynamixelStatePublish();
+  void jointStatePublish();
 
   void initServer();
   bool jointCommandMsgCallback(dynamixel_workbench_msgs::JointCommand::Request &req,
                                dynamixel_workbench_msgs::JointCommand::Response &res);
+  void goalJointPositionCallback(const sensor_msgs::JointState::ConstPtr &msg);
 };
 
 #endif //DYNAMIXEL_WORKBENCH_POSITION_CONTROL_H

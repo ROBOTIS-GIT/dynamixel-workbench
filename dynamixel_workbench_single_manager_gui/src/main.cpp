@@ -14,9 +14,8 @@
 * limitations under the License.
 *******************************************************************************/
 
-/* Authors: Taehoon Lim (Darby) */
+/* Authors: Taehun Lim (Darby) */
 
-#include <QtGui>
 #include <QApplication>
 #include "../include/dynamixel_workbench_single_manager_gui/main_window.hpp"
 
