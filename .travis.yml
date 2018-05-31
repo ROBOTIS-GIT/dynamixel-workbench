@@ -1,8 +1,8 @@
 # This config file for Travis CI utilizes ros-industrial/industrial_ci package.
 # For more info for the package, see https://github.com/ros-industrial/industrial_ci/blob/master/README.rst
 
-dist: trusty
 sudo: required
+dist: trusty
 services:
   - docker
 language: generic
@@ -12,22 +12,21 @@ compiler:
   - gcc
 notifications:
   email:
-    on_success: always
+    on_success: change
     on_failure: always
     recipients:
       - pyo@robotis.com
 env:
   matrix:
-    - ROS_DISTRO="kinetic"   ROS_REPOSITORY_PATH=http://packages.ros.org/ros/ubuntu  USE_DEB=true
-    - ROS_DISTRO="kinetic"   PRERELEASE=true PRERELEASE_DOWNSTREAM_DEPTH=0
-matrix:
-  allow_failures:
-    - env: ROS_DISTRO="kinetic"   PRERELEASE=true PRERELEASE_DOWNSTREAM_DEPTH=0
+    - ROS_DISTRO=kinetic ROS_REPO=ros-shadow-fixed UPSTREAM_WORKSPACE=debian OS_NAME=ubuntu OS_CODE_NAME=xenial
+#   - ROS_DISTRO=melodic ROS_REPO=ros-shadow-fixed UPSTREAM_WORKSPACE=file   OS_NAME=ubuntu OS_CODE_NAME=bionic $ROSINSTALL_FILENAME=".dynamixel_workbench.rosinstall"
+#   - ROS_DISTRO=melodic ROS_REPO=ros-shadow-fixed UPSTREAM_WORKSPACE=debian OS_NAME=ubuntu OS_CODE_NAME=bionic
 branches:
   only:
     - master
     - develop
     - kinetic-devel
+    - melodic-devel
 install:
   - git clone https://github.com/ros-industrial/industrial_ci.git .ci_config
 script:
