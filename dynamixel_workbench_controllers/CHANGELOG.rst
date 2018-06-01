@@ -2,6 +2,14 @@
 Changelog for package dynamixel_workbench_controllers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.3.0 (2018-06-01)
+------------------
+* added cmd_vel topics, joint_state topics, msgs
+* changed compile options
+* deleted unused code
+* Merge pull request `#152 <https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues/152>`_  `#151 <https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues/151>`_ `#149 <https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues/149>`_ `#132 <https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues/132>`_ 
+* Contributors: Darby Lim, Pyo
+
 0.2.4 (2018-03-20)
 ------------------
 * changed package.xml to format v2

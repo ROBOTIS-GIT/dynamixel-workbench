@@ -2,6 +2,13 @@
 Changelog for package dynamixel_workbench_toolbox
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.3.0 (2018-06-01)
+------------------
+* added getProtocolVersion()
+* changed max_dxl_deries_num
+* merged pull request `#152 <https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues/152>`_ `#151 <https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues/151>`_ `#149 <https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues/149>`_ `#132 <https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues/132>`_ 
+* Contributors: Darby Lim, Pyo
+
 0.2.4 (2018-03-20)
 ------------------
 * changed package.xml to format v2
