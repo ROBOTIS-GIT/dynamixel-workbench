@@ -2,6 +2,10 @@
 Changelog for package dynamixel_workbench_controllers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.3.1 (2018-06-04)
+------------------
+* none
+
 0.3.0 (2018-06-01)
 ------------------
 * added cmd_vel topics, joint_state topics, msgs

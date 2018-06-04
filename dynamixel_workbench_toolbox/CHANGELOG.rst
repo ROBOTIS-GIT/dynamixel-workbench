@@ -2,6 +2,10 @@
 Changelog for package dynamixel_workbench_toolbox
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.3.1 (2018-06-04)
+------------------
+* None
+
 0.3.0 (2018-06-01)
 ------------------
 * added getProtocolVersion()
