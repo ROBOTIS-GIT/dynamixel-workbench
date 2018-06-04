@@ -12,18 +12,11 @@ add_compile_options(-std=c++11)
 ################################################################################
 find_package(catkin REQUIRED COMPONENTS
   roscpp
-  rqt_gui
-  rqt_gui_cpp
   dynamixel_workbench_msgs
   dynamixel_workbench_toolbox
 )
 
-if("${qt_gui_cpp_USE_QT_MAJOR_VERSION} " STREQUAL "5 ")
-  find_package(Qt5Widgets REQUIRED)
-else()
-  find_package(Qt4 COMPONENTS QtCore QtGui REQUIRED)
-  include(${QT_USE_FILE})
-endif()
+find_package(Qt5Widgets REQUIRED)
 
 set(${PROJECT_NAME}_SRCS
   src/main.cpp
@@ -70,26 +63,17 @@ endif()
 ################################################################################
 catkin_package(
   INCLUDE_DIRS include
-  CATKIN_DEPENDS roscpp rqt_gui rqt_gui_cpp dynamixel_workbench_msgs dynamixel_workbench_toolbox
+  CATKIN_DEPENDS roscpp dynamixel_workbench_msgs dynamixel_workbench_toolbox
 )
 
-if("${qt_gui_cpp_USE_QT_MAJOR_VERSION} " STREQUAL "5 ")
-  qt5_wrap_cpp(${PROJECT_NAME}_MOCS     ${${PROJECT_NAME}_HDRS})
-  qt5_add_resources(${PROJECT_NAME}_RCC ${${PROJECT_NAME}_RESOURCES})
-else()
-  qt4_wrap_cpp(${PROJECT_NAME}_MOCS     ${${PROJECT_NAME}_HDRS})
-  qt4_add_resources(${PROJECT_NAME}_RCC ${${PROJECT_NAME}_RESOURCES})
-endif()
+qt5_wrap_cpp(${PROJECT_NAME}_MOCS     ${${PROJECT_NAME}_HDRS})
+qt5_add_resources(${PROJECT_NAME}_RCC ${${PROJECT_NAME}_RESOURCES})
 
 # ensure generated header files are being created in the devel space
 set(_cmake_current_binary_dir "${CMAKE_CURRENT_BINARY_DIR}")
 set(CMAKE_CURRENT_BINARY_DIR ${dynamixel_workbench_single_manager_gui_INCLUDE_DIRECTORIES})
 
-if("${qt_gui_cpp_USE_QT_MAJOR_VERSION} " STREQUAL "5 ")
-  qt5_wrap_ui(${PROJECT_NAME}_UIS_H ${${PROJECT_NAME}_UIS})
-else()
-  qt4_wrap_ui(${PROJECT_NAME}_UIS_H ${${PROJECT_NAME}_UIS})
-endif()
+qt5_wrap_ui(${PROJECT_NAME}_UIS_H ${${PROJECT_NAME}_UIS})
 
 set(CMAKE_CURRENT_BINARY_DIR "${_cmake_current_binary_dir}")
 
@@ -104,15 +88,7 @@ include_directories(
 
 add_executable(dynamixel_workbench_single_manager_gui ${dynamixel_workbench_single_manager_gui_SRCS} ${dynamixel_workbench_single_manager_gui_MOCS} ${dynamixel_workbench_single_manager_gui_UIS_H} ${dynamixel_workbench_single_manager_gui_RCC})
 add_dependencies(dynamixel_workbench_single_manager_gui ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(dynamixel_workbench_single_manager_gui ${catkin_LIBRARIES})
-if("${qt_gui_cpp_USE_QT_MAJOR_VERSION} " STREQUAL "5 ")
-  target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
-else()
-  target_link_libraries(${PROJECT_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
-endif()
-
-find_package(class_loader)
-class_loader_hide_library_symbols(${PROJECT_NAME})
+target_link_libraries(dynamixel_workbench_single_manager_gui Qt5::Widgets ${catkin_LIBRARIES})
 
 #################################################################################
 ## Install
