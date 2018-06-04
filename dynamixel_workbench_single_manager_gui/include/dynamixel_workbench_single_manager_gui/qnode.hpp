@@ -22,7 +22,6 @@
 #ifndef Q_MOC_RUN
 
 #include <ros/ros.h>
-#include <rqt_gui_cpp/plugin.h>
 #include <string>
 #include <QThread>
 #include <QStringListModel>
