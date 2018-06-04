@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>dynamixel_workbench_single_manager_gui</name>
-  <version>0.3.0</version>
+  <version>0.3.1</version>
   <description>
     It provides a grapic user interface to check the status of Dynamixel and control it before using Dynamixel
   </description>
@@ -14,8 +14,10 @@
   <url type="bugtracker">https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues</url>
   <buildtool_depend>catkin</buildtool_depend>
   <depend>roscpp</depend>
-  <depend>rqt_gui</depend>
-  <depend>rqt_gui_cpp</depend>
+  <depend>qtbase5-dev</depend>
+  <depend>qt5-qmake</depend>
   <depend>dynamixel_workbench_msgs</depend>
   <depend>dynamixel_workbench_toolbox</depend>
+  <exec_depend>libqt5-core</exec_depend>
+  <exec_depend>libqt5-gui</exec_depend>
 </package>

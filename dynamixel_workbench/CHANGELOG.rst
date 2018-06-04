@@ -2,6 +2,13 @@
 Changelog for package dynamixel_workbench
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.3.1 (2018-06-04)
+------------------
+* updated Qt5 and delete Qt4 config
+* deleted rqt_plugin header
+* merged pull request `#154 <https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues/154>`_ `#153 <https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues/153>`_
+* Contributors: Darby Lim
+
 0.3.0 (2018-06-01)
 ------------------
 * added cmd_vel topics, joint_state topics, msgs
