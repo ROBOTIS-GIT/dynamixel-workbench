@@ -31,7 +31,7 @@
 #endif
 
 #define MAX_DXL_SERIES_NUM 30
-#define MAX_HANDLER_NUM 5
+#define MAX_HANDLER_NUM 50
 
 #define BYTE  1
 #define WORD  2
@@ -99,6 +99,8 @@ class DynamixelDriver
 
   void addSyncWrite(const char *item_name);
   bool syncWrite(const char *item_name, int32_t *data);
+  bool syncWriteMultipleRegisters(uint8_t start_address, uint8_t data_length, std::vector<uint8_t*> data);
+
 
   void addSyncRead(const char *item_name);
   bool syncRead(const char *item_name, int32_t *data);

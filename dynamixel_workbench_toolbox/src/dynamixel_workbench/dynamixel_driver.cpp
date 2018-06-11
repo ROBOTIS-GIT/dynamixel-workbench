@@ -777,6 +777,29 @@ bool DynamixelDriver::syncReadMultipleRegisters(uint8_t start_address, uint8_t d
   return true;
 }
 
+bool DynamixelDriver::syncWriteMultipleRegisters(uint8_t start_address, uint8_t data_length, std::vector<uint8_t*> data)
+{
+  int dxl_comm_result = COMM_RX_FAIL;
+  bool dxl_addparam_result = false;
+  bool dxl_getdata_result = false;
+
+  dynamixel::GroupSyncWrite *groupSyncWrite = new dynamixel::GroupSyncWrite(portHandler_, packetHandler_, start_address, data_length);
+
+  for (int i = 0; i < tools_cnt_; i++)
+  {
+    for (int j = 0; j < tools_[i].dxl_info_cnt_; j++)
+    {
+      dxl_addparam_result = groupSyncWrite->addParam(tools_[i].dxl_info_[j].id, data[i]);
+      if (dxl_addparam_result != true)
+        return false;
+    }
+  }
+
+  return groupSyncWrite->txPacket(); 
+}
+
+
+
 void DynamixelDriver::initBulkWrite()
 {
   groupBulkWrite_ = new dynamixel::GroupBulkWrite(portHandler_, packetHandler_);
