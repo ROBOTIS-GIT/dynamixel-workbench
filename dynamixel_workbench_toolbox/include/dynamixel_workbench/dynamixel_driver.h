@@ -101,7 +101,7 @@ class DynamixelDriver
   bool syncWrite(const char *item_name, int32_t *data);
   bool syncWriteMultipleRegisters(uint8_t start_address, uint8_t data_length, std::vector<uint8_t*> data);
 
-
+  void reinitSyncReadHandler(const char *item_name);
   void addSyncRead(const char *item_name);
   bool syncRead(const char *item_name, int32_t *data);
   bool syncReadMultipleRegisters(uint8_t start_address, uint8_t data_length, std::vector<uint8_t> *data);

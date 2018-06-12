@@ -670,6 +670,23 @@ void DynamixelDriver::addSyncRead(const char *item_name)
                                                                                           cti->data_length);
 }
 
+void DynamixelDriver::reinitSyncReadHandler(const char *item_name)
+{
+  ControlTableItem *cti;
+  cti = tools_[0].getControlItem(item_name);
+
+  for (int index = 0; index < sync_read_handler_cnt_; index++)
+  {
+    if (!strncmp(syncReadHandler_[index].cti->item_name, item_name, strlen(item_name)))
+    {
+      syncReadHandler_[index].groupSyncRead  = new dynamixel::GroupSyncRead(portHandler_,
+                                                                             packetHandler_,
+                                                                             cti->address,
+                                                                             cti->data_length);
+    }
+  }
+}
+
 bool DynamixelDriver::syncRead(const char *item_name, int32_t *data)
 {
   int dxl_comm_result = COMM_RX_FAIL;
