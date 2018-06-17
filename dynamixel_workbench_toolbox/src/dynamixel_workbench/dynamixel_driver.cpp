@@ -718,6 +718,7 @@ bool DynamixelDriver::syncRead(const char *item_name, int32_t *data)
   dxl_comm_result = srh.groupSyncRead->txRxPacket();
   if (dxl_comm_result != COMM_SUCCESS)
   {
+    ROS_DEBUG_THROTTLE(1, "Sync Read error %d", dxl_comm_result);
     return false;
   }
 
