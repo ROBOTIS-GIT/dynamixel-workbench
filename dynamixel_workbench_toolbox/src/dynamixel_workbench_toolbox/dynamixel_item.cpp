@@ -92,7 +92,7 @@ static void setAXInfo()
   
   model_info.value_of_min_radian_position    = 0;
   model_info.value_of_0_radian_position      = 512;
-  model_info.value_of_max_radian_position    = 1023;
+  model_info.value_of_max_radian_position    = 1024;
 
   model_info.min_radian                      = -2.61799;
   model_info.max_radian                      =  2.61799;
@@ -162,7 +162,7 @@ static void setRXInfo(void)
   
   model_info.value_of_min_radian_position    = 0;
   model_info.value_of_0_radian_position      = 512;
-  model_info.value_of_max_radian_position    = 1023;
+  model_info.value_of_max_radian_position    = 1024;
 
   model_info.min_radian                      = -2.61799;
   model_info.max_radian                      =  2.61799;
@@ -235,7 +235,7 @@ static void setEXInfo()
   
   model_info.value_of_min_radian_position    = 0;
   model_info.value_of_0_radian_position      = 2048; 
-  model_info.value_of_max_radian_position    = 4095;
+  model_info.value_of_max_radian_position    = 4096;
 
   model_info.min_radian                      = -2.18969008;
   model_info.max_radian                      =  2.18969008;
@@ -308,7 +308,7 @@ static void setMXInfo()
   
   model_info.value_of_min_radian_position    = 0;
   model_info.value_of_0_radian_position      = 2048;  
-  model_info.value_of_max_radian_position    = 4095;
+  model_info.value_of_max_radian_position    = 4096;
 
   model_info.min_radian                      = -3.14159265;
   model_info.max_radian                      =  3.14159265;
@@ -396,7 +396,7 @@ static void setMX2Info(void)
   
   model_info.value_of_min_radian_position    = 0;
   model_info.value_of_0_radian_position      = 2048;  
-  model_info.value_of_max_radian_position    = 4095;
+  model_info.value_of_max_radian_position    = 4096;
 
   model_info.min_radian                      = -3.14159265;
   model_info.max_radian                      =  3.14159265;
@@ -475,7 +475,7 @@ static void setExtMXInfo()
   
   model_info.value_of_min_radian_position    = 0;
   model_info.value_of_0_radian_position      = 2048;  
-  model_info.value_of_max_radian_position    = 4095;
+  model_info.value_of_max_radian_position    = 4096;
 
   model_info.min_radian                      = -3.14159265;
   model_info.max_radian                      =  3.14159265;
@@ -565,7 +565,7 @@ static void setExtMX2Info(void)
   
   model_info.value_of_min_radian_position    = 0;
   model_info.value_of_0_radian_position      = 2048;  
-  model_info.value_of_max_radian_position    = 4095;
+  model_info.value_of_max_radian_position    = 4096;
 
   model_info.min_radian                      = -3.14159265;
   model_info.max_radian                      =  3.14159265;
@@ -635,7 +635,7 @@ static void setXL320Info()
   
   model_info.value_of_min_radian_position    = 0;
   model_info.value_of_0_radian_position      = 512;  
-  model_info.value_of_max_radian_position    = 1023;
+  model_info.value_of_max_radian_position    = 1024;
 
   model_info.min_radian                      = -2.61799;
   model_info.max_radian                      =  2.61799;
@@ -723,7 +723,7 @@ static void setXLInfo()
 
   model_info.value_of_min_radian_position    = 0;
   model_info.value_of_0_radian_position      = 2048;  
-  model_info.value_of_max_radian_position    = 4095;
+  model_info.value_of_max_radian_position    = 4096;
 
   model_info.min_radian                      = -3.14159265;
   model_info.max_radian                      =  3.14159265;
@@ -814,7 +814,7 @@ static void setXMInfo()
 
   model_info.value_of_min_radian_position  = 0;
   model_info.value_of_0_radian_position    = 2048;
-  model_info.value_of_max_radian_position  = 4095;
+  model_info.value_of_max_radian_position  = 4096;
 
   model_info.min_radian = -3.14159265;
   model_info.max_radian =  3.14159265;
@@ -907,7 +907,7 @@ static void setExtXMInfo(void)
 
   model_info.value_of_min_radian_position  = 0;
   model_info.value_of_0_radian_position    = 2048;
-  model_info.value_of_max_radian_position  = 4095;
+  model_info.value_of_max_radian_position  = 4096;
 
   model_info.min_radian = -3.14159265;
   model_info.max_radian =  3.14159265;
@@ -997,7 +997,7 @@ static void setXHInfo()
 
   model_info.value_of_min_radian_position  = 0;
   model_info.value_of_0_radian_position    = 2048;
-  model_info.value_of_max_radian_position  = 4095;
+  model_info.value_of_max_radian_position  = 4096;
 
   model_info.min_radian = -3.14159265;
   model_info.max_radian = 3.14159265;
