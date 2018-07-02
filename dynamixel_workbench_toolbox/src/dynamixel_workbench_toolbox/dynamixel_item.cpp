@@ -1029,6 +1029,76 @@ static void setPROItem()
   item[3]  = {8  , "Baud_Rate"             , 1};
   item[4]  = {9  , "Return_Delay_Time"     , 1};
   item[5]  = {11 , "Operating_Mode"        , 1};
+  item[6]  = {17 , "Moving_Threshold"      , 4};
+  item[7]  = {21 , "Temperature_Limit"     , 1};
+  item[8]  = {22 , "Max_Voltage_Limit"     , 2};
+  item[9]  = {24 , "Min_Voltage_Limit"     , 2};
+  item[10] = {26 , "Acceleration_Limit"    , 4};
+  item[11] = {30 , "Torque_Limit"          , 2};
+  item[12] = {32 , "Velocity_Limit"        , 4};
+  item[13] = {36 , "Max_Position_Limit"    , 4};
+  item[14] = {40 , "Min_Position_Limit"    , 4};
+  item[15] = {44 , "External_Port_Mode_1"  , 1};
+  item[16] = {45 , "External_Port_Mode_2"  , 1};
+  item[17] = {46 , "External_Port_Mode_3"  , 1};
+  item[18] = {47 , "External_Port_Mode_4"  , 1};
+  item[19] = {48 , "Shutdown"              , 1};
+
+  item[20] = {562, "Torque_Enable"         , 1};
+  item[21] = {563, "LED_RED"               , 1};
+  item[22] = {564, "LED_GREEN"             , 1};
+  item[23] = {565, "LED_BLUE"              , 1};
+  item[24] = {586, "Velocity_I_Gain"       , 2};
+  item[25] = {588, "Velocity_P_Gain"       , 2};
+  item[26] = {594, "Position_P_Gain"       , 2};
+  item[27] = {596, "Goal_Position"         , 4};
+  item[28] = {600, "Goal_Velocity"         , 4};
+  item[29] = {604, "Goal_Torque"           , 2};
+  item[30] = {606, "Goal_Acceleration"     , 4};
+  item[31] = {610, "Moving"                , 1};
+  item[32] = {611, "Present_Position"      , 4};
+  item[33] = {615, "Present_Velocity"      , 4};
+  item[34] = {621, "Present_Current"       , 2};
+  item[35] = {623, "Present_Input_Voltage" , 2};
+  item[36] = {625, "Present_Temperature"   , 1};
+  item[37] = {626, "External_Port_Mode_1"  , 2};
+  item[38] = {628, "External_Port_Mode_2"  , 2};
+  item[39] = {630, "External_Port_Mode_3"  , 2};
+  item[40] = {632, "External_Port_Mode_4"  , 2};
+  item[41] = {890, "Registered_Instruction", 1};
+  item[42] = {891, "Status_Return_Level"   , 1};
+  item[43] = {892, "Hardware_Error_Status" , 1};
+
+  the_number_of_item = 44;
+#endif  
+}
+
+static void setExtPROItem()
+{
+#if defined(__OPENCR__) || defined(__OPENCM904__)
+  item[0]  = {7  , "ID"                    , 1};
+  item[1]  = {8  , "Baud_Rate"             , 1};
+  item[2]  = {11 , "Operating_Mode"        , 1};
+
+  item[3]  = {562, "Torque_Enable"         , 1};
+  item[4]  = {563, "LED_RED"               , 1};
+  item[5]  = {596, "Goal_Position"         , 4};
+  item[6]  = {600, "Goal_Velocity"         , 4};
+  item[7]  = {604, "Goal_Torque"           , 2};
+  item[8]  = {606, "Goal_Acceleration"     , 4};
+  item[9]  = {610, "Moving"                , 1};
+  item[10] = {611, "Present_Position"      , 4};
+  item[11] = {615, "Present_Velocity"      , 4};
+  item[12] = {621, "Present_Current"       , 2};
+
+  the_number_of_item = 13;
+#else
+  item[0]  = {0  , "Model_Number"          , 2};
+  item[1]  = {6  , "Firmware_Version"      , 1};
+  item[2]  = {7  , "ID"                    , 1};
+  item[3]  = {8  , "Baud_Rate"             , 1};
+  item[4]  = {9  , "Return_Delay_Time"     , 1};
+  item[5]  = {11 , "Operating_Mode"        , 1};
   item[6]  = {13 , "Homing_Offset"         , 4};
   item[7]  = {17 , "Moving_Threshold"      , 4};
   item[8]  = {21 , "Temperature_Limit"     , 1};
@@ -1078,9 +1148,60 @@ static void setPROInfo()
 {
   model_info.velocity_to_value_ratio         = 4792.8;
   
-  model_info.value_of_min_radian_position    = -250961;
-  model_info.value_of_0_radian_position      = 0;
-  model_info.value_of_max_radian_position    = 250961;
+  if (num == PRO_L42_10_S300_R)
+  {
+    model_info.value_of_min_radian_position    = 0;
+    model_info.value_of_0_radian_position      = 2048;
+    model_info.value_of_max_radian_position    = 4096;
+  }
+  else if (num == PRO_L54_30_S400_R)
+  {
+    model_info.value_of_min_radian_position    = -144197;
+    model_info.value_of_0_radian_position      = 0;
+    model_info.value_of_max_radian_position    = 144197;   
+  }
+  else if (num == PRO_L54_30_S500_R || num == PRO_L54_50_S500_R)
+  {
+    model_info.value_of_min_radian_position    = -180692;
+    model_info.value_of_0_radian_position      = 0;
+    model_info.value_of_max_radian_position    = 180692;   
+  }
+  else if (num == PRO_L54_50_S290_R)
+  {
+    model_info.value_of_min_radian_position    = -103846;
+    model_info.value_of_0_radian_position      = 0;
+    model_info.value_of_max_radian_position    = 103846;   
+  }
+  else if (num == PRO_M42_10_S260_R)
+  {
+    model_info.value_of_min_radian_position    = -131593;
+    model_info.value_of_0_radian_position      = 0;
+    model_info.value_of_max_radian_position    = 131593;   
+  }
+  else if (num == PRO_M54_40_S250_R || num == PRO_M54_60_S250_R)
+  {
+    model_info.value_of_min_radian_position    = -125708;
+    model_info.value_of_0_radian_position      = 0;
+    model_info.value_of_max_radian_position    = 125708;   
+  }
+  else if (num == PRO_H42_20_S300_R)
+  {
+    model_info.value_of_min_radian_position    = -151875;
+    model_info.value_of_0_radian_position      = 0;
+    model_info.value_of_max_radian_position    = 151875;   
+  }
+  else if (num == PRO_H54_100_S500_R || num == PRO_H54_200_S500_R)
+  {
+    model_info.value_of_min_radian_position    = -250961;
+    model_info.value_of_0_radian_position      = 0;
+    model_info.value_of_max_radian_position    = 250961;   
+  }
+  else
+  {
+    model_info.value_of_min_radian_position    = -250961;
+    model_info.value_of_0_radian_position      = 0;
+    model_info.value_of_max_radian_position    = 250961;       
+  }
 
   model_info.min_radian                      = -3.14159265;
   model_info.max_radian                      =  3.14159265;
@@ -1138,9 +1259,13 @@ ControlTableItem* getConrolTableItem(uint16_t model_number)
   {
     setXHItem();
   }
-  else if (num == PRO_L42_10_S300_R  || num == PRO_L54_30_S400_R || num == PRO_L54_30_S500_R || num == PRO_L54_50_S290_R || num == PRO_L54_50_S500_R  ||
-           num == PRO_M42_10_S260_R  || num == PRO_M54_40_S250_R || num == PRO_M54_60_S250_R || num == PRO_H42_20_S300_R || num == PRO_H54_100_S500_R ||
-           num == PRO_H54_200_S500_R)
+  else if (num == PRO_L54_30_S400_R || num == PRO_L54_30_S500_R  || num == PRO_L54_50_S290_R || num == PRO_L54_50_S500_R ||
+           num == PRO_M42_10_S260_R || num == PRO_M54_40_S250_R  || num == PRO_M54_60_S250_R || 
+           num == PRO_H42_20_S300_R || num == PRO_H54_100_S500_R || num == PRO_H54_200_S500_R)
+  {
+    setExtPROItem();
+  }
+  else if (num == num == PRO_L42_10_S300_R)
   {
     setPROItem();
   }
