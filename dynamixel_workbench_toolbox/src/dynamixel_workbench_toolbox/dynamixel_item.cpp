@@ -1144,53 +1144,53 @@ static void setExtPROItem()
 #endif  
 }
 
-static void setPROInfo()
+static void setPROInfo(uint16_t model_number)
 {
   model_info.velocity_to_value_ratio         = 4792.8;
   
-  if (num == PRO_L42_10_S300_R)
+  if (model_number == PRO_L42_10_S300_R)
   {
     model_info.value_of_min_radian_position    = 0;
     model_info.value_of_0_radian_position      = 2048;
     model_info.value_of_max_radian_position    = 4096;
   }
-  else if (num == PRO_L54_30_S400_R)
+  else if (model_number == PRO_L54_30_S400_R)
   {
     model_info.value_of_min_radian_position    = -144197;
     model_info.value_of_0_radian_position      = 0;
     model_info.value_of_max_radian_position    = 144197;   
   }
-  else if (num == PRO_L54_30_S500_R || num == PRO_L54_50_S500_R)
+  else if (model_number == PRO_L54_30_S500_R || model_number == PRO_L54_50_S500_R)
   {
     model_info.value_of_min_radian_position    = -180692;
     model_info.value_of_0_radian_position      = 0;
     model_info.value_of_max_radian_position    = 180692;   
   }
-  else if (num == PRO_L54_50_S290_R)
+  else if (model_number == PRO_L54_50_S290_R)
   {
     model_info.value_of_min_radian_position    = -103846;
     model_info.value_of_0_radian_position      = 0;
     model_info.value_of_max_radian_position    = 103846;   
   }
-  else if (num == PRO_M42_10_S260_R)
+  else if (model_number == PRO_M42_10_S260_R)
   {
     model_info.value_of_min_radian_position    = -131593;
     model_info.value_of_0_radian_position      = 0;
     model_info.value_of_max_radian_position    = 131593;   
   }
-  else if (num == PRO_M54_40_S250_R || num == PRO_M54_60_S250_R)
+  else if (model_number == PRO_M54_40_S250_R || model_number == PRO_M54_60_S250_R)
   {
     model_info.value_of_min_radian_position    = -125708;
     model_info.value_of_0_radian_position      = 0;
     model_info.value_of_max_radian_position    = 125708;   
   }
-  else if (num == PRO_H42_20_S300_R)
+  else if (model_number == PRO_H42_20_S300_R)
   {
     model_info.value_of_min_radian_position    = -151875;
     model_info.value_of_0_radian_position      = 0;
     model_info.value_of_max_radian_position    = 151875;   
   }
-  else if (num == PRO_H54_100_S500_R || num == PRO_H54_200_S500_R)
+  else if (model_number == PRO_H54_100_S500_R || model_number == PRO_H54_200_S500_R)
   {
     model_info.value_of_min_radian_position    = -250961;
     model_info.value_of_0_radian_position      = 0;
@@ -1265,7 +1265,7 @@ ControlTableItem* getConrolTableItem(uint16_t model_number)
   {
     setExtPROItem();
   }
-  else if (num == num == PRO_L42_10_S300_R)
+  else if (num == PRO_L42_10_S300_R)
   {
     setPROItem();
   }
@@ -1333,7 +1333,7 @@ ModelInfo* getModelInfo(uint16_t model_number)
            num == PRO_M42_10_S260_R  || num == PRO_M54_40_S250_R || num == PRO_M54_60_S250_R || num == PRO_H42_20_S300_R || num == PRO_H54_100_S500_R ||
            num == PRO_H54_200_S500_R)
   {
-    setPROInfo();
+    setPROInfo(num);
   }
   else
   {
