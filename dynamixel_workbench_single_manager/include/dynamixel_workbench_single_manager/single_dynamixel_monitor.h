@@ -94,6 +94,7 @@ class SingleDynamixelMonitor
   void XMExt(void);
   void XH(void);
   void PRO(void);
+  void PROExt(void);
 };
 }
 
