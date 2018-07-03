@@ -469,7 +469,14 @@ void QNode::initDynamixelStateSubscriber()
   }
   else if (dynamixel_info_.model_name.find("PRO") != std::string::npos)
   {
-    dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + std::string("PRO"), 10, &QNode::PROStatusMsgCallback, this);
+    if (dynamixel_info_.model_name.find("PRO_L42_10_S300_R") != std::string::npos)
+    {
+      dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + std::string("PRO"), 10, &QNode::PROExtStatusMsgCallback, this);
+    }
+    else
+    {
+      dynamixel_status_msg_sub_ = node_handle.subscribe("dynamixel/" + std::string("PRO"), 10, &QNode::PROStatusMsgCallback, this);
+    }
   }
 }
 
@@ -1131,6 +1138,54 @@ void QNode::XHStatusMsgCallback(const dynamixel_workbench_msgs::XH::ConstPtr &ms
 }
 
 void QNode::PROStatusMsgCallback(const dynamixel_workbench_msgs::PRO::ConstPtr &msg)
+{
+  log(std::string("< EEPROM >"));
+  log(std::string("Model_Number: "), msg->Model_Number);
+  log(std::string("Firmware_Version: "), msg->Firmware_Version);
+  log(std::string("ID: "), msg->ID);
+  log(std::string("Baud_Rate: "), msg->Baud_Rate);
+  log(std::string("Return_Delay_Time: "), msg->Return_Delay_Time);
+  log(std::string("Operating_Mode: "), msg->Operating_Mode);
+  log(std::string("Moving_Threshold: "), msg->Moving_Threshold);
+  log(std::string("Temperature_Limit: "), msg->Temperature_Limit);
+  log(std::string("Max_Voltage_Limit: "), msg->Max_Voltage_Limit);
+  log(std::string("Min_Voltage_Limit: "), msg->Min_Voltage_Limit);
+  log(std::string("Acceleration_Limit: "), msg->Acceleration_Limit);
+  log(std::string("Torque_Limit: "), msg->Torque_Limit);
+  log(std::string("Velocity_Limit: "), msg->Velocity_Limit);
+  log(std::string("Max_Position_Limit: "), msg->Max_Position_Limit);
+  log(std::string("Min_Position_Limit: "), msg->Min_Position_Limit);
+  log(std::string("External_Port_Mode_1: "), msg->External_Port_Mode_1);
+  log(std::string("External_Port_Mode_2: "), msg->External_Port_Mode_2);
+  log(std::string("External_Port_Mode_3: "), msg->External_Port_Mode_3);
+  log(std::string("External_Port_Mode_4: "), msg->External_Port_Mode_4);
+  log(std::string("Shutdown: "), msg->Shutdown);
+  log(std::string(""));
+  log(std::string("< RAM >"));
+  log(std::string("Torque_Enable: "), msg->Torque_Enable);
+  log(std::string("LED_RED: "), msg->LED_RED);
+  log(std::string("LED_GREEN: "), msg->LED_GREEN);
+  log(std::string("LED_BLUE: "), msg->LED_BLUE);
+  log(std::string("Velocity_I_Gain: "), msg->Velocity_I_Gain);
+  log(std::string("Velocity_P_Gain: "), msg->Velocity_P_Gain);
+  log(std::string("Position_P_Gain: "), msg->Position_P_Gain);
+  log(std::string("Goal_Position: "), msg->Goal_Position);
+  log(std::string("Goal_Velocity: "), msg->Goal_Velocity);
+  log(std::string("Goal_Torque: "), msg->Goal_Torque);
+  log(std::string("Moving: "), msg->Moving);
+  log(std::string("Present_Position: "), msg->Present_Position);
+  log(std::string("Present_Velocity: "), msg->Present_Velocity);
+  log(std::string("Present_Current: "), msg->Present_Current);
+  log(std::string("Present_Input_Voltage: "), msg->Present_Input_Voltage);
+  log(std::string("Present_Temperature: "), msg->Present_Temperature);
+  log(std::string("Registered_Instruction: "), msg->Registered_Instruction);
+  log(std::string("Status_Return_Level: "), msg->Status_Return_Level);
+  log(std::string("Hardware_Error_Status: "), msg->Hardware_Error_Status);
+
+  row_count_ = 0;
+}
+
+void QNode::PROExtStatusMsgCallback(const dynamixel_workbench_msgs::PROExt::ConstPtr &msg)
 {
   log(std::string("< EEPROM >"));
   log(std::string("Model_Number: "), msg->Model_Number);

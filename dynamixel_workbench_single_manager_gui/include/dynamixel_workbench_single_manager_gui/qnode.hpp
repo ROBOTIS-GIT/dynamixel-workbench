@@ -72,6 +72,7 @@ class QNode : public QThread
   void XHStatusMsgCallback(const dynamixel_workbench_msgs::XH::ConstPtr &msg);
 
   void PROStatusMsgCallback(const dynamixel_workbench_msgs::PRO::ConstPtr &msg);
+  void PROExtStatusMsgCallback(const dynamixel_workbench_msgs::PROExt::ConstPtr &msg);
 
   bool sendSetIdMsg(uint8_t set_id);
   bool sendSetOperatingModeMsg(std::string index, float protocol_version, std::string model_name, int32_t value_of_max_radian_position);
