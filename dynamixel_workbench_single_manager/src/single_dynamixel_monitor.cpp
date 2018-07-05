@@ -175,7 +175,14 @@ void SingleDynamixelMonitor::initDynamixelStatePublisher()
   }
   else if (!strncmp(model_name, "PRO", strlen("PRO")))
   {
-    dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::PRO>("dynamixel/" + std::string("PRO"), 10);
+    if ((!strncmp(model_name, "PRO_L42_10_S300_R", strlen(model_name))))
+    {
+      dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::PROExt>("dynamixel/" + std::string("PRO"), 10);
+    }
+    else
+    {
+      dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::PRO>("dynamixel/" + std::string("PRO"), 10);
+    }
   }
 }
 
@@ -598,9 +605,13 @@ void SingleDynamixelMonitor::dynamixelStatePublish(void)
   {
     XH();
   }
-  else if (!strncmp(model_name, "PRO", strlen("PRO")))
+  else if (!strncmp(model_name, "PRO_L42_10_S300_R", strlen("PRO_L42_10_S300_R")))
   {
     PRO();
+  }
+  else if (!strncmp(model_name, "PRO", strlen("PRO")))
+  {
+    PROExt();
   }
 }
 
@@ -609,10 +620,36 @@ void SingleDynamixelMonitor::AX(void)
   ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
   dynamixel_workbench_msgs::AX ax_state;
 
+  uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
+  uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
+  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+
+  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+
   for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
   {
     int32_t read_value = 0;
-    dynamixel_driver_->readRegister(dxl_id_, item_ptr[index].item_name, &read_value);
+    read_value = getAllRegisteredData[item_ptr[index].address];
+
+    switch (item_ptr[index].data_length)
+    {
+      case BYTE:
+        read_value = getAllRegisteredData[item_ptr[index].address];
+       break;
+
+      case WORD:
+        read_value = DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address], getAllRegisteredData[item_ptr[index].address+1]);
+       break;
+
+      case DWORD:
+        read_value = DXL_MAKEDWORD(DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address],   getAllRegisteredData[item_ptr[index].address+1]),
+                                   DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address+2], getAllRegisteredData[item_ptr[index].address+3]));
+       break;
+
+      default:
+       read_value = getAllRegisteredData[item_ptr[index].address];
+       break;
+    }
 
     if (!strncmp(item_ptr[index].item_name, "Model_Number", strlen("Model_Number")))
       ax_state.Model_Number = read_value;
@@ -688,10 +725,36 @@ void SingleDynamixelMonitor::RX(void)
   ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
   dynamixel_workbench_msgs::RX rx_state;
 
+  uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
+  uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
+  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+
+  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+
   for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
   {
     int32_t read_value = 0;
-    dynamixel_driver_->readRegister(dxl_id_, item_ptr[index].item_name, &read_value);
+    read_value = getAllRegisteredData[item_ptr[index].address];
+
+    switch (item_ptr[index].data_length)
+    {
+      case BYTE:
+        read_value = getAllRegisteredData[item_ptr[index].address];
+       break;
+
+      case WORD:
+        read_value = DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address], getAllRegisteredData[item_ptr[index].address+1]);
+       break;
+
+      case DWORD:
+        read_value = DXL_MAKEDWORD(DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address],   getAllRegisteredData[item_ptr[index].address+1]),
+                                   DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address+2], getAllRegisteredData[item_ptr[index].address+3]));
+       break;
+
+      default:
+       read_value = getAllRegisteredData[item_ptr[index].address];
+       break;
+    }
 
     if (!strncmp(item_ptr[index].item_name, "Model_Number", strlen("Model_Number")))
       rx_state.Model_Number = read_value;
@@ -767,10 +830,36 @@ void SingleDynamixelMonitor::MX(void)
   ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
   dynamixel_workbench_msgs::MX mx_state;
 
+  uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
+  uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
+  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+
+  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+
   for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
   {
     int32_t read_value = 0;
-    dynamixel_driver_->readRegister(dxl_id_, item_ptr[index].item_name, &read_value);
+    read_value = getAllRegisteredData[item_ptr[index].address];
+
+    switch (item_ptr[index].data_length)
+    {
+      case BYTE:
+        read_value = getAllRegisteredData[item_ptr[index].address];
+       break;
+
+      case WORD:
+        read_value = DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address], getAllRegisteredData[item_ptr[index].address+1]);
+       break;
+
+      case DWORD:
+        read_value = DXL_MAKEDWORD(DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address],   getAllRegisteredData[item_ptr[index].address+1]),
+                                   DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address+2], getAllRegisteredData[item_ptr[index].address+3]));
+       break;
+
+      default:
+       read_value = getAllRegisteredData[item_ptr[index].address];
+       break;
+    }
 
     if (!strncmp(item_ptr[index].item_name, "Model_Number", strlen("Model_Number")))
       mx_state.Model_Number = read_value;
@@ -850,10 +939,36 @@ void SingleDynamixelMonitor::MXExt(void)
   ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
   dynamixel_workbench_msgs::MXExt mxext_state;
 
+  uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
+  uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
+  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+
+  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+
   for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
   {
     int32_t read_value = 0;
-    dynamixel_driver_->readRegister(dxl_id_, item_ptr[index].item_name, &read_value);
+    read_value = getAllRegisteredData[item_ptr[index].address];
+
+    switch (item_ptr[index].data_length)
+    {
+      case BYTE:
+        read_value = getAllRegisteredData[item_ptr[index].address];
+       break;
+
+      case WORD:
+        read_value = DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address], getAllRegisteredData[item_ptr[index].address+1]);
+       break;
+
+      case DWORD:
+        read_value = DXL_MAKEDWORD(DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address],   getAllRegisteredData[item_ptr[index].address+1]),
+                                   DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address+2], getAllRegisteredData[item_ptr[index].address+3]));
+       break;
+
+      default:
+       read_value = getAllRegisteredData[item_ptr[index].address];
+       break;
+    }
 
     if (!strncmp(item_ptr[index].item_name, "Model_Number", strlen("Model_Number")))
       mxext_state.Model_Number = read_value;
@@ -939,10 +1054,36 @@ void SingleDynamixelMonitor::MX2(void)
   ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
   dynamixel_workbench_msgs::MX2 mx2_state;
 
+  uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
+  uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
+  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+
+  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+
   for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
   {
     int32_t read_value = 0;
-    dynamixel_driver_->readRegister(dxl_id_, item_ptr[index].item_name, &read_value);
+    read_value = getAllRegisteredData[item_ptr[index].address];
+
+    switch (item_ptr[index].data_length)
+    {
+      case BYTE:
+        read_value = getAllRegisteredData[item_ptr[index].address];
+       break;
+
+      case WORD:
+        read_value = DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address], getAllRegisteredData[item_ptr[index].address+1]);
+       break;
+
+      case DWORD:
+        read_value = DXL_MAKEDWORD(DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address],   getAllRegisteredData[item_ptr[index].address+1]),
+                                   DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address+2], getAllRegisteredData[item_ptr[index].address+3]));
+       break;
+
+      default:
+       read_value = getAllRegisteredData[item_ptr[index].address];
+       break;
+    }
 
     if (!strncmp(item_ptr[index].item_name, "Model_Number", strlen("Model_Number")))
       mx2_state.Model_Number = read_value;
@@ -1052,10 +1193,36 @@ void SingleDynamixelMonitor::MX2Ext(void)
   ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
   dynamixel_workbench_msgs::MX2Ext mx2ext_state;
 
+  uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
+  uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
+  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+
+  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+
   for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
   {
     int32_t read_value = 0;
-    dynamixel_driver_->readRegister(dxl_id_, item_ptr[index].item_name, &read_value);
+    read_value = getAllRegisteredData[item_ptr[index].address];
+
+    switch (item_ptr[index].data_length)
+    {
+      case BYTE:
+        read_value = getAllRegisteredData[item_ptr[index].address];
+       break;
+
+      case WORD:
+        read_value = DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address], getAllRegisteredData[item_ptr[index].address+1]);
+       break;
+
+      case DWORD:
+        read_value = DXL_MAKEDWORD(DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address],   getAllRegisteredData[item_ptr[index].address+1]),
+                                   DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address+2], getAllRegisteredData[item_ptr[index].address+3]));
+       break;
+
+      default:
+       read_value = getAllRegisteredData[item_ptr[index].address];
+       break;
+    }
 
     if (!strncmp(item_ptr[index].item_name, "Model_Number", strlen("Model_Number")))
       mx2ext_state.Model_Number = read_value;
@@ -1169,10 +1336,36 @@ void SingleDynamixelMonitor::EX(void)
   ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
   dynamixel_workbench_msgs::EX ex_state;
 
+  uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
+  uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
+  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+
+  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+
   for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
   {
     int32_t read_value = 0;
-    dynamixel_driver_->readRegister(dxl_id_, item_ptr[index].item_name, &read_value);
+    read_value = getAllRegisteredData[item_ptr[index].address];
+
+    switch (item_ptr[index].data_length)
+    {
+      case BYTE:
+        read_value = getAllRegisteredData[item_ptr[index].address];
+       break;
+
+      case WORD:
+        read_value = DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address], getAllRegisteredData[item_ptr[index].address+1]);
+       break;
+
+      case DWORD:
+        read_value = DXL_MAKEDWORD(DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address],   getAllRegisteredData[item_ptr[index].address+1]),
+                                   DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address+2], getAllRegisteredData[item_ptr[index].address+3]));
+       break;
+
+      default:
+       read_value = getAllRegisteredData[item_ptr[index].address];
+       break;
+    }
 
     if (!strncmp(item_ptr[index].item_name, "Model_Number", strlen("Model_Number")))
       ex_state.Model_Number = read_value;
@@ -1252,10 +1445,36 @@ void SingleDynamixelMonitor::XL320(void)
   ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
   dynamixel_workbench_msgs::XL320 xl320_state;
 
+  uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
+  uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
+  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+
+  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+
   for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
   {
     int32_t read_value = 0;
-    dynamixel_driver_->readRegister(dxl_id_, item_ptr[index].item_name, &read_value);
+    read_value = getAllRegisteredData[item_ptr[index].address];
+
+    switch (item_ptr[index].data_length)
+    {
+      case BYTE:
+        read_value = getAllRegisteredData[item_ptr[index].address];
+       break;
+
+      case WORD:
+        read_value = DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address], getAllRegisteredData[item_ptr[index].address+1]);
+       break;
+
+      case DWORD:
+        read_value = DXL_MAKEDWORD(DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address],   getAllRegisteredData[item_ptr[index].address+1]),
+                                   DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address+2], getAllRegisteredData[item_ptr[index].address+3]));
+       break;
+
+      default:
+       read_value = getAllRegisteredData[item_ptr[index].address];
+       break;
+    }
 
     if (!strncmp(item_ptr[index].item_name, "Model_Number", strlen("Model_Number")))
       xl320_state.Model_Number = read_value;
@@ -1327,10 +1546,36 @@ void SingleDynamixelMonitor::XL(void)
   ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
   dynamixel_workbench_msgs::XL xl_state;
 
+  uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
+  uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
+  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+
+  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+
   for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
   {
     int32_t read_value = 0;
-    dynamixel_driver_->readRegister(dxl_id_, item_ptr[index].item_name, &read_value);
+    read_value = getAllRegisteredData[item_ptr[index].address];
+
+    switch (item_ptr[index].data_length)
+    {
+      case BYTE:
+        read_value = getAllRegisteredData[item_ptr[index].address];
+       break;
+
+      case WORD:
+        read_value = DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address], getAllRegisteredData[item_ptr[index].address+1]);
+       break;
+
+      case DWORD:
+        read_value = DXL_MAKEDWORD(DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address],   getAllRegisteredData[item_ptr[index].address+1]),
+                                   DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address+2], getAllRegisteredData[item_ptr[index].address+3]));
+       break;
+
+      default:
+       read_value = getAllRegisteredData[item_ptr[index].address];
+       break;
+    }
 
     if (!strncmp(item_ptr[index].item_name, "Model_Number", strlen("Model_Number")))
       xl_state.Model_Number = read_value;
@@ -1440,10 +1685,36 @@ void SingleDynamixelMonitor::XM(void)
   ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
   dynamixel_workbench_msgs::XM xm_state;
 
+  uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
+  uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
+  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+
+  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+
   for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
   {
     int32_t read_value = 0;
-    dynamixel_driver_->readRegister(dxl_id_, item_ptr[index].item_name, &read_value);
+    read_value = getAllRegisteredData[item_ptr[index].address];
+
+    switch (item_ptr[index].data_length)
+    {
+      case BYTE:
+        read_value = getAllRegisteredData[item_ptr[index].address];
+       break;
+
+      case WORD:
+        read_value = DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address], getAllRegisteredData[item_ptr[index].address+1]);
+       break;
+
+      case DWORD:
+        read_value = DXL_MAKEDWORD(DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address],   getAllRegisteredData[item_ptr[index].address+1]),
+                                   DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address+2], getAllRegisteredData[item_ptr[index].address+3]));
+       break;
+
+      default:
+       read_value = getAllRegisteredData[item_ptr[index].address];
+       break;
+    }
 
     if (!strncmp(item_ptr[index].item_name, "Model_Number", strlen("Model_Number")))
       xm_state.Model_Number = read_value;
@@ -1557,10 +1828,36 @@ void SingleDynamixelMonitor::XMExt(void)
   ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
   dynamixel_workbench_msgs::XMExt xmext_state;
 
+  uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
+  uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
+  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+
+  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+
   for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
   {
     int32_t read_value = 0;
-    dynamixel_driver_->readRegister(dxl_id_, item_ptr[index].item_name, &read_value);
+    read_value = getAllRegisteredData[item_ptr[index].address];
+
+    switch (item_ptr[index].data_length)
+    {
+      case BYTE:
+        read_value = getAllRegisteredData[item_ptr[index].address];
+       break;
+
+      case WORD:
+        read_value = DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address], getAllRegisteredData[item_ptr[index].address+1]);
+       break;
+
+      case DWORD:
+        read_value = DXL_MAKEDWORD(DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address],   getAllRegisteredData[item_ptr[index].address+1]),
+                                   DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address+2], getAllRegisteredData[item_ptr[index].address+3]));
+       break;
+
+      default:
+       read_value = getAllRegisteredData[item_ptr[index].address];
+       break;
+    }
 
     if (!strncmp(item_ptr[index].item_name, "Model_Number", strlen("Model_Number")))
       xmext_state.Model_Number = read_value;
@@ -1680,10 +1977,36 @@ void SingleDynamixelMonitor::XH(void)
   ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
   dynamixel_workbench_msgs::XH xh_state;
 
+  uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
+  uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
+  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+
+  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+
   for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
   {
     int32_t read_value = 0;
-    dynamixel_driver_->readRegister(dxl_id_, item_ptr[index].item_name, &read_value);
+    read_value = getAllRegisteredData[item_ptr[index].address];
+
+    switch (item_ptr[index].data_length)
+    {
+      case BYTE:
+        read_value = getAllRegisteredData[item_ptr[index].address];
+       break;
+
+      case WORD:
+        read_value = DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address], getAllRegisteredData[item_ptr[index].address+1]);
+       break;
+
+      case DWORD:
+        read_value = DXL_MAKEDWORD(DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address],   getAllRegisteredData[item_ptr[index].address+1]),
+                                   DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address+2], getAllRegisteredData[item_ptr[index].address+3]));
+       break;
+
+      default:
+       read_value = getAllRegisteredData[item_ptr[index].address];
+       break;
+    }
 
     if (!strncmp(item_ptr[index].item_name, "Model_Number", strlen("Model_Number")))
       xh_state.Model_Number = read_value;
@@ -1797,10 +2120,36 @@ void SingleDynamixelMonitor::PRO(void)
   ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
   dynamixel_workbench_msgs::PRO pro_state;
 
+  uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
+  uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
+  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+
+  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+
   for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
   {
     int32_t read_value = 0;
-    dynamixel_driver_->readRegister(dxl_id_, item_ptr[index].item_name, &read_value);
+    read_value = getAllRegisteredData[item_ptr[index].address];
+
+    switch (item_ptr[index].data_length)
+    {
+      case BYTE:
+        read_value = getAllRegisteredData[item_ptr[index].address];
+       break;
+
+      case WORD:
+        read_value = DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address], getAllRegisteredData[item_ptr[index].address+1]);
+       break;
+
+      case DWORD:
+        read_value = DXL_MAKEDWORD(DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address],   getAllRegisteredData[item_ptr[index].address+1]),
+                                   DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address+2], getAllRegisteredData[item_ptr[index].address+3]));
+       break;
+
+      default:
+       read_value = getAllRegisteredData[item_ptr[index].address];
+       break;
+    }
 
     if (!strncmp(item_ptr[index].item_name, "Model_Number", strlen("Model_Number")))
       pro_state.Model_Number = read_value;
@@ -1814,8 +2163,6 @@ void SingleDynamixelMonitor::PRO(void)
       pro_state.Return_Delay_Time = read_value;
     else if (!strncmp(item_ptr[index].item_name, "Operating_Mode", strlen("Operating_Mode")))
       pro_state.Operating_Mode = read_value;
-    else if (!strncmp(item_ptr[index].item_name, "Homing_Offset", strlen("Homing_Offset")))
-      pro_state.Homing_Offset = read_value;
     else if (!strncmp(item_ptr[index].item_name, "Moving_Threshold", strlen("Moving_Threshold")))
       pro_state.Moving_Threshold = read_value;
     else if (!strncmp(item_ptr[index].item_name, "Temperature_Limit", strlen("Temperature_Limit")))
@@ -1887,4 +2234,127 @@ void SingleDynamixelMonitor::PRO(void)
   }
 
   dynamixel_status_pub_.publish(pro_state);
+}
+
+void SingleDynamixelMonitor::PROExt(void)
+{
+  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  dynamixel_workbench_msgs::PROExt proext_state;
+
+  uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
+  uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
+  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+
+  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+
+  for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
+  {
+    int32_t read_value = 0;
+    read_value = getAllRegisteredData[item_ptr[index].address];
+
+    switch (item_ptr[index].data_length)
+    {
+      case BYTE:
+        read_value = getAllRegisteredData[item_ptr[index].address];
+       break;
+
+      case WORD:
+        read_value = DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address], getAllRegisteredData[item_ptr[index].address+1]);
+       break;
+
+      case DWORD:
+        read_value = DXL_MAKEDWORD(DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address],   getAllRegisteredData[item_ptr[index].address+1]),
+                                   DXL_MAKEWORD(getAllRegisteredData[item_ptr[index].address+2], getAllRegisteredData[item_ptr[index].address+3]));
+       break;
+
+      default:
+       read_value = getAllRegisteredData[item_ptr[index].address];
+       break;
+    }
+
+    if (!strncmp(item_ptr[index].item_name, "Model_Number", strlen("Model_Number")))
+      proext_state.Model_Number = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Firmware_Version", strlen("Firmware_Version")))
+      proext_state.Firmware_Version = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "ID", strlen("ID")))
+      proext_state.ID = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Baud_Rate", strlen("Baud_Rate")))
+      proext_state.Baud_Rate = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Return_Delay_Time", strlen("Return_Delay_Time")))
+      proext_state.Return_Delay_Time = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Operating_Mode", strlen("Operating_Mode")))
+      proext_state.Operating_Mode = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Homing_Offset", strlen("Homing_Offset")))
+      proext_state.Homing_Offset = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Moving_Threshold", strlen("Moving_Threshold")))
+      proext_state.Moving_Threshold = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Temperature_Limit", strlen("Temperature_Limit")))
+      proext_state.Temperature_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Max_Voltage_Limit", strlen("Max_Voltage_Limit")))
+      proext_state.Max_Voltage_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Min_Voltage_Limit", strlen("Min_Voltage_Limit")))
+      proext_state.Min_Voltage_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Acceleration_Limit", strlen("Acceleration_Limit")))
+      proext_state.Acceleration_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Torque_Limit", strlen("Torque_Limit")))
+      proext_state.Torque_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Velocity_Limit", strlen("Velocity_Limit")))
+      proext_state.Velocity_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Max_Position_Limit", strlen("Max_Position_Limit")))
+      proext_state.Max_Position_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Min_Position_Limit", strlen("Min_Position_Limit")))
+      proext_state.Min_Position_Limit = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "External_Port_Mode_1", strlen("External_Port_Mode_1")))
+      proext_state.External_Port_Mode_1 = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "External_Port_Mode_2", strlen("External_Port_Mode_2")))
+      proext_state.External_Port_Mode_2 = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "External_Port_Mode_3", strlen("External_Port_Mode_3")))
+      proext_state.External_Port_Mode_3 = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "External_Port_Mode_4", strlen("External_Port_Mode_4")))
+      proext_state.External_Port_Mode_4 = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Shutdown", strlen("Shutdown")))
+      proext_state.Shutdown = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Torque_Enable", strlen("Torque_Enable")))
+      proext_state.Torque_Enable = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "LED_RED", strlen("LED_RED")))
+      proext_state.LED_RED = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "LED_GREEN", strlen("LED_GREEN")))
+      proext_state.LED_GREEN = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "LED_BLUE", strlen("LED_BLUE")))
+      proext_state.LED_BLUE = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Velocity_I_Gain", strlen("Velocity_I_Gain")))
+      proext_state.Velocity_I_Gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Velocity_P_Gain", strlen("Velocity_P_Gain")))
+      proext_state.Velocity_P_Gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Position_P_Gain", strlen("Position_P_Gain")))
+      proext_state.Position_P_Gain = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Goal_Position", strlen("Goal_Position")))
+      proext_state.Goal_Position = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Goal_Velocity", strlen("Goal_Velocity")))
+      proext_state.Goal_Velocity = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Goal_Torque", strlen("Goal_Torque")))
+      proext_state.Goal_Torque = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Goal_Acceleration", strlen("Goal_Acceleration")))
+      proext_state.Goal_Acceleration = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Moving", strlen("Moving")))
+      proext_state.Moving = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Position", strlen("Present_Position")))
+      proext_state.Present_Position = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Velocity", strlen("Present_Velocity")))
+      proext_state.Present_Velocity = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Current", strlen("Present_Current")))
+      proext_state.Present_Current = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Input_Voltage", strlen("Present_Input_Voltage")))
+      proext_state.Present_Input_Voltage = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Present_Temperature", strlen("Present_Temperature")))
+      proext_state.Present_Temperature = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Registered_Instruction", strlen("Registered_Instruction")))
+      proext_state.Registered_Instruction = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Status_Return_Level", strlen("Status_Return_Level")))
+      proext_state.Status_Return_Level = read_value;
+    else if (!strncmp(item_ptr[index].item_name, "Hardware_Error_Status", strlen("Hardware_Error_Status")))
+      proext_state.Hardware_Error_Status = read_value;
+  }
+
+  dynamixel_status_pub_.publish(proext_state);
 }
