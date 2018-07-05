@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>871</height>
+    <height>874</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -72,7 +72,11 @@
           </property>
           <layout class="QGridLayout" name="gridLayout_3">
            <item row="0" column="0">
-            <widget class="QListView" name="view_logging"/>
+            <widget class="QListView" name="view_logging">
+             <property name="editTriggers">
+              <set>QAbstractItemView::CurrentChanged</set>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -89,7 +93,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>19</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -419,8 +423,11 @@
                <height>16777215</height>
               </size>
              </property>
+             <property name="minimum">
+              <number>-9999999</number>
+             </property>
              <property name="maximum">
-              <number>256</number>
+              <number>9999999</number>
              </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
@@ -476,10 +483,10 @@
               <bool>true</bool>
              </property>
              <property name="minimum">
-              <number>-2048</number>
+              <number>-9999999</number>
              </property>
              <property name="maximum">
-              <number>2048</number>
+              <number>9999999</number>
              </property>
             </widget>
            </item>
