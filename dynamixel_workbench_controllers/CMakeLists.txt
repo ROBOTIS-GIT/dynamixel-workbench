@@ -16,6 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   dynamixel_workbench_msgs
   dynamixel_workbench_toolbox
+  tf
 )
 
 ################################################################################
