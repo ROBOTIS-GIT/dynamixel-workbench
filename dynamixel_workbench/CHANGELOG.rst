@@ -2,6 +2,21 @@
 Changelog for package dynamixel_workbench
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.0 (2018-07-20)
+------------------
+* upgraded read time #162
+* added Dynamixel PRO information #162
+* added proext function and amended readRegister
+* added mutex for log thread
+* added timer for data log
+* added PROext header
+* added readRegister function
+* updated dxl ext function
+* update dxl pro info
+* update proInfo func
+* modified max radian position
+* Contributors: Darby Lim, Pyo
+
 0.3.1 (2018-06-04)
 ------------------
 * updated Qt5 and delete Qt4 config
