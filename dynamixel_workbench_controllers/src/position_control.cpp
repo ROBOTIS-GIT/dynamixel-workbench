@@ -115,12 +115,12 @@ void PositionControl::dynamixelStatePublish()
 
 void PositionControl::jointStatePublish()
 {
-  int32_t present_position[dxl_cnt_] = {0, };
+  std::vector<int32_t> present_position(dxl_cnt_, 0);
 
   for (int index = 0; index < dxl_cnt_; index++)
     present_position[index] = dxl_wb_->itemRead(dxl_id_[index], "Present_Position");
 
-  int32_t present_velocity[dxl_cnt_] = {0, };
+  std::vector<int32_t> present_velocity(dxl_cnt_, 0);
 
   for (int index = 0; index < dxl_cnt_; index++)
     present_velocity[index] = dxl_wb_->itemRead(dxl_id_[index], "Present_Velocity");
@@ -173,19 +173,19 @@ bool PositionControl::jointCommandMsgCallback(dynamixel_workbench_msgs::JointCom
 
 void PositionControl::goalJointPositionCallback(const sensor_msgs::JointState::ConstPtr &msg)
 {
-  double goal_position[dxl_cnt_] = {0.0, };
+  std::vector<double> goal_position(dxl_cnt_, 0.0);
 
   for (int index = 0; index < dxl_cnt_; index++)
     goal_position[index] = msg->position.at(index);
 
-  int32_t goal_dxl_position[dxl_cnt_] = {0, };
+  std::vector<int32_t> goal_dxl_position(dxl_cnt_, 0);
 
   for (int index = 0; index < dxl_cnt_; index++)
   {
     goal_dxl_position[index] = dxl_wb_->convertRadian2Value(dxl_id_[index], goal_position[index]);
   }
 
-  dxl_wb_->syncWrite("Goal_Position", goal_dxl_position);
+  dxl_wb_->syncWrite("Goal_Position", goal_dxl_position.data());
 }
 
 int main(int argc, char **argv)

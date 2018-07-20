@@ -622,9 +622,9 @@ void SingleDynamixelMonitor::AX(void)
 
   uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
   uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
-  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+  std::vector<uint8_t> getAllRegisteredData(last_register_addr+last_register_addr_length, 0);
 
-  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData.data());
 
   for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
   {
@@ -727,9 +727,9 @@ void SingleDynamixelMonitor::RX(void)
 
   uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
   uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
-  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+  std::vector<uint8_t> getAllRegisteredData(last_register_addr+last_register_addr_length, 0);
 
-  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData.data());
 
   for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
   {
@@ -832,9 +832,9 @@ void SingleDynamixelMonitor::MX(void)
 
   uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
   uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
-  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+  std::vector<uint8_t> getAllRegisteredData(last_register_addr+last_register_addr_length, 0);
 
-  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData.data());
 
   for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
   {
@@ -941,9 +941,9 @@ void SingleDynamixelMonitor::MXExt(void)
 
   uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
   uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
-  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+  std::vector<uint8_t> getAllRegisteredData(last_register_addr+last_register_addr_length, 0);
 
-  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData.data());
 
   for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
   {
@@ -1056,9 +1056,9 @@ void SingleDynamixelMonitor::MX2(void)
 
   uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
   uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
-  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+  std::vector<uint8_t> getAllRegisteredData(last_register_addr+last_register_addr_length, 0);
 
-  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData.data());
 
   for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
   {
@@ -1195,9 +1195,9 @@ void SingleDynamixelMonitor::MX2Ext(void)
 
   uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
   uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
-  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+  std::vector<uint8_t> getAllRegisteredData(last_register_addr+last_register_addr_length, 0);
 
-  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData.data());
 
   for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
   {
@@ -1338,9 +1338,9 @@ void SingleDynamixelMonitor::EX(void)
 
   uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
   uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
-  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+  std::vector<uint8_t> getAllRegisteredData(last_register_addr+last_register_addr_length, 0);
 
-  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData.data());
 
   for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
   {
@@ -1447,9 +1447,9 @@ void SingleDynamixelMonitor::XL320(void)
 
   uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
   uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
-  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+  std::vector<uint8_t> getAllRegisteredData(last_register_addr+last_register_addr_length, 0);
 
-  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData.data());
 
   for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
   {
@@ -1548,9 +1548,9 @@ void SingleDynamixelMonitor::XL(void)
 
   uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
   uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
-  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+  std::vector<uint8_t> getAllRegisteredData(last_register_addr+last_register_addr_length, 0);
 
-  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData.data());
 
   for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
   {
@@ -1687,9 +1687,9 @@ void SingleDynamixelMonitor::XM(void)
 
   uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
   uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
-  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+  std::vector<uint8_t> getAllRegisteredData(last_register_addr+last_register_addr_length, 0);
 
-  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData.data());
 
   for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
   {
@@ -1830,9 +1830,9 @@ void SingleDynamixelMonitor::XMExt(void)
 
   uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
   uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
-  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+  std::vector<uint8_t> getAllRegisteredData(last_register_addr+last_register_addr_length, 0);
 
-  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData.data());
 
   for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
   {
@@ -1979,9 +1979,9 @@ void SingleDynamixelMonitor::XH(void)
 
   uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
   uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
-  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+  std::vector<uint8_t> getAllRegisteredData(last_register_addr+last_register_addr_length, 0);
 
-  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData.data());
 
   for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
   {
@@ -2122,9 +2122,9 @@ void SingleDynamixelMonitor::PRO(void)
 
   uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
   uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
-  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+  std::vector<uint8_t> getAllRegisteredData(last_register_addr+last_register_addr_length, 0);
 
-  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData.data());
 
   for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
   {
@@ -2243,9 +2243,9 @@ void SingleDynamixelMonitor::PROExt(void)
 
   uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
   uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
-  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+  std::vector<uint8_t> getAllRegisteredData(last_register_addr+last_register_addr_length, 0);
 
-  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData.data());
 
   for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
   {

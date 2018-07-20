@@ -132,17 +132,17 @@ void TorqueControl::dynamixelStatePublish()
 
 void TorqueControl::jointStatePublish()
 {
-  int32_t present_position[dxl_cnt_] = {0, };
+  std::vector<int32_t> present_position(dxl_cnt_, 0);
 
   for (int index = 0; index < dxl_cnt_; index++)
     present_position[index] = dxl_wb_->itemRead(dxl_id_[index], "Present_Position");
 
-  int32_t present_velocity[dxl_cnt_] = {0, };
+  std::vector<int32_t> present_velocity(dxl_cnt_, 0);
 
   for (int index = 0; index < dxl_cnt_; index++)
     present_velocity[index] = dxl_wb_->itemRead(dxl_id_[index], "Present_Velocity");
 
-  int16_t present_current[dxl_cnt_] = {0, };
+  std::vector<int16_t> present_current(dxl_cnt_, 0);
 
   for (int index = 0; index < dxl_cnt_; index++)
     present_current[index] = dxl_wb_->itemRead(dxl_id_[index], "Present_Current");
@@ -234,7 +234,7 @@ bool TorqueControl::jointCommandMsgCallback(dynamixel_workbench_msgs::JointComma
 
 void TorqueControl::goalJointPositionCallback(const sensor_msgs::JointState::ConstPtr &msg)
 {
-  double goal_position[dxl_cnt_] = {0.0, };
+  std::vector<double> goal_position(dxl_cnt_, 0.0);
 
   for (int index = 0; index < dxl_cnt_; index++)
     goal_position[index] = msg->position.at(index);
