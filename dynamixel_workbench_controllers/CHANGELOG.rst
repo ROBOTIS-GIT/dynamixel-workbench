@@ -2,6 +2,13 @@
 Changelog for package dynamixel_workbench_controllers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.0 (2018-07-20)
+------------------
+* upgraded read time #162
+* added Dynamixel PRO information #162
+* added PROext header
+* Contributors: Darby Lim, Pyo
+
 0.3.1 (2018-06-04)
 ------------------
 * none

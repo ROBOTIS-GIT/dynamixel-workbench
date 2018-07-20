@@ -39,5 +39,6 @@
 #include "dynamixel_workbench_msgs/XH.h"
 
 #include "dynamixel_workbench_msgs/PRO.h"
+#include "dynamixel_workbench_msgs/PROExt.h"
 
 #endif //DYNAMIXEL_WORKBENCH_MESSAGE_HEADER_H
