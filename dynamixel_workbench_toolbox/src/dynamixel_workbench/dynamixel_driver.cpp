@@ -735,6 +735,7 @@ bool DynamixelDriver::syncRead(const char *item_name, int32_t *data)
       }
       else
       {
+        ROS_ERROR("Could not read ID %d", id);
         return false;
       }
     }
