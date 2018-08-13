@@ -710,15 +710,17 @@ bool DynamixelDriver::syncRead(const char *item_name, int32_t *data)
     for (int j = 0; j < tools_[i].dxl_info_cnt_; j++)
     {
       dxl_addparam_result = srh.groupSyncRead->addParam(tools_[i].dxl_info_[j].id);
-      if (dxl_addparam_result != true)
+      if (dxl_addparam_result != true){
+        ROS_ERROR_THROTTLE(1, "Sync Read add param error");
         return false;
+      }
     }
   }
 
   dxl_comm_result = srh.groupSyncRead->txRxPacket();
   if (dxl_comm_result != COMM_SUCCESS)
   {
-    ROS_DEBUG_THROTTLE(1, "Sync Read error %d", dxl_comm_result);
+    ROS_ERROR_THROTTLE(1, "Sync Read error %d", dxl_comm_result);
     return false;
   }
 
