@@ -2,6 +2,18 @@
 Changelog for package dynamixel_workbench_single_manager
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.0 (2018-07-20)
+------------------
+* upgraded read time #162
+* added Dynamixel PRO information #162
+* added proext function and amended readRegister
+* added PROext header
+* Contributors: Darby Lim, Pyo
+
+0.3.1 (2018-06-04)
+------------------
+* None
+
 0.3.0 (2018-06-01)
 ------------------
 * merged pull request `#152 <https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues/152>`_ `#151 <https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues/151>`_ `#149 <https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues/149>`_ `#132 <https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues/132>`_ 

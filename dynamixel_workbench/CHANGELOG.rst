@@ -2,6 +2,28 @@
 Changelog for package dynamixel_workbench
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.0 (2018-07-20)
+------------------
+* upgraded read time #162
+* added Dynamixel PRO information #162
+* added proext function and amended readRegister
+* added mutex for log thread
+* added timer for data log
+* added PROext header
+* added readRegister function
+* updated dxl ext function
+* update dxl pro info
+* update proInfo func
+* modified max radian position
+* Contributors: Darby Lim, Pyo
+
+0.3.1 (2018-06-04)
+------------------
+* updated Qt5 and delete Qt4 config
+* deleted rqt_plugin header
+* merged pull request `#154 <https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues/154>`_ `#153 <https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues/153>`_
+* Contributors: Darby Lim
+
 0.3.0 (2018-06-01)
 ------------------
 * added cmd_vel topics, joint_state topics, msgs

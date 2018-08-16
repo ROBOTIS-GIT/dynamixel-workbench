@@ -177,11 +177,11 @@ void SingleDynamixelMonitor::initDynamixelStatePublisher()
   {
     if ((!strncmp(model_name, "PRO_L42_10_S300_R", strlen(model_name))))
     {
-      dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::PROExt>("dynamixel/" + std::string("PRO"), 10);
+      dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::PRO>("dynamixel/" + std::string("PRO"), 10);
     }
     else
     {
-      dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::PRO>("dynamixel/" + std::string("PRO"), 10);
+      dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::PROExt>("dynamixel/" + std::string("PRO"), 10);
     }
   }
 }

@@ -2,6 +2,20 @@
 Changelog for package dynamixel_workbench_toolbox
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.0 (2018-07-20)
+------------------
+* upgraded read time #162
+* added Dynamixel PRO information #162
+* added readRegister function
+* update dxl pro info
+* update proInfo func
+* modified max radian position
+* Contributors: Darby Lim, Pyo, Taehun Lim
+
+0.3.1 (2018-06-04)
+------------------
+* None
+
 0.3.0 (2018-06-01)
 ------------------
 * added getProtocolVersion()
