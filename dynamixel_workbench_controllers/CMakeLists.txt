@@ -13,6 +13,7 @@ add_compile_options(-std=c++11)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs
+  std_msgs
   geometry_msgs
   dynamixel_workbench_msgs
   dynamixel_workbench_toolbox
@@ -35,7 +36,7 @@ find_package(catkin REQUIRED COMPONENTS
 ################################################################################
 catkin_package(
  INCLUDE_DIRS include
- CATKIN_DEPENDS roscpp sensor_msgs geometry_msgs dynamixel_workbench_msgs dynamixel_workbench_toolbox
+ CATKIN_DEPENDS roscpp sensor_msgs std_msgs geometry_msgs dynamixel_workbench_msgs dynamixel_workbench_toolbox
 )
 
 ################################################################################
@@ -54,6 +55,10 @@ add_executable(velocity_control src/velocity_control.cpp)
 add_dependencies(velocity_control ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(velocity_control ${catkin_LIBRARIES})
 
+add_executable(general_velocity_control src/general_velocity_control.cpp)
+add_dependencies(general_velocity_control ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(general_velocity_control ${catkin_LIBRARIES})
+
 add_executable(multi_port src/multi_port.cpp)
 add_dependencies(multi_port ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(multi_port ${catkin_LIBRARIES})
@@ -65,7 +70,7 @@ target_link_libraries(torque_control ${catkin_LIBRARIES})
 #################################################################################
 ## Install
 #################################################################################
-install(TARGETS position_control velocity_control multi_port torque_control
+install(TARGETS position_control velocity_control general_velocity_control multi_port torque_control
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
