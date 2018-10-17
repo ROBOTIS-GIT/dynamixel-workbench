@@ -201,7 +201,7 @@ bool SingleDynamixelMonitor::showDynamixelControlTable(void)
   bool comm_result = false;
   int32_t torque_status = 0;
   uint16_t torque_enable_address = 0;
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
 
   for (int item_num = 0; item_num < dynamixel_driver_->getTheNumberOfItem(dxl_id_); item_num++)
   {
@@ -231,7 +231,7 @@ bool SingleDynamixelMonitor::showDynamixelControlTable(void)
 
 bool SingleDynamixelMonitor::checkValidationCommand(std::string cmd)
 {
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
 
   for (int item_num = 0; item_num < dynamixel_driver_->getTheNumberOfItem(dxl_id_); item_num++)
   {
@@ -617,7 +617,7 @@ void SingleDynamixelMonitor::dynamixelStatePublish(void)
 
 void SingleDynamixelMonitor::AX(void)
 {
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
   dynamixel_workbench_msgs::AX ax_state;
 
   uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
@@ -722,7 +722,7 @@ void SingleDynamixelMonitor::AX(void)
 
 void SingleDynamixelMonitor::RX(void)
 {
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
   dynamixel_workbench_msgs::RX rx_state;
 
   uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
@@ -827,7 +827,7 @@ void SingleDynamixelMonitor::RX(void)
 
 void SingleDynamixelMonitor::MX(void)
 {
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
   dynamixel_workbench_msgs::MX mx_state;
 
   uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
@@ -936,7 +936,7 @@ void SingleDynamixelMonitor::MX(void)
 
 void SingleDynamixelMonitor::MXExt(void)
 {
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
   dynamixel_workbench_msgs::MXExt mxext_state;
 
   uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
@@ -1051,7 +1051,7 @@ void SingleDynamixelMonitor::MXExt(void)
 
 void SingleDynamixelMonitor::MX2(void)
 {
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
   dynamixel_workbench_msgs::MX2 mx2_state;
 
   uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
@@ -1190,7 +1190,7 @@ void SingleDynamixelMonitor::MX2(void)
 
 void SingleDynamixelMonitor::MX2Ext(void)
 {
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
   dynamixel_workbench_msgs::MX2Ext mx2ext_state;
 
   uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
@@ -1333,7 +1333,7 @@ void SingleDynamixelMonitor::MX2Ext(void)
 
 void SingleDynamixelMonitor::EX(void)
 {
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
   dynamixel_workbench_msgs::EX ex_state;
 
   uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
@@ -1442,7 +1442,7 @@ void SingleDynamixelMonitor::EX(void)
 
 void SingleDynamixelMonitor::XL320(void)
 {
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
   dynamixel_workbench_msgs::XL320 xl320_state;
 
   uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
@@ -1543,7 +1543,7 @@ void SingleDynamixelMonitor::XL320(void)
 
 void SingleDynamixelMonitor::XL(void)
 {
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
   dynamixel_workbench_msgs::XL xl_state;
 
   uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
@@ -1682,7 +1682,7 @@ void SingleDynamixelMonitor::XL(void)
 
 void SingleDynamixelMonitor::XM(void)
 {
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
   dynamixel_workbench_msgs::XM xm_state;
 
   uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
@@ -1825,7 +1825,7 @@ void SingleDynamixelMonitor::XM(void)
 
 void SingleDynamixelMonitor::XMExt(void)
 {
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
   dynamixel_workbench_msgs::XMExt xmext_state;
 
   uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
@@ -1974,7 +1974,7 @@ void SingleDynamixelMonitor::XMExt(void)
 
 void SingleDynamixelMonitor::XH(void)
 {
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
   dynamixel_workbench_msgs::XH xh_state;
 
   uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
@@ -2117,7 +2117,7 @@ void SingleDynamixelMonitor::XH(void)
 
 void SingleDynamixelMonitor::PRO(void)
 {
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
   dynamixel_workbench_msgs::PRO pro_state;
 
   uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
@@ -2238,7 +2238,7 @@ void SingleDynamixelMonitor::PRO(void)
 
 void SingleDynamixelMonitor::PROExt(void)
 {
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
   dynamixel_workbench_msgs::PROExt proext_state;
 
   uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;

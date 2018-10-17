@@ -398,7 +398,7 @@ void MainWindow::setAddressComboBox(bool torque_enable)
   }
 
   uint16_t torque_enable_address = 0;
-  ControlTableItem* item_ptr = dynamixel_tool_->getControlItemPtr();
+  const ControlTableItem* item_ptr = dynamixel_tool_->getControlItemPtr();
 
   for (int item_num = 0; item_num < dynamixel_tool_->getTheNumberOfItem(); item_num++)
   {
