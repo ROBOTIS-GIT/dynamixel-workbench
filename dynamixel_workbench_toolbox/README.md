@@ -24,5 +24,6 @@ $ cd ${YOUR_DOWNLOAD_PATH}/dynamixel_workbench/dynamixel_workbench_toolbox/examp
 $ mkdir build && cd build
 $ cmake ..
 $ make
+$ sudo chmod a+rw ${USB_PORT}
 $ ./monitor
 ```
