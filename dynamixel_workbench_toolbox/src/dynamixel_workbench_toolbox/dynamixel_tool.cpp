@@ -151,10 +151,6 @@ void DynamixelTool::setControlTable(uint16_t model_number)
   the_number_of_item_ = getTheNumberOfControlItem();
   info_ptr_           = getModelInfo(model_number);
 
-  for (int index = 0; index < the_number_of_item_; index++)
-    item_[index] = item_ptr_[index];
-
-
   info_.velocity_to_value_ratio         = info_ptr_->velocity_to_value_ratio;
   info_.torque_to_current_value_ratio   = info_ptr_->torque_to_current_value_ratio;
 
@@ -380,17 +376,18 @@ uint8_t DynamixelTool::getTheNumberOfItem(void)
   return the_number_of_item_;
 }
 
-ControlTableItem* DynamixelTool::getControlItem(const char* item_name)
+const ControlTableItem* DynamixelTool::getControlItem(const char* item_name)
 {
-  static ControlTableItem* cti;    
-
+  const ControlTableItem* cti = item_ptr_;  
+  uint8_t name_length = strlen(item_name);
   for (int num = 0; num < the_number_of_item_; num++)
   {
-    if (!strncmp(item_name, item_[num].item_name, strlen(item_[num].item_name)))
+    if ((name_length == cti->item_name_length) && 
+        (memcmp(item_name, cti->item_name, name_length) == 0) )
     {
-      cti = &item_[num];
       return cti;
     }
+    cti++;
   }
 
   if (!strncmp(item_name, "Moving_Speed", strlen("Moving_Speed")))
@@ -401,9 +398,10 @@ ControlTableItem* DynamixelTool::getControlItem(const char* item_name)
     getControlItem("Present_Speed");
   else if (!strncmp(item_name, "Present_Speed", strlen("Present_Speed")))
     getControlItem("Present_Velocity");
+  return NULL;
 }
 
-ControlTableItem* DynamixelTool::getControlItemPtr(void)
+const ControlTableItem* DynamixelTool::getControlItemPtr(void)
 {
   return item_ptr_;
 }
