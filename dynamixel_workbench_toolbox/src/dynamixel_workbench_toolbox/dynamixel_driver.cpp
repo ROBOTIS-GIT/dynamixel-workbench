@@ -142,7 +142,7 @@ int DynamixelDriver::getBaudrate(void)
   return portHandler_->getBaudRate();
 }
 
-char *DynamixelDriver::getModelName(uint8_t id)
+const char *DynamixelDriver::getModelName(uint8_t id)
 {
   uint8_t factor = getToolsFactor(id);
 
@@ -312,7 +312,7 @@ bool DynamixelDriver::reset(uint8_t id)
           tools_[factor].dxl_info_[i].id = new_id;
       }
 
-      char* model_name = getModelName(new_id);
+      const char* model_name = getModelName(new_id);
       if (!strncmp(model_name, "AX", strlen("AX")) ||
           !strncmp(model_name, "MX-12W", strlen("MX-12W")))
         baud = 1000000;

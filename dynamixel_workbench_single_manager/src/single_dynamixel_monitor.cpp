@@ -109,7 +109,7 @@ void SingleDynamixelMonitor::shutdownSingleDynamixelMonitor(void)
 
 void SingleDynamixelMonitor::initDynamixelStatePublisher()
 {
-  char* model_name = dynamixel_driver_->getModelName(dxl_id_);
+  const char* model_name = dynamixel_driver_->getModelName(dxl_id_);
 
   if (!strncmp(model_name, "AX", strlen("AX")))
   {
@@ -550,7 +550,7 @@ int main(int argc, char **argv)
 
 void SingleDynamixelMonitor::dynamixelStatePublish(void)
 {
-  char* model_name = dynamixel_driver_->getModelName(dxl_id_);
+  const char* model_name = dynamixel_driver_->getModelName(dxl_id_);
 
   if (!strncmp(model_name, "AX", strlen("AX")))
   {

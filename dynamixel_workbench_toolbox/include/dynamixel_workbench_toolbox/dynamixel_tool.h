@@ -25,7 +25,7 @@
 
 typedef struct
 {
-  char model_name[20];
+  const char *model_name;
   uint16_t model_num;
   uint8_t id;
 } DXLInfo;
