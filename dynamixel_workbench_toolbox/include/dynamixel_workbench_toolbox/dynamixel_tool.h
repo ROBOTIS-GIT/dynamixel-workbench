@@ -25,16 +25,18 @@
 
 typedef struct
 {
-  const char *model_name;
-  uint16_t model_num;
   uint8_t id;
 } DXLInfo;
 
 class DynamixelTool
 {
  public:
-  DXLInfo dxl_info_[16];
+  enum {COUNT_DXL_INFO = 16};
+  DXLInfo dxl_info_[COUNT_DXL_INFO];
   uint8_t dxl_info_cnt_;
+
+  const char *model_name_;
+  uint16_t model_num_;
 
  private:
   const ControlTableItem* item_ptr_;
