@@ -26,7 +26,7 @@ DynamixelDriver::~DynamixelDriver()
   {
     for (int j = 0; j < tools_[i].dxl_info_cnt_; j++)
     {
-      writeRegister(tools_[i].dxl_info_[j].id, "Torque_Enable", false);
+      writeRegister(tools_[i].dxl_id_[j], "Torque_Enable", false);
     }
   }
 
@@ -160,7 +160,7 @@ uint16_t DynamixelDriver::getModelNum(uint8_t id)
 
   for (int i = 0; i < tools_[factor].dxl_info_cnt_; i++)
   {
-    if (tools_[factor].dxl_info_[i].id == id)
+    if (tools_[factor].dxl_id_[i] == id)
       return tools_[factor].model_num_;
   }
   return 0;
@@ -311,8 +311,8 @@ bool DynamixelDriver::reset(uint8_t id)
       if (factor == 0xff) return false;
       for (int i = 0; i < tools_[factor].dxl_info_cnt_; i++)
       {
-        if (tools_[factor].dxl_info_[i].id == id)
-          tools_[factor].dxl_info_[i].id = new_id;
+        if (tools_[factor].dxl_id_[i] == id)
+          tools_[factor].dxl_id_[i] = new_id;
       }
 
       const char* model_name = getModelName(new_id);
@@ -370,8 +370,8 @@ bool DynamixelDriver::reset(uint8_t id)
 
       for (int i = 0; i < tools_[factor].dxl_info_cnt_; i++)
       {
-        if (tools_[factor].dxl_info_[i].id == id)
-          tools_[factor].dxl_info_[i].id = new_id;
+        if (tools_[factor].dxl_id_[i] == id)
+          tools_[factor].dxl_id_[i] = new_id;
       }
 
       if (!strncmp(getModelName(new_id), "XL-320", strlen("XL-320")))
@@ -622,7 +622,7 @@ uint8_t DynamixelDriver::getToolsFactor(uint8_t id)
   {
     for (int j = 0; j < tools_[i].dxl_info_cnt_; j++)
     {
-      if (tools_[i].dxl_info_[j].id == id)
+      if (tools_[i].dxl_id_[j] == id)
       {
         return i;
       }
@@ -772,7 +772,7 @@ bool DynamixelDriver::syncWrite(const char *item_name, int32_t *data)
       data_byte[2] = DXL_LOBYTE(DXL_HIWORD(data[cnt]));
       data_byte[3] = DXL_HIBYTE(DXL_HIWORD(data[cnt]));
 
-      dxl_addparam_result = swh.groupSyncWrite->addParam(tools_[i].dxl_info_[j].id, (uint8_t *)&data_byte);
+      dxl_addparam_result = swh.groupSyncWrite->addParam(tools_[i].dxl_id_[j], (uint8_t *)&data_byte);
       if (dxl_addparam_result != true)
       {
         return false;
@@ -886,7 +886,7 @@ bool DynamixelDriver::syncRead(const char *item_name, int32_t *data)
   {
     for (int j = 0; j < tools_[i].dxl_info_cnt_; j++)
     {
-      dxl_addparam_result = srh.groupSyncRead->addParam(tools_[i].dxl_info_[j].id);
+      dxl_addparam_result = srh.groupSyncRead->addParam(tools_[i].dxl_id_[j]);
       if (dxl_addparam_result != true)
         return false;
     }
@@ -902,7 +902,7 @@ bool DynamixelDriver::syncRead(const char *item_name, int32_t *data)
   {
     for (int j = 0; j < tools_[i].dxl_info_cnt_; j++)
     {
-      uint8_t id = tools_[i].dxl_info_[j].id;
+      uint8_t id = tools_[i].dxl_id_[j];
 
       dxl_getdata_result = srh.groupSyncRead->isAvailable(id, srh.cti->address, srh.cti->data_length);
       if (dxl_getdata_result)

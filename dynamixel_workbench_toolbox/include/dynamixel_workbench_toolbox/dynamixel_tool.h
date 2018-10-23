@@ -23,16 +23,11 @@
 
 #include "dynamixel_item.h"
 
-typedef struct
-{
-  uint8_t id;
-} DXLInfo;
-
 class DynamixelTool
 {
  public:
   enum {COUNT_DXL_INFO = 16};
-  DXLInfo dxl_info_[COUNT_DXL_INFO];
+  uint8_t dxl_id_[COUNT_DXL_INFO];
   uint8_t dxl_info_cnt_;
 
   const char *model_name_;
