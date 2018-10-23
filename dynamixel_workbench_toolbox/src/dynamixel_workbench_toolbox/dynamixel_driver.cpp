@@ -415,7 +415,7 @@ bool DynamixelDriver::writeRegister(uint8_t id, const char *item_name, int32_t d
   const ControlTableItem *cti;
 
   uint8_t factor = getToolsFactor(id);
-  if (factor == 0xff) false; NULL;
+  if (factor == 0xff) return false; 
 
   cti = tools_[factor].getControlItem(item_name);
 
