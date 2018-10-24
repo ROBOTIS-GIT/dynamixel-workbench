@@ -21,12 +21,13 @@
 //===================================================================
 // Define Serial ID to Namd table
 //===================================================================
-typedef struct {
+typedef struct 
+{
   uint16_t      model_number;
   const char *  model_name; 
-} SERVO_NUM_TO_NAME;
+} Servo_Num_To_Name;
 
-static const SERVO_NUM_TO_NAME servo_num_to_name_table[] = {
+static const Servo_Num_To_Name servo_num_to_name_table[] = {
     {AX_12A, "AX-12A"},
     {AX_12W, "AX-12W"},
     {AX_18A, "AX-18A"},

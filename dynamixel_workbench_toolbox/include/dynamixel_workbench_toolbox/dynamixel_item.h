@@ -32,7 +32,7 @@
 
 #define EX_106     107
 
-#define MX_12W     360
+#define MX_12W     104
 #define MX_28      29
 #define MX_28_2    30
 #define MX_64      310
@@ -69,19 +69,20 @@
 
 typedef struct
 {
-  float velocity_to_value_ratio;
-  float torque_to_current_value_ratio;
+  float rpm;
 
   int32_t value_of_min_radian_position;
-  int32_t value_of_0_radian_position;
+  int32_t value_of_zero_radian_position;
   int32_t value_of_max_radian_position;
 
   float  min_radian;
   float  max_radian;
 } ModelInfo;
 
-uint8_t getTheNumberOfControlItem();
+// Public Functions
 const ControlTableItem* getConrolTableItem(uint16_t model_number);
-ModelInfo* getModelInfo(uint16_t model_number);
+const ModelInfo* getModelInfo(uint16_t model_number);
+
+uint8_t getTheNumberOfControlItem();
 
 #endif //DYNAMIXEL_H
