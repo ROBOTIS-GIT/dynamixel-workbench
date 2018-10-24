@@ -14,7 +14,11 @@ add_library(dynamixel_workbench
   ../src/dynamixel_workbench_toolbox/dynamixel_workbench.cpp
 )
 
-target_link_libraries(dynamixel_workbench LINK_PUBLIC "/usr/local/lib/libdxl_x64_cpp.so")
+if(APPLE)
+  target_link_libraries(dynamixel_workbench LINK_PUBLIC "/usr/local/lib/libdxl_mac_cpp.dylib")
+else()
+  target_link_libraries(dynamixel_workbench LINK_PUBLIC "/usr/local/lib/libdxl_x64_cpp.so")
+endif()
 
 add_executable(model_scan src/a_Model_Scan.cpp)
 target_link_libraries(model_scan LINK_PUBLIC dynamixel_workbench)
