@@ -35,9 +35,7 @@ class DynamixelTool
 
  private:
   const ControlTableItem* item_ptr_;
-  ModelInfo* info_ptr_;
-
-  ModelInfo info_;
+  const ModelInfo* info_ptr_;
   uint8_t the_number_of_item_;
 
  public:
@@ -50,8 +48,7 @@ class DynamixelTool
   void addDXL(uint16_t model_number, uint8_t id);
   void addDXL(const char* model_name, uint8_t id);
 
-  float getVelocityToValueRatio(void);
-  float getTorqueToCurrentValueRatio(void);
+  float getRPM(void);
 
   int32_t getValueOfMinRadianPosition(void);
   int32_t getValueOfMaxRadianPosition(void);
@@ -61,9 +58,10 @@ class DynamixelTool
   float getMaxRadian(void);
 
   uint8_t getTheNumberOfItem(void);
+  
   const ControlTableItem* getControlItem(const char *item_name);
   const ControlTableItem* getControlItemPtr(void);
-  ModelInfo* getModelInfoPtr(void);
+  const ModelInfo* getModelInfoPtr(void);
 
  private:
   void setControlTable(const char* model_name);

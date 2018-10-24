@@ -137,16 +137,6 @@ void DynamixelTool::setControlTable(uint16_t model_number)
   item_ptr_           = getConrolTableItem(model_number);
   the_number_of_item_ = getTheNumberOfControlItem();
   info_ptr_           = getModelInfo(model_number);
-
-  info_.velocity_to_value_ratio         = info_ptr_->velocity_to_value_ratio;
-  info_.torque_to_current_value_ratio   = info_ptr_->torque_to_current_value_ratio;
-
-  info_.value_of_0_radian_position      = info_ptr_->value_of_0_radian_position;
-  info_.value_of_min_radian_position    = info_ptr_->value_of_min_radian_position;
-  info_.value_of_max_radian_position    = info_ptr_->value_of_max_radian_position;
-
-  info_.min_radian                      = info_ptr_->min_radian;
-  info_.max_radian                      = info_ptr_->max_radian;
 }
 
 void DynamixelTool::setModelName(uint16_t model_number)
@@ -179,39 +169,34 @@ void DynamixelTool::setModelNum(const char* model_name)
 
 }
 
-float DynamixelTool::getVelocityToValueRatio(void)
+float DynamixelTool::getRPM(void)
 {
-  return info_.velocity_to_value_ratio;
-}
-
-float DynamixelTool::getTorqueToCurrentValueRatio(void)
-{
-  return info_.torque_to_current_value_ratio;
+  return info_ptr_->rpm;
 }
 
 int32_t DynamixelTool::getValueOfMinRadianPosition(void)
 {
-  return info_.value_of_min_radian_position;
+  return info_ptr_->value_of_min_radian_position;
 }
 
 int32_t DynamixelTool::getValueOfMaxRadianPosition(void)
 {
-  return info_.value_of_max_radian_position;
+  return info_ptr_->value_of_max_radian_position;
 }
 
 int32_t DynamixelTool::getValueOfZeroRadianPosition(void)
 {
-  return info_.value_of_0_radian_position;
+  return info_ptr_->value_of_zero_radian_position;
 }
 
 float DynamixelTool::getMinRadian(void)
 {
-  return info_.min_radian;
+  return info_ptr_->min_radian;
 }
 
 float DynamixelTool::getMaxRadian(void)
 {
-  return info_.max_radian;
+  return info_ptr_->max_radian;
 }
 
 uint8_t DynamixelTool::getTheNumberOfItem(void)
@@ -249,7 +234,7 @@ const ControlTableItem* DynamixelTool::getControlItemPtr(void)
   return item_ptr_;
 }
 
-ModelInfo* DynamixelTool::getModelInfoPtr(void)
+const ModelInfo* DynamixelTool::getModelInfoPtr(void)
 {
   return info_ptr_;
 }
