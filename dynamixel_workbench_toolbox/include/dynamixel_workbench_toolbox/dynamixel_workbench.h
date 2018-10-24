@@ -99,8 +99,8 @@ class DynamixelWorkbench
   int32_t convertVelocity2Value(uint8_t id, float velocity);
   float convertValue2Velocity(uint8_t id, int32_t value);
 
-  int16_t convertTorque2Value(uint8_t id, float torque);
-  float convertValue2Torque(uint8_t id, int16_t value);
+  // int16_t convertTorque2Value(uint8_t id, float torque);
+  // float convertValue2Torque(uint8_t id, int16_t value);
 
   const ControlTableItem* getControlItemPtr(uint8_t id);
   uint8_t getControlItemCount(uint8_t id);

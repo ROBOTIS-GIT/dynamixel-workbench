@@ -1118,7 +1118,7 @@ int32_t DynamixelDriver::convertVelocity2Value(uint8_t id, float velocity)
   uint8_t factor = getToolsFactor(id);
   if (factor == 0xff) factor = 0; 
 
-  value = velocity * tools_[factor].getVelocityToValueRatio();
+  // value = velocity * tools_[factor].getVelocityToValueRatio();
 
   return value;
 }
@@ -1129,32 +1129,32 @@ float DynamixelDriver::convertValue2Velocity(uint8_t id, int32_t value)
   uint8_t factor = getToolsFactor(id);
   if (factor == 0xff) factor = 0; 
 
-  velocity = value / tools_[factor].getVelocityToValueRatio();
+  // velocity = value / tools_[factor].getVelocityToValueRatio();
 
   return velocity;
 }
 
-int16_t DynamixelDriver::convertTorque2Value(uint8_t id, float torque)
-{
-  int16_t value = 0;
-  uint8_t factor = getToolsFactor(id);
-  if (factor == 0xff) factor = 0; 
+// int16_t DynamixelDriver::convertTorque2Value(uint8_t id, float torque)
+// {
+//   int16_t value = 0;
+//   uint8_t factor = getToolsFactor(id);
+//   if (factor == 0xff) factor = 0; 
 
-  value = torque * tools_[factor].getTorqueToCurrentValueRatio();
+//   value = torque * tools_[factor].getTorqueToCurrentValueRatio();
 
-  return value;
-}
+//   return value;
+// }
 
-float DynamixelDriver::convertValue2Torque(uint8_t id, int16_t value)
-{
-  float torque = 0.0;
-  uint8_t factor = getToolsFactor(id);
-  if (factor == 0xff) factor = 0; 
+// float DynamixelDriver::convertValue2Torque(uint8_t id, int16_t value)
+// {
+//   float torque = 0.0;
+//   uint8_t factor = getToolsFactor(id);
+//   if (factor == 0xff) factor = 0; 
 
-  torque = value / tools_[factor].getTorqueToCurrentValueRatio();
+//   torque = value / tools_[factor].getTorqueToCurrentValueRatio();
 
-  return torque;
-}
+//   return torque;
+// }
 
 void DynamixelDriver::millis(uint16_t msec)
 {

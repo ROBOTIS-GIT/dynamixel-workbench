@@ -493,15 +493,15 @@ float DynamixelWorkbench::convertValue2Velocity(uint8_t id, int32_t value)
   return driver_.convertValue2Velocity(id, value);
 }
 
-int16_t DynamixelWorkbench::convertTorque2Value(uint8_t id, float torque)
-{
-  return driver_.convertTorque2Value(id, torque);
-}
+// int16_t DynamixelWorkbench::convertTorque2Value(uint8_t id, float torque)
+// {
+//   return driver_.convertTorque2Value(id, torque);
+// }
 
-float DynamixelWorkbench::convertValue2Torque(uint8_t id, int16_t value)
-{
-  return driver_.convertValue2Torque(id, value);
-}
+// float DynamixelWorkbench::convertValue2Torque(uint8_t id, int16_t value)
+// {
+//   return driver_.convertValue2Torque(id, value);
+// }
 
 
 /*/////////////////////////////////////////////////////////////////////////////
