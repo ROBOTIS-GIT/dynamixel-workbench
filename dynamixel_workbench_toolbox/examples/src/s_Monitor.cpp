@@ -271,6 +271,8 @@ bool monitoring()
       }
     }
   }
+
+  return true;
 }
 
 bool isAvailableID(uint8_t id)
