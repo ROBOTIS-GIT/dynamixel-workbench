@@ -66,13 +66,13 @@ class DynamixelTool
 
   uint8_t getTheNumberOfControlItem(void);
   
-  const ControlItem *getControlItem(const char *item_name, const char* err);
+  const ControlItem *getControlItem(const char *item_name, const char* err = "");
   const ControlItem *getControlTable(void);
   const ModelInfo *getModelInfo(void);
 
  private:
   bool setControlTable(const char *model_name, const char *err = "");
-  void setControlTable(uint16_t model_number, const char *err = "");
+  bool setControlTable(uint16_t model_number, const char *err = "");
 
   bool setModelName(uint16_t model_number, const char *err = "");
   bool setModelNumber(const char *model_name, const char *err = "");

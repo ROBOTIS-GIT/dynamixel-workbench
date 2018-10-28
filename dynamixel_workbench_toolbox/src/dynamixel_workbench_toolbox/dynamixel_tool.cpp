@@ -135,19 +135,19 @@ bool DynamixelTool::setControlTable(const char *model_name, const char *err)
     }
   }
 
-  err = "[DynamixelTool] Failed to set control table due to mismatch model name and model number"
+  err = "[DynamixelTool] Failed to set control table due to mismatch model name and model number";
   return false;
 }
 
 bool DynamixelTool::setControlTable(uint16_t model_number, const char *err)
 {
-  control_table_              = getControlTable(model_number);
-  the_number_of_control_item_ = getTheNumberOfControlItem();
-  model_info_                 = getModelInfo(model_number);
+  control_table_              = DynamixelItem::getControlTable(model_number);
+  the_number_of_control_item_ = DynamixelItem::getTheNumberOfControlItem();
+  model_info_                 = DynamixelItem::getModelInfo(model_number);
 
   if (control_table_ == NULL || model_info_ == NULL)
   {
-    err = "[DynamixelTool] Failed to get control table or model info"
+    err = "[DynamixelTool] Failed to get control table or model info";
     return false;
   }
 
@@ -167,7 +167,7 @@ bool DynamixelTool::setModelName(uint16_t model_number, const char *err)
     }
   }
 
-  err = "[DynamixelTool] Failed to find model name"
+  err = "[DynamixelTool] Failed to find model name";
   return false;
 }
 
@@ -185,7 +185,7 @@ bool DynamixelTool::setModelNumber(const char *model_name, const char *err)
     }
   }
 
-  err = "[DynamixelTool] Failed to find model number"
+  err = "[DynamixelTool] Failed to find model number";
   return false;
 }
 
@@ -256,7 +256,7 @@ const ControlItem *DynamixelTool::getControlItem(const char *item_name, const ch
   const ControlItem* control_item = control_table_;  
   uint8_t name_length = strlen(item_name);
 
-  for (uint8_t num = 0; num < the_number_of_item_; num++)
+  for (uint8_t num = 0; num < the_number_of_control_item_; num++)
   {
     if ((name_length == control_item->item_name_length) && 
         (memcmp(item_name, control_item->item_name, name_length) == 0))
@@ -267,15 +267,15 @@ const ControlItem *DynamixelTool::getControlItem(const char *item_name, const ch
   }
 
   if (strncmp(item_name, "Moving_Speed", strlen("Moving_Speed")) == 0)
-    findItem("Goal_Velocity");
+    getControlItem("Goal_Velocity");
   else if (strncmp(item_name, "Goal_Velocity", strlen("Goal_Velocity")) == 0)
-    findItem("Moving_Speed");
+    getControlItem("Moving_Speed");
   else if (strncmp(item_name, "Present_Velocity", strlen("Present_Velocity")) == 0)
-    findItem("Present_Speed");
+    getControlItem("Present_Speed");
   else if (strncmp(item_name, "Present_Speed", strlen("Present_Speed")) == 0)
-    findItem("Present_Velocity");
+    getControlItem("Present_Velocity");
 
-  err = "[DynamixelTool] Can't find Item"
+  err = "[DynamixelTool] Can't find Item";
   return NULL;
 }
 

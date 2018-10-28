@@ -18,8 +18,8 @@
 
 #include "../../include/dynamixel_workbench_toolbox/dynamixel_driver.h"
 
-static const dynamixel::PacketHandler *packetHandler_1 = dynamixel::PacketHandler::getPacketHandler(1.0f);
-static const dynamixel::PacketHandler *packetHandler_2 = dynamixel::PacketHandler::getPacketHandler(2.0f);
+static dynamixel::PacketHandler *packetHandler_1 = dynamixel::PacketHandler::getPacketHandler(1.0f);
+static dynamixel::PacketHandler *packetHandler_2 = dynamixel::PacketHandler::getPacketHandler(2.0f);
 
 DynamixelDriver::DynamixelDriver() : tools_cnt_(0), sync_write_handler_cnt_(0), sync_read_handler_cnt_(0) {}
 
@@ -29,7 +29,7 @@ DynamixelDriver::~DynamixelDriver()
   {
     for (int j = 0; j < tools_[i].getDynamixelCount(); j++)
     {
-      writeRegister(tools_[i].getID()[j], "Torque_Enable", false);
+      // writeRegister(tools_[i].getID()[j], "Torque_Enable", false);
     }
   }
 
@@ -38,7 +38,7 @@ DynamixelDriver::~DynamixelDriver()
 
 void DynamixelDriver::initTools(void)
 {
-  tools_cnt = 0;
+  tools_cnt_ = 0;
 }
 
 bool DynamixelDriver::setTool(uint16_t model_number, uint8_t id, const char *err)
@@ -241,7 +241,7 @@ bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_the_number_of_id, uint8
 
   if (id_cnt > 0)
   {
-    *get_id_num = id_cnt;
+    *get_the_number_of_id = id_cnt;
     result = setPacketHandler(1.0f, err);
     return result;
   }
@@ -269,7 +269,7 @@ bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_the_number_of_id, uint8
 
   if (id_cnt > 0)
   {
-    *get_id_num = id_cnt;
+    *get_the_number_of_id = id_cnt;
     result = setPacketHandler(2.0f, err);
     return result;
   }
@@ -283,7 +283,6 @@ bool DynamixelDriver::ping(uint8_t id, uint16_t *get_model_number, const char *e
   ErrorFromSDK sdk_error = {0, false, false, 0};
   bool result = false;
 
-  uint8_t id = 0;
   uint16_t model_number = 0;
 
   sdk_error.dxl_comm_result = packetHandler_1->ping(portHandler_, id, &model_number, &sdk_error.dxl_error);
@@ -300,16 +299,11 @@ bool DynamixelDriver::ping(uint8_t id, uint16_t *get_model_number, const char *e
   }
   else
   {
-    get_id[id_cnt++] = id;
     setTool(model_number, id);
-  }
-
-  if (id_cnt > 0)
-  {
     *get_model_number = model_number;
     result = setPacketHandler(1.0f, err);
     return result;
-  }    
+  }
 
   sdk_error.dxl_comm_result = packetHandler_2->ping(portHandler_, id, &model_number, &sdk_error.dxl_error);
   
@@ -325,16 +319,11 @@ bool DynamixelDriver::ping(uint8_t id, uint16_t *get_model_number, const char *e
   }
   else
   {
-    get_id[id_cnt++] = id;
     setTool(model_number, id);
-  }  
-
-  if (id_cnt > 0)
-  {
     *get_model_number = model_number;
     result = setPacketHandler(2.0f, err);
     return result;
-  }    
+  }  
 
   err = "[DynamixelDriver] Failed to ping!";
   return false;
@@ -342,156 +331,151 @@ bool DynamixelDriver::ping(uint8_t id, uint16_t *get_model_number, const char *e
 
 bool DynamixelDriver::reboot(uint8_t id, const char* err)
 {
+  ErrorFromSDK sdk_error = {0, false, false, 0};
+
   if (getProtocolVersion() == 1.0)
   {
+    err = "[DynamixelDriver] reboot functions is not available with the Dynamixel Protocol 1.0.";
     return false;
   }
   else
   {
-    uint8_t error = 0;
-    uint16_t comm_result = COMM_RX_FAIL;
-
-    comm_result = packetHandler_[0]->reboot(portHandler_, id, &error);
-    millis(2000);
-
-    if (comm_result == COMM_SUCCESS)
+    sdk_error.dxl_comm_result = packetHandler_->reboot(portHandler_, id, &sdk_error.dxl_error);
+    if (sdk_error.dxl_comm_result != COMM_SUCCESS)
     {
-      if (error != 0)
-      {
-        return false;
-      }
+      err = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     }
-    else
+    else if (sdk_error.dxl_error != 0)
     {
-      return false;
+      err = packetHandler_->getRxPacketError(sdk_error.dxl_error);
     }
   }
 
   return true;
 }
 
-bool DynamixelDriver::reset(uint8_t id)
-{
-  uint8_t error = 0;
-  uint16_t comm_result = COMM_RX_FAIL;
-  bool isOK = false;
+// bool DynamixelDriver::reset(uint8_t id)
+// {
+//   uint8_t error = 0;
+//   uint16_t comm_result = COMM_RX_FAIL;
+//   bool isOK = false;
 
-  uint32_t baud = 0;
-  uint8_t new_id = 1;
+//   uint32_t baud = 0;
+//   uint8_t new_id = 1;
 
-  if (packetHandler_[0]->getProtocolVersion() == 1.0)
-  {
-    // Reset Dynamixel except ID and Baudrate
-    comm_result = packetHandler_[0]->factoryReset(portHandler_, id, 0x00, &error);
-    millis(2000);
+//   if (packetHandler_[0]->getProtocolVersion() == 1.0)
+//   {
+//     // Reset Dynamixel except ID and Baudrate
+//     comm_result = packetHandler_[0]->factoryReset(portHandler_, id, 0x00, &error);
+//     millis(2000);
 
-    if (comm_result == COMM_SUCCESS)
-    {
-      if (error != 0)
-      {
-        return false;
-      }
+//     if (comm_result == COMM_SUCCESS)
+//     {
+//       if (error != 0)
+//       {
+//         return false;
+//       }
 
-      uint8_t factor = getTool(id);
+//       uint8_t factor = getTool(id);
 
-      if (factor == 0xff) return false;
-      for (int i = 0; i < tools_[factor].getDynamixelCount(); i++)
-      {
-        if (tools_[factor].getID()[i] == id)
-          tools_[factor].getID()[i] = new_id;
-      }
+//       if (factor == 0xff) return false;
+//       for (int i = 0; i < tools_[factor].getDynamixelCount(); i++)
+//       {
+//         if (tools_[factor].getID()[i] == id)
+//           tools_[factor].getID()[i] = new_id;
+//       }
 
-      const char* model_name = getModelName(new_id);
-      if (!strncmp(model_name, "AX", strlen("AX")) ||
-          !strncmp(model_name, "MX-12W", strlen("MX-12W")))
-        baud = 1000000;
-      else
-        baud = 57600;
+//       const char* model_name = getModelName(new_id);
+//       if (!strncmp(model_name, "AX", strlen("AX")) ||
+//           !strncmp(model_name, "MX-12W", strlen("MX-12W")))
+//         baud = 1000000;
+//       else
+//         baud = 57600;
 
-      if (portHandler_->setBaudRate(baud) == false)
-      {
-        millis(2000);
-        return false;
-      }
-      else
-      {
-        millis(2000);
+//       if (portHandler_->setBaudRate(baud) == false)
+//       {
+//         millis(2000);
+//         return false;
+//       }
+//       else
+//       {
+//         millis(2000);
 
-        if (!strncmp(model_name, "MX-28-2", strlen("MX-28-2"))   ||
-            !strncmp(model_name, "MX-64-2", strlen("MX-64-2"))   ||
-            !strncmp(model_name, "MX-106-2", strlen("MX-106-2")) ||
-            !strncmp(model_name, "XL", strlen("XL")) ||
-            !strncmp(model_name, "XM", strlen("XM")) ||
-            !strncmp(model_name, "XH", strlen("XH")) ||
-            !strncmp(model_name, "PRO", strlen("PRO")))
-          isOK = setPacketHandler(2.0);
-        else
-          isOK = setPacketHandler(1.0);
+//         if (!strncmp(model_name, "MX-28-2", strlen("MX-28-2"))   ||
+//             !strncmp(model_name, "MX-64-2", strlen("MX-64-2"))   ||
+//             !strncmp(model_name, "MX-106-2", strlen("MX-106-2")) ||
+//             !strncmp(model_name, "XL", strlen("XL")) ||
+//             !strncmp(model_name, "XM", strlen("XM")) ||
+//             !strncmp(model_name, "XH", strlen("XH")) ||
+//             !strncmp(model_name, "PRO", strlen("PRO")))
+//           isOK = setPacketHandler(2.0);
+//         else
+//           isOK = setPacketHandler(1.0);
 
-        if (isOK)
-          return true;
-        else
-          return false;
-      }
-    }
-    else
-    {
-      return false;
-    }
-  }
-  else if (packetHandler_[0]->getProtocolVersion() == 2.0)
-  {
-    comm_result = packetHandler_[0]->factoryReset(portHandler_, id, 0xff, &error);
-    millis(2000);
+//         if (isOK)
+//           return true;
+//         else
+//           return false;
+//       }
+//     }
+//     else
+//     {
+//       return false;
+//     }
+//   }
+//   else if (packetHandler_[0]->getProtocolVersion() == 2.0)
+//   {
+//     comm_result = packetHandler_[0]->factoryReset(portHandler_, id, 0xff, &error);
+//     millis(2000);
 
-    if (comm_result == COMM_SUCCESS)
-    {
-      if (error != 0)
-      {   
-        return false;
-      }
+//     if (comm_result == COMM_SUCCESS)
+//     {
+//       if (error != 0)
+//       {   
+//         return false;
+//       }
 
-      uint8_t factor = getTool(id);
-      if (factor == 0xff) return false;
+//       uint8_t factor = getTool(id);
+//       if (factor == 0xff) return false;
 
-      for (int i = 0; i < tools_[factor].getDynamixelCount(); i++)
-      {
-        if (tools_[factor].getID()[i] == id)
-          tools_[factor].getID()[i] = new_id;
-      }
+//       for (int i = 0; i < tools_[factor].getDynamixelCount(); i++)
+//       {
+//         if (tools_[factor].getID()[i] == id)
+//           tools_[factor].getID()[i] = new_id;
+//       }
 
-      if (!strncmp(getModelName(new_id), "XL-320", strlen("XL-320")))
-      {
-        baud = 1000000;
-      }
-      else
-      {
-        baud = 57600;
-      }
+//       if (!strncmp(getModelName(new_id), "XL-320", strlen("XL-320")))
+//       {
+//         baud = 1000000;
+//       }
+//       else
+//       {
+//         baud = 57600;
+//       }
 
-      if (portHandler_->setBaudRate(baud) == false)
-      {
-        millis(2000);
-        return false;
-      }
-      else
-      {
-        millis(2000);
+//       if (portHandler_->setBaudRate(baud) == false)
+//       {
+//         millis(2000);
+//         return false;
+//       }
+//       else
+//       {
+//         millis(2000);
 
-        isOK = setPacketHandler(2.0);
-        if (isOK)
-          return true;
-        else
-          return false;
-      }
-    }
-    else
-    {
-      return false;
-    }
-  }
-  return false;  // should never get here.
-}
+//         isOK = setPacketHandler(2.0);
+//         if (isOK)
+//           return true;
+//         else
+//           return false;
+//       }
+//     }
+//     else
+//     {
+//       return false;
+//     }
+//   }
+//   return false;  // should never get here.
+// }
 
 // bool DynamixelDriver::writeRegister(uint8_t id, const char *item_name, int32_t data)
 // {

@@ -99,7 +99,7 @@ class DynamixelDriver
             const char *err = "");
 
   bool reboot(uint8_t id, const char *err = "");
-  bool reset(uint8_t id, const char *err = "");
+  // bool reset(uint8_t id, const char *err = "");
 
   // bool writeRegister(uint8_t id, const char *item_name, int32_t data, const char *err = "");
   // bool writeRegister(uint8_t id, uint16_t addr, uint8_t length, int32_t data, const char *err = "");

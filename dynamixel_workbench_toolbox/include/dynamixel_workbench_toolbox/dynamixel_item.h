@@ -93,9 +93,12 @@ typedef struct
 } ModelInfo;
 
 // Public Functions
+namespace DynamixelItem
+{
 const ControlItem *getControlTable(uint16_t model_number);
 const ModelInfo *getModelInfo(uint16_t model_number);
 
 uint8_t getTheNumberOfControlItem();
+}
 
 #endif //DYNAMIXEL_ITEM_H
