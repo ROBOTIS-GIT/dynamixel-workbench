@@ -1033,7 +1033,7 @@ bool DynamixelDriver::addSyncWriteHandler(uint8_t id, const char *item_name, con
 //   return true;
 // }
 
-bool DynamixelDriver::addSyncRead(uint8_t id, const char *item_name, const char *err)
+bool DynamixelDriver::addSyncReadHandler(uint8_t id, const char *item_name, const char *err)
 {
   const ControlItem *control_item;
 
