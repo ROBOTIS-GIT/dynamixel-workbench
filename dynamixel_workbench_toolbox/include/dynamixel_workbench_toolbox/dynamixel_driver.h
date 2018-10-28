@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright 2016 ROBOTIS CO., LTD.
+* Copyright 2018 ROBOTIS CO., LTD.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 /* Authors: Taehun Lim (Darby) */
 
-#ifndef DYNAMIXEL_WORKBENCH_DYNAMIXEL_DRIVER_H
-#define DYNAMIXEL_WORKBENCH_DYNAMIXEL_DRIVER_H
+#ifndef DYNAMIXEL_DRIVER_H
+#define DYNAMIXEL_DRIVER_H
 
 #include "dynamixel_tool.h"
 
@@ -25,7 +25,6 @@
   #include <Arduino.h>
   #include <DynamixelSDK.h>
 #elif defined(__linux__) || defined(__APPLE__)
-  #include "stdio.h"
   #include "unistd.h"
   #include "dynamixel_sdk/dynamixel_sdk.h"
 #endif
@@ -33,29 +32,31 @@
 #define MAX_DXL_SERIES_NUM 5
 #define MAX_HANDLER_NUM 5
 
-#define BYTE  1
-#define WORD  2
-#define DWORD 4
-
 typedef struct 
 {
-  const ControlTableItem *cti; 
+  const ControlItem *control_item; 
   dynamixel::GroupSyncWrite *groupSyncWrite;    
 } SyncWriteHandler;
 
 typedef struct 
 {
-  const ControlTableItem *cti;
+  const ControlItem *control_item;
   dynamixel::GroupSyncRead  *groupSyncRead;     
 } SyncReadHandler;
+
+typedef struct
+{
+  int dxl_comm_result;
+  bool dxl_addparam_result;
+  bool dxl_getdata_result;
+  uint8_t dxl_error;
+} ErrorFromSDK;
 
 class DynamixelDriver
 {
  private:
   dynamixel::PortHandler   *portHandler_;
   dynamixel::PacketHandler *packetHandler_;
-  dynamixel::PacketHandler *packetHandler_1;
-  dynamixel::PacketHandler *packetHandler_2;
 
   SyncWriteHandler syncWriteHandler_[MAX_HANDLER_NUM];
   SyncReadHandler  syncReadHandler_[MAX_HANDLER_NUM];
@@ -73,22 +74,30 @@ class DynamixelDriver
   DynamixelDriver();
   ~DynamixelDriver();
 
-  bool init(const char* device_name = "/dev/ttyUSB0", uint32_t baud_rate = 57600);
+  bool init(const char* device_name = "/dev/ttyUSB0", 
+            uint32_t baud_rate = 57600, 
+            const char* err = "");
 
-  bool setPortHandler(const char *device_name);
-  bool setPacketHandler(void);
-  bool setPacketHandler(float protocol_version);
-  bool setBaudrate(uint32_t baud_rate);
+  bool setPortHandler(const char *device_name, const char *err = "");
+  bool setBaudrate(uint32_t baud_rate, const char* err = "");
+  // bool setPacketHandler(const char* err = "");
+  bool setPacketHandler(float protocol_version, const char *err = "");
 
   float getProtocolVersion(void);
-  int getBaudrate(void);
-  const char* getModelName(uint8_t id);
-  uint16_t getModelNum(uint8_t id);
-  const ControlTableItem* getControlItemPtr(uint8_t id);
-  uint8_t getTheNumberOfItem(uint8_t id);
+  uint32_t getBaudrate(void);
 
-  bool scan(uint8_t *get_id, uint8_t *get_id_num, uint8_t range = 200);
-  bool ping(uint8_t id, uint16_t *get_model_number);
+  const char * getModelName(uint8_t id, const char *err = "");
+  uint16_t getModelNumber(uint8_t id, const char *err = "");
+  const ControlItem *getControlTable(uint8_t id, const char *err = "");
+  uint8_t getTheNumberOfControlItem(uint8_t id, const char *err = "");
+
+  bool scan(uint8_t *get_id,
+            uint8_t *get_the_number_of_id, 
+            uint8_t range = 200,
+            const char *err = "");
+  bool ping(uint8_t id, 
+            uint16_t *get_model_number,
+            const char *err = "");
 
   bool reboot(uint8_t id);
   bool reset(uint8_t id);
@@ -128,12 +137,12 @@ class DynamixelDriver
   // float convertValue2Torque(uint8_t id, int16_t value);
 
  private:
-  void initDXLinfo(void);
-  void setTools(uint16_t model_number, uint8_t id);
+  // void initDXLinfo(void);
+  bool setTool(uint16_t model_number, uint8_t id, const char *err = "");
+  uint8_t getTool(uint8_t id, const char *err = "");
   const char *findModelName(uint16_t model_num);
-  uint8_t getToolsFactor(uint8_t id);
 
   void millis(uint16_t msec);
 };
 
-#endif //DYNAMIXEL_WORKBENCH_DYNAMIXEL_DRIVER_H
+#endif //DYNAMIXEL_DRIVER_H
