@@ -42,6 +42,8 @@ class DynamixelTool
   DynamixelTool();
   ~DynamixelTool();
 
+  void initTool(void);
+
   bool addTool(const char *model_name, uint8_t id, const char *err = "");
   bool addTool(uint16_t model_number, uint8_t id, const char *err = "");
 
