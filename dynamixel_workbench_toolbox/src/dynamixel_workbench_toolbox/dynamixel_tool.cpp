@@ -83,6 +83,7 @@ DynamixelTool::~DynamixelTool(){}
 bool DynamixelTool::addTool(const char *model_name, uint8_t id, const char *err)
 {
   bool result = false;
+  dxl_cnt_ = 0;
 
   model_name_ = model_name;
   result = setModelNumber(model_name, err);
@@ -98,6 +99,7 @@ bool DynamixelTool::addTool(const char *model_name, uint8_t id, const char *err)
 bool DynamixelTool::addTool(uint16_t model_number, uint8_t id, const char *err)
 {
   bool result = false;
+  dxl_cnt_ = 0;
 
   result = setModelName(model_number, err);
   if (result == false) return false;
