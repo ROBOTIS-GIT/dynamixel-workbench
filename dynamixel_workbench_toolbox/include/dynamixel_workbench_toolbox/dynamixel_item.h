@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright 2016 ROBOTIS CO., LTD.
+* Copyright 2018 ROBOTIS CO., LTD.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -16,10 +16,11 @@
 
 /* Authors: Taehun Lim (Darby) */
 
-#ifndef DYNAMIXEL_H
-#define DYNAMIXEL_H
+#ifndef DYNAMIXEL_ITEM_H
+#define DYNAMIXEL_ITEM_H
 
-#include "control_table_item.h"
+#include <stdint.h>
+#include <stddef.h>
 
 #define AX_12A     12
 #define AX_12W     300
@@ -67,6 +68,18 @@
 #define PRO_H54_100_S500_R 53768
 #define PRO_H54_200_S500_R 54024
 
+#define BYTE  1
+#define WORD  2
+#define DWORD 4
+
+typedef struct 
+{
+  const char *item_name;
+  uint16_t    address;
+  uint8_t	    item_name_length;
+  uint8_t     data_length;
+} ControlItem;
+
 typedef struct
 {
   float rpm;
@@ -80,9 +93,9 @@ typedef struct
 } ModelInfo;
 
 // Public Functions
-const ControlTableItem* getConrolTableItem(uint16_t model_number);
-const ModelInfo* getModelInfo(uint16_t model_number);
+const ControlItem *getControlTable(uint16_t model_number);
+const ModelInfo *getModelInfo(uint16_t model_number);
 
 uint8_t getTheNumberOfControlItem();
 
-#endif //DYNAMIXEL_H
+#endif //DYNAMIXEL_ITEM_H

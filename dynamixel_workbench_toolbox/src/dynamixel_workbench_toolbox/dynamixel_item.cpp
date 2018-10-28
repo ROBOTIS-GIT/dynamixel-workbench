@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright 2016 ROBOTIS CO., LTD.
+* Copyright 2018 ROBOTIS CO., LTD.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -116,7 +116,7 @@ static const char s_Velocity_Trajectory[] = "Velocity_Trajectory";
 //---------------------------------------------------------
 // AX servos - (num == AX_12A || num == AX_12W || num == AX_18A)
 //---------------------------------------------------------
-static const ControlTableItem items_AX[]{
+static const ControlItem items_AX[]{
     {s_Model_Number, 0, sizeof(s_Model_Number) - 1, 2},
     {s_Firmware_Version, 2, sizeof(s_Firmware_Version) - 1, 1},
     {s_ID, 3, sizeof(s_ID) - 1, 1},
@@ -162,7 +162,7 @@ static const ModelInfo info_AX = {0.1,  // The unit is about percentage NOT RPM
 //---------------------------------------------------------
 // RX servos - (num == RX_10 || num == RX_24F || num == RX_28 || num == RX_64)
 //---------------------------------------------------------
-static const ControlTableItem items_RX[]{
+static const ControlItem items_RX[]{
     {s_Model_Number, 0, sizeof(s_Model_Number) - 1, 2},
     {s_Firmware_Version, 2, sizeof(s_Firmware_Version) - 1, 1},
     {s_ID, 3, sizeof(s_ID) - 1, 1},
@@ -209,7 +209,7 @@ static const ModelInfo info_RX = {0.1,  // The unit is about percentage NOT RPM
 //---------------------------------------------------------
 // EX servos - (num == EX_106)
 //---------------------------------------------------------
-static const ControlTableItem items_EX[]{
+static const ControlItem items_EX[]{
     {s_Model_Number, 0, sizeof(s_Model_Number) - 1, 2},
     {s_Firmware_Version, 2, sizeof(s_Firmware_Version) - 1, 1},
     {s_ID, 3, sizeof(s_ID) - 1, 1},
@@ -258,7 +258,7 @@ static const ModelInfo info_EX = {0.1,  // The unit is about percentage NOT RPM
 //---------------------------------------------------------
 // MX Protocol 1 servos - (num == MX_12W || num == MX_28)
 //---------------------------------------------------------
-static const ControlTableItem items_MX[]{
+static const ControlItem items_MX[]{
     {s_Model_Number, 0, sizeof(s_Model_Number) - 1, 2},
     {s_Firmware_Version, 2, sizeof(s_Firmware_Version) - 1, 1},
     {s_ID, 3, sizeof(s_ID) - 1, 1},
@@ -307,7 +307,7 @@ static const ModelInfo info_MX = {0.916,
 //---------------------------------------------------------
 // MX Protocol 2 servos - (num == MX_28_2)
 //---------------------------------------------------------
-static const ControlTableItem items_MX2[]{
+static const ControlItem items_MX2[]{
     {s_Model_Number, 0, sizeof(s_Model_Number) - 1, 2},
     {s_Firmware_Version, 6, sizeof(s_Firmware_Version) - 1, 1},
     {s_ID, 7, sizeof(s_ID) - 1, 1},
@@ -371,7 +371,7 @@ static const ModelInfo info_MX2 = {0.229,
 //---------------------------------------------------------
 // EXT MX Protocol 1 servos - (num == MX_64 || num == MX_106)
 //---------------------------------------------------------
-static const ControlTableItem items_EXTMX[]{
+static const ControlItem items_EXTMX[]{
     {s_Model_Number, 0, sizeof(s_Model_Number) - 1, 2},
     {s_Firmware_Version, 2, sizeof(s_Firmware_Version) - 1, 1},
     {s_ID, 3, sizeof(s_ID) - 1, 1},
@@ -423,7 +423,7 @@ static const ModelInfo info_EXTMX = {0.11,
 //---------------------------------------------------------
 // EXT MX Protocol 2 Servos - (num == MX_64_2 || num == MX_106_2)
 //---------------------------------------------------------
-static const ControlTableItem items_EXTMX2[]{
+static const ControlItem items_EXTMX2[]{
     {s_Model_Number, 0, sizeof(s_Model_Number) - 1, 2},
     {s_Firmware_Version, 6, sizeof(s_Firmware_Version) - 1, 1},
     {s_ID, 7, sizeof(s_ID) - 1, 1},
@@ -489,7 +489,7 @@ static const ModelInfo info_EXTMX2 = {0.229,
 //---------------------------------------------------------
 // XL320 - (num == XL_320)
 //---------------------------------------------------------
-static const ControlTableItem items_XL320[]{
+static const ControlItem items_XL320[]{
     {s_Model_Number, 0, sizeof(s_Model_Number) - 1, 2},
     {s_Firmware_Version, 2, sizeof(s_Firmware_Version) - 1, 1},
     {s_ID, 3, sizeof(s_ID) - 1, 1},
@@ -535,7 +535,7 @@ static const ModelInfo info_XL320 = {0.1,   // The unit is about percentage NOT 
 //---------------------------------------------------------
 // XL - (num == XL430_W250)
 //---------------------------------------------------------
-static const ControlTableItem items_XL[]{
+static const ControlItem items_XL[]{
     {s_Model_Number, 0, sizeof(s_Model_Number) - 1, 2},
     {s_Firmware_Version, 6, sizeof(s_Firmware_Version) - 1, 1},
     {s_ID, 7, sizeof(s_ID) - 1, 1},
@@ -599,7 +599,7 @@ static const ModelInfo info_XL = {0.229,
 //---------------------------------------------------------
 // XM - (num == XM430_W210 || num == XM430_W350)
 //---------------------------------------------------------
-static const ControlTableItem items_XM[]{
+static const ControlItem items_XM[]{
     {s_Model_Number, 0, sizeof(s_Model_Number) - 1, 2},
     {s_Firmware_Version, 6, sizeof(s_Firmware_Version) - 1, 1},
     {s_ID, 7, sizeof(s_ID) - 1, 1},
@@ -665,7 +665,7 @@ static const ModelInfo info_XM = {0.229,
 //---------------------------------------------------------
 // EXTXM - (num == XM540_W150 || num == XM540_W270)
 //---------------------------------------------------------
-static const ControlTableItem items_EXTXM[]{
+static const ControlItem items_EXTXM[]{
     {s_Model_Number, 0, sizeof(s_Model_Number) - 1, 2},
     {s_Firmware_Version, 6, sizeof(s_Firmware_Version) - 1, 1},
     {s_ID, 7, sizeof(s_ID) - 1, 1},
@@ -734,7 +734,7 @@ static const ModelInfo info_EXTXM = {0.229,
 //---------------------------------------------------------
 // XH - (num == XH430_V210 || num == XH430_V350 || num == XH430_W210 || num == XH430_W350)
 //---------------------------------------------------------
-static const ControlTableItem items_XH[]{
+static const ControlItem items_XH[]{
     {s_Model_Number, 0, sizeof(s_Model_Number) - 1, 2},
     {s_Firmware_Version, 6, sizeof(s_Firmware_Version) - 1, 1},
     {s_ID, 7, sizeof(s_ID) - 1, 1},
@@ -800,7 +800,7 @@ static const ModelInfo info_XH = {0.229,
 //---------------------------------------------------------
 // PRO - (num == PRO_L42_10_S300_R)
 //---------------------------------------------------------
-static const ControlTableItem items_PRO[]{
+static const ControlItem items_PRO[]{
     {s_Model_Number, 0, sizeof(s_Model_Number) - 1, 2},
     {s_Firmware_Version, 6, sizeof(s_Firmware_Version) - 1, 1},
     {s_ID, 7, sizeof(s_ID) - 1, 1},
@@ -859,7 +859,7 @@ static const ModelInfo info_PRO = {0.114,
 //---------------------------------------------------------
 // EXT PRO - All Other Pros...
 //---------------------------------------------------------
-static const ControlTableItem items_EXTPRO[]{
+static const ControlItem items_EXTPRO[]{
     {s_Model_Number, 0, sizeof(s_Model_Number) - 1, 2},
     {s_Firmware_Version, 6, sizeof(s_Firmware_Version) - 1, 1},
     {s_ID, 7, sizeof(s_ID) - 1, 1},
@@ -922,90 +922,90 @@ static const ModelInfo info_EXTPRO[] = {
 // Get Servo control table for the specified servo type
 //=========================================================
 static uint8_t the_number_of_item = 0;
-const ControlTableItem *getConrolTableItem(uint16_t model_number)
+const ControlItem *getControlItem(uint16_t model_number)
 {
   uint16_t num = model_number;
 
-  const ControlTableItem *items;
+  const ControlItem *control_table;
   if (num == AX_12A || num == AX_12W || num == AX_18A)
   {
-    items = items_AX;
+    control_table = items_AX;
     the_number_of_item = COUNT_AX_ITEMS;
   }
   else if (num == RX_10 || num == RX_24F || num == RX_28 || num == RX_64)
   {
-    items = items_RX;
+    control_table = items_RX;
     the_number_of_item = COUNT_RX_ITEMS;
   }
   else if (num == EX_106)
   {
-    items = items_EX;
+    control_table = items_EX;
     the_number_of_item = COUNT_EX_ITEMS;
   }
   else if (num == MX_12W || num == MX_28)
   {
-    items = items_MX;
+    control_table = items_MX;
     the_number_of_item = COUNT_MX_ITEMS;
   }
   else if (num == MX_64 || num == MX_106)
   {
-    items = items_EXTMX;
+    control_table = items_EXTMX;
     the_number_of_item = COUNT_EXTMX_ITEMS;
   }
   else if (num == MX_28_2)
   {
-    items = items_MX2;
+    control_table = items_MX2;
     the_number_of_item = COUNT_MX2_ITEMS;
   }
   else if (num == MX_64_2 || num == MX_106_2)
   {
-    items = items_EXTMX2;
+    control_table = items_EXTMX2;
     the_number_of_item = COUNT_EXTMX2_ITEMS;
   }
   else if (num == XL_320)
   {
-    items = items_XL320;
+    control_table = items_XL320;
     the_number_of_item = COUNT_XL320_ITEMS;
   }
   else if (num == XL430_W250)
   {
-    items = items_XL;
+    control_table = items_XL;
     the_number_of_item = COUNT_XL_ITEMS;
   }
   else if (num == XM430_W210 || num == XM430_W350)
   {
-    items = items_XM;
+    control_table = items_XM;
     the_number_of_item = COUNT_XM_ITEMS;
   }
   else if (num == XM540_W150 || num == XM540_W270)
   {
-    items = items_EXTXM;
+    control_table = items_EXTXM;
     the_number_of_item = COUNT_EXTXM_ITEMS;
   }
   else if (num == XH430_V210 || num == XH430_V350 || num == XH430_W210 || num == XH430_W350)
   {
-    items = items_XH;
+    control_table = items_XH;
     the_number_of_item = COUNT_XH_ITEMS;
   }
   else if (num == PRO_L54_30_S400_R || num == PRO_L54_30_S500_R || num == PRO_L54_50_S290_R || num == PRO_L54_50_S500_R ||
            num == PRO_M42_10_S260_R || num == PRO_M54_40_S250_R || num == PRO_M54_60_S250_R ||
            num == PRO_H42_20_S300_R || num == PRO_H54_100_S500_R || num == PRO_H54_200_S500_R)
   {
-    items = items_EXTPRO;
+    control_table = items_EXTPRO;
     the_number_of_item = COUNT_EXTPRO_ITEMS;
   }
   else if (num == PRO_L42_10_S300_R)
   {
-    items = items_PRO;
+    control_table = items_PRO;
     the_number_of_item = COUNT_PRO_ITEMS;
   }
   else
   {
-    items = items_XM;
-    the_number_of_item = COUNT_XM_ITEMS;
+    control_table = NULL;
+    the_number_of_item = 0;
   }
 
-  return items;
+  return control_table;
 }
 
 const ModelInfo *getModelInfo(uint16_t model_number)
@@ -1096,7 +1096,7 @@ const ModelInfo *getModelInfo(uint16_t model_number)
   }
   else
   {
-    info = &info_XM;
+    info = NULL;
   }
 
   return info;
