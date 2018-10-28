@@ -29,9 +29,19 @@ DynamixelDriver::~DynamixelDriver()
   {
     for (int j = 0; j < tools_[i].getDynamixelCount(); j++)
     {
-      // writeRegister(tools_[i].getID()[j], "Torque_Enable", false);
+      writeRegister(tools_[i].getID()[j], "Torque_Enable", (uint8_t)0);
     }
   }
+
+  for (int i = 0; i < sync_write_handler_cnt_; i++)
+  {
+    delete[] syncWriteHandler_[i].groupSyncWrite;
+  }  
+
+  for (int i = 0; i < sync_read_handler_cnt_; i++)
+  {
+    delete[] syncReadHandler_[i].groupSyncRead;
+  }  
 
   portHandler_->closePort();
 }
@@ -892,111 +902,32 @@ bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, uint32_t *
   return false;
 }
 
-// const char *DynamixelDriver::findModelName(uint16_t model_num)
-// {
-//   uint16_t num = model_num;
-//   static const char* model_name = NULL;
+bool DynamixelDriver::addSyncWriteHandler(uint8_t id, const char *item_name, const char *err)
+{
+  const ControlItem *control_item;
 
-//   if (num == AX_12A)
-//     model_name = "AX-12A";
-//   else if (num == AX_12W)
-//     model_name = "AX-12W";
-//   else if (num == AX_18A)
-//     model_name = "AX-18A";
+  uint8_t factor = getTool(id, err);
+  if (factor == 0xff) return false; 
 
-//   else if (num == RX_24F)
-//     model_name = "RX-24F";
-//   else if (num == RX_28)
-//     model_name = "RX-28";
-//   else if (num == RX_64)
-//     model_name = "RX-64";
+  control_item = tools_[factor].getControlItem(item_name, err);
+  if (control_item == NULL) return false;
 
-//   else if (num == EX_106)
-//     model_name = "EX-106";
+  if (sync_write_handler_cnt_ > (MAX_HANDLER_NUM-1))
+  {
+    err = "[DynamixelDriver] Too many sync write handler are added (MAX = 5)";
+    return false;
+  }
 
-//   else if (num == MX_12W)
-//     model_name = "MX-12W";
-//   else if (num == MX_28)
-//     model_name = "MX-28";
-//   else if (num == MX_28_2)
-//     model_name = "MX-28-2";
-//   else if (num == MX_64)
-//     model_name = "MX-64";
-//   else if (num == MX_64_2)
-//     model_name = "MX-64-2";
-//   else if (num == MX_106)
-//     model_name = "MX-106";
-//   else if (num == MX_106_2)
-//     model_name = "MX-106-2";
+  syncWriteHandler_[sync_write_handler_cnt_].control_item = control_item;
 
-//   else if (num == XL_320)
-//     model_name = "XL-320";
-//   else if (num == XL430_W250)
-//     model_name = "XL430-W250";
+  syncWriteHandler_[sync_write_handler_cnt_].groupSyncWrite = new dynamixel::GroupSyncWrite(portHandler_,
+                                                                                            packetHandler_,
+                                                                                            control_item->address,
+                                                                                            control_item->data_length);
 
-//   else if (num == XM430_W210)
-//     model_name = "XM430-W210";
-//   else if (num == XM430_W350)
-//     model_name = "XM430-W350";
-//   else if (num == XM540_W150)
-//     model_name = "XM540-W150";
-//   else if (num == XM540_W270)
-//     model_name = "XM540-W270";
-
-//   else if (num == XH430_V210)
-//     model_name = "XH430-V210";
-//   else if (num == XH430_V350)
-//     model_name = "XH430-V350";
-//   else if (num == XH430_W210)
-//     model_name = "XH430-W210";
-//   else if (num == XH430_W350)
-//     model_name = "XH430-W350";
-
-//   else if (num == PRO_L42_10_S300_R)
-//     model_name = "PRO-L42-10-S300-R";
-//   else if (num == PRO_L54_30_S400_R)
-//     model_name = "PRO-L54-30-S400-R";
-//   else if (num == PRO_L54_30_S500_R)
-//     model_name = "PRO-L54-30-S500-R";
-//   else if (num == PRO_L54_50_S290_R)
-//     model_name = "PRO-L54-50-S290-R";
-//   else if (num == PRO_L54_50_S500_R)
-//     model_name = "PRO-L54-50-S500-R";
-
-//   else if (num == PRO_M42_10_S260_R)
-//     model_name = "PRO-M42-10-S260-R";
-//   else if (num == PRO_M54_40_S250_R)
-//     model_name = "PRO-M54-40-S250-R";
-//   else if (num == PRO_M54_60_S250_R)
-//     model_name = "PRO-M54-60-S250-R";
-
-//   else if (num == PRO_H42_20_S300_R)
-//     model_name = "PRO-H42-20-S300-R";
-//   else if (num == PRO_H54_100_S500_R)
-//     model_name = "PRO-H54-100-S500-R";
-//   else if (num == PRO_H54_200_S500_R)
-//     model_name = "PRO-H54-200-S500-R";
-
-//   return model_name;
-// }
-
-// void DynamixelDriver::addSyncWrite(const char *item_name)
-// {
-//   const ControlItem *control_item;
-//   control_item = tools_[0].getControlItem(item_name);
-
-//   if (control_item == NULL)
-//   {
-//     return;
-//   }
-
-//   syncWriteHandler_[sync_write_handler_cnt_].control_item = control_item;
-
-//   syncWriteHandler_[sync_write_handler_cnt_++].groupSyncWrite = new dynamixel::GroupSyncWrite(portHandler_,
-//                                                                                               packetHandler_[0],
-//                                                                                               control_item->address,
-//                                                                                               control_item->data_length);
-// }
+  sync_write_handler_cnt_++;
+  return true;                                                            
+}
 
 // bool DynamixelDriver::syncWrite(const char *item_name, int32_t *data)
 // {
@@ -1102,22 +1033,32 @@ bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, uint32_t *
 //   return true;
 // }
 
-// void DynamixelDriver::addSyncRead(const char *item_name)
-// {
-//   const ControlItem *control_item;
-//   control_item = tools_[0].getControlItem(item_name);
+bool DynamixelDriver::addSyncRead(uint8_t id, const char *item_name, const char *err)
+{
+  const ControlItem *control_item;
 
-//   if (control_item == NULL)
-//   {
-//     return;
-//   }
-//   syncReadHandler_[sync_read_handler_cnt_].control_item = control_item;
-  
-//   syncReadHandler_[sync_read_handler_cnt_++].groupSyncRead = new dynamixel::GroupSyncRead(portHandler_,
-//                                                                                           packetHandler_[0],
-//                                                                                           control_item->address,
-//                                                                                           control_item->data_length);
-// }
+  uint8_t factor = getTool(id, err);
+  if (factor == 0xff) return false; 
+
+  control_item = tools_[factor].getControlItem(item_name, err);
+  if (control_item == NULL) return false;
+
+  if (sync_read_handler_cnt_ > (MAX_HANDLER_NUM-1))
+  {
+    err = "[DynamixelDriver] Too many sync read handler are added (MAX = 5)";
+    return false;
+  }
+
+  syncReadHandler_[sync_read_handler_cnt_].control_item = control_item;
+
+  syncReadHandler_[sync_read_handler_cnt_++].groupSyncRead = new dynamixel::GroupSyncRead(portHandler_,
+                                                                                          packetHandler_,
+                                                                                          control_item->address,
+                                                                                          control_item->data_length);
+
+  sync_read_handler_cnt_++;
+  return true;       
+}
 
 // bool DynamixelDriver::syncRead(const char *item_name, int32_t *data)
 // {

@@ -119,11 +119,11 @@ class DynamixelDriver
   bool readRegister(uint8_t id, const char *item_name, uint16_t *data, const char *err = "");
   bool readRegister(uint8_t id, const char *item_name, uint32_t *data, const char *err = "");
 
-  // void addSyncWrite(const char *item_name, const char *err = "");
+  bool addSyncWriteHandler(uint8_t id, const char *item_name, const char *err = "");
   // bool syncWrite(const char *item_name, int32_t *data, const char *err = "");
   // bool syncWrite(uint8_t *id, uint8_t id_num, const char *item_name, int32_t *data, const char *err = "");
 
-  // void addSyncRead(const char *item_name, const char *err = "");
+  bool addSyncRead(uint8_t id, const char *item_name, const char *err = "");
   // bool syncRead(const char *item_name, int32_t *data, const char *err = "");
 
   // void initBulkWrite();
@@ -151,7 +151,6 @@ class DynamixelDriver
   void initTools(void);
   bool setTool(uint16_t model_number, uint8_t id, const char *err = "");
   uint8_t getTool(uint8_t id, const char *err = "");
-  const char *findModelName(uint16_t model_num);
 
   void wait(uint16_t msec);
 };
