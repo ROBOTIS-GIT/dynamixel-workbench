@@ -80,7 +80,6 @@ class DynamixelDriver
 
   bool setPortHandler(const char *device_name, const char *err = "");
   bool setBaudrate(uint32_t baud_rate, const char* err = "");
-  // bool setPacketHandler(const char* err = "");
   bool setPacketHandler(float protocol_version, const char *err = "");
 
   float getProtocolVersion(void);
@@ -99,50 +98,50 @@ class DynamixelDriver
             uint16_t *get_model_number,
             const char *err = "");
 
-  bool reboot(uint8_t id);
-  bool reset(uint8_t id);
+  bool reboot(uint8_t id, const char *err = "");
+  bool reset(uint8_t id, const char *err = "");
 
-  bool writeRegister(uint8_t id, const char *item_name, int32_t data);
-  bool writeRegister(uint8_t id, uint16_t addr, uint8_t length, int32_t data);
-  bool readRegister(uint8_t id, const char *item_name, int32_t *data);
-  bool readRegister(uint8_t id, uint16_t addr, uint8_t length, int32_t *data);
-  bool readRegister(uint8_t id, uint16_t length, uint8_t *data);
+  // bool writeRegister(uint8_t id, const char *item_name, int32_t data, const char *err = "");
+  // bool writeRegister(uint8_t id, uint16_t addr, uint8_t length, int32_t data, const char *err = "");
+  // bool readRegister(uint8_t id, const char *item_name, int32_t *data, const char *err = "");
+  // bool readRegister(uint8_t id, uint16_t addr, uint8_t length, int32_t *data, const char *err = "");
+  // bool readRegister(uint8_t id, uint16_t length, uint8_t *data, const char *err = "");
 
-  void addSyncWrite(const char *item_name);
-  bool syncWrite(const char *item_name, int32_t *data);
-  bool syncWrite(uint8_t *id, uint8_t id_num, const char *item_name, int32_t *data);
+  // void addSyncWrite(const char *item_name, const char *err = "");
+  // bool syncWrite(const char *item_name, int32_t *data, const char *err = "");
+  // bool syncWrite(uint8_t *id, uint8_t id_num, const char *item_name, int32_t *data, const char *err = "");
 
-  void addSyncRead(const char *item_name);
-  bool syncRead(const char *item_name, int32_t *data);
+  // void addSyncRead(const char *item_name, const char *err = "");
+  // bool syncRead(const char *item_name, int32_t *data, const char *err = "");
 
-  void initBulkWrite();
-  bool addBulkWriteParam(uint8_t id, const char *item_name, int32_t data);
-  bool bulkWrite();
+  // void initBulkWrite();
+  // bool addBulkWriteParam(uint8_t id, const char *item_name, int32_t data);
+  // bool bulkWrite();
 
-  void initBulkRead();
-  bool addBulkReadParam(uint8_t id, const char *item_name);
-  bool sendBulkReadPacket();
-  bool bulkRead(uint8_t id, const char *item_name, int32_t *data);
+  // void initBulkRead();
+  // bool addBulkReadParam(uint8_t id, const char *item_name);
+  // bool sendBulkReadPacket();
+  // bool bulkRead(uint8_t id, const char *item_name, int32_t *data);
 
-  int32_t convertRadian2Value(uint8_t id, float radian);
-  float convertValue2Radian(uint8_t id, int32_t value);
+  // int32_t convertRadian2Value(uint8_t id, float radian);
+  // float convertValue2Radian(uint8_t id, int32_t value);
 
-  int32_t convertRadian2Value(float radian, int32_t max_position, int32_t min_position, float max_radian = 3.14, float min_radian = -3.14);
-  float convertValue2Radian(int32_t value, int32_t max_position, int32_t min_position, float max_radian = 3.14, float min_radian = -3.14);
+  // int32_t convertRadian2Value(float radian, int32_t max_position, int32_t min_position, float max_radian = 3.14, float min_radian = -3.14);
+  // float convertValue2Radian(int32_t value, int32_t max_position, int32_t min_position, float max_radian = 3.14, float min_radian = -3.14);
 
-  int32_t convertVelocity2Value(uint8_t id, float velocity);
-  float convertValue2Velocity(uint8_t id, int32_t value);
+  // int32_t convertVelocity2Value(uint8_t id, float velocity);
+  // float convertValue2Velocity(uint8_t id, int32_t value);
 
   // int16_t convertTorque2Value(uint8_t id, float torque);
   // float convertValue2Torque(uint8_t id, int16_t value);
 
  private:
-  // void initDXLinfo(void);
+  void initTools(void);
   bool setTool(uint16_t model_number, uint8_t id, const char *err = "");
   uint8_t getTool(uint8_t id, const char *err = "");
   const char *findModelName(uint16_t model_num);
 
-  void millis(uint16_t msec);
+  // void millis(uint16_t msec);
 };
 
 #endif //DYNAMIXEL_DRIVER_H
