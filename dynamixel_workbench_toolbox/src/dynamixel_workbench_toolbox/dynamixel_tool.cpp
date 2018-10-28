@@ -80,7 +80,7 @@ DynamixelTool::DynamixelTool() : dxl_cnt_(0), the_number_of_control_item_(0){}
 
 DynamixelTool::~DynamixelTool(){}
 
-bool DynamixelTool::addTool(const char *model_name, uint8_t id, const char* err)
+bool DynamixelTool::addTool(const char *model_name, uint8_t id, const char *err)
 {
   bool result = false;
 
@@ -96,7 +96,7 @@ bool DynamixelTool::addTool(const char *model_name, uint8_t id, const char* err)
   return true;
 }
 
-bool DynamixelTool::addTool(uint16_t model_number, uint8_t id, const char* err)
+bool DynamixelTool::addTool(uint16_t model_number, uint8_t id, const char *err)
 {
   bool result = false;
 
@@ -124,7 +124,7 @@ void DynamixelTool::addDXL(uint16_t model_number, uint8_t id)
   dxl_cnt_++;
 }
 
-bool DynamixelTool::setControlTable(const char *model_name, const char* err)
+bool DynamixelTool::setControlTable(const char *model_name, const char *err)
 {  
   const char* name = model_name;
   uint8_t name_length = strlen(name);
@@ -141,7 +141,7 @@ bool DynamixelTool::setControlTable(const char *model_name, const char* err)
   return false;
 }
 
-bool DynamixelTool::setControlTable(uint16_t model_number, const char* err)
+bool DynamixelTool::setControlTable(uint16_t model_number, const char *err)
 {
   control_table_              = getControlTable(model_number);
   the_number_of_control_item_ = getTheNumberOfControlItem();
@@ -156,7 +156,7 @@ bool DynamixelTool::setControlTable(uint16_t model_number, const char* err)
   return true;
 }
 
-bool DynamixelTool::setModelName(uint16_t model_number, const char* err)
+bool DynamixelTool::setModelName(uint16_t model_number, const char *err)
 {
   uint16_t num = model_number;
 
@@ -173,7 +173,7 @@ bool DynamixelTool::setModelName(uint16_t model_number, const char* err)
   return false;
 }
 
-bool DynamixelTool::setModelNumber(const char *model_name, const char* err)
+bool DynamixelTool::setModelNumber(const char *model_name, const char *err)
 {
   const char* name = model_name;
   uint8_t name_length = strlen(name);
@@ -253,7 +253,7 @@ uint8_t DynamixelTool::getTheNumberOfControlItem(void)
   return the_number_of_control_item_;
 }
 
-const ControlItem *DynamixelTool::getControlItem(const char *item_name, const char* err)
+const ControlItem *DynamixelTool::getControlItem(const char *item_name, const char *err)
 {
   const ControlItem* control_item = control_table_;  
   uint8_t name_length = strlen(item_name);

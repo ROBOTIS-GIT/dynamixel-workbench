@@ -42,8 +42,8 @@ class DynamixelTool
   DynamixelTool();
   ~DynamixelTool();
 
-  bool addTool(const char *model_name, uint8_t id, const char* err = "");
-  bool addTool(uint16_t model_number, uint8_t id, const char* err = "");
+  bool addTool(const char *model_name, uint8_t id, const char *err = "");
+  bool addTool(uint16_t model_number, uint8_t id, const char *err = "");
 
   void addDXL(uint16_t model_number, uint8_t id);
   void addDXL(const char *model_name, uint8_t id);
@@ -71,10 +71,10 @@ class DynamixelTool
   const ModelInfo *getModelInfo(void);
 
  private:
-  bool setControlTable(const char *model_name, const char* err = "");
-  void setControlTable(uint16_t model_number, const char* err = "");
+  bool setControlTable(const char *model_name, const char *err = "");
+  void setControlTable(uint16_t model_number, const char *err = "");
 
-  bool setModelName(uint16_t model_number, const char* err = "");
-  bool setModelNumber(const char *model_name, const char* err = "");
+  bool setModelName(uint16_t model_number, const char *err = "");
+  bool setModelNumber(const char *model_name, const char *err = "");
 };
 #endif //DYNAMIXEL_TOOL_H
