@@ -478,6 +478,35 @@ bool DynamixelDriver::reset(uint8_t id, const char* err)
   return false;
 }
 
+bool DynamixelDriver::writeRegister(uint8_t id, uint16_t address, uint8_t length, uint8_t* data, const char *err)
+{
+  ErrorFromSDK sdk_error = {0, false, false, 0};
+
+  sdk_error.dxl_comm_result = packetHandler_->writeTxRx(portHandler_, 
+                                                        id, 
+                                                        address, 
+                                                        length, 
+                                                        data, 
+                                                        &sdk_error.dxl_error);
+  if (sdk_error.dxl_comm_result != COMM_SUCCESS)
+  {
+    err = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    return false;
+  }
+  else if (sdk_error.dxl_error != 0)
+  {
+    err = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+    return false;
+  }
+  else
+  {
+    return true;
+  }
+
+  err = "[DynamixelDriver] Failed to write Register!";
+  return false;
+}
+
 bool DynamixelDriver::writeRegister(uint8_t id, const char *item_name, uint8_t data, const char *err)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
@@ -592,6 +621,29 @@ bool DynamixelDriver::writeRegister(uint8_t id, const char *item_name, uint32_t 
   return false;
 }
 
+bool DynamixelDriver::writeOnlyRegister(uint8_t id, uint16_t address, uint16_t length, uint8_t *data, const char *err)
+{
+  ErrorFromSDK sdk_error = {0, false, false, 0};
+
+  sdk_error.dxl_comm_result = packetHandler_->writeTxOnly(portHandler_, 
+                                                          id, 
+                                                          address, 
+                                                          length, 
+                                                          data);
+  if (sdk_error.dxl_comm_result != COMM_SUCCESS)
+  {
+    err = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    return false;
+  }
+  else
+  {
+    return true;
+  }
+
+  err = "[DynamixelDriver] Failed to write Only Register!";
+  return false;
+}
+
 bool DynamixelDriver::writeOnlyRegister(uint8_t id, const char *item_name, uint8_t data, const char *err)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
@@ -620,7 +672,7 @@ bool DynamixelDriver::writeOnlyRegister(uint8_t id, const char *item_name, uint8
     return true;
   }
 
-  err = "[DynamixelDriver] Failed to write Register!";
+  err = "[DynamixelDriver] Failed to write Only Register!";
   return false;
 }
 
@@ -652,7 +704,7 @@ bool DynamixelDriver::writeOnlyRegister(uint8_t id, const char *item_name, uint1
     return true;
   }
 
-  err = "[DynamixelDriver] Failed to write Register!";
+  err = "[DynamixelDriver] Failed to write Only Register!";
   return false;
 }
 
@@ -684,42 +736,9 @@ bool DynamixelDriver::writeOnlyRegister(uint8_t id, const char *item_name, uint3
     return true;
   }
 
-  err = "[DynamixelDriver] Failed to write Register!";
+  err = "[DynamixelDriver] Failed to write Only Register!";
   return false;
 }
-
-// bool DynamixelDriver::writeRegister(uint8_t id, uint16_t addr, uint8_t length, int32_t data)
-// {
-//   uint8_t error = 0;
-//   int dxl_comm_result = COMM_TX_FAIL;
-
-//   if (length == BYTE)
-//   {
-//     dxl_comm_result = packetHandler_[0]->write1ByteTxRx(portHandler_, id, addr, (uint8_t)data, &error);
-//   }
-//   else if (length == WORD)
-//   {
-//     dxl_comm_result = packetHandler_[0]->write2ByteTxRx(portHandler_, id, addr, (uint16_t)data, &error);
-//   }
-//   else if (length == DWORD)
-//   {
-//     dxl_comm_result = packetHandler_[0]->write4ByteTxRx(portHandler_, id, addr, (uint32_t)data, &error);
-//   }
-
-//   if (dxl_comm_result == COMM_SUCCESS)
-//   {
-//     if (error != 0)
-//     {
-//       return false;
-//     }
-//   }
-//   else
-//   {
-//     return false;
-//   }
-
-//   return true;
-// }
 
 // bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, int32_t *data)
 // {
