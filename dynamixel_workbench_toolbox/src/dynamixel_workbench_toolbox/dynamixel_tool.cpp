@@ -87,11 +87,10 @@ bool DynamixelTool::addTool(const char *model_name, uint8_t id, const char *err)
   model_name_ = model_name;
   result = setModelNumber(model_name, err);
   if (result == false) return false;
-  dxl_id_[dxl_cnt_] = id;
+  dxl_id_[dxl_cnt_++] = id;
 
   result = setControlTable(model_name, err);
   if (result == false) return false;
-  dxl_cnt_++;
 
   return true;
 }
@@ -103,25 +102,22 @@ bool DynamixelTool::addTool(uint16_t model_number, uint8_t id, const char *err)
   result = setModelName(model_number, err);
   if (result == false) return false;
   model_number_ = model_number;
-  dxl_id_[dxl_cnt_] = id;
+  dxl_id_[dxl_cnt_++] = id;
 
   result = setControlTable(model_number, err);
   if (result == false) return false;
-  dxl_cnt_++;
 
   return result;
 }
 
 void DynamixelTool::addDXL(const char *model_name, uint8_t id)
 {
-  dxl_id_[dxl_cnt_] = id;
-  dxl_cnt_++;
+  dxl_id_[dxl_cnt_++] = id;
 }
 
 void DynamixelTool::addDXL(uint16_t model_number, uint8_t id)
 {
-  dxl_id_[dxl_cnt_] = id;
-  dxl_cnt_++;
+  dxl_id_[dxl_cnt_++] = id;
 }
 
 bool DynamixelTool::setControlTable(const char *model_name, const char *err)
