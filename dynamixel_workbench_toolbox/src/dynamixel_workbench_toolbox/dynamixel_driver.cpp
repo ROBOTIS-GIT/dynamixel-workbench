@@ -740,136 +740,157 @@ bool DynamixelDriver::writeOnlyRegister(uint8_t id, const char *item_name, uint3
   return false;
 }
 
-// bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, int32_t *data)
-// {
-//   uint8_t error = 0;
-//   int dxl_comm_result = COMM_RX_FAIL;
+bool DynamixelDriver::readRegister(uint8_t id, uint16_t address, uint16_t length, uint8_t *data, const char *err)
+{
+  ErrorFromSDK sdk_error = {0, false, false, 0};
 
-//   int8_t value_8_bit = 0;
-//   int16_t value_16_bit = 0;
-//   int32_t value_32_bit = 0;
+  uint8_t data_read[1] = {0};
 
-//   const ControlItem *control_item;
-//   uint8_t factor = getTool(id);
-//   if (factor == 0xff) return false;
-//   control_item = tools_[factor].getControlItem(item_name);
-//   if (control_item == NULL)
-//   {
-//     return false;
-//   }
-  
-//   if (control_item->data_length == BYTE)
-//   {
-//     dxl_comm_result = packetHandler_[0]->read1ByteTxRx(portHandler_, id, control_item->address, (uint8_t *)&value_8_bit, &error);
-//   }
-//   else if (control_item->data_length == WORD)
-//   {
-//     dxl_comm_result = packetHandler_[0]->read2ByteTxRx(portHandler_, id, control_item->address, (uint16_t *)&value_16_bit, &error);
-//   }
-//   else if (control_item->data_length == DWORD)
-//   {
-//     dxl_comm_result = packetHandler_[0]->read4ByteTxRx(portHandler_, id, control_item->address, (uint32_t *)&value_32_bit, &error);
-//   }
+  sdk_error.dxl_comm_result = packetHandler_->readTxRx(portHandler_, 
+                                                       id, 
+                                                       address,
+                                                       length, 
+                                                       (uint8_t *)&data_read, 
+                                                       &sdk_error.dxl_error);
+  if (sdk_error.dxl_comm_result != COMM_SUCCESS)
+  {
+    err = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    return false;
+  }
+  else if (sdk_error.dxl_error != 0)
+  {
+    err = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+    return false;
+  }
+  else
+  {
+    *data = data_read[0];
+    return true;
+  }
 
-//   if (dxl_comm_result == COMM_SUCCESS)
-//   {
-//     if (error != 0)
-//     {
-//       return false;
-//     }
+  err = "[DynamixelDriver] Failed to read Register!";
+  return false;
+}
 
-//     if (control_item->data_length == BYTE)
-//     {
-//       *data = value_8_bit;
-//     }
-//     else if (control_item->data_length == WORD)
-//     {
-//       *data = value_16_bit;
-//     }
-//     else if (control_item->data_length == DWORD)
-//     {
-//       *data = value_32_bit;
-//     }
+bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, uint8_t *data, const char *err)
+{
+  ErrorFromSDK sdk_error = {0, false, false, 0};
 
-//     return true;
-//   }
-//   else
-//   {
-//     return false;
-//   }
-// }
+  uint8_t data_read[1] = {0};
 
-// bool DynamixelDriver::readRegister(uint8_t id, uint16_t addr, uint8_t length, int32_t *data)
-// {
-//   uint8_t error = 0;
-//   int dxl_comm_result = COMM_RX_FAIL;
+  const ControlItem *control_item;
 
-//   int8_t value_8_bit = 0;
-//   int16_t value_16_bit = 0;
-//   int32_t value_32_bit = 0;
+  uint8_t factor = getTool(id, err);
+  if (factor == 0xff) return false; 
 
-//   if (length == BYTE)
-//   {
-//     dxl_comm_result = packetHandler_[0]->read1ByteTxRx(portHandler_, id, addr, (uint8_t *)&value_8_bit, &error);
-//   }
-//   else if (length == WORD)
-//   {
-//     dxl_comm_result = packetHandler_[0]->read2ByteTxRx(portHandler_, id, addr, (uint16_t *)&value_16_bit, &error);
-//   }
-//   else if (length == DWORD)
-//   {
-//     dxl_comm_result = packetHandler_[0]->read4ByteTxRx(portHandler_, id, addr, (uint32_t *)&value_32_bit, &error);
-//   }
+  control_item = tools_[factor].getControlItem(item_name, err);
+  if (control_item == NULL) return false;
 
-//   if (dxl_comm_result == COMM_SUCCESS)
-//   {
-//     if (error != 0)
-//     {
-//       return false;
-//     }
+  sdk_error.dxl_comm_result = packetHandler_->readTxRx(portHandler_, 
+                                                       id, 
+                                                       control_item->address,
+                                                       control_item->data_length, 
+                                                       (uint8_t *)&data_read, 
+                                                       &sdk_error.dxl_error);
+  if (sdk_error.dxl_comm_result != COMM_SUCCESS)
+  {
+    err = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    return false;
+  }
+  else if (sdk_error.dxl_error != 0)
+  {
+    err = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+    return false;
+  }
+  else
+  {
+    *data = data_read[0];
+    return true;
+  }
 
-//     if (length == BYTE)
-//     {
-//       *data = value_8_bit;
-//     }
-//     else if (length == WORD)
-//     {
-//       *data = value_16_bit;
-//     }
-//     else if (length == DWORD)
-//     {
-//       *data = value_32_bit;
-//     }
+  err = "[DynamixelDriver] Failed to read Register!";
+  return false;
+}
 
-//     return true;
-//   }
-//   else
-//   {
-//     return false;
-//   }
-// }
+bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, uint16_t *data, const char *err)
+{
+  ErrorFromSDK sdk_error = {0, false, false, 0};
 
-// bool DynamixelDriver::readRegister(uint8_t id, uint16_t length, uint8_t *data)
-// {
-//   uint8_t error = 0;
-//   int dxl_comm_result = COMM_RX_FAIL;
+  uint8_t data_read[2] = {0, 0};
 
-//   dxl_comm_result = packetHandler_[0]->readTxRx(portHandler_, id, 0, length, data, &error);
+  const ControlItem *control_item;
 
-//   if (dxl_comm_result == COMM_SUCCESS)
-//   {
-//     if (error != 0)
-//     {
-//       return false;
-//     }
+  uint8_t factor = getTool(id, err);
+  if (factor == 0xff) return false; 
 
-//     return true;
-//   }
-//   else
-//   {
-//     return false;
-//   }
-// }
+  control_item = tools_[factor].getControlItem(item_name, err);
+  if (control_item == NULL) return false;
+
+  sdk_error.dxl_comm_result = packetHandler_->readTxRx(portHandler_, 
+                                                       id, 
+                                                       control_item->address,
+                                                       control_item->data_length, 
+                                                       (uint8_t *)&data_read, 
+                                                       &sdk_error.dxl_error);
+  if (sdk_error.dxl_comm_result != COMM_SUCCESS)
+  {
+    err = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    return false;
+  }
+  else if (sdk_error.dxl_error != 0)
+  {
+    err = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+    return false;
+  }
+  else
+  {
+    *data = DXL_MAKEWORD(data_read[0], data_read[1]);
+    return true;
+  }
+
+  err = "[DynamixelDriver] Failed to read Register!";
+  return false;
+}
+
+bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, uint32_t *data, const char *err)
+{
+  ErrorFromSDK sdk_error = {0, false, false, 0};
+
+  uint8_t data_read[4] = {0, 0, 0, 0};
+
+  const ControlItem *control_item;
+
+  uint8_t factor = getTool(id, err);
+  if (factor == 0xff) return false; 
+
+  control_item = tools_[factor].getControlItem(item_name, err);
+  if (control_item == NULL) return false;
+
+  sdk_error.dxl_comm_result = packetHandler_->readTxRx(portHandler_, 
+                                                       id, 
+                                                       control_item->address,
+                                                       control_item->data_length, 
+                                                       (uint8_t *)&data_read, 
+                                                       &sdk_error.dxl_error);
+  if (sdk_error.dxl_comm_result != COMM_SUCCESS)
+  {
+    err = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    return false;
+  }
+  else if (sdk_error.dxl_error != 0)
+  {
+    err = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+    return false;
+  }
+  else
+  {
+    *data = DXL_MAKEDWORD(DXL_MAKEWORD(data_read[0], data_read[1]), DXL_MAKEWORD(data_read[2], data_read[3]));
+    return true;
+  }
+
+  err = "[DynamixelDriver] Failed to read Register!";
+  return false;
+}
 
 // const char *DynamixelDriver::findModelName(uint16_t model_num)
 // {
