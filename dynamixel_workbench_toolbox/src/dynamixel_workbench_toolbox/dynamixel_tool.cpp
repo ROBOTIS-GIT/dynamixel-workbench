@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright 2016 ROBOTIS CO., LTD.
+* Copyright 2018 ROBOTIS CO., LTD.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -23,11 +23,11 @@
 //===================================================================
 typedef struct 
 {
-  uint16_t      model_number;
-  const char *  model_name; 
-} Servo_Num_To_Name;
+  uint16_t      number;
+  const char*   name; 
+} DynamixelModel;
 
-static const Servo_Num_To_Name servo_num_to_name_table[] = {
+const DynamixelModel dynamixel_model_table[] = {
     {AX_12A, "AX-12A"},
     {AX_12W, "AX-12W"},
     {AX_18A, "AX-18A"},
@@ -36,6 +36,7 @@ static const Servo_Num_To_Name servo_num_to_name_table[] = {
     {RX_24F, "RX-24F"},
     {RX_28, "RX-28"},
     {RX_64, "RX-64"},
+
     {EX_106, "EX-106"},
 
     {MX_12W, "MX-12W"},
@@ -73,168 +74,220 @@ static const Servo_Num_To_Name servo_num_to_name_table[] = {
     {PRO_H54_100_S500_R, "PRO-H54-100-S500-R"},
     {PRO_H54_200_S500_R, "PRO-H54-200-S500-R"}
 };
-#define NUM_SERVO_NUM_TO_NAME  (sizeof(servo_num_to_name_table)/sizeof(servo_num_to_name_table[0]))
+#define COUNT_DYNAMIXEL_MODEL  (sizeof(dynamixel_model_table)/sizeof(dynamixel_model_table[0]))
 
-DynamixelTool::DynamixelTool() : dxl_info_cnt_(0), the_number_of_item_(0){}
+DynamixelTool::DynamixelTool() : dxl_cnt_(0), the_number_of_control_item_(0){}
 
 DynamixelTool::~DynamixelTool(){}
 
-void DynamixelTool::addTool(const char* model_name, uint8_t id)
+bool DynamixelTool::addTool(const char *model_name, uint8_t id, const char* err)
 {
-  model_name_ = model_name;
-  setModelNum(model_name);
-  dxl_id_[dxl_info_cnt_] = id;
+  bool result = false;
 
-  setControlTable(model_name);
-  dxl_info_cnt_++;
+  model_name_ = model_name;
+  result = setModelNumber(model_name, err);
+  if (result == false) return false;
+  dxl_id_[dxl_cnt_] = id;
+
+  result = setControlTable(model_name, err);
+  if (result == false) return false;
+  dxl_cnt_++;
+
+  return true;
 }
 
-void DynamixelTool::addTool(uint16_t model_number, uint8_t id)
+bool DynamixelTool::addTool(uint16_t model_number, uint8_t id, const char* err)
 {
-  setModelName(model_number);
-  model_num_ = model_number;
-  dxl_id_[dxl_info_cnt_] = id;
+  bool result = false;
 
-  setControlTable(model_number);
-  dxl_info_cnt_++;
+  result = setModelName(model_number, err);
+  if (result == false) return false;
+  model_number_ = model_number;
+  dxl_id_[dxl_cnt_] = id;
+
+  result = setControlTable(model_number, err);
+  if (result == false) return false;
+  dxl_cnt_++;
+
+  return result;
 }
 
-void DynamixelTool::addDXL(const char* model_name, uint8_t id)
+void DynamixelTool::addDXL(const char *model_name, uint8_t id)
 {
-  model_name_ = model_name;
-  setModelNum(model_name);
-  dxl_id_[dxl_info_cnt_] = id;
-
-  dxl_info_cnt_++;
+  dxl_id_[dxl_cnt_] = id;
+  dxl_cnt_++;
 }
 
 void DynamixelTool::addDXL(uint16_t model_number, uint8_t id)
 {
-  setModelName(model_number);
-  model_num_ = model_number;
-  dxl_id_[dxl_info_cnt_] = id;
-
-  dxl_info_cnt_++;
+  dxl_id_[dxl_cnt_] = id;
+  dxl_cnt_++;
 }
 
-void DynamixelTool::setControlTable(const char *model_name)
+bool DynamixelTool::setControlTable(const char *model_name, const char* err)
 {  
   const char* name = model_name;
   uint8_t name_length = strlen(name);
 
-  for (uint8_t index=0; index < NUM_SERVO_NUM_TO_NAME; index++)
+  for (uint8_t index=0; index < COUNT_DYNAMIXEL_MODEL; index++)
   {
-    if(strncmp(name, servo_num_to_name_table[index].model_name, name_length) == 0)
+    if(strncmp(name, dynamixel_model_table[index].name, name_length) == 0)
     {
-      setControlTable(servo_num_to_name_table[index].model_number);
-      break;
+      return setControlTable(dynamixel_model_table[index].number, err);
     }
   }
+
+  err = "[DynamixelTool] Failed to set control table due to mismatch model name and model number"
+  return false;
 }
 
-void DynamixelTool::setControlTable(uint16_t model_number)
+bool DynamixelTool::setControlTable(uint16_t model_number, const char* err)
 {
-  item_ptr_           = getConrolTableItem(model_number);
-  the_number_of_item_ = getTheNumberOfControlItem();
-  info_ptr_           = getModelInfo(model_number);
+  control_table_              = getControlTable(model_number);
+  the_number_of_control_item_ = getTheNumberOfControlItem();
+  model_info_                 = getModelInfo(model_number);
+
+  if (control_table_ == NULL || model_info_ == NULL)
+  {
+    err = "[DynamixelTool] Failed to get control table or model info"
+    return false;
+  }
+
+  return true;
 }
 
-void DynamixelTool::setModelName(uint16_t model_number)
+bool DynamixelTool::setModelName(uint16_t model_number, const char* err)
 {
   uint16_t num = model_number;
 
-  for (uint8_t index=0; index < NUM_SERVO_NUM_TO_NAME; index++)
+  for (uint8_t index=0; index < COUNT_DYNAMIXEL_MODEL; index++)
   {
-    if (num == servo_num_to_name_table[index].model_number)
+    if (num == dynamixel_model_table[index].number)
     {
-      model_name_ = servo_num_to_name_table[index].model_name;
-      break;
+      model_name_ = dynamixel_model_table[index].name;
+      return true;
     }
   }
+
+  err = "[DynamixelTool] Failed to find model name"
+  return false;
 }
 
-void DynamixelTool::setModelNum(const char* model_name)
+bool DynamixelTool::setModelNumber(const char *model_name, const char* err)
 {
   const char* name = model_name;
   uint8_t name_length = strlen(name);
 
-  for (uint8_t index=0; index < NUM_SERVO_NUM_TO_NAME; index++)
+  for (uint8_t index=0; index < COUNT_DYNAMIXEL_MODEL; index++)
   {
     if(strncmp(name, model_name_, name_length) == 0)
     {
-      model_num_ = servo_num_to_name_table[index].model_number;
-      break;
+      model_number_ = dynamixel_model_table[index].number;
+      return true;
     }
   }
 
+  err = "[DynamixelTool] Failed to find model number"
+  return false;
+}
+
+const char* DynamixelTool::getModelName(void)
+{
+  return model_name_;
+}
+
+uint16_t DynamixelTool::getModelNumber(void)
+{
+  return model_number_;
+}
+
+const uint8_t* DynamixelTool::getID(void)
+{
+  const uint8_t* id_table_ = dxl_id_;
+
+  return id_table_;
+}
+
+uint8_t DynamixelTool::getDynamixelCount(void)
+{
+  return dxl_cnt_;
+}
+
+uint8_t DynamixelTool::getDynamixelBuffer(void)
+{
+  return DYNAMIXEL_BUFFER;
 }
 
 float DynamixelTool::getRPM(void)
 {
-  return info_ptr_->rpm;
+  return model_info_->rpm;
 }
 
 int32_t DynamixelTool::getValueOfMinRadianPosition(void)
 {
-  return info_ptr_->value_of_min_radian_position;
+  return model_info_->value_of_min_radian_position;
 }
 
 int32_t DynamixelTool::getValueOfMaxRadianPosition(void)
 {
-  return info_ptr_->value_of_max_radian_position;
+  return model_info_->value_of_max_radian_position;
 }
 
 int32_t DynamixelTool::getValueOfZeroRadianPosition(void)
 {
-  return info_ptr_->value_of_zero_radian_position;
+  return model_info_->value_of_zero_radian_position;
 }
 
 float DynamixelTool::getMinRadian(void)
 {
-  return info_ptr_->min_radian;
+  return model_info_->min_radian;
 }
 
 float DynamixelTool::getMaxRadian(void)
 {
-  return info_ptr_->max_radian;
+  return model_info_->max_radian;
 }
 
-uint8_t DynamixelTool::getTheNumberOfItem(void)
+uint8_t DynamixelTool::getTheNumberOfControlItem(void)
 {
-  return the_number_of_item_;
+  return the_number_of_control_item_;
 }
 
-const ControlTableItem* DynamixelTool::getControlItem(const char* item_name)
+const ControlItem *DynamixelTool::getControlItem(const char *item_name, const char* err)
 {
-  const ControlTableItem* cti = item_ptr_;  
+  const ControlItem* control_item = control_table_;  
   uint8_t name_length = strlen(item_name);
-  for (int num = 0; num < the_number_of_item_; num++)
+
+  for (uint8_t num = 0; num < the_number_of_item_; num++)
   {
-    if ((name_length == cti->item_name_length) && 
-        (memcmp(item_name, cti->item_name, name_length) == 0) )
+    if ((name_length == control_item->item_name_length) && 
+        (memcmp(item_name, control_item->item_name, name_length) == 0))
     {
-      return cti;
+      return control_item;
     }
-    cti++;
+    control_item++;
   }
 
-  if (!strncmp(item_name, "Moving_Speed", strlen("Moving_Speed")))
-    getControlItem("Goal_Velocity");
-  else if (!strncmp(item_name, "Goal_Velocity", strlen("Goal_Velocity")))
-    getControlItem("Moving_Speed");
-  else if (!strncmp(item_name, "Present_Velocity", strlen("Present_Velocity")))
-    getControlItem("Present_Speed");
-  else if (!strncmp(item_name, "Present_Speed", strlen("Present_Speed")))
-    getControlItem("Present_Velocity");
+  if (strncmp(item_name, "Moving_Speed", strlen("Moving_Speed")) == 0)
+    findItem("Goal_Velocity");
+  else if (strncmp(item_name, "Goal_Velocity", strlen("Goal_Velocity")) == 0)
+    findItem("Moving_Speed");
+  else if (strncmp(item_name, "Present_Velocity", strlen("Present_Velocity")) == 0)
+    findItem("Present_Speed");
+  else if (strncmp(item_name, "Present_Speed", strlen("Present_Speed")) == 0)
+    findItem("Present_Velocity");
+
+  err = "[DynamixelTool] Can't find Item"
   return NULL;
 }
 
-const ControlTableItem* DynamixelTool::getControlItemPtr(void)
+const ControlItem *DynamixelTool::getControlTable(void)
 {
-  return item_ptr_;
+  return control_table_;
 }
 
-const ModelInfo* DynamixelTool::getModelInfoPtr(void)
+const ModelInfo *DynamixelTool::getModelInfo(void)
 {
-  return info_ptr_;
+  return model_info_;
 }
+

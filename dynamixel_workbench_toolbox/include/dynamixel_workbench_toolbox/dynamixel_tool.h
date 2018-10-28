@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright 2016 ROBOTIS CO., LTD.
+* Copyright 2018 ROBOTIS CO., LTD.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -25,28 +25,35 @@
 
 class DynamixelTool
 {
- public:
-  enum {COUNT_DXL_INFO = 16};
-  uint8_t dxl_id_[COUNT_DXL_INFO];
-  uint8_t dxl_info_cnt_;
+ private:
+  enum {DYNAMIXEL_BUFFER = 16};
+  uint8_t dxl_id_[DYNAMIXEL_BUFFER];
+  uint8_t dxl_cnt_;
 
   const char *model_name_;
-  uint16_t model_num_;
+  uint16_t model_number_;
 
- private:
-  const ControlTableItem* item_ptr_;
-  const ModelInfo* info_ptr_;
-  uint8_t the_number_of_item_;
+  const ControlItem *control_table_;
+  const ModelInfo *model_info_;
+
+  uint16_t the_number_of_control_item_;
 
  public:
   DynamixelTool();
   ~DynamixelTool();
 
-  void addTool(const char* model_name, uint8_t id);
-  void addTool(uint16_t model_number, uint8_t id);
+  bool addTool(const char *model_name, uint8_t id, const char* err = "");
+  bool addTool(uint16_t model_number, uint8_t id, const char* err = "");
 
   void addDXL(uint16_t model_number, uint8_t id);
-  void addDXL(const char* model_name, uint8_t id);
+  void addDXL(const char *model_name, uint8_t id);
+
+  const char *getModelName(void);
+  uint16_t getModelNumber(void);
+
+  const uint8_t* getID(void);
+  uint8_t getDynamixelBuffer(void);
+  uint8_t getDynamixelCount(void);
 
   float getRPM(void);
 
@@ -57,17 +64,17 @@ class DynamixelTool
   float getMinRadian(void);
   float getMaxRadian(void);
 
-  uint8_t getTheNumberOfItem(void);
+  uint8_t getTheNumberOfControlItem(void);
   
-  const ControlTableItem* getControlItem(const char *item_name);
-  const ControlTableItem* getControlItemPtr(void);
-  const ModelInfo* getModelInfoPtr(void);
+  const ControlItem *getControlItem(const char *item_name, const char* err);
+  const ControlItem *getControlTable(void);
+  const ModelInfo *getModelInfo(void);
 
  private:
-  void setControlTable(const char* model_name);
-  void setControlTable(uint16_t model_number);
+  bool setControlTable(const char *model_name, const char* err = "");
+  void setControlTable(uint16_t model_number, const char* err = "");
 
-  void setModelName(uint16_t model_number);
-  void setModelNum(const char* model_name);
+  bool setModelName(uint16_t model_number, const char* err = "");
+  bool setModelNumber(const char *model_name, const char* err = "");
 };
 #endif //DYNAMIXEL_TOOL_H
