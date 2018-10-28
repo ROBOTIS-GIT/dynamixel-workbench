@@ -99,9 +99,15 @@ class DynamixelDriver
             const char *err = "");
 
   bool reboot(uint8_t id, const char *err = "");
-  // bool reset(uint8_t id, const char *err = "");
+  bool reset(uint8_t id, const char *err = "");
 
-  // bool writeRegister(uint8_t id, const char *item_name, int32_t data, const char *err = "");
+  bool writeRegister(uint8_t id, const char *item_name, uint8_t data, const char *err = "");
+  bool writeRegister(uint8_t id, const char *item_name, uint16_t data, const char *err = "");
+  bool writeRegister(uint8_t id, const char *item_name, uint32_t data, const char *err = "");
+
+  bool writeOnlyRegister(uint8_t id, const char *item_name, uint8_t data, const char *err = "");
+  bool writeOnlyRegister(uint8_t id, const char *item_name, uint16_t data, const char *err = "");
+  bool writeOnlyRegister(uint8_t id, const char *item_name, uint32_t data, const char *err = "");
   // bool writeRegister(uint8_t id, uint16_t addr, uint8_t length, int32_t data, const char *err = "");
   // bool readRegister(uint8_t id, const char *item_name, int32_t *data, const char *err = "");
   // bool readRegister(uint8_t id, uint16_t addr, uint8_t length, int32_t *data, const char *err = "");
@@ -141,7 +147,7 @@ class DynamixelDriver
   uint8_t getTool(uint8_t id, const char *err = "");
   const char *findModelName(uint16_t model_num);
 
-  // void millis(uint16_t msec);
+  void wait(uint16_t msec);
 };
 
 #endif //DYNAMIXEL_DRIVER_H
