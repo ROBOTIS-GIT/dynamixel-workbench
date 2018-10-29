@@ -238,7 +238,7 @@ bool monitoring()
             uint8_t id_1 = atoi(param[0]);
             uint8_t id_2 = atoi(param[1]);
 
-            wb_result = dxl_wb.addSyncWriteHandler(id_1, param[2], &log);
+            wb_result = dxl_wb.addSyncReadHandler(id_1, param[2], &log);
             if (wb_result == false)
             {
               printf("%s\n", log);
@@ -252,14 +252,17 @@ bool monitoring()
             data[0] = atoi(param[3]);
             data[1] = atoi(param[4]);
 
-            wb_result = dxl_wb.syncWrite(0, data, &log);
+            wb_result = dxl_wb.syncRead(0, data, &log);
             if (wb_result == false)
             {
               printf("%s\n", log);
               return 0;
             }
             else
+            {
               printf("%s\n", log);
+              printf("data : %d\n", data);
+            }
           }
         }
         // else if (strcmp(cmd, "id") == 0)

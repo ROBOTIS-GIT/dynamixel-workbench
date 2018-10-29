@@ -1062,6 +1062,8 @@ bool DynamixelDriver::addSyncReadHandler(uint8_t id, uint16_t address, uint16_t 
                                                                                           length);
 
   sync_read_handler_cnt_++;
+
+  *log = "[DynamixelDriver] Succeeded to add sync read handler";
   return true;
 }
 
@@ -1089,6 +1091,8 @@ bool DynamixelDriver::addSyncReadHandler(uint8_t id, const char *item_name, cons
                                                                                           control_item->data_length);
 
   sync_read_handler_cnt_++;
+
+  *log = "[DynamixelDriver] Succeeded to add sync read handler";
   return true;       
 }
 
