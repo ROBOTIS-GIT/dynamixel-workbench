@@ -747,8 +747,8 @@ bool DynamixelDriver::writeOnlyRegister(uint8_t id, const char *item_name, uint3
 bool DynamixelDriver::readRegister(uint8_t id, uint16_t address, uint16_t length, uint32_t *data, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
-
-  uint8_t data_read[length] = {0, 0, 0, 0};
+  
+  uint8_t data_read[length];
 
   sdk_error.dxl_comm_result = packetHandler_->readTxRx(portHandler_, 
                                                       id, 
@@ -916,6 +916,20 @@ bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, uint32_t *
   return false;
 }
 
+void DynamixelDriver::getParam(uint16_t data, uint8_t *param)
+{
+  param[0] = DXL_LOWORD(data);
+  param[1] = DXL_LOWORD(data);
+}
+
+void DynamixelDriver::getParam(uint32_t data, uint8_t *param)
+{
+  param[0] = DXL_LOBYTE(DXL_LOWORD(data));
+  param[1] = DXL_HIBYTE(DXL_LOWORD(data));
+  param[2] = DXL_LOBYTE(DXL_HIWORD(data));
+  param[3] = DXL_HIBYTE(DXL_HIWORD(data));
+}
+
 bool DynamixelDriver::addSyncWriteHandler(uint8_t id, uint16_t address, uint16_t length, const char **log)
 {
   if (sync_write_handler_cnt_ > (MAX_HANDLER_NUM-1))
@@ -932,6 +946,8 @@ bool DynamixelDriver::addSyncWriteHandler(uint8_t id, uint16_t address, uint16_t
                                                                                             length);
 
   sync_write_handler_cnt_++;
+
+  *log = "[DynamixelDriver] Succeeded to add sync write handler";
   return true;    
 }
 
@@ -959,37 +975,31 @@ bool DynamixelDriver::addSyncWriteHandler(uint8_t id, const char *item_name, con
                                                                                             control_item->data_length);
 
   sync_write_handler_cnt_++;
+
+  *log = "[DynamixelDriver] Succeeded to add sync write handler";
   return true;                                                            
 }
 
-bool DynamixelDriver::getParam(uint16_t *data, uint8_t *param)
-{
-  param[0] = DXL_LOWORD(data);
-  param[1] = DXL_LOWORD(data);
-}
-
-bool DynamixelDriver::getParam(uint32_t *data, uint8_t *param)
-{
-  param[0] = DXL_LOBYTE(DXL_LOWORD(data));
-  param[1] = DXL_HIBYTE(DXL_LOWORD(data));
-  param[2] = DXL_LOBYTE(DXL_HIWORD(data));
-  param[3] = DXL_HIBYTE(DXL_HIWORD(data));
-}
-
-bool DynamixelDriver::syncWrite(uint8_t index, uint8_t *data, const char **log)
+bool DynamixelDriver::syncWrite(uint8_t index, uint32_t *data, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
+
+  uint8_t dxl_cnt = 0;
+  uint8_t parameter[4] = {0, 0, 0, 0};
 
   for (int i = 0; i < tools_cnt_; i++)
   {
     for (int j = 0; j < tools_[i].getDynamixelCount(); j++)
     {
-      sdk_error.dxl_addparam_result = syncWriteHandler_[index].groupSyncWrite->addParam(tools_[i].getID()[j], (uint8_t *)&data);
+      getParam(data[dxl_cnt], parameter);
+      sdk_error.dxl_addparam_result = syncWriteHandler_[index].groupSyncWrite->addParam(tools_[i].getID()[j], (uint8_t *)&parameter);
       if (sdk_error.dxl_addparam_result != true)
       {
         *log = "groupSyncWrite addparam failed";
         return false;
       }
+      else
+        dxl_cnt++;
     }
   }
 
@@ -1006,13 +1016,16 @@ bool DynamixelDriver::syncWrite(uint8_t index, uint8_t *data, const char **log)
   return true;
 }
 
-bool DynamixelDriver::syncWrite(uint8_t index, uint8_t *id, uint8_t id_num, uint8_t *data, const char **log)
+bool DynamixelDriver::syncWrite(uint8_t index, uint8_t *id, uint8_t id_num, uint32_t *data, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
+  uint8_t parameter[4] = {0, 0, 0, 0};
+
   for (int i = 0; i < id_num; i++)
   {
-    sdk_error.dxl_addparam_result = syncWriteHandler_[index].groupSyncWrite->addParam(id[i], (uint8_t *)&data);
+    getParam(data[i], parameter);
+    sdk_error.dxl_addparam_result = syncWriteHandler_[index].groupSyncWrite->addParam(id[i], (uint8_t *)&parameter);
     if (sdk_error.dxl_addparam_result != true)
     {
       *log = "groupSyncWrite addparam failed";

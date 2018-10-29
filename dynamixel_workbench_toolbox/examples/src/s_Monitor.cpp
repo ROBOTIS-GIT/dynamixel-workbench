@@ -27,7 +27,7 @@ using namespace std;
 #define SPACEBAR_ASCII_VALUE        0x20
 #define ENTER_ASCII_VALUE           0x0a
 
-#define DEVICE_NAME "/dev/ttyUSB0"
+#define DEVICE_NAME "/dev/tty.usbserial-FT1CTA16"
 
 uint8_t get_id[16];
 uint8_t scan_cnt = 0;
@@ -161,7 +161,7 @@ bool monitoring()
           uint16_t last_register_addr = control_item[the_number_of_control_item-1].address;
           uint16_t last_register_addr_length = control_item[the_number_of_control_item-1].data_length;
 
-          uint32_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+          uint32_t getAllRegisteredData[last_register_addr+last_register_addr_length];
 
           if (control_item != NULL)
           {
@@ -201,6 +201,65 @@ bool monitoring()
                 } 
               }
             }
+          }
+        }
+        else if (isAvailableID(atoi(param[0])) && isAvailableID(atoi(param[1])))
+        {
+          if (strcmp(cmd, "sync_write") == 0)
+          {
+            uint8_t id_1 = atoi(param[0]);
+            uint8_t id_2 = atoi(param[1]);
+
+            wb_result = dxl_wb.addSyncWriteHandler(id_1, param[2], &log);
+            if (wb_result == false)
+            {
+              printf("%s\n", log);
+              printf("Failed to add sync write handler\n");
+              return 0;
+            }
+            else
+              printf("%s\n", log);
+
+            uint32_t data[2] = {0, 0};
+            data[0] = atoi(param[3]);
+            data[1] = atoi(param[4]);
+
+            wb_result = dxl_wb.syncWrite(0, data, &log);
+            if (wb_result == false)
+            {
+              printf("%s\n", log);
+              return 0;
+            }
+            else
+              printf("%s\n", log);
+          }
+          else if (strcmp(cmd, "sync_read") == 0)
+          {
+            uint8_t id_1 = atoi(param[0]);
+            uint8_t id_2 = atoi(param[1]);
+
+            wb_result = dxl_wb.addSyncWriteHandler(id_1, param[2], &log);
+            if (wb_result == false)
+            {
+              printf("%s\n", log);
+              printf("Failed to add sync write handler\n");
+              return 0;
+            }
+            else
+              printf("%s\n", log);
+
+            uint32_t data[2] = {0, 0};
+            data[0] = atoi(param[3]);
+            data[1] = atoi(param[4]);
+
+            wb_result = dxl_wb.syncWrite(0, data, &log);
+            if (wb_result == false)
+            {
+              printf("%s\n", log);
+              return 0;
+            }
+            else
+              printf("%s\n", log);
           }
         }
         // else if (strcmp(cmd, "id") == 0)
@@ -373,6 +432,7 @@ void printInst(void)
   printf("wheel  (ID) (GOAL_VELOCITY)\n");
   printf("write  (ID) (ADDRESS_NAME) (VALUE)\n");
   printf("read   (ID) (ADDRESS_NAME)\n");
+  printf("sync_write (ID_1) (ID_2) (ADDRESS_NAME) (VALUE_1) (VALUE_2)\n");
   printf("reboot (ID) \n");
   printf("reset  (ID) \n");
   printf("exit\n");
