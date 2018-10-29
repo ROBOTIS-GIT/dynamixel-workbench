@@ -20,6 +20,7 @@
 #define DYNAMIXEL_TOOL_H
 
 #include <string.h>
+#include <stdio.h>
 
 #include "dynamixel_item.h"
 
@@ -38,14 +39,16 @@ class DynamixelTool
 
   uint16_t the_number_of_control_item_;
 
+  char tool_log[200];
+
  public:
   DynamixelTool();
   ~DynamixelTool();
 
   void initTool(void);
 
-  bool addTool(const char *model_name, uint8_t id, const char *err = "");
-  bool addTool(uint16_t model_number, uint8_t id, const char *err = "");
+  bool addTool(const char *model_name, uint8_t id, const char **log = NULL);
+  bool addTool(uint16_t model_number, uint8_t id, const char **log = NULL);
 
   void addDXL(uint16_t model_number, uint8_t id);
   void addDXL(const char *model_name, uint8_t id);
@@ -68,15 +71,15 @@ class DynamixelTool
 
   uint8_t getTheNumberOfControlItem(void);
   
-  const ControlItem *getControlItem(const char *item_name, const char* err = "");
+  const ControlItem *getControlItem(const char *item_name, const char **log = NULL);
   const ControlItem *getControlTable(void);
   const ModelInfo *getModelInfo(void);
 
  private:
-  bool setControlTable(const char *model_name, const char *err = "");
-  bool setControlTable(uint16_t model_number, const char *err = "");
+  bool setControlTable(const char *model_name, const char **log = NULL);
+  bool setControlTable(uint16_t model_number, const char **log = NULL);
 
-  bool setModelName(uint16_t model_number, const char *err = "");
-  bool setModelNumber(const char *model_name, const char *err = "");
+  bool setModelName(uint16_t model_number, const char **log = NULL);
+  bool setModelNumber(const char *model_name, const char **log = NULL);
 };
 #endif //DYNAMIXEL_TOOL_H

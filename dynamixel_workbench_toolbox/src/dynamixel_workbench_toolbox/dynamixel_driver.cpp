@@ -54,7 +54,7 @@ void DynamixelDriver::initTools(void)
     tools_[num].initTool();
 }
 
-bool DynamixelDriver::setTool(uint16_t model_number, uint8_t id, const char *err)
+bool DynamixelDriver::setTool(uint16_t model_number, uint8_t id, const char **log)
 {
   bool result = false;
 
@@ -71,7 +71,7 @@ bool DynamixelDriver::setTool(uint16_t model_number, uint8_t id, const char *err
       }
       else
       {
-        err = "[DynamixelDriver] Too many Dynamixels are connected (default buffer size is 16, the same series of Dynamixels)";
+        *log = "[DynamixelDriver] Too many Dynamixels are connected (default buffer size is 16, the same series of Dynamixels)";
         return false;
       }
     }
@@ -80,20 +80,20 @@ bool DynamixelDriver::setTool(uint16_t model_number, uint8_t id, const char *err
   if (tools_cnt_ < MAX_DXL_SERIES_NUM) 
   {
     // only do it if we still have some room...
-    result = tools_[tools_cnt_++].addTool(model_number, id, err);
+    result = tools_[tools_cnt_++].addTool(model_number, id, log);
     return result;
   }
   else
   {
-    err = "[DynamixelDriver] Too many series are connected (MAX = 5 different series)";
+    *log = "[DynamixelDriver] Too many series are connected (MAX = 5 different series)";
     return false;
   }
 
-  err = "[DynamixelDriver] Failed to set the Tool";
+  *log = "[DynamixelDriver] Failed to set the Tool";
   return false;
 }
 
-uint8_t DynamixelDriver::getTool(uint8_t id, const char *err)
+uint8_t DynamixelDriver::getTool(uint8_t id, const char **log)
 {
   for (int i = 0; i < tools_cnt_; i++)
   {
@@ -106,60 +106,60 @@ uint8_t DynamixelDriver::getTool(uint8_t id, const char *err)
     }
   }
 
-  err = "[DynamixelDriver] Failed to get the Tool";
+  *log = "[DynamixelDriver] Failed to get the Tool";
   return 0xff;
 }
 
-bool DynamixelDriver::init(const char *device_name, uint32_t baud_rate, const char* err)
+bool DynamixelDriver::init(const char *device_name, uint32_t baud_rate, const char **log)
 {
   bool result = false;
 
-  result = setPortHandler(device_name, err);
+  result = setPortHandler(device_name, log);
   if (result == false) return false;
 
-  result = setBaudrate(baud_rate, err);
+  result = setBaudrate(baud_rate, log);
   if (result == false) return false;
 
   return result;
 }
 
-bool DynamixelDriver::setPortHandler(const char *device_name, const char* err)
+bool DynamixelDriver::setPortHandler(const char *device_name, const char **log)
 {
   portHandler_ = dynamixel::PortHandler::getPortHandler(device_name);
 
   if (portHandler_->openPort())
   {
-    err = "[DynamixelDriver] Succeeded to open the port!";
+    *log = "[DynamixelDriver] Succeeded to open the port!";
     return true;
   }
 
-  err = "[DynamixelDriver] Failed to open the port!";
+  *log = "[DynamixelDriver] Failed to open the port!";
   return false;
 }
 
-bool DynamixelDriver::setBaudrate(uint32_t baud_rate, const char* err)
+bool DynamixelDriver::setBaudrate(uint32_t baud_rate, const char **log)
 {
   if (portHandler_->setBaudRate(baud_rate))
   {
-    err = "[DynamixelDriver] Succeeded to change the baudrate!";
+    *log = "[DynamixelDriver] Succeeded to change the baudrate!";
     return true;
   }
 
-  err = "[DynamixelDriver] Failed to change the baudrate!";
+  *log = "[DynamixelDriver] Failed to change the baudrate!";
   return false;
 }
 
-bool DynamixelDriver::setPacketHandler(float protocol_version, const char* err)
+bool DynamixelDriver::setPacketHandler(float protocol_version, const char **log)
 {
   packetHandler_ = dynamixel::PacketHandler::getPacketHandler(protocol_version);
 
   if (packetHandler_->getProtocolVersion() == protocol_version)
   {
-    err = "[DynamixelDriver] Succeeded to set the protocol!";
+    *log = "[DynamixelDriver] Succeeded to set the protocol!";
     return true;
   }
 
-  err = "[DynamixelDriver] Failed to set the protocol!";
+  *log = "[DynamixelDriver] Failed to set the protocol!";
   return false;
 }
 
@@ -173,9 +173,9 @@ uint32_t DynamixelDriver::getBaudrate(void)
   return portHandler_->getBaudRate();
 }
 
-const char* DynamixelDriver::getModelName(uint8_t id, const char *err)
+const char* DynamixelDriver::getModelName(uint8_t id, const char **log)
 {
-  uint8_t factor = getTool(id, err);
+  uint8_t factor = getTool(id, log);
 
   if (factor == 0xff) 
     return NULL;
@@ -185,9 +185,9 @@ const char* DynamixelDriver::getModelName(uint8_t id, const char *err)
   return NULL;
 }
 
-uint16_t DynamixelDriver::getModelNumber(uint8_t id, const char *err)
+uint16_t DynamixelDriver::getModelNumber(uint8_t id, const char **log)
 {
-  uint8_t factor = getTool(id, err);
+  uint8_t factor = getTool(id, log);
   if (factor == 0xff) return 0;
 
   for (int i = 0; i < tools_[factor].getDynamixelCount(); i++)
@@ -199,23 +199,23 @@ uint16_t DynamixelDriver::getModelNumber(uint8_t id, const char *err)
   return 0;
 }
 
-const ControlItem* DynamixelDriver::getControlTable(uint8_t id, const char* err)
+const ControlItem* DynamixelDriver::getControlTable(uint8_t id, const char **log)
 {
-  uint8_t factor = getTool(id, err);
+  uint8_t factor = getTool(id, log);
   if (factor == 0xff) return NULL;
 
   return tools_[factor].getControlTable();
 }
 
-uint8_t DynamixelDriver::getTheNumberOfControlItem(uint8_t id, const char *err)
+uint8_t DynamixelDriver::getTheNumberOfControlItem(uint8_t id, const char **log)
 {
-  uint8_t factor = getTool(id, err);
+  uint8_t factor = getTool(id, log);
   if (factor == 0xff) return 0;
 
   return tools_[factor].getTheNumberOfControlItem();
 }
 
-bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_the_number_of_id, uint8_t range, const char *err)
+bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_the_number_of_id, uint8_t range, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
   bool result = false;
@@ -237,12 +237,12 @@ bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_the_number_of_id, uint8
     
     if (sdk_error.dxl_comm_result != COMM_SUCCESS)
     {
-      err = packetHandler_1->getTxRxResult(sdk_error.dxl_comm_result);
+      *log = packetHandler_1->getTxRxResult(sdk_error.dxl_comm_result);
       return false;
     }
     else if (sdk_error.dxl_error != 0)
     {
-      err = packetHandler_1->getRxPacketError(sdk_error.dxl_error);
+      *log = packetHandler_1->getRxPacketError(sdk_error.dxl_error);
       return false;
     }
     else
@@ -255,7 +255,7 @@ bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_the_number_of_id, uint8
   if (id_cnt > 0)
   {
     *get_the_number_of_id = id_cnt;
-    result = setPacketHandler(1.0f, err);
+    result = setPacketHandler(1.0f, log);
     return result;
   }
 
@@ -265,12 +265,12 @@ bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_the_number_of_id, uint8
     
     if (sdk_error.dxl_comm_result != COMM_SUCCESS)
     {
-      err = packetHandler_2->getTxRxResult(sdk_error.dxl_comm_result);
+      *log = packetHandler_2->getTxRxResult(sdk_error.dxl_comm_result);
       return false;
     }
     else if (sdk_error.dxl_error != 0)
     {
-      err = packetHandler_2->getRxPacketError(sdk_error.dxl_error);
+      *log = packetHandler_2->getRxPacketError(sdk_error.dxl_error);
       return false;
     }
     else
@@ -283,15 +283,15 @@ bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_the_number_of_id, uint8
   if (id_cnt > 0)
   {
     *get_the_number_of_id = id_cnt;
-    result = setPacketHandler(2.0f, err);
+    result = setPacketHandler(2.0f, log);
     return result;
   }
 
-  err = "[DynamixelDriver] Failed to scan!";
+  *log = "[DynamixelDriver] Failed to scan!";
   return false;
 }
 
-bool DynamixelDriver::ping(uint8_t id, uint16_t *get_model_number, const char *err)
+bool DynamixelDriver::ping(uint8_t id, uint16_t *get_model_number, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
   bool result = false;
@@ -302,19 +302,19 @@ bool DynamixelDriver::ping(uint8_t id, uint16_t *get_model_number, const char *e
   
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    err = packetHandler_1->getTxRxResult(sdk_error.dxl_comm_result);
+    *log = packetHandler_1->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
   else if (sdk_error.dxl_error != 0)
   {
-    err = packetHandler_1->getRxPacketError(sdk_error.dxl_error);
+    *log = packetHandler_1->getRxPacketError(sdk_error.dxl_error);
     return false;
   }
   else
   {
     setTool(model_number, id);
     *get_model_number = model_number;
-    result = setPacketHandler(1.0f, err);
+    result = setPacketHandler(1.0f, log);
     return result;
   }
 
@@ -322,33 +322,33 @@ bool DynamixelDriver::ping(uint8_t id, uint16_t *get_model_number, const char *e
   
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    err = packetHandler_2->getTxRxResult(sdk_error.dxl_comm_result);
+    *log = packetHandler_2->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
   else if (sdk_error.dxl_error != 0)
   {
-    err = packetHandler_2->getRxPacketError(sdk_error.dxl_error);
+    *log = packetHandler_2->getRxPacketError(sdk_error.dxl_error);
     return false;
   }
   else
   {
     setTool(model_number, id);
     *get_model_number = model_number;
-    result = setPacketHandler(2.0f, err);
+    result = setPacketHandler(2.0f, log);
     return result;
   }  
 
-  err = "[DynamixelDriver] Failed to ping!";
+  *log = "[DynamixelDriver] Failed to ping!";
   return false;
 }
 
-bool DynamixelDriver::reboot(uint8_t id, const char* err)
+bool DynamixelDriver::reboot(uint8_t id, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
   if (getProtocolVersion() == 1.0)
   {
-    err = "[DynamixelDriver] reboot functions is not available with the Dynamixel Protocol 1.0.";
+    *log = "[DynamixelDriver] reboot functions is not available with the Dynamixel Protocol 1.0.";
     return false;
   }
   else
@@ -356,26 +356,26 @@ bool DynamixelDriver::reboot(uint8_t id, const char* err)
     sdk_error.dxl_comm_result = packetHandler_2->reboot(portHandler_, id, &sdk_error.dxl_error);
     if (sdk_error.dxl_comm_result != COMM_SUCCESS)
     {
-      err = packetHandler_2->getTxRxResult(sdk_error.dxl_comm_result);
+      *log = packetHandler_2->getTxRxResult(sdk_error.dxl_comm_result);
       return false;
     }
     else if (sdk_error.dxl_error != 0)
     {
-      err = packetHandler_2->getRxPacketError(sdk_error.dxl_error);
+      *log = packetHandler_2->getRxPacketError(sdk_error.dxl_error);
       return false;
     }
     else
     {
-      err = "[DynamixelDriver] Succeeded to reboot!";
+      *log = "[DynamixelDriver] Succeeded to reboot!";
       return true;
     }
   }
 
-  err = "[DynamixelDriver] Failed to reboot!";
+  *log = "[DynamixelDriver] Failed to reboot!";
   return false;
 }
 
-bool DynamixelDriver::reset(uint8_t id, const char* err)
+bool DynamixelDriver::reset(uint8_t id, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
   bool result = false;
@@ -383,10 +383,10 @@ bool DynamixelDriver::reset(uint8_t id, const char* err)
   uint32_t new_baud_rate = 0;
   uint8_t new_id = 1;
 
-  const char* model_name = getModelName(id, err);
+  const char* model_name = getModelName(id, log);
   if (model_name == NULL) return false;
 
-  uint16_t model_number = getModelNumber(id, err);
+  uint16_t model_number = getModelNumber(id, log);
   if (model_number == 0) return false;
 
   if (getProtocolVersion() == 1.0)
@@ -403,17 +403,17 @@ bool DynamixelDriver::reset(uint8_t id, const char* err)
 
     if (sdk_error.dxl_comm_result != COMM_SUCCESS)
     {
-      err = packetHandler_1->getTxRxResult(sdk_error.dxl_comm_result);
+      *log = packetHandler_1->getTxRxResult(sdk_error.dxl_comm_result);
       return false;
     }
     else if (sdk_error.dxl_error != 0)
     {
-      err = packetHandler_1->getRxPacketError(sdk_error.dxl_error);
+      *log = packetHandler_1->getRxPacketError(sdk_error.dxl_error);
       return false;
     }
     else
     {
-      result = setBaudrate(new_baud_rate, err);
+      result = setBaudrate(new_baud_rate, log);
       if (result == false) 
         return false;
       else
@@ -426,22 +426,22 @@ bool DynamixelDriver::reset(uint8_t id, const char* err)
             !strncmp(model_name, "XH", strlen("XH")) ||
             !strncmp(model_name, "PRO", strlen("PRO")))
         {
-          result = setPacketHandler(2.0f, err);
+          result = setPacketHandler(2.0f, log);
           if (result == false) return false;
         }          
         else
         {
-          result = setPacketHandler(1.0f, err);
+          result = setPacketHandler(1.0f, log);
           if (result == false) return false; 
         }
       }
     }
 
     initTools();
-    result = setTool(model_number, new_id, err);
+    result = setTool(model_number, new_id, log);
     if (result == false) return false; 
     
-    err = "[DynamixelDriver] Succeeded to reset!";
+    *log = "[DynamixelDriver] Succeeded to reset!";
     return true;
   }
   else if (getProtocolVersion() == 2.0)
@@ -451,12 +451,12 @@ bool DynamixelDriver::reset(uint8_t id, const char* err)
 
     if (sdk_error.dxl_comm_result != COMM_SUCCESS)
     {
-      err = packetHandler_2->getTxRxResult(sdk_error.dxl_comm_result);
+      *log = packetHandler_2->getTxRxResult(sdk_error.dxl_comm_result);
       return false;
     }
     else if (sdk_error.dxl_error != 0)
     {
-      err = packetHandler_2->getRxPacketError(sdk_error.dxl_error);
+      *log = packetHandler_2->getRxPacketError(sdk_error.dxl_error);
       return false;
     }
     else
@@ -466,29 +466,29 @@ bool DynamixelDriver::reset(uint8_t id, const char* err)
       else 
         new_baud_rate = 57600;
 
-      result = setBaudrate(new_baud_rate, err);
+      result = setBaudrate(new_baud_rate, log);
       if (result == false) 
         return false;
       else
       {
-        result = setPacketHandler(2.0f, err);
+        result = setPacketHandler(2.0f, log);
         if (result == false)  return false;
       }
     }
 
     initTools();
-    result = setTool(model_number, new_id, err);
+    result = setTool(model_number, new_id, log);
     if (result == false) return false; 
     
-    err = "[DynamixelDriver] Succeeded to reset!";
+    *log = "[DynamixelDriver] Succeeded to reset!";
     return true;
   }
 
-  err = "[DynamixelDriver] Failed to reset!";
+  *log = "[DynamixelDriver] Failed to reset!";
   return false;
 }
 
-bool DynamixelDriver::writeRegister(uint8_t id, uint16_t address, uint8_t length, uint8_t* data, const char *err)
+bool DynamixelDriver::writeRegister(uint8_t id, uint16_t address, uint8_t length, uint8_t* data, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
@@ -500,12 +500,12 @@ bool DynamixelDriver::writeRegister(uint8_t id, uint16_t address, uint8_t length
                                                         &sdk_error.dxl_error);
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    err = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
   else if (sdk_error.dxl_error != 0)
   {
-    err = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+    *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
     return false;
   }
   else
@@ -513,20 +513,20 @@ bool DynamixelDriver::writeRegister(uint8_t id, uint16_t address, uint8_t length
     return true;
   }
 
-  err = "[DynamixelDriver] Failed to write Register!";
+  *log = "[DynamixelDriver] Failed to write Register!";
   return false;
 }
 
-bool DynamixelDriver::writeRegister(uint8_t id, const char *item_name, uint8_t data, const char *err)
+bool DynamixelDriver::writeRegister(uint8_t id, const char *item_name, uint8_t data, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
   const ControlItem *control_item;
 
-  uint8_t factor = getTool(id, err);
+  uint8_t factor = getTool(id, log);
   if (factor == 0xff) return false; 
 
-  control_item = tools_[factor].getControlItem(item_name, err);
+  control_item = tools_[factor].getControlItem(item_name, log);
   if (control_item == NULL) return false;
 
   uint8_t data_write[1] = { data };
@@ -538,12 +538,12 @@ bool DynamixelDriver::writeRegister(uint8_t id, const char *item_name, uint8_t d
                                                         &sdk_error.dxl_error);
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    err = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
   else if (sdk_error.dxl_error != 0)
   {
-    err = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+    *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
     return false;
   }
   else
@@ -551,20 +551,20 @@ bool DynamixelDriver::writeRegister(uint8_t id, const char *item_name, uint8_t d
     return true;
   }
 
-  err = "[DynamixelDriver] Failed to write Register!";
+  *log = "[DynamixelDriver] Failed to write Register!";
   return false;
 }
 
-bool DynamixelDriver::writeRegister(uint8_t id, const char *item_name, uint16_t data, const char *err)
+bool DynamixelDriver::writeRegister(uint8_t id, const char *item_name, uint16_t data, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
   const ControlItem *control_item;
 
-  uint8_t factor = getTool(id, err);
+  uint8_t factor = getTool(id, log);
   if (factor == 0xff) return false; 
 
-  control_item = tools_[factor].getControlItem(item_name, err);
+  control_item = tools_[factor].getControlItem(item_name, log);
   if (control_item == NULL) return false;
 
   uint8_t data_write[2] = { DXL_LOBYTE(data), DXL_HIBYTE(data) };
@@ -576,12 +576,12 @@ bool DynamixelDriver::writeRegister(uint8_t id, const char *item_name, uint16_t 
                                                         &sdk_error.dxl_error);
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    err = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
   else if (sdk_error.dxl_error != 0)
   {
-    err = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+    *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
     return false;
   }
   else
@@ -589,20 +589,20 @@ bool DynamixelDriver::writeRegister(uint8_t id, const char *item_name, uint16_t 
     return true;
   }
 
-  err = "[DynamixelDriver] Failed to write Register!";
+  *log = "[DynamixelDriver] Failed to write Register!";
   return false;
 }
 
-bool DynamixelDriver::writeRegister(uint8_t id, const char *item_name, uint32_t data, const char *err)
+bool DynamixelDriver::writeRegister(uint8_t id, const char *item_name, uint32_t data, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
   const ControlItem *control_item;
 
-  uint8_t factor = getTool(id, err);
+  uint8_t factor = getTool(id, log);
   if (factor == 0xff) return false; 
 
-  control_item = tools_[factor].getControlItem(item_name, err);
+  control_item = tools_[factor].getControlItem(item_name, log);
   if (control_item == NULL) return false;
 
   uint8_t data_write[4] = { DXL_LOBYTE(DXL_LOWORD(data)), DXL_HIBYTE(DXL_LOWORD(data)), DXL_LOBYTE(DXL_HIWORD(data)), DXL_HIBYTE(DXL_HIWORD(data)) };
@@ -614,12 +614,12 @@ bool DynamixelDriver::writeRegister(uint8_t id, const char *item_name, uint32_t 
                                                         &sdk_error.dxl_error);
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    err = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
   else if (sdk_error.dxl_error != 0)
   {
-    err = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+    *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
     return false;
   }
   else
@@ -627,11 +627,11 @@ bool DynamixelDriver::writeRegister(uint8_t id, const char *item_name, uint32_t 
     return true;
   }
 
-  err = "[DynamixelDriver] Failed to write Register!";
+  *log = "[DynamixelDriver] Failed to write Register!";
   return false;
 }
 
-bool DynamixelDriver::writeOnlyRegister(uint8_t id, uint16_t address, uint16_t length, uint8_t *data, const char *err)
+bool DynamixelDriver::writeOnlyRegister(uint8_t id, uint16_t address, uint16_t length, uint8_t *data, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
@@ -642,7 +642,7 @@ bool DynamixelDriver::writeOnlyRegister(uint8_t id, uint16_t address, uint16_t l
                                                           data);
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    err = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
   else
@@ -650,20 +650,20 @@ bool DynamixelDriver::writeOnlyRegister(uint8_t id, uint16_t address, uint16_t l
     return true;
   }
 
-  err = "[DynamixelDriver] Failed to write Only Register!";
+  *log = "[DynamixelDriver] Failed to write Only Register!";
   return false;
 }
 
-bool DynamixelDriver::writeOnlyRegister(uint8_t id, const char *item_name, uint8_t data, const char *err)
+bool DynamixelDriver::writeOnlyRegister(uint8_t id, const char *item_name, uint8_t data, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
   const ControlItem *control_item;
 
-  uint8_t factor = getTool(id, err);
+  uint8_t factor = getTool(id, log);
   if (factor == 0xff) return false; 
 
-  control_item = tools_[factor].getControlItem(item_name, err);
+  control_item = tools_[factor].getControlItem(item_name, log);
   if (control_item == NULL) return false;
 
   uint8_t data_write[4] = { DXL_LOBYTE(DXL_LOWORD(data)), DXL_HIBYTE(DXL_LOWORD(data)), DXL_LOBYTE(DXL_HIWORD(data)), DXL_HIBYTE(DXL_HIWORD(data)) };
@@ -674,7 +674,7 @@ bool DynamixelDriver::writeOnlyRegister(uint8_t id, const char *item_name, uint8
                                                           data_write);
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    err = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
   else
@@ -682,20 +682,20 @@ bool DynamixelDriver::writeOnlyRegister(uint8_t id, const char *item_name, uint8
     return true;
   }
 
-  err = "[DynamixelDriver] Failed to write Only Register!";
+  *log = "[DynamixelDriver] Failed to write Only Register!";
   return false;
 }
 
-bool DynamixelDriver::writeOnlyRegister(uint8_t id, const char *item_name, uint16_t data, const char *err)
+bool DynamixelDriver::writeOnlyRegister(uint8_t id, const char *item_name, uint16_t data, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
   const ControlItem *control_item;
 
-  uint8_t factor = getTool(id, err);
+  uint8_t factor = getTool(id, log);
   if (factor == 0xff) return false; 
 
-  control_item = tools_[factor].getControlItem(item_name, err);
+  control_item = tools_[factor].getControlItem(item_name, log);
   if (control_item == NULL) return false;
 
   uint8_t data_write[2] = { DXL_LOBYTE(data), DXL_HIBYTE(data) };
@@ -706,7 +706,7 @@ bool DynamixelDriver::writeOnlyRegister(uint8_t id, const char *item_name, uint1
                                                           data_write);
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    err = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
   else
@@ -714,20 +714,20 @@ bool DynamixelDriver::writeOnlyRegister(uint8_t id, const char *item_name, uint1
     return true;
   }
 
-  err = "[DynamixelDriver] Failed to write Only Register!";
+  *log = "[DynamixelDriver] Failed to write Only Register!";
   return false;
 }
 
-bool DynamixelDriver::writeOnlyRegister(uint8_t id, const char *item_name, uint32_t data, const char *err)
+bool DynamixelDriver::writeOnlyRegister(uint8_t id, const char *item_name, uint32_t data, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
   const ControlItem *control_item;
 
-  uint8_t factor = getTool(id, err);
+  uint8_t factor = getTool(id, log);
   if (factor == 0xff) return false; 
 
-  control_item = tools_[factor].getControlItem(item_name, err);
+  control_item = tools_[factor].getControlItem(item_name, log);
   if (control_item == NULL) return false;
 
   uint8_t data_write[4] = { DXL_LOBYTE(DXL_LOWORD(data)), DXL_HIBYTE(DXL_LOWORD(data)), DXL_LOBYTE(DXL_HIWORD(data)), DXL_HIBYTE(DXL_HIWORD(data)) };
@@ -738,7 +738,7 @@ bool DynamixelDriver::writeOnlyRegister(uint8_t id, const char *item_name, uint3
                                                           data_write);
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    err = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
   else
@@ -746,11 +746,11 @@ bool DynamixelDriver::writeOnlyRegister(uint8_t id, const char *item_name, uint3
     return true;
   }
 
-  err = "[DynamixelDriver] Failed to write Only Register!";
+  *log = "[DynamixelDriver] Failed to write Only Register!";
   return false;
 }
 
-bool DynamixelDriver::readRegister(uint8_t id, uint16_t address, uint16_t length, uint8_t *data, const char *err)
+bool DynamixelDriver::readRegister(uint8_t id, uint16_t address, uint16_t length, uint8_t *data, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
@@ -764,12 +764,12 @@ bool DynamixelDriver::readRegister(uint8_t id, uint16_t address, uint16_t length
                                                        &sdk_error.dxl_error);
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    err = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
   else if (sdk_error.dxl_error != 0)
   {
-    err = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+    *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
     return false;
   }
   else
@@ -778,11 +778,11 @@ bool DynamixelDriver::readRegister(uint8_t id, uint16_t address, uint16_t length
     return true;
   }
 
-  err = "[DynamixelDriver] Failed to read Register!";
+  *log = "[DynamixelDriver] Failed to read Register!";
   return false;
 }
 
-bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, uint8_t *data, const char *err)
+bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, uint8_t *data, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
@@ -790,10 +790,10 @@ bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, uint8_t *d
 
   const ControlItem *control_item;
 
-  uint8_t factor = getTool(id, err);
+  uint8_t factor = getTool(id, log);
   if (factor == 0xff) return false; 
 
-  control_item = tools_[factor].getControlItem(item_name, err);
+  control_item = tools_[factor].getControlItem(item_name, log);
   if (control_item == NULL) return false;
 
   sdk_error.dxl_comm_result = packetHandler_->readTxRx(portHandler_, 
@@ -804,12 +804,12 @@ bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, uint8_t *d
                                                        &sdk_error.dxl_error);
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    err = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
   else if (sdk_error.dxl_error != 0)
   {
-    err = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+    *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
     return false;
   }
   else
@@ -818,11 +818,11 @@ bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, uint8_t *d
     return true;
   }
 
-  err = "[DynamixelDriver] Failed to read Register!";
+  *log = "[DynamixelDriver] Failed to read Register!";
   return false;
 }
 
-bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, uint16_t *data, const char *err)
+bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, uint16_t *data, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
@@ -830,10 +830,10 @@ bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, uint16_t *
 
   const ControlItem *control_item;
 
-  uint8_t factor = getTool(id, err);
+  uint8_t factor = getTool(id, log);
   if (factor == 0xff) return false; 
 
-  control_item = tools_[factor].getControlItem(item_name, err);
+  control_item = tools_[factor].getControlItem(item_name, log);
   if (control_item == NULL) return false;
 
   sdk_error.dxl_comm_result = packetHandler_->readTxRx(portHandler_, 
@@ -844,12 +844,12 @@ bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, uint16_t *
                                                        &sdk_error.dxl_error);
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    err = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
   else if (sdk_error.dxl_error != 0)
   {
-    err = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+    *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
     return false;
   }
   else
@@ -858,11 +858,11 @@ bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, uint16_t *
     return true;
   }
 
-  err = "[DynamixelDriver] Failed to read Register!";
+  *log = "[DynamixelDriver] Failed to read Register!";
   return false;
 }
 
-bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, uint32_t *data, const char *err)
+bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, uint32_t *data, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
@@ -870,10 +870,10 @@ bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, uint32_t *
 
   const ControlItem *control_item;
 
-  uint8_t factor = getTool(id, err);
+  uint8_t factor = getTool(id, log);
   if (factor == 0xff) return false; 
 
-  control_item = tools_[factor].getControlItem(item_name, err);
+  control_item = tools_[factor].getControlItem(item_name, log);
   if (control_item == NULL) return false;
 
   sdk_error.dxl_comm_result = packetHandler_->readTxRx(portHandler_, 
@@ -884,12 +884,12 @@ bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, uint32_t *
                                                        &sdk_error.dxl_error);
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    err = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
   else if (sdk_error.dxl_error != 0)
   {
-    err = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+    *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
     return false;
   }
   else
@@ -898,23 +898,23 @@ bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, uint32_t *
     return true;
   }
 
-  err = "[DynamixelDriver] Failed to read Register!";
+  *log = "[DynamixelDriver] Failed to read Register!";
   return false;
 }
 
-bool DynamixelDriver::addSyncWriteHandler(uint8_t id, const char *item_name, const char *err)
+bool DynamixelDriver::addSyncWriteHandler(uint8_t id, const char *item_name, const char **log)
 {
   const ControlItem *control_item;
 
-  uint8_t factor = getTool(id, err);
+  uint8_t factor = getTool(id, log);
   if (factor == 0xff) return false; 
 
-  control_item = tools_[factor].getControlItem(item_name, err);
+  control_item = tools_[factor].getControlItem(item_name, log);
   if (control_item == NULL) return false;
 
   if (sync_write_handler_cnt_ > (MAX_HANDLER_NUM-1))
   {
-    err = "[DynamixelDriver] Too many sync write handler are added (MAX = 5)";
+    *log = "[DynamixelDriver] Too many sync write handler are added (MAX = 5)";
     return false;
   }
 
@@ -1033,19 +1033,19 @@ bool DynamixelDriver::addSyncWriteHandler(uint8_t id, const char *item_name, con
 //   return true;
 // }
 
-bool DynamixelDriver::addSyncReadHandler(uint8_t id, const char *item_name, const char *err)
+bool DynamixelDriver::addSyncReadHandler(uint8_t id, const char *item_name, const char **log)
 {
   const ControlItem *control_item;
 
-  uint8_t factor = getTool(id, err);
+  uint8_t factor = getTool(id, log);
   if (factor == 0xff) return false; 
 
-  control_item = tools_[factor].getControlItem(item_name, err);
+  control_item = tools_[factor].getControlItem(item_name, log);
   if (control_item == NULL) return false;
 
   if (sync_read_handler_cnt_ > (MAX_HANDLER_NUM-1))
   {
-    err = "[DynamixelDriver] Too many sync read handler are added (MAX = 5)";
+    *log = "[DynamixelDriver] Too many sync read handler are added (MAX = 5)";
     return false;
   }
 

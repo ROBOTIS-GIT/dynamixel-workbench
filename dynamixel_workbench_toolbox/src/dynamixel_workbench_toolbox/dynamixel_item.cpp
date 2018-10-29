@@ -922,7 +922,7 @@ static const ModelInfo info_EXTPRO[] = {
 // Get Servo control table for the specified servo type
 //=========================================================
 static uint8_t the_number_of_item = 0;
-const ControlItem *getControlItem(uint16_t model_number)
+const ControlItem *DynamixelItem::getControlTable(uint16_t model_number)
 {
   uint16_t num = model_number;
 
@@ -1008,7 +1008,7 @@ const ControlItem *getControlItem(uint16_t model_number)
   return control_table;
 }
 
-const ModelInfo *getModelInfo(uint16_t model_number)
+const ModelInfo *DynamixelItem::getModelInfo(uint16_t model_number)
 {
   uint16_t num = model_number;
 
@@ -1102,7 +1102,7 @@ const ModelInfo *getModelInfo(uint16_t model_number)
   return info;
 }
 
-uint8_t getTheNumberOfControlItem()
+uint8_t DynamixelItem::getTheNumberOfControlItem()
 {
   return the_number_of_item;
 }

@@ -76,55 +76,55 @@ class DynamixelDriver
 
   bool init(const char* device_name = "/dev/ttyUSB0", 
             uint32_t baud_rate = 57600, 
-            const char* err = "");
+            const char **log = NULL);
 
-  bool setPortHandler(const char *device_name, const char *err = "");
-  bool setBaudrate(uint32_t baud_rate, const char* err = "");
-  bool setPacketHandler(float protocol_version, const char *err = "");
+  bool setPortHandler(const char *device_name, const char **log = NULL);
+  bool setBaudrate(uint32_t baud_rate, const char **log = NULL);
+  bool setPacketHandler(float protocol_version, const char **log = NULL);
 
   float getProtocolVersion(void);
   uint32_t getBaudrate(void);
 
-  const char * getModelName(uint8_t id, const char *err = "");
-  uint16_t getModelNumber(uint8_t id, const char *err = "");
-  const ControlItem *getControlTable(uint8_t id, const char *err = "");
-  uint8_t getTheNumberOfControlItem(uint8_t id, const char *err = "");
+  const char * getModelName(uint8_t id, const char **log = NULL);
+  uint16_t getModelNumber(uint8_t id, const char **log = NULL);
+  const ControlItem *getControlTable(uint8_t id, const char **log = NULL);
+  uint8_t getTheNumberOfControlItem(uint8_t id, const char **log = NULL);
 
   bool scan(uint8_t *get_id,
             uint8_t *get_the_number_of_id, 
-            uint8_t range = 200,
-            const char *err = "");
+            uint8_t range = 253,
+            const char **log = NULL);
   bool ping(uint8_t id, 
             uint16_t *get_model_number,
-            const char *err = "");
+            const char **log = NULL);
 
-  bool reboot(uint8_t id, const char *err = "");
-  bool reset(uint8_t id, const char *err = "");
+  bool reboot(uint8_t id, const char **log = NULL);
+  bool reset(uint8_t id, const char **log = NULL);
 
-  bool writeRegister(uint8_t id, uint16_t address, uint8_t length, uint8_t* data, const char *err = "");
+  bool writeRegister(uint8_t id, uint16_t address, uint8_t length, uint8_t* data, const char **log = NULL);
 
-  bool writeRegister(uint8_t id, const char *item_name, uint8_t data, const char *err = "");
-  bool writeRegister(uint8_t id, const char *item_name, uint16_t data, const char *err = "");
-  bool writeRegister(uint8_t id, const char *item_name, uint32_t data, const char *err = "");
+  bool writeRegister(uint8_t id, const char *item_name, uint8_t data, const char **log = NULL);
+  bool writeRegister(uint8_t id, const char *item_name, uint16_t data, const char **log = NULL);
+  bool writeRegister(uint8_t id, const char *item_name, uint32_t data, const char **log = NULL);
 
-  bool writeOnlyRegister(uint8_t id, uint16_t address, uint16_t length, uint8_t *data, const char *err = "");
+  bool writeOnlyRegister(uint8_t id, uint16_t address, uint16_t length, uint8_t *data, const char **log = NULL);
 
-  bool writeOnlyRegister(uint8_t id, const char *item_name, uint8_t data, const char *err = "");
-  bool writeOnlyRegister(uint8_t id, const char *item_name, uint16_t data, const char *err = "");
-  bool writeOnlyRegister(uint8_t id, const char *item_name, uint32_t data, const char *err = "");  
+  bool writeOnlyRegister(uint8_t id, const char *item_name, uint8_t data, const char **log = NULL);
+  bool writeOnlyRegister(uint8_t id, const char *item_name, uint16_t data, const char **log = NULL);
+  bool writeOnlyRegister(uint8_t id, const char *item_name, uint32_t data, const char **log = NULL);  
 
-  bool readRegister(uint8_t id, uint16_t address, uint16_t length, uint8_t *data, const char *err = "");
+  bool readRegister(uint8_t id, uint16_t address, uint16_t length, uint8_t *data, const char **log = NULL);
 
-  bool readRegister(uint8_t id, const char *item_name, uint8_t *data, const char *err = "");
-  bool readRegister(uint8_t id, const char *item_name, uint16_t *data, const char *err = "");
-  bool readRegister(uint8_t id, const char *item_name, uint32_t *data, const char *err = "");
+  bool readRegister(uint8_t id, const char *item_name, uint8_t *data, const char **log = NULL);
+  bool readRegister(uint8_t id, const char *item_name, uint16_t *data, const char **log = NULL);
+  bool readRegister(uint8_t id, const char *item_name, uint32_t *data, const char **log = NULL);
 
-  bool addSyncWriteHandler(uint8_t id, const char *item_name, const char *err = "");
-  // bool syncWrite(const char *item_name, int32_t *data, const char *err = "");
-  // bool syncWrite(uint8_t *id, uint8_t id_num, const char *item_name, int32_t *data, const char *err = "");
+  bool addSyncWriteHandler(uint8_t id, const char *item_name, const char **log = NULL);
+  // bool syncWrite(const char *item_name, int32_t *data, const char **log = NULL);
+  // bool syncWrite(uint8_t *id, uint8_t id_num, const char *item_name, int32_t *data, const char **log = NULL);
 
-  bool addSyncReadHandler(uint8_t id, const char *item_name, const char *err = "");
-  // bool syncRead(const char *item_name, int32_t *data, const char *err = "");
+  bool addSyncReadHandler(uint8_t id, const char *item_name, const char **log = NULL);
+  // bool syncRead(const char *item_name, int32_t *data, const char **log = NULL);
 
   // void initBulkWrite();
   // bool addBulkWriteParam(uint8_t id, const char *item_name, int32_t data);
@@ -149,8 +149,8 @@ class DynamixelDriver
 
  private:
   void initTools(void);
-  bool setTool(uint16_t model_number, uint8_t id, const char *err = "");
-  uint8_t getTool(uint8_t id, const char *err = "");
+  bool setTool(uint16_t model_number, uint8_t id, const char **log = NULL);
+  uint8_t getTool(uint8_t id, const char **log = NULL);
 
   void wait(uint16_t msec);
 };
