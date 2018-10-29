@@ -126,12 +126,19 @@ class DynamixelDriver
   bool readRegister(uint8_t id, const char *item_name, uint16_t *data, const char **log = NULL);
   bool readRegister(uint8_t id, const char *item_name, uint32_t *data, const char **log = NULL);
 
+  bool addSyncWriteHandler(uint8_t id, uint16_t address, uint16_t length, const char **log = NULL);
   bool addSyncWriteHandler(uint8_t id, const char *item_name, const char **log = NULL);
-  // bool syncWrite(const char *item_name, int32_t *data, const char **log = NULL);
-  // bool syncWrite(uint8_t *id, uint8_t id_num, const char *item_name, int32_t *data, const char **log = NULL);
 
+  bool getParam(uint16_t *data, uint8_t *param);
+  bool getParam(uint32_t *data, uint8_t *param);
+
+  bool syncWrite(uint8_t index, uint8_t *data, const char **log = NULL);
+  bool syncWrite(uint8_t index, uint8_t *id, uint8_t id_num, uint8_t *data, const char **log = NULL);
+
+  bool addSyncReadHandler(uint8_t id, uint16_t address, uint16_t length, const char **log = NULL);
   bool addSyncReadHandler(uint8_t id, const char *item_name, const char **log = NULL);
-  // bool syncRead(const char *item_name, int32_t *data, const char **log = NULL);
+
+  bool syncRead(uint8_t index, uint32_t *data, const char **log = NULL);
 
   // void initBulkWrite();
   // bool addBulkWriteParam(uint8_t id, const char *item_name, int32_t data);

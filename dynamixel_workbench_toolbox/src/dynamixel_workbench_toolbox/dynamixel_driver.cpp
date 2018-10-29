@@ -490,7 +490,7 @@ bool DynamixelDriver::writeRegister(uint8_t id, uint16_t address, uint16_t lengt
                                                         id, 
                                                         address, 
                                                         length, 
-                                                        data, 
+                                                        data,
                                                         &sdk_error.dxl_error);
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
@@ -916,6 +916,25 @@ bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, uint32_t *
   return false;
 }
 
+bool DynamixelDriver::addSyncWriteHandler(uint8_t id, uint16_t address, uint16_t length, const char **log)
+{
+  if (sync_write_handler_cnt_ > (MAX_HANDLER_NUM-1))
+  {
+    *log = "[DynamixelDriver] Too many sync write handler are added (MAX = 5)";
+    return false;
+  }
+
+  syncWriteHandler_[sync_write_handler_cnt_].control_item = NULL;
+
+  syncWriteHandler_[sync_write_handler_cnt_].groupSyncWrite = new dynamixel::GroupSyncWrite(portHandler_,
+                                                                                            packetHandler_,
+                                                                                            address,
+                                                                                            length);
+
+  sync_write_handler_cnt_++;
+  return true;    
+}
+
 bool DynamixelDriver::addSyncWriteHandler(uint8_t id, const char *item_name, const char **log)
 {
   const ControlItem *control_item;
@@ -943,109 +962,95 @@ bool DynamixelDriver::addSyncWriteHandler(uint8_t id, const char *item_name, con
   return true;                                                            
 }
 
-// bool DynamixelDriver::syncWrite(const char *item_name, int32_t *data)
-// {
-//   bool dxl_addparam_result = false;
-//   int dxl_comm_result = COMM_TX_FAIL;
+bool DynamixelDriver::getParam(uint16_t *data, uint8_t *param)
+{
+  param[0] = DXL_LOWORD(data);
+  param[1] = DXL_LOWORD(data);
+}
 
-//   uint8_t data_byte[4] = {0, };
-//   uint8_t cnt = 0;
+bool DynamixelDriver::getParam(uint32_t *data, uint8_t *param)
+{
+  param[0] = DXL_LOBYTE(DXL_LOWORD(data));
+  param[1] = DXL_HIBYTE(DXL_LOWORD(data));
+  param[2] = DXL_LOBYTE(DXL_HIWORD(data));
+  param[3] = DXL_HIBYTE(DXL_HIWORD(data));
+}
 
-//   SyncWriteHandler swh;
-//   bool swh_found = false;
+bool DynamixelDriver::syncWrite(uint8_t index, uint8_t *data, const char **log)
+{
+  ErrorFromSDK sdk_error = {0, false, false, 0};
 
-//   for (int index = 0; index < sync_write_handler_cnt_; index++)
-//   {
-//     if (!strncmp(syncWriteHandler_[index].control_item->item_name, item_name, strlen(item_name)))
-//     {
-//       swh = syncWriteHandler_[index];
-//       swh_found = true;
-//       break;
-//     }
-//   }
+  for (int i = 0; i < tools_cnt_; i++)
+  {
+    for (int j = 0; j < tools_[i].getDynamixelCount(); j++)
+    {
+      sdk_error.dxl_addparam_result = syncWriteHandler_[index].groupSyncWrite->addParam(tools_[i].getID()[j], (uint8_t *)&data);
+      if (sdk_error.dxl_addparam_result != true)
+      {
+        *log = "groupSyncWrite addparam failed";
+        return false;
+      }
+    }
+  }
 
-//   if (!swh_found)
-//   {
-//     return false;
-//   }
+  sdk_error.dxl_comm_result = syncWriteHandler_[index].groupSyncWrite->txPacket();
+  if (sdk_error.dxl_comm_result != COMM_SUCCESS)
+  {
+    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    return false;
+  }
 
-//   for (int i = 0; i < tools_cnt_; i++)
-//   {
-//     for (int j = 0; j < tools_[i].getDynamixelCount(); j++)
-//     {
-//       data_byte[0] = DXL_LOBYTE(DXL_LOWORD(data[cnt]));
-//       data_byte[1] = DXL_HIBYTE(DXL_LOWORD(data[cnt]));
-//       data_byte[2] = DXL_LOBYTE(DXL_HIWORD(data[cnt]));
-//       data_byte[3] = DXL_HIBYTE(DXL_HIWORD(data[cnt]));
+  syncWriteHandler_[index].groupSyncWrite->clearParam();
 
-//       dxl_addparam_result = swh.groupSyncWrite->addParam(tools_[i].getID()[j], (uint8_t *)&data_byte);
-//       if (dxl_addparam_result != true)
-//       {
-//         return false;
-//       }
+  *log = "[DynamixelDriver] Succeeded to sync write!";
+  return true;
+}
 
-//       cnt++;
-//     }
-//   }
+bool DynamixelDriver::syncWrite(uint8_t index, uint8_t *id, uint8_t id_num, uint8_t *data, const char **log)
+{
+  ErrorFromSDK sdk_error = {0, false, false, 0};
 
-//   dxl_comm_result = swh.groupSyncWrite->txPacket();
-//   if (dxl_comm_result != COMM_SUCCESS)
-//   {
-//     return false;
-//   }
-//   swh.groupSyncWrite->clearParam();
-//   return true;
-// }
+  for (int i = 0; i < id_num; i++)
+  {
+    sdk_error.dxl_addparam_result = syncWriteHandler_[index].groupSyncWrite->addParam(id[i], (uint8_t *)&data);
+    if (sdk_error.dxl_addparam_result != true)
+    {
+      *log = "groupSyncWrite addparam failed";
+      return false;
+    }
+  }
 
-// bool DynamixelDriver::syncWrite(uint8_t *id, uint8_t id_num, const char *item_name, int32_t *data)
-// {
-//   bool dxl_addparam_result = false;
-//   int dxl_comm_result = COMM_TX_FAIL;
+  sdk_error.dxl_comm_result = syncWriteHandler_[index].groupSyncWrite->txPacket();
+  if (sdk_error.dxl_comm_result != COMM_SUCCESS)
+  {
+    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    return false;
+  }
 
-//   uint8_t data_byte[4] = {0, };
-//   uint8_t cnt = 0;
+  syncWriteHandler_[index].groupSyncWrite->clearParam();
 
-//   SyncWriteHandler swh;
-//   bool swh_found = false;
+  *log = "[DynamixelDriver] Succeeded to sync write!";
+  return true;
+}
 
-//   for (int index = 0; index < sync_write_handler_cnt_; index++)
-//   {
-//     if (!strncmp(syncWriteHandler_[index].control_item->item_name, item_name, strlen(item_name)))
-//     {
-//       swh = syncWriteHandler_[index];
-//       swh_found = true;
-//       break;
-//     }
-//   }
+bool DynamixelDriver::addSyncReadHandler(uint8_t id, uint16_t address, uint16_t length, const char **log)
+{
+  if (sync_read_handler_cnt_ > (MAX_HANDLER_NUM-1))
+  {
+    *log = "[DynamixelDriver] Too many sync read handler are added (MAX = 5)";
+    return false;
+  }
 
-//   if (!swh_found)
-//   {
-//     return false;
-//   }
-  
-//   for (int i = 0; i < id_num; i++)
-//   {
-//     data_byte[0] = DXL_LOBYTE(DXL_LOWORD(data[cnt]));
-//     data_byte[1] = DXL_HIBYTE(DXL_LOWORD(data[cnt]));
-//     data_byte[2] = DXL_LOBYTE(DXL_HIWORD(data[cnt]));
-//     data_byte[3] = DXL_HIBYTE(DXL_HIWORD(data[cnt]));
+  syncReadHandler_[sync_read_handler_cnt_].control_item = NULL;
 
-//     dxl_addparam_result = swh.groupSyncWrite->addParam(id[i], (uint8_t *)&data_byte);
-//     if (dxl_addparam_result != true)
-//     {
-//       return false;
-//     }
-//     cnt++;
-//   }
+  syncReadHandler_[sync_read_handler_cnt_++].groupSyncRead = new dynamixel::GroupSyncRead(portHandler_,
+                                                                                          packetHandler_,
+                                                                                          address,
+                                                                                          length);
 
-//   dxl_comm_result = swh.groupSyncWrite->txPacket();
-//   if (dxl_comm_result != COMM_SUCCESS)
-//   {
-//     return false;
-//   }
-//   swh.groupSyncWrite->clearParam();
-//   return true;
-// }
+  sync_read_handler_cnt_++;
+  return true;
+}
 
 bool DynamixelDriver::addSyncReadHandler(uint8_t id, const char *item_name, const char **log)
 {
@@ -1074,68 +1079,56 @@ bool DynamixelDriver::addSyncReadHandler(uint8_t id, const char *item_name, cons
   return true;       
 }
 
-// bool DynamixelDriver::syncRead(const char *item_name, int32_t *data)
-// {
-//   int dxl_comm_result = COMM_RX_FAIL;
-//   bool dxl_addparam_result = false;
-//   bool dxl_getdata_result = false;
+bool DynamixelDriver::syncRead(uint8_t index, uint32_t *data, const char **log)
+{
+  ErrorFromSDK sdk_error = {0, false, false, 0};
 
-//   int index = 0;
+  for (int i = 0; i < tools_cnt_; i++)
+  {
+    for (int j = 0; j < tools_[i].getDynamixelCount(); j++)
+    {
+      sdk_error.dxl_addparam_result = syncReadHandler_[index].groupSyncRead->addParam(tools_[i].getID()[j]);
+      if (sdk_error.dxl_addparam_result != true)
+      {
+        *log = "groupSyncWrite addparam failed";
+        return false;
+      }
+    }
+  }
 
-//   SyncReadHandler srh;
-//   bool srh_found = false;
-  
-//   for (int index = 0; index < sync_read_handler_cnt_; index++)
-//   {
-//     if (!strncmp(syncReadHandler_[index].control_item->item_name, item_name, strlen(item_name)))
-//     {
-//       srh = syncReadHandler_[index];
-//       srh_found = true;
-//       break; // Found it, don't need to continue search
-//     }
-//   }
-//   if (!srh_found)
-//   {
-//     return false; // did not find item_name in list
-//   }
-//   for (int i = 0; i < tools_cnt_; i++)
-//   {
-//     for (int j = 0; j < tools_[i].getDynamixelCount(); j++)
-//     {
-//       dxl_addparam_result = srh.groupSyncRead->addParam(tools_[i].getID()[j]);
-//       if (dxl_addparam_result != true)
-//         return false;
-//     }
-//   }
+  sdk_error.dxl_comm_result = syncReadHandler_[index].groupSyncRead->txRxPacket();
+  if (sdk_error.dxl_comm_result != COMM_SUCCESS)
+  {
+    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    return false;
+  }
 
-//   dxl_comm_result = srh.groupSyncRead->txRxPacket();
-//   if (dxl_comm_result != COMM_SUCCESS)
-//   {
-//     return false;
-//   }
+  for (int i = 0; i < tools_cnt_; i++)
+  {
+    for (int j = 0; j < tools_[i].getDynamixelCount(); j++)
+    {
+      sdk_error.dxl_getdata_result = syncReadHandler_[index].groupSyncRead->isAvailable(tools_[i].getID()[j], 
+                                                                                        syncReadHandler_[index].control_item->address, 
+                                                                                        syncReadHandler_[index].control_item->data_length);
+      if (sdk_error.dxl_getdata_result != true)
+      {
+        *log = "groupSyncRead getdata failed";
+        return false;
+      }
+      else
+      {
+        data[i+j] = syncReadHandler_[index].groupSyncRead->getData(tools_[i].getID()[j], 
+                                                                    syncReadHandler_[index].control_item->address, 
+                                                                    syncReadHandler_[index].control_item->data_length);
+      }
+    }
+  }
 
-//   for (int i = 0; i < tools_cnt_; i++)
-//   {
-//     for (int j = 0; j < tools_[i].getDynamixelCount(); j++)
-//     {
-//       uint8_t id = tools_[i].getID()[j];
+  syncReadHandler_[index].groupSyncRead->clearParam();
 
-//       dxl_getdata_result = srh.groupSyncRead->isAvailable(id, srh.control_item->address, srh.control_item->data_length);
-//       if (dxl_getdata_result)
-//       {
-//         data[index++] = srh.groupSyncRead->getData(id, srh.control_item->address, srh.control_item->data_length);
-//       }
-//       else
-//       {
-//         return false;
-//       }
-//     }
-//   }
-
-//   srh.groupSyncRead->clearParam();
-
-//   return true;
-// }
+  *log = "[DynamixelDriver] Succeeded to sync read!";
+  return true;
+}
 
 // void DynamixelDriver::initBulkWrite()
 // {
