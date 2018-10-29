@@ -20,8 +20,8 @@ else()
   target_link_libraries(dynamixel_workbench LINK_PUBLIC "/usr/local/lib/libdxl_x64_cpp.so")
 endif()
 
-add_executable(model_scan src/a_Model_Scan.cpp)
-target_link_libraries(model_scan LINK_PUBLIC dynamixel_workbench)
+# add_executable(model_scan src/a_Model_Scan.cpp)
+# target_link_libraries(model_scan LINK_PUBLIC dynamixel_workbench)
 
 add_executable(monitor src/s_Monitor.cpp)
 target_link_libraries(monitor LINK_PUBLIC dynamixel_workbench)
