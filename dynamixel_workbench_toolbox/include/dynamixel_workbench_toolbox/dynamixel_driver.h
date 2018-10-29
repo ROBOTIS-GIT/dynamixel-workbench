@@ -139,6 +139,7 @@ class DynamixelDriver
   bool addSyncReadHandler(uint8_t id, const char *item_name, const char **log = NULL);
 
   bool syncRead(uint8_t index, uint32_t *data, const char **log = NULL);
+  bool syncRead(uint8_t index, uint8_t *id, uint8_t id_num, uint32_t *data, const char **log = NULL);
 
   // void initBulkWrite();
   // bool addBulkWriteParam(uint8_t id, const char *item_name, int32_t data);

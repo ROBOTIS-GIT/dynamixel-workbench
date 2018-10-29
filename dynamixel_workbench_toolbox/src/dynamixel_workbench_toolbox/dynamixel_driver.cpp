@@ -1147,6 +1147,51 @@ bool DynamixelDriver::syncRead(uint8_t index, uint32_t *data, const char **log)
   return true;
 }
 
+bool DynamixelDriver::syncRead(uint8_t index, uint8_t *id, uint8_t id_num, uint32_t *data, const char **log)
+{
+  ErrorFromSDK sdk_error = {0, false, false, 0};
+
+  for (int i = 0; i < id_num; i++)
+  {
+    sdk_error.dxl_addparam_result = syncReadHandler_[index].groupSyncRead->addParam(id[i]);
+    if (sdk_error.dxl_addparam_result != true)
+    {
+      *log = "groupSyncWrite addparam failed";
+      return false;
+    }
+  }
+
+  sdk_error.dxl_comm_result = syncReadHandler_[index].groupSyncRead->txRxPacket();
+  if (sdk_error.dxl_comm_result != COMM_SUCCESS)
+  {
+    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    return false;
+  }
+
+  for (int i = 0; i < id_num; i++)
+  {
+    sdk_error.dxl_getdata_result = syncReadHandler_[index].groupSyncRead->isAvailable(id[i], 
+                                                                                      syncReadHandler_[index].control_item->address, 
+                                                                                      syncReadHandler_[index].control_item->data_length);
+    if (sdk_error.dxl_getdata_result != true)
+    {
+      *log = "groupSyncRead getdata failed";
+      return false;
+    }
+    else
+    {
+      data[i] = syncReadHandler_[index].groupSyncRead->getData(id[i], 
+                                                                syncReadHandler_[index].control_item->address, 
+                                                                syncReadHandler_[index].control_item->data_length);
+    }
+  }
+
+  syncReadHandler_[index].groupSyncRead->clearParam();
+
+  *log = "[DynamixelDriver] Succeeded to sync read!";
+  return true;
+}
+
 // void DynamixelDriver::initBulkWrite()
 // {
 //   groupBulkWrite_ = new dynamixel::GroupBulkWrite(portHandler_, packetHandler_[0]);

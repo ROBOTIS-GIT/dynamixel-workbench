@@ -261,7 +261,7 @@ bool monitoring()
             else
             {
               printf("%s\n", log);
-              printf("data : %d\n", data);
+              printf("data[0] : %d, data[1] : %d\n", data[0], data[1]);
             }
           }
         }
