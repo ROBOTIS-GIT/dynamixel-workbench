@@ -215,7 +215,7 @@ uint8_t DynamixelDriver::getTheNumberOfControlItem(uint8_t id, const char **log)
   return tools_[factor].getTheNumberOfControlItem();
 }
 
-bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_the_number_of_id, uint8_t range, const char **log)
+bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_the_number_of_id, uint8_t start_num, uint8_t end_num, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
   bool result = false;
@@ -225,13 +225,13 @@ bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_the_number_of_id, uint8
 
   uint16_t model_number = 0;
 
-  uint8_t get_range = range;
+  uint8_t get_end_num = end_num;
 
-  if (get_range > 253) get_range = 253;
+  if (end_num > 253) end_num = 253;
 
   initTools();
 
-  for (id = 0; id <= get_range; id++)
+  for (id = start_num; id <= end_num; id++)
   {
     sdk_error.dxl_comm_result = packetHandler_1_0->ping(portHandler_, id, &model_number, &sdk_error.dxl_error);
     
@@ -257,7 +257,7 @@ bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_the_number_of_id, uint8
     return result;
   }
 
-  for (id = 0; id <= get_range; id++)
+  for (id = start_num; id <= end_num; id++)
   {
     sdk_error.dxl_comm_result = packetHandler_2_0->ping(portHandler_, id, &model_number, &sdk_error.dxl_error);
     
@@ -284,6 +284,11 @@ bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_the_number_of_id, uint8
   }
 
   return false;
+}
+
+bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_the_number_of_id, uint8_t range, const char **log)
+{
+  return scan(get_id, get_the_number_of_id, 0, range, log);
 }
 
 bool DynamixelDriver::ping(uint8_t id, uint16_t *get_model_number, const char **log)
@@ -490,10 +495,12 @@ bool DynamixelDriver::writeRegister(uint8_t id, uint16_t address, uint16_t lengt
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
     *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    return false;
   }
   else if (sdk_error.dxl_error != 0)
   {
     *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+    return false;
   }
   else
   {
@@ -741,14 +748,14 @@ bool DynamixelDriver::readRegister(uint8_t id, uint16_t address, uint16_t length
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
-  uint8_t data_read[4] = {0, 0, 0, 0};
+  uint8_t data_read[length] = {0, 0, 0, 0};
 
   sdk_error.dxl_comm_result = packetHandler_->readTxRx(portHandler_, 
-                                                       id, 
-                                                       address,
-                                                       length, 
-                                                       (uint8_t *)&data_read, 
-                                                       &sdk_error.dxl_error);
+                                                      id, 
+                                                      address,
+                                                      length, 
+                                                      (uint8_t *)&data_read, 
+                                                      &sdk_error.dxl_error);
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
     *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
@@ -761,10 +768,31 @@ bool DynamixelDriver::readRegister(uint8_t id, uint16_t address, uint16_t length
   }
   else
   {
-    *data = DXL_MAKEDWORD(DXL_MAKEWORD(data_read[0], data_read[1]), DXL_MAKEWORD(data_read[2], data_read[3]));
+    switch (length)
+    {
+      case BYTE:
+        *data = data_read[0];
+       break;
+
+      case WORD:
+        *data = DXL_MAKEWORD(data_read[0], data_read[1]);
+       break;
+
+      case DWORD:
+        *data = DXL_MAKEDWORD(DXL_MAKEWORD(data_read[0], data_read[1]), DXL_MAKEWORD(data_read[2], data_read[3]));
+       break;
+
+      default:
+        for (uint16_t index = 0; index < length; index++)
+        {
+          data[index] = (uint32_t)data_read[index];
+        }
+       break;
+    }
     *log = "[DynamixelDriver] Succeeded to read!";
     return true;
   }
+
   return false;
 }
 
