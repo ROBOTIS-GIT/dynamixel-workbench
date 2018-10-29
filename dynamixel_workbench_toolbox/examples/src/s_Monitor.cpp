@@ -62,6 +62,9 @@ bool monitoring()
   char *token;
   bool valid_cmd = false;
 
+  bool wb_result = false;
+  const char *log;
+
   if (kbhit())
   {
     if (getchar() == ENTER_ASCII_VALUE)
@@ -98,26 +101,32 @@ bool monitoring()
         uint32_t baud = 57600;
         
         baud = atoi(param[0]);
-        if (dxl_wb.begin(DEVICE_NAME, baud))
-          printf("Succeed to begin(%d)\n", baud);
+        wb_result = dxl_wb.init(DEVICE_NAME, baud, &log);
+        if (wb_result == false)
+        {
+          printf("%s\n", log);
+          printf("Failed to init\n");
+        }
         else
-          printf("Failed to begin\n");
+          printf("Succeed to init(%d)\n", baud);          
       }
       else if (strcmp(cmd, "scan") == 0)
       {
-        uint8_t range = 100;  // default
+        uint8_t range = 16;  // default
         
         range = atoi(param[0]);
-        dxl_wb.scan(get_id, &scan_cnt, range);
-
-        if (scan_cnt == 0)
-          printf("Can't find Dynamixel\n");
+        wb_result = dxl_wb.scan(get_id, &scan_cnt, range, &log);
+        if (wb_result == false)
+        {
+          printf("%s\n", log);
+          printf("Failed to scan\n");
+        }
         else
         {
           printf("Find %d Dynamixels\n", scan_cnt);
 
           for (int cnt = 0; cnt < scan_cnt; cnt++)
-            printf("ID : %d\n", get_id[cnt]);
+            printf("id : %d\n", get_id[cnt]);
         }
       }
       else if (strcmp(cmd, "ping") == 0)
@@ -128,133 +137,196 @@ bool monitoring()
 
         uint16_t model_number = 0;
 
-        if (dxl_wb.ping(get_id[ping_cnt], &model_number))
+        wb_result = dxl_wb.ping(get_id[ping_cnt], &model_number, &log);
+        if (wb_result == false)
+        {
+          printf("%s\n", log);
+          printf("Failed to ping\n");
+        }
+        else
         {
           printf("id : %d, model_number : %d\n", get_id[ping_cnt], model_number);
           ping_cnt++;
         }
-        else
-          printf("Failed to ping\n");
       }
       else if (isAvailableID(atoi(param[0])))
       {
         if (strcmp(cmd, "info") == 0)
         {
-          // Lets loop through all of the information for this servo...
-          uint8_t id     = atoi(param[0]);
+          uint8_t id = atoi(param[0]);
 
-          // first print model number stuff
-          uint16_t model_number = 0;
-          const ControlTableItem *cti =  dxl_wb.getControlItemPtr(id);
-          uint8_t cti_count = dxl_wb.getControlItemCount(id);
+          const ControlItem *control_item =  dxl_wb.getControlTable(id);
+          uint8_t the_number_of_control_item = dxl_wb.getTheNumberOfControlItem(id);
 
-          if (cti)
+          uint16_t last_register_addr = control_item[the_number_of_control_item-1].address;
+          uint16_t last_register_addr_length = control_item[the_number_of_control_item-1].data_length;
+
+          printf("last_register_addr : %d, last_register_addr_length: %d \n", last_register_addr, last_register_addr_length);
+
+          uint32_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+
+          if (control_item != NULL)
           {
-            if (dxl_wb.ping(id, &model_number))
+            wb_result = dxl_wb.readRegister(id, (uint16_t)0, last_register_addr+last_register_addr_length, getAllRegisteredData, &log);
+            if (wb_result == false)
             {
-              printf("id : %d, model_number : %d (%s)\n", id, model_number, dxl_wb.getModelName(id));
+              printf("%s\n", log);
+              return 0;
             }
-            while (cti_count--)
+            else
             {
-              printf("\t%s : %d\n", cti->item_name, dxl_wb.itemRead(id, cti->item_name));
-              cti++;
+              for (int index = 0; index < the_number_of_control_item; index++)
+              {
+                uint32_t data = 0;
+
+                switch (control_item[index].data_length)
+                {
+                  case BYTE:
+                    data = getAllRegisteredData[control_item[index].address];
+                    printf("\t%s : %d\n", control_item[index].item_name, data);
+                   break;
+
+                  case WORD:
+                    data = DXL_MAKEWORD(getAllRegisteredData[control_item[index].address], getAllRegisteredData[control_item[index].address+1]);
+                    printf("\t%s : %d\n", control_item[index].item_name, data);
+                   break;
+
+                  case DWORD:
+                    data = DXL_MAKEDWORD(DXL_MAKEWORD(getAllRegisteredData[control_item[index].address],   getAllRegisteredData[control_item[index].address+1]),
+                                              DXL_MAKEWORD(getAllRegisteredData[control_item[index].address+2], getAllRegisteredData[control_item[index].address+3]));
+                    printf("\t%s : %d\n", control_item[index].item_name, data);
+                   break;
+
+                  default:
+                    data = getAllRegisteredData[control_item[index].address];
+                   break;
+                } 
+              }
             }
           }
         }
+        // else if (strcmp(cmd, "id") == 0)
+        // {
+        //   uint8_t id     = atoi(param[0]);
+        //   uint8_t new_id = atoi(param[1]);
 
-        else if (strcmp(cmd, "id") == 0)
-        {
-          uint8_t id     = atoi(param[0]);
-          uint8_t new_id = atoi(param[1]);
+        //   if (dxl_wb.setID(id, new_id))
+        //     printf("Succeed to change ID");
+        //   else
+        //     printf("Failed");
+        // }
+        // else if (strcmp(cmd, "baud") == 0)
+        // {
+        //   uint8_t  id       = atoi(param[0]);
+        //   uint32_t  new_baud  = atoi(param[1]);
 
-          if (dxl_wb.setID(id, new_id))
-            printf("Succeed to change ID");
-          else
-            printf("Failed");
+        //   if (dxl_wb.setBaud(id, new_baud))
+        //     printf("Succeed to change BaudRate\n");
+        //   else
+        //     printf("Failed\n");
 
-        }
-        else if (strcmp(cmd, "baud") == 0)
-        {
-          uint8_t  id       = atoi(param[0]);
-          uint32_t  new_baud  = atoi(param[1]);
+        // }
+        // else if (strcmp(cmd, "torque") == 0)
+        // {
+        //   uint8_t id       = atoi(param[0]);
+        //   uint8_t onoff    = atoi(param[1]);
 
-          if (dxl_wb.setBaud(id, new_baud))
-            printf("Succeed to change BaudRate\n");
-          else
-            printf("Failed\n");
+        //   if (dxl_wb.itemWrite(id, "Torque_Enable", onoff))
+        //     printf("Succeed to torque command!!\n");
+        //   else
+        //     printf("Failed\n");
 
-        }
-        else if (strcmp(cmd, "torque") == 0)
-        {
-          uint8_t id       = atoi(param[0]);
-          uint8_t onoff    = atoi(param[1]);
+        // }
+        // else if (strcmp(cmd, "joint") == 0)
+        // {
+        //   uint8_t id    = atoi(param[0]);
+        //   uint16_t goal = atoi(param[1]);
 
-          if (dxl_wb.itemWrite(id, "Torque_Enable", onoff))
-            printf("Succeed to torque command!!\n");
-          else
-            printf("Failed\n");
+        //   dxl_wb.jointMode(id);
+        //   if (dxl_wb.goalPosition(id, goal))
+        //     printf("Succeed to joint command!!\n");
+        //   else
+        //     printf("Failed\n");
 
-        }
-        else if (strcmp(cmd, "joint") == 0)
-        {
-          uint8_t id    = atoi(param[0]);
-          uint16_t goal = atoi(param[1]);
+        // }
+        // else if (strcmp(cmd, "wheel") == 0)
+        // {
+        //   uint8_t id    = atoi(param[0]);
+        //   int32_t goal  = atoi(param[1]);
 
-          dxl_wb.jointMode(id);
-          if (dxl_wb.goalPosition(id, goal))
-            printf("Succeed to joint command!!\n");
-          else
-            printf("Failed\n");
-
-        }
-        else if (strcmp(cmd, "wheel") == 0)
-        {
-          uint8_t id    = atoi(param[0]);
-          int32_t goal  = atoi(param[1]);
-
-          dxl_wb.wheelMode(id);
-          if (dxl_wb.goalSpeed(id, goal))
-            printf("Succeed to wheel command!!\n");
-          else
-            printf("Failed\n");
-        }
+        //   dxl_wb.wheelMode(id);
+        //   if (dxl_wb.goalSpeed(id, goal))
+        //     printf("Succeed to wheel command!!\n");
+        //   else
+        //     printf("Failed\n");
+        // }
         else if (strcmp(cmd, "write") == 0)
         {
           uint8_t id = atoi(param[0]);
-          int32_t value = atoi(param[2]);
+          uint32_t value = atoi(param[2]);
 
-          if (dxl_wb.itemWrite(id, param[1], value))
+          wb_result = dxl_wb.writeRegister(id, param[1], value, &log);
+          if (wb_result == false)
           {
-            printf("Succeed to write command!!\n");
+            printf("%s\n", log);
+            printf("Failed to write\n");
+            return 0;
           }
           else
-            printf("Failed\n");
+          {
+            printf("%s\n", log);
+          }
         }
         else if (strcmp(cmd, "read") == 0)
         {
           uint8_t id = atoi(param[0]);
 
-          int32_t value = dxl_wb.itemRead(id, param[1]);
-
-          printf("read data : %d\n", value);
+          uint32_t data = 0;
+          
+          wb_result = dxl_wb.readRegister(id, param[1], &data, &log);
+          if (wb_result == false)
+          {
+            printf("%s\n", log);
+            printf("Failed to read\n");
+            return 0;
+          }
+          else
+          {
+            printf("%s\n", log);
+            printf("read data : %d\n", data);
+          }
         }
         else if (strcmp(cmd, "reboot") == 0)
         {
           uint8_t id = atoi(param[0]);
 
-          if (dxl_wb.reboot(id))
-            printf("Succeed to reboot\n");
-          else
+          wb_result = dxl_wb.reboot(id, &log);
+          if (wb_result == false)
+          {
+            printf("%s\n", log);
             printf("Failed to reboot\n");
+            return 0;
+          }
+          else
+          {
+            printf("%s\n", log);
+          }
         }
         else if (strcmp(cmd, "reset") == 0)
         {
           uint8_t id = atoi(param[0]);
 
-          if (dxl_wb.reset(id))
-            printf("Succeed to reset\n");
-          else
+          wb_result = dxl_wb.reset(id, &log);
+          if (wb_result == false)
+          {
+            printf("%s\n", log);
             printf("Failed to reset\n");
+            return 0;
+          }
+          else
+          {
+            printf("%s\n", log);
+          }
         }
         else
         {
