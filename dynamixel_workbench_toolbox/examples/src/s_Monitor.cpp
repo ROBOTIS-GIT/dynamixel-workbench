@@ -161,8 +161,6 @@ bool monitoring()
           uint16_t last_register_addr = control_item[the_number_of_control_item-1].address;
           uint16_t last_register_addr_length = control_item[the_number_of_control_item-1].data_length;
 
-          printf("last_register_addr : %d, last_register_addr_length: %d \n", last_register_addr, last_register_addr_length);
-
           uint32_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
 
           if (control_item != NULL)
@@ -193,7 +191,7 @@ bool monitoring()
 
                   case DWORD:
                     data = DXL_MAKEDWORD(DXL_MAKEWORD(getAllRegisteredData[control_item[index].address],   getAllRegisteredData[control_item[index].address+1]),
-                                              DXL_MAKEWORD(getAllRegisteredData[control_item[index].address+2], getAllRegisteredData[control_item[index].address+3]));
+                                         DXL_MAKEWORD(getAllRegisteredData[control_item[index].address+2], getAllRegisteredData[control_item[index].address+3]));
                     printf("\t%s : %d\n", control_item[index].item_name, data);
                    break;
 
