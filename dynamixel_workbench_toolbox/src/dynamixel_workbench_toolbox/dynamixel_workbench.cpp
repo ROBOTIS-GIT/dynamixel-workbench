@@ -27,7 +27,7 @@ DynamixelWorkbench::~DynamixelWorkbench()
 {
 
 }
-
+#if 0
 bool DynamixelWorkbench::begin(const char* device_name, uint32_t baud_rate)
 {
   bool isOK = false;
@@ -636,3 +636,4 @@ uint8_t DynamixelWorkbench::getControlItemCount(uint8_t id)
 {
   return driver_.getTheNumberOfItem(id);
 }
+#endif
