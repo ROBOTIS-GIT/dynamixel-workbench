@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright 2016 ROBOTIS CO., LTD.
+* Copyright 2018 ROBOTIS CO., LTD.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -18,228 +18,370 @@
 
 #include "../../include/dynamixel_workbench_toolbox/dynamixel_workbench.h"
 
-DynamixelWorkbench::DynamixelWorkbench()
-{
+// MX
+// Wheel Mode	both are 0
+// Joint Mode	neither are 0
+// Multi-turn Mode	both are 4095
 
+static const uint8_t XL_320_WHEEL_MODE = 1;
+static const uint8_t XL_320_JOINT_MODE = 2;
+
+static const uint8_t SERIES_CURRENT_CONTROL_MODE                  = 0;
+static const uint8_t SERIES_TORQUE_CONTROL_MODE                 = 0;
+static const uint8_t SERIES_VELOCITY_CONTROL_MODE                 = 1;
+static const uint8_t SERIES_POSITION_CONTROL_MODE                 = 3;
+static const uint8_t SERIES_EXTENDED_POSITION_CONTROL_MODE        = 4;
+static const uint8_t SERIES_CURRENT_BASED_POSITION_CONTROL_MODE   = 5;
+static const uint8_t SERIES_VOLTAGE_CONTROL_MODE                  = 16;
+
+DynamixelWorkbench::DynamixelWorkbench(){}
+
+DynamixelWorkbench::~DynamixelWorkbench(){}
+
+bool DynamixelWorkbench::torque(uint8_t id, bool onoff, const char **log)
+{
+  bool result = false;
+
+  result = writeRegister(id, "Torque_Enable", (uint8_t)onoff, log);
+  if (result == false)
+    return false;
+
+  *log = "[DynamixelWorkbench] Succeeded to change torque status!";
+  return true;
 }
 
-DynamixelWorkbench::~DynamixelWorkbench()
+bool DynamixelWorkbench::torqueOn(uint8_t id, const char **log)
 {
+  bool result = false;
 
-}
-#if 0
-bool DynamixelWorkbench::begin(const char* device_name, uint32_t baud_rate)
-{
-  bool isOK = false;
+  result = torque(id, (uint8_t)1, log);
 
-  isOK = driver_.init(device_name, baud_rate);
-
-  return isOK;
+  return result;
 }
 
-bool DynamixelWorkbench::scan(uint8_t *get_id, uint8_t *get_id_num, uint8_t range)
+bool DynamixelWorkbench::torqueOff(uint8_t id, const char **log)
 {
-  bool isOK = false;
+  bool result = false;
 
-  isOK = driver_.scan(get_id, get_id_num, range);
+  result = torque(id, (uint8_t)0, log);
 
-  return isOK;
+  return result;
 }
 
-bool DynamixelWorkbench::ping(uint8_t id, uint16_t *get_model_number)
+bool DynamixelWorkbench::setID(uint8_t id, uint8_t new_id, const char **log)
 {
-  bool isOK = false;
+  bool result = false;
 
-  isOK = driver_.ping(id, get_model_number);
+  result = torqueOff(id, log);
+  if (result == false) return false;
 
-  return isOK;
+  result = writeRegister(id, "ID", new_id, log);
+  // millis(1000);
+  if (result == false) return false;
+
+  *log = "[DynamixelWorkbench] Succeeded to change ID!";
+  return result;
 }
 
-bool DynamixelWorkbench::reboot(uint8_t id)
+bool DynamixelWorkbench::setBaud(uint8_t id, uint32_t new_baudrate, const char **log)
 {
-  bool isOK = false;
+  bool result = false;
 
-  isOK = driver_.reboot(id);
+  result = torqueOff(id, log);
+  if (result == false) return false;
 
-  return isOK;
-}
-
-bool DynamixelWorkbench::reset(uint8_t id)
-{
-  bool isOK = false;
-
-  isOK = driver_.reset(id);
-
-  return isOK;
-}
-
-bool DynamixelWorkbench::setID(uint8_t id, uint8_t new_id)
-{
-  bool comm_result = false;
-
-  torque(id, false);
-
-  comm_result = driver_.writeRegister(id, "ID", new_id);
-
-  millis(1000);
-
-  return comm_result;
-}
-
-bool DynamixelWorkbench::setBaud(uint8_t id, uint32_t new_baud)
-{
-  bool comm_result = false;
-
-  torque(id, false);
-
-  if (driver_.getProtocolVersion() == 1.0)
+  if (getProtocolVersion() == 1.0f)
   {
-    if (new_baud == 9600)
-      comm_result = driver_.writeRegister(id, "Baud_Rate", 207);
-    else if (new_baud == 19200)
-      comm_result = driver_.writeRegister(id, "Baud_Rate", 103);
-    else if (new_baud == 57600)
-      comm_result = driver_.writeRegister(id, "Baud_Rate", 34);
-    else if (new_baud == 115200)
-      comm_result = driver_.writeRegister(id, "Baud_Rate", 16);
-    else if (new_baud == 200000)
-      comm_result = driver_.writeRegister(id, "Baud_Rate", 9);
-    else if (new_baud == 250000)
-      comm_result = driver_.writeRegister(id, "Baud_Rate", 7);
-    else if (new_baud == 400000)
-      comm_result = driver_.writeRegister(id, "Baud_Rate", 4);
-    else if (new_baud == 500000)
-      comm_result = driver_.writeRegister(id, "Baud_Rate", 3);
-    else if (new_baud == 1000000)
-      comm_result = driver_.writeRegister(id, "Baud_Rate", 1);
-    else
-      comm_result = driver_.writeRegister(id, "Baud_Rate", 34);
+    switch (new_baudrate)
+    {
+      case 9600:
+        result = writeRegister(id, "Baud_Rate", (uint8_t)207, log);
+        if (result == false) return false;
+       break;
+
+      case 19200:
+        result = writeRegister(id, "Baud_Rate", (uint8_t)103, log);
+        if (result == false) return false;
+       break;
+
+      case 57600:
+        result = writeRegister(id, "Baud_Rate", (uint8_t)34, log);
+        if (result == false) return false;
+       break;
+
+      case 115200:
+        result = writeRegister(id, "Baud_Rate", (uint8_t)16, log);
+        if (result == false) return false;
+       break;
+
+      case 200000:
+        result = writeRegister(id, "Baud_Rate", (uint8_t)9, log);
+        if (result == false) return false;    
+       break;
+
+      case 250000:
+        result = writeRegister(id, "Baud_Rate", (uint8_t)7, log);
+        if (result == false) return false;       
+       break;
+       
+      case 400000:
+        result = writeRegister(id, "Baud_Rate", (uint8_t)4, log);
+        if (result == false) return false;       
+       break;
+
+      case 500000:
+        result = writeRegister(id, "Baud_Rate", (uint8_t)3, log);
+        if (result == false) return false;       
+       break;
+
+      case 1000000:
+        result = writeRegister(id, "Baud_Rate", (uint8_t)1, log);
+        if (result == false) return false;       
+       break;
+
+      case 2250000:
+        result = writeRegister(id, "Baud_Rate", (uint8_t)250, log);
+        if (result == false) return false;       
+       break;
+
+      case 2500000:
+        result = writeRegister(id, "Baud_Rate", (uint8_t)251, log);
+        if (result == false) return false;       
+       break;
+
+      case 3000000:
+        result = writeRegister(id, "Baud_Rate", (uint8_t)252, log);
+        if (result == false) return false;       
+       break;
+       
+      default:
+        result = writeRegister(id, "Baud_Rate", (uint8_t)34, log);
+        if (result == false) return false;
+       break;
+    }
   }
-  else if (driver_.getProtocolVersion() == 2.0)
+  else if (getProtocolVersion() == 2.0f)
   {    
-    if (new_baud == 9600)
-      comm_result = driver_.writeRegister(id, "Baud_Rate", 0);
-    else if (new_baud == 57600)
-      comm_result = driver_.writeRegister(id, "Baud_Rate", 1);
-    else if (new_baud == 115200)
-      comm_result = driver_.writeRegister(id, "Baud_Rate", 2);
-    else if (new_baud == 1000000)
-      comm_result = driver_.writeRegister(id, "Baud_Rate", 3);
-    else if (new_baud == 2000000)
-      comm_result = driver_.writeRegister(id, "Baud_Rate", 4);
-    else if (new_baud == 3000000)
-      comm_result = driver_.writeRegister(id, "Baud_Rate", 5);
-    else if (new_baud == 4000000)
-      comm_result = driver_.writeRegister(id, "Baud_Rate", 6);
-    else if (new_baud == 4500000)
-      comm_result = driver_.writeRegister(id, "Baud_Rate", 7);
-    else if (new_baud == 10500000)
-      comm_result = driver_.writeRegister(id, "Baud_Rate", 8);
-    else
-      comm_result = driver_.writeRegister(id, "Baud_Rate", 1);
+    switch (new_baudrate)
+    {
+      case 9600:
+        result = writeRegister(id, "Baud_Rate", (uint8_t)0, log);
+        if (result == false) return false;       
+       break;
+
+      case 57600:
+        result = writeRegister(id, "Baud_Rate", (uint8_t)1, log);
+        if (result == false) return false;       
+       break;
+
+      case 115200:
+        result = writeRegister(id, "Baud_Rate", (uint8_t)2, log);
+        if (result == false) return false;       
+       break;
+
+      case 1000000:
+        result = writeRegister(id, "Baud_Rate", (uint8_t)3, log);
+        if (result == false) return false;       
+       break;
+
+      case 2000000:
+        result = writeRegister(id, "Baud_Rate", (uint8_t)4, log);
+        if (result == false) return false;       
+       break;
+
+      case 3000000:
+        result = writeRegister(id, "Baud_Rate", (uint8_t)5, log);
+        if (result == false) return false;       
+       break;
+       
+      case 4000000:
+        result = writeRegister(id, "Baud_Rate", (uint8_t)6, log);
+        if (result == false) return false;       
+       break;
+
+      case 4500000:
+        result = writeRegister(id, "Baud_Rate", (uint8_t)7, log);
+        if (result == false) return false;       
+       break;
+
+      case 10500000:
+        result = writeRegister(id, "Baud_Rate", (uint8_t)8, log);
+        if (result == false) return false;       
+       break;
+       
+      default:
+        result = writeRegister(id, "Baud_Rate", (uint8_t)1, log);
+        if (result == false) return false;       
+       break;
+    }
   }
-  millis(2000);
+#if defined(__OPENCR__) || defined(__OPENCM904__)
+    delay(2000);
+#else
+    usleep(1000*2000);
+#endif
 
-  return comm_result;
+  *log = "[DynamixelWorkbench] Succeeded to change Baud Rate!";
+  return result;
 }
 
-bool DynamixelWorkbench::setPacketHandler(float protocol_version)
+
+bool DynamixelWorkbench::led(uint8_t id, bool onoff, const char **log)
 {
-  return driver_.setPacketHandler(protocol_version);
+  bool result = false;
+
+  result = writeRegister(id, "LED", (uint8_t)onoff, log);
+  if (result == false)
+    return false;
+
+  *log = "[DynamixelWorkbench] Succeeded to change led status!";
+  return true;
 }
 
-float DynamixelWorkbench::getProtocolVersion()
+bool DynamixelWorkbench::ledOn(uint8_t id, const char **log)
 {
-  return driver_.getProtocolVersion();
+  bool result = false;
+
+  result = led(id, (uint8_t)1, log);
+
+  return result;
 }
 
-const char* DynamixelWorkbench::getModelName(uint8_t id)
+bool DynamixelWorkbench::ledOff(uint8_t id, const char **log)
 {
-  return driver_.getModelName(id);
+  bool result = false;
+
+  result = led(id, (uint8_t)0, log);
+
+  return result;
 }
 
-bool DynamixelWorkbench::ledOn(uint8_t id)
+bool DynamixelWorkbench::setPositionControlMode(uint8_t id, const char **log)
 {
-  bool comm_result = false;
+  bool result = false;
 
-  if (!strncmp(getModelName(id), "PRO", strlen("PRO")))
-    comm_result = driver_.writeRegister(id, "LED_RED", 1);
-  else
-    comm_result = driver_.writeRegister(id, "LED", 1);
+  const char* model_name = getModelName(id, log);
+  if (model_name == NULL) return false;
 
-  return comm_result;
-}
-
-bool DynamixelWorkbench::ledOff(uint8_t id)
-{
-  bool comm_result = false;
-
-  if (!strncmp(getModelName(id), "PRO", strlen("PRO")))
-    comm_result = driver_.writeRegister(id, "LED_RED", 0);
-  else
-    comm_result = driver_.writeRegister(id, "LED", 0);
-
-  return comm_result;
-}
-
-bool DynamixelWorkbench::jointMode(uint8_t id, uint16_t vel, uint16_t acc)
-{
-  bool comm_result = false;
-
-  strcpy(dxl_, driver_.getModelName(id));
-
-  comm_result = torque(id, false);
-
-  comm_result = setPositionControlMode(id);
-
-  comm_result = torque(id, true);
-
-  if (driver_.getProtocolVersion() == 1.0)
+  if (getProtocolVersion() == 1.0)
   {
-    if (!strncmp(dxl_, "MX-28-2", strlen("MX-28-2"))   ||
-        !strncmp(dxl_, "MX-64-2", strlen("MX-64-2"))   ||
-        !strncmp(dxl_, "MX-106-2", strlen("MX-106-2")) ||
-        !strncmp(dxl_, "XL430", strlen("XL430"))       ||
-        !strncmp(dxl_, "XM", strlen("XM"))             ||
-        !strncmp(dxl_, "XH", strlen("XH")))
+    if (!strncmp(model_name, "MX-28-2", strlen("MX-28-2"))   ||
+        !strncmp(model_name, "MX-64-2", strlen("MX-64-2"))   ||
+        !strncmp(model_name, "MX-106-2", strlen("MX-106-2")) ||
+        !strncmp(model_name, "XL430", strlen("XL430"))       ||
+        !strncmp(model_name, "XM", strlen("XM"))             ||
+        !strncmp(model_name, "XH", strlen("XH"))             ||
+        !strncmp(model_name, "PRO", strlen("PRO")))
     {
-      comm_result = driver_.writeRegister(id, "Profile_Acceleration", acc);
-      comm_result = driver_.writeRegister(id, "Profile_Velocity", vel);
+      result = writeRegister(id, "Operating_Mode", (uint8_t)SERIES_POSITION_CONTROL_MODE, log);
+      if (result == false) return false;
     }
-    else
+    else if (!strncmp(model_name, "AX", 2) || !strncmp(model_name, "RX", 2))
     {
-      comm_result = driver_.writeRegister(id, "Moving_Speed", vel);
-    }
-  }
-  else if (driver_.getProtocolVersion() == 2.0)
-  {
-    if (!strncmp(dxl_, "XL-320", 6) || !strncmp(dxl_, "PRO", 3))
-    {
-      comm_result = driver_.writeRegister(id, "Moving_Speed", vel);
-    }
-    else
-    {
-      comm_result = driver_.writeRegister(id, "Profile_Acceleration", acc);
-      comm_result = driver_.writeRegister(id, "Profile_Velocity", vel);
-    }
-  }
+      result = writeRegister(id, "CW_Angle_Limit", (uint16_t)0, log);
+      if (result == false) return false;
 
-  return comm_result;
+      result = writeRegister(id, "CCW_Angle_Limit", (uint16_t)1023, log);
+      if (result == false) return false;
+    }
+    else
+    {
+      result = writeRegister(id, "CW_Angle_Limit", (uint16_t)0, log);
+      if (result == false) return false;
+
+      result = writeRegister(id, "CCW_Angle_Limit", (uint16_t)4095, log);
+      if (result == false) return false;
+    }
+  }
+  else if (getProtocolVersion() == 2.0)
+  {
+    if (!strncmp(model_name, "XL-320", 6))
+    {
+      result = writeRegister(id, "CW_Angle_Limit", (uint16_t)0, log);
+      if (result == false) return false;
+
+      result = writeRegister(id, "CCW_Angle_Limit", (uint16_t)1023, log);
+      if (result == false) return false;
+    }
+    else
+    {
+      result = writeRegister(id, "Operating_Mode", (uint8_t)SERIES_POSITION_CONTROL_MODE, log);
+      if (result == false) return false;
+    }
+  }
+  // millis(10);
+
+  return result;
 }
 
+bool DynamixelWorkbench::jointMode(uint8_t id, uint32_t velocity, uint32_t acceleration, const char **log)
+{
+  bool result = false;
+
+  const char* model_name = getModelName(id, log);
+  if (model_name == NULL) return false;
+
+  result = torqueOff(id, log);
+  if (result == false) return false;
+
+  result = setPositionControlMode(id, log);
+  if (result == false) return false;
+
+  if (getProtocolVersion() == 1.0)
+  {
+    if (!strncmp(model_name, "MX-28-2", strlen("MX-28-2"))   ||
+        !strncmp(model_name, "MX-64-2", strlen("MX-64-2"))   ||
+        !strncmp(model_name, "MX-106-2", strlen("MX-106-2")) ||
+        !strncmp(model_name, "XL430", strlen("XL430"))       ||
+        !strncmp(model_name, "XM", strlen("XM"))             ||
+        !strncmp(model_name, "XH", strlen("XH")))
+    {
+      result = writeRegister(id, "Profile_Acceleration", acceleration, log);
+      if (result == false) return false;
+
+      result = writeRegister(id, "Profile_Velocity", velocity, log);
+      if (result == false) return false;
+    }
+    else
+    {
+      result = writeRegister(id, "Moving_Speed", velocity, log);
+      if (result == false) return false;
+    }
+  }
+  else if (getProtocolVersion() == 2.0)
+  {
+    if (!strncmp(model_name, "XL-320", strlen("XL-320")) || !strncmp(model_name, "PRO", strlen("PRO")))
+    {
+      result = writeRegister(id, "Moving_Speed", velocity, log);
+      if (result == false) return false;
+    }
+    else
+    {
+      result = writeRegister(id, "Profile_Acceleration", acceleration, log);
+      if (result == false) return false;
+
+      result = writeRegister(id, "Profile_Velocity", velocity, log);
+      if (result == false) return false;
+    }
+  }
+
+  return result;
+}
+
+#if 0
 bool DynamixelWorkbench::wheelMode(uint8_t id, uint16_t vel, uint16_t acc)
 {
-  bool comm_result = false;
+  bool result = false;
 
-  strcpy(dxl_, driver_.getModelName(id));
+  strcpy(dxl_, getModelName(id));
 
-  comm_result = torque(id, false);
+  result = torque(id, false);
 
-  comm_result = setVelocityControlMode(id);
+  result = setVelocityControlMode(id);
 
-  comm_result = torque(id, true);
+  result = torque(id, true);
 
-  if (driver_.getProtocolVersion() == 1.0)
+  if (getProtocolVersion() == 1.0)
   {
     if (!strncmp(dxl_, "MX-28-2", strlen("MX-28-2"))   ||
         !strncmp(dxl_, "MX-64-2", strlen("MX-64-2"))   ||
@@ -248,57 +390,57 @@ bool DynamixelWorkbench::wheelMode(uint8_t id, uint16_t vel, uint16_t acc)
         !strncmp(dxl_, "XM", strlen("XM"))             ||
         !strncmp(dxl_, "XH", strlen("XH")))
     {
-      comm_result = driver_.writeRegister(id, "Profile_Acceleration", acc);
-      comm_result = driver_.writeRegister(id, "Profile_Velocity", vel);
+      result = writeRegister(id, "Profile_Acceleration", acc);
+      result = writeRegister(id, "Profile_Velocity", vel);
     }
   }
-  else if (driver_.getProtocolVersion() == 2.0 && (strncmp(dxl_, "PRO", 3) != 0))
+  else if (getProtocolVersion() == 2.0 && (strncmp(dxl_, "PRO", 3) != 0))
   {   
-    comm_result = driver_.writeRegister(id, "Profile_Acceleration", acc);
-    comm_result = driver_.writeRegister(id, "Profile_Velocity", vel);
+    result = writeRegister(id, "Profile_Acceleration", acc);
+    result = writeRegister(id, "Profile_Velocity", vel);
   }
 
-  return comm_result;
+  return result;
 }
 
 bool DynamixelWorkbench::currentMode(uint8_t id, uint8_t cur)
 {
-  bool comm_result = false;
+  bool result = false;
 
-  strcpy(dxl_, driver_.getModelName(id));
+  strcpy(dxl_, getModelName(id));
   
-  comm_result = torque(id, false);
+  result = torque(id, false);
 
-  comm_result = setCurrentControlMode(id);
+  result = setCurrentControlMode(id);
 
-  comm_result = torque(id, true);
+  result = torque(id, true);
 
   if (!strncmp(dxl_, "X", 1)                         ||
       !strncmp(dxl_, "MX-64-2", strlen("MX-64-2"))   ||
       !strncmp(dxl_, "MX-106-2", strlen("MX-106-2")) )
   {   
-    comm_result = driver_.writeRegister(id, "Goal_Current", cur);
+    result = writeRegister(id, "Goal_Current", cur);
   }
 
-  return comm_result;
+  return result;
 }
 
 bool DynamixelWorkbench::goalPosition(uint8_t id, int32_t goal)
 {
-  bool comm_result = false;
+  bool result = false;
   
-  comm_result = driver_.writeRegister(id, "Goal_Position", goal);
+  result = writeRegister(id, "Goal_Position", goal);
 
-  return comm_result;
+  return result;
 }
 
 bool DynamixelWorkbench::goalSpeed(uint8_t id, int32_t goal)
 {
-  bool comm_result = false;
+  bool result = false;
 
-  strcpy(dxl_, driver_.getModelName(id));
+  strcpy(dxl_, getModelName(id));
 
-  if (driver_.getProtocolVersion() == 1.0)
+  if (getProtocolVersion() == 1.0)
   {
     if (!strncmp(dxl_, "MX-28-2", strlen("MX-28-2"))   ||
         !strncmp(dxl_, "MX-64-2", strlen("MX-64-2"))   ||
@@ -307,7 +449,7 @@ bool DynamixelWorkbench::goalSpeed(uint8_t id, int32_t goal)
         !strncmp(dxl_, "XM", strlen("XM"))             ||
         !strncmp(dxl_, "XH", strlen("XH")))
     {
-      comm_result = driver_.writeRegister(id, "Goal_Velocity", goal);
+      result = writeRegister(id, "Goal_Velocity", goal);
     }
     else
     {
@@ -316,10 +458,10 @@ bool DynamixelWorkbench::goalSpeed(uint8_t id, int32_t goal)
         goal = (-1) * goal;
         goal |= 1024;
       }
-      comm_result = driver_.writeRegister(id, "Moving_Speed", goal);
+      result = writeRegister(id, "Moving_Speed", goal);
     }
   }
-  else if (driver_.getProtocolVersion() == 2.0)
+  else if (getProtocolVersion() == 2.0)
   {
     if (!strncmp(dxl_, "XL-320", 6))
     {
@@ -328,246 +470,52 @@ bool DynamixelWorkbench::goalSpeed(uint8_t id, int32_t goal)
         goal = (-1) * goal;
         goal |= 1024;
       }
-      comm_result = driver_.writeRegister(id, "Moving_Speed", goal);
+      result = writeRegister(id, "Moving_Speed", goal);
     }
     else
-      comm_result = driver_.writeRegister(id, "Goal_Velocity", goal);
+      result = writeRegister(id, "Goal_Velocity", goal);
   }
 
-  return comm_result;
-}
-
-bool DynamixelWorkbench::itemWrite(uint8_t id, const char* item_name, int32_t value)
-{
-  bool comm_result = false;
-
-  comm_result = driver_.writeRegister(id, item_name, value);
-
-  return comm_result;
-}
-
-bool DynamixelWorkbench::itemWrite(uint8_t id, uint16_t addr, uint8_t length, int32_t data)
-{
-  bool comm_result = false;
-
-  comm_result = driver_.writeRegister(id, addr, length, data);
-
-  return comm_result;
-}
-
-bool DynamixelWorkbench::syncWrite(const char *item_name, int32_t* value)
-{
-  bool isOK = false;
-
-  isOK =  driver_.syncWrite(item_name, value);
-
-  return isOK;
-}
-
-bool DynamixelWorkbench::syncWrite(uint8_t *id, uint8_t id_num, const char *item_name, int32_t *data)
-{
-  bool isOK = false;
-
-  isOK =  driver_.syncWrite(id, id_num, item_name, data);
-
-  return isOK;
-}
-
-bool DynamixelWorkbench::bulkWrite()
-{
-  bool isOK = false;
-
-  isOK = driver_.bulkWrite();
-
-  return isOK;
-}
-
-int32_t DynamixelWorkbench::itemRead(uint8_t id, const char* item_name)
-{
-  static int32_t data = 0;
-
-  if (driver_.readRegister(id, item_name, &data))
-    return data;
-  return 0; // Should decide on error value
-}
-
-int32_t  DynamixelWorkbench::itemRead(uint8_t id, uint16_t addr, uint8_t length)
-{
-  static int32_t data = 0;
-
-  if (driver_.readRegister(id, addr, length, &data))
-    return data; 
-  return 0; // Should decide on error value
-}
-
-int32_t* DynamixelWorkbench::syncRead(const char *item_name)
-{
-  static int32_t data[16];
-  if (driver_.syncRead(item_name, data))
-    return data;
-  return 0; // Should decide on error value
-}
-
-int32_t DynamixelWorkbench::bulkRead(uint8_t id, const char* item_name)
-{
-  static int32_t data;
-  if (driver_.bulkRead(id, item_name, &data))
-    return data;
-  return 0; // Should decide on error value
-}
-
-void DynamixelWorkbench::addSyncWrite(const char* item_name)
-{
-  driver_.addSyncWrite(item_name);
-}
-
-void DynamixelWorkbench::addSyncRead(const char* item_name)
-{
-  driver_.addSyncRead(item_name);
-}
-
-void DynamixelWorkbench::initBulkWrite()
-{
-  driver_.initBulkWrite();
-}
-
-void DynamixelWorkbench::initBulkRead()
-{
-  driver_.initBulkRead();
-}
-
-bool DynamixelWorkbench::addBulkWriteParam(uint8_t id, const char *item_name, int32_t data)
-{
-  bool isOK = false;
-
-  isOK = driver_.addBulkWriteParam(id, item_name, data);
-
-  return isOK;
-}
-
-bool DynamixelWorkbench::addBulkReadParam(uint8_t id, const char *item_name)
-{
-  bool isOK = false;
-
-  isOK = driver_.addBulkReadParam(id, item_name);
-
-  return isOK;
-}
-
-bool DynamixelWorkbench::setBulkRead()
-{
-  bool isOK = false;
-
-  isOK = driver_.sendBulkReadPacket();
-
-  return isOK;
-}
-
-int32_t DynamixelWorkbench::convertRadian2Value(uint8_t id, float radian)
-{
-  return driver_.convertRadian2Value(id, radian);
-}
-
-float DynamixelWorkbench::convertValue2Radian(uint8_t id, int32_t value)
-{
-  return driver_.convertValue2Radian(id, value);
+  return result;
 }
 
 int32_t DynamixelWorkbench::convertRadian2Value(float radian, int32_t max_position, int32_t min_position, float max_radian, float min_radian)
 {
-  return driver_.convertRadian2Value(radian, max_position, min_position, max_radian, min_radian);
+  return convertRadian2Value(radian, max_position, min_position, max_radian, min_radian);
 }
 
 float DynamixelWorkbench::convertValue2Radian(int32_t value, int32_t max_position, int32_t min_position, float max_radian, float min_radian)
 {
-  return driver_.convertValue2Radian(value, max_position, min_position, max_radian, min_radian);
+  return convertValue2Radian(value, max_position, min_position, max_radian, min_radian);
 }
 
 int32_t DynamixelWorkbench::convertVelocity2Value(uint8_t id, float velocity)
 {
-  return driver_.convertVelocity2Value(id, velocity);
+  return convertVelocity2Value(id, velocity);
 }
 
 float DynamixelWorkbench::convertValue2Velocity(uint8_t id, int32_t value)
 {
-  return driver_.convertValue2Velocity(id, value);
+  return convertValue2Velocity(id, value);
 }
 
 // int16_t DynamixelWorkbench::convertTorque2Value(uint8_t id, float torque)
 // {
-//   return driver_.convertTorque2Value(id, torque);
+//   return convertTorque2Value(id, torque);
 // }
 
 // float DynamixelWorkbench::convertValue2Torque(uint8_t id, int16_t value)
 // {
-//   return driver_.convertValue2Torque(id, value);
+//   return convertValue2Torque(id, value);
 // }
-
-
-/*/////////////////////////////////////////////////////////////////////////////
-// Private Function
-*//////////////////////////////////////////////////////////////////////////////
-
-bool DynamixelWorkbench::torque(uint8_t id, bool onoff)
-{
-  bool comm_result = false;
-
-  comm_result = driver_.writeRegister(id, "Torque_Enable", onoff);
-
-  return comm_result;
-}
-
-bool DynamixelWorkbench::setPositionControlMode(uint8_t id)
-{
-  bool comm_result = false;
-
-  strcpy(dxl_, driver_.getModelName(id));
-
-  if (driver_.getProtocolVersion() == 1.0)
-  {
-    if (!strncmp(dxl_, "MX-28-2", strlen("MX-28-2"))   ||
-        !strncmp(dxl_, "MX-64-2", strlen("MX-64-2"))   ||
-        !strncmp(dxl_, "MX-106-2", strlen("MX-106-2")) ||
-        !strncmp(dxl_, "XL430", strlen("XL430"))       ||
-        !strncmp(dxl_, "XM", strlen("XM"))             ||
-        !strncmp(dxl_, "XH", strlen("XH"))             ||
-        !strncmp(dxl_, "PRO", strlen("PRO")))
-    {
-      comm_result = driver_.writeRegister(id, "Operating_Mode", X_SERIES_POSITION_CONTROL_MODE);
-    }
-    else if (!strncmp(dxl_, "AX", 2) || !strncmp(dxl_, "RX", 2))
-    {
-      comm_result = driver_.writeRegister(id, "CW_Angle_Limit", 0);
-      comm_result = driver_.writeRegister(id, "CCW_Angle_Limit", 1023);
-    }
-    else
-    {
-      comm_result = driver_.writeRegister(id, "CW_Angle_Limit", 0);
-      comm_result = driver_.writeRegister(id, "CCW_Angle_Limit", 4095);
-    }
-  }
-  else if (driver_.getProtocolVersion() == 2.0)
-  {
-    if (!strncmp(dxl_, "XL-320", 6))
-    {
-      comm_result = driver_.writeRegister(id, "CW_Angle_Limit", 0);
-      comm_result = driver_.writeRegister(id, "CCW_Angle_Limit", 1023);
-    }
-    else
-      comm_result = driver_.writeRegister(id, "Operating_Mode", X_SERIES_POSITION_CONTROL_MODE);
-  }
-  millis(10);
-
-  return comm_result;
-}
 
 bool DynamixelWorkbench::setVelocityControlMode(uint8_t id)
 {
-  bool comm_result = false;
+  bool result = false;
 
-  strcpy(dxl_, driver_.getModelName(id));
+  strcpy(dxl_, getModelName(id));
 
-  if (driver_.getProtocolVersion() == 1.0)
+  if (getProtocolVersion() == 1.0)
   {
     if (!strncmp(dxl_, "MX-28-2", strlen("MX-28-2"))   ||
         !strncmp(dxl_, "MX-64-2", strlen("MX-64-2"))   ||
@@ -577,63 +525,167 @@ bool DynamixelWorkbench::setVelocityControlMode(uint8_t id)
         !strncmp(dxl_, "XH", strlen("XH"))             ||
         !strncmp(dxl_, "PRO", strlen("PRO")))
     {
-      comm_result = driver_.writeRegister(id, "Operating_Mode", X_SERIES_VELOCITY_CONTROL_MODE);
+      result = writeRegister(id, "Operating_Mode", X_SERIES_VELOCITY_CONTROL_MODE);
     }
     else
     {
-      comm_result = driver_.writeRegister(id, "CW_Angle_Limit", 0);
-      comm_result = driver_.writeRegister(id, "CCW_Angle_Limit", 0);
+      result = writeRegister(id, "CW_Angle_Limit", 0);
+      result = writeRegister(id, "CCW_Angle_Limit", 0);
     }
   }
-  else if (driver_.getProtocolVersion() == 2.0)
+  else if (getProtocolVersion() == 2.0)
   {
     if (!strncmp(dxl_, "XL-320", 6))
     {
-      comm_result = driver_.writeRegister(id, "CW_Angle_Limit", 0);
-      comm_result = driver_.writeRegister(id, "CCW_Angle_Limit", 0);
+      result = writeRegister(id, "CW_Angle_Limit", 0);
+      result = writeRegister(id, "CCW_Angle_Limit", 0);
     }
     else
-      comm_result = driver_.writeRegister(id, "Operating_Mode", X_SERIES_VELOCITY_CONTROL_MODE);
+      result = writeRegister(id, "Operating_Mode", X_SERIES_VELOCITY_CONTROL_MODE);
   } 
   millis(10);
 
-  return comm_result;
+  return result;
 }
 
 bool DynamixelWorkbench::setCurrentControlMode(uint8_t id)
 {
-  bool comm_result = false;
+  bool result = false;
 
-  strcpy(dxl_, driver_.getModelName(id));
+  strcpy(dxl_, getModelName(id));
   
   if (!strncmp(dxl_, "X", 1)                         ||
       !strncmp(dxl_, "MX-64-2", strlen("MX-64-2"))   ||
       !strncmp(dxl_, "MX-106-2", strlen("MX-106-2")) )
   {
-    comm_result = driver_.writeRegister(id, "Operating_Mode", X_SERIES_CURRENT_BASED_POSITION_CONTROL_MODE);
+    result = writeRegister(id, "Operating_Mode", X_SERIES_CURRENT_BASED_POSITION_CONTROL_MODE);
   }   
 
   millis(10);
 
-  return comm_result;
+  return result;
 }
 
-void DynamixelWorkbench::millis(uint16_t msec)
-{
-#if defined(__OPENCR__) || defined(__OPENCM904__)
-    delay(msec);
-#else
-    usleep(1000*msec);
-#endif
-}
+// int32_t DynamixelDriver::convertRadian2Value(uint8_t id, float radian)
+// {
+//   int32_t value = 0;
+//   uint8_t factor = getTool(id);
 
-const ControlTableItem* DynamixelWorkbench::getControlItemPtr(uint8_t id)
-{
-  return driver_.getControlItemPtr(id);
-}
+//   if (radian > 0)
+//   {
+//     value = (radian * (tools_[factor].getValueOfMaxRadianPosition() - tools_[factor].getValueOfZeroRadianPosition()) / tools_[factor].getMaxRadian()) + tools_[factor].getValueOfZeroRadianPosition();
+//   }
+//   else if (radian < 0)
+//   {
+//     value = (radian * (tools_[factor].getValueOfMinRadianPosition() - tools_[factor].getValueOfZeroRadianPosition()) / tools_[factor].getMinRadian()) + tools_[factor].getValueOfZeroRadianPosition();
+//   }
+//   else
+//   {
+//     value = tools_[factor].getValueOfZeroRadianPosition();
+//   }
 
-uint8_t DynamixelWorkbench::getControlItemCount(uint8_t id)
-{
-  return driver_.getTheNumberOfItem(id);
-}
+//   return value;
+// }
+
+// float DynamixelDriver::convertValue2Radian(uint8_t id, int32_t value)
+// {
+//   float radian = 0.0;
+//   uint8_t factor = getTool(id);
+//   if (factor == 0) factor = 0;  // just use first one
+
+//   if (value > tools_[factor].getValueOfZeroRadianPosition())
+//   {
+//     radian = (float)(value - tools_[factor].getValueOfZeroRadianPosition()) * tools_[factor].getMaxRadian() / (float)(tools_[factor].getValueOfMaxRadianPosition() - tools_[factor].getValueOfZeroRadianPosition());
+//   }
+//   else if (value < tools_[factor].getValueOfZeroRadianPosition())
+//   {
+//     radian = (float)(value - tools_[factor].getValueOfZeroRadianPosition()) * tools_[factor].getMinRadian() / (float)(tools_[factor].getValueOfMinRadianPosition() - tools_[factor].getValueOfZeroRadianPosition());
+//   }
+
+//   return radian;
+// }
+
+// int32_t DynamixelDriver::convertRadian2Value(float radian, int32_t max_position, int32_t min_position, float max_radian, float min_radian)
+// {
+//   int32_t value = 0;
+//   int32_t zero_position = (max_position + min_position)/2;
+
+//   if (radian > 0)
+//   {
+//     value = (radian * (max_position - zero_position) / max_radian) + zero_position;
+//   }
+//   else if (radian < 0)
+//   {
+//     value = (radian * (min_position - zero_position) / min_radian) + zero_position;
+//   }
+//   else
+//   {
+//     value = zero_position;
+//   }
+
+//   return value;
+// }
+
+// float DynamixelDriver::convertValue2Radian(int32_t value, int32_t max_position, int32_t min_position, float max_radian, float min_radian)
+// {
+//   float radian = 0.0;
+//   int32_t zero_position = (max_position + min_position)/2;
+
+//   if (value > zero_position)
+//   {
+//     radian = (float)(value - zero_position) * max_radian / (float)(max_position - zero_position);
+//   }
+//   else if (value < zero_position)
+//   {
+//     radian = (float)(value - zero_position) * min_radian / (float)(min_position - zero_position);
+//   }
+
+//   return radian;
+// }
+
+// int32_t DynamixelDriver::convertVelocity2Value(uint8_t id, float velocity)
+// {
+//   int32_t value = 0;
+//   uint8_t factor = getTool(id);
+//   if (factor == 0xff) factor = 0; 
+
+//   // value = velocity * tools_[factor].getVelocityToValueRatio();
+
+//   return value;
+// }
+
+// float DynamixelDriver::convertValue2Velocity(uint8_t id, int32_t value)
+// {
+//   float velocity = 0;
+//   uint8_t factor = getTool(id);
+//   if (factor == 0xff) factor = 0; 
+
+//   // velocity = value / tools_[factor].getVelocityToValueRatio();
+
+//   return velocity;
+// }
+
+// int16_t DynamixelDriver::convertTorque2Value(uint8_t id, float torque)
+// {
+//   int16_t value = 0;
+//   uint8_t factor = getTool(id);
+//   if (factor == 0xff) factor = 0; 
+
+//   value = torque * tools_[factor].getTorqueToCurrentValueRatio();
+
+//   return value;
+// }
+
+// float DynamixelDriver::convertValue2Torque(uint8_t id, int16_t value)
+// {
+//   float torque = 0.0;
+//   uint8_t factor = getTool(id);
+//   if (factor == 0xff) factor = 0; 
+
+//   torque = value / tools_[factor].getTorqueToCurrentValueRatio();
+
+//   return torque;
+// }
+
+
 #endif
