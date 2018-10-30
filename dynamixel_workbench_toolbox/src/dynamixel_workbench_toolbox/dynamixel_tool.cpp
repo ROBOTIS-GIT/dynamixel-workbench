@@ -27,7 +27,7 @@ typedef struct
   const char*   name; 
 } DynamixelModel;
 
-const DynamixelModel dynamixel_model_table[] = {
+static const DynamixelModel dynamixel_model_table[] = {
     {AX_12A, "AX-12A"},
     {AX_12W, "AX-12W"},
     {AX_18A, "AX-18A"},
