@@ -29,8 +29,9 @@
   #include "dynamixel_sdk/dynamixel_sdk.h"
 #endif
 
-#define MAX_DXL_SERIES_NUM 5
-#define MAX_HANDLER_NUM 5
+#define MAX_DXL_SERIES_NUM  5
+#define MAX_HANDLER_NUM     5
+#define MAX_BULK_PARAMETER 16
 
 typedef struct 
 {
@@ -43,6 +44,13 @@ typedef struct
   const ControlItem *control_item;
   dynamixel::GroupSyncRead  *groupSyncRead;     
 } SyncReadHandler;
+
+typedef struct
+{
+  uint8_t  id;
+  uint16_t address;
+  uint16_t data_length;
+} BulkParameter;
 
 typedef struct
 {
@@ -62,13 +70,15 @@ class DynamixelDriver
   SyncReadHandler  syncReadHandler_[MAX_HANDLER_NUM];
 
   dynamixel::GroupBulkRead  *groupBulkRead_;  
-  dynamixel::GroupBulkWrite *groupBulkWrite_;  
+  dynamixel::GroupBulkWrite *groupBulkWrite_;
+  BulkParameter bulk_param_[MAX_BULK_PARAMETER];
  
   DynamixelTool tools_[MAX_DXL_SERIES_NUM];
 
   uint8_t tools_cnt_;
   uint8_t sync_write_handler_cnt_;
   uint8_t sync_read_handler_cnt_;
+  uint8_t bulk_parameter_cnt_;
 
  public:
   DynamixelDriver();
@@ -145,29 +155,15 @@ class DynamixelDriver
   bool addBulkWriteParam(uint8_t id, const char *item_name, uint32_t data, const char **log = NULL);
   bool bulkWrite(const char **log = NULL);
 
-  // void initBulkRead();
-  // bool addBulkReadParam(uint8_t id, const char *item_name);
-  // bool sendBulkReadPacket();
-  // bool bulkRead(uint8_t id, const char *item_name, int32_t *data);
-
-  // int32_t convertRadian2Value(uint8_t id, float radian);
-  // float convertValue2Radian(uint8_t id, int32_t value);
-
-  // int32_t convertRadian2Value(float radian, int32_t max_position, int32_t min_position, float max_radian = 3.14, float min_radian = -3.14);
-  // float convertValue2Radian(int32_t value, int32_t max_position, int32_t min_position, float max_radian = 3.14, float min_radian = -3.14);
-
-  // int32_t convertVelocity2Value(uint8_t id, float velocity);
-  // float convertValue2Velocity(uint8_t id, int32_t value);
-
-  // int16_t convertTorque2Value(uint8_t id, float torque);
-  // float convertValue2Torque(uint8_t id, int16_t value);
+  bool initBulkRead(const char **log = NULL);
+  bool addBulkReadParam(uint8_t id, const char *item_name, const char **log = NULL);
+  bool bulkRead(uint32_t *data, const char **log = NULL);
+  // bool bulkRead(uint8_t id, const char *item_name, uint32_t *data, const char **log = NULL);
 
  private:
   void initTools(void);
   bool setTool(uint16_t model_number, uint8_t id, const char **log = NULL);
   uint8_t getTool(uint8_t id, const char **log = NULL);
-
-  void wait(uint16_t msec);
 };
 
 #endif //DYNAMIXEL_DRIVER_H

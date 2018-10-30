@@ -21,7 +21,13 @@
 static dynamixel::PacketHandler *packetHandler_1_0 = dynamixel::PacketHandler::getPacketHandler(1.0f);
 static dynamixel::PacketHandler *packetHandler_2_0 = dynamixel::PacketHandler::getPacketHandler(2.0f);
 
-DynamixelDriver::DynamixelDriver() : tools_cnt_(0), sync_write_handler_cnt_(0), sync_read_handler_cnt_(0) {}
+DynamixelDriver::DynamixelDriver() : tools_cnt_(0), 
+                                    sync_write_handler_cnt_(0), 
+                                    sync_read_handler_cnt_(0),
+                                    bulk_parameter_cnt_(0)
+{
+
+}
 
 DynamixelDriver::~DynamixelDriver()
 {
@@ -356,7 +362,11 @@ bool DynamixelDriver::reboot(uint8_t id, const char **log)
   else
   {
     sdk_error.dxl_comm_result = packetHandler_2_0->reboot(portHandler_, id, &sdk_error.dxl_error);
-    wait(1000);
+#if defined(__OPENCR__) || defined(__OPENCM904__)
+    delay(1000);
+#else
+    usleep(1000*1000);
+#endif
 
     if (sdk_error.dxl_comm_result != COMM_SUCCESS)
     {
@@ -401,7 +411,11 @@ bool DynamixelDriver::reset(uint8_t id, const char **log)
       new_baud_rate = 57600;
 
     sdk_error.dxl_comm_result = packetHandler_1_0->factoryReset(portHandler_, id, 0x00, &sdk_error.dxl_error);
-    wait(2000);
+#if defined(__OPENCR__) || defined(__OPENCM904__)
+    delay(2000);
+#else
+    usleep(1000*2000);
+#endif
 
     if (sdk_error.dxl_comm_result != COMM_SUCCESS)
     {
@@ -449,7 +463,11 @@ bool DynamixelDriver::reset(uint8_t id, const char **log)
   else if (getProtocolVersion() == 2.0)
   {
     sdk_error.dxl_comm_result = packetHandler_2_0->factoryReset(portHandler_, id, 0xff, &sdk_error.dxl_error);
-    wait(2000);
+#if defined(__OPENCR__) || defined(__OPENCM904__)
+    delay(2000);
+#else
+    usleep(1000*2000);
+#endif
 
     if (sdk_error.dxl_comm_result != COMM_SUCCESS)
     {
@@ -1221,22 +1239,6 @@ bool DynamixelDriver::addBulkWriteParam(uint8_t id, const char *item_name, uint3
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
-  // uint8_t data_byte[4] = {0, };
-
-  // const ControlItem *control_item;
-  // uint8_t factor = getTool(id);
-  // if (factor == 0xff) return false;
-  // control_item = tools_[factor].getControlItem(item_name);
-  // if (control_item == NULL)
-  // {
-  //   return false;
-  // }
-
-  // data_byte[0] = DXL_LOBYTE(DXL_LOWORD(data));
-  // data_byte[1] = DXL_HIBYTE(DXL_LOWORD(data));
-  // data_byte[2] = DXL_LOBYTE(DXL_HIWORD(data));
-  // data_byte[3] = DXL_HIBYTE(DXL_HIWORD(data));
-
   uint8_t parameter[4] = {0, 0, 0, 0};
 
   const ControlItem *control_item;
@@ -1279,71 +1281,126 @@ bool DynamixelDriver::bulkWrite(const char **log)
   return true;
 }
 
-// void DynamixelDriver::initBulkRead()
-// {
-//   groupBulkRead_ = new dynamixel::GroupBulkRead(portHandler_, packetHandler_[0]);
-// }
+bool DynamixelDriver::initBulkRead(const char **log)
+{
+  if (portHandler_ == NULL)
+    *log = "[DynamixelDriver] Failed to load portHandler!";
+  else if (packetHandler_ == NULL)
+    *log = "[DynamixelDriver] Failed to load packetHandler!";
+  else
+  {
+    delete groupBulkRead_;
+    groupBulkRead_ = new dynamixel::GroupBulkRead(portHandler_, packetHandler_);
 
-// bool DynamixelDriver::addBulkReadParam(uint8_t id, const char *item_name)
-// {
-//   bool dxl_addparam_result = false;
+    *log = "[DynamixelDriver] Succeeded to init groupBulkRead!";
+    return true;
+  }
 
-//   const ControlItem *control_item;
-//   uint8_t factor = getTool(id);
-//   if (factor == 0xff) return false;
-//   control_item = tools_[factor].getControlItem(item_name);
-//   if (control_item == NULL)
-//   {
-//     return false;
-//   }
+  return false;
+}
 
-//   dxl_addparam_result = groupBulkRead_->addParam(id, control_item->address, control_item->data_length);
-//   if (dxl_addparam_result != true)
-//   {
-//     return false;
-//   }
+bool DynamixelDriver::addBulkReadParam(uint8_t id, const char *item_name, const char **log)
+{
+  ErrorFromSDK sdk_error = {0, false, false, 0};
 
-//   return true;
-// }
+  const ControlItem *control_item;
 
-// bool DynamixelDriver::sendBulkReadPacket()
-// {
-//   int dxl_comm_result = COMM_RX_FAIL;
+  uint8_t factor = getTool(id, log);
+  if (factor == 0xff) return false; 
 
-//   dxl_comm_result = groupBulkRead_->txRxPacket();
-//   if (dxl_comm_result != COMM_SUCCESS)
-//   {
-//     return false;
-//   }
+  control_item = tools_[factor].getControlItem(item_name, log);
+  if (control_item == NULL) return false;
 
-//   return true;
-// }
+  sdk_error.dxl_addparam_result = groupBulkRead_->addParam(id, 
+                                                          control_item->address, 
+                                                          control_item->data_length);
+  if (sdk_error.dxl_addparam_result != true)
+  {
+    *log = "grouBulkRead addparam failed";
+    return false;
+  }
 
-// bool DynamixelDriver::bulkRead(uint8_t id, const char *item_name, int32_t *data)
-// {
-//   bool dxl_getdata_result = false;
-//   const ControlItem *control_item;
-//   uint8_t factor = getTool(id);
-//   if (factor == 0xff) 
-//   {
-//     return false;
-//   }
-//   control_item = tools_[factor].getControlItem(item_name);
-//   if (control_item == NULL)
-//   {
-//     return false;
-//   }
+  if (bulk_parameter_cnt_ < (MAX_BULK_PARAMETER-1))
+  {
+    bulk_param_[bulk_parameter_cnt_].id = id;
+    bulk_param_[bulk_parameter_cnt_].address = control_item->address;
+    bulk_param_[bulk_parameter_cnt_].data_length = control_item->data_length;
+    bulk_parameter_cnt_++;
+  }
+  else
+  {
+    *log = "[DynamixelDriver] Too many bulk parameter are added (default buffer size is 16)";
+    return false;
+  }
 
-//   dxl_getdata_result = groupBulkRead_->isAvailable(id, control_item->address, control_item->data_length);
-//   if (dxl_getdata_result != true)
-//   {
-//     return false;
-//   }
+  *log = "[DynamixelDriver] Succeeded to add param for bulk read!";
+  return true;
 
-//   *data = groupBulkRead_->getData(id, control_item->address, control_item->data_length);
+  // bool dxl_addparam_result = false;
 
-//   return true;
-// }
+  // const ControlItem *control_item;
+  // uint8_t factor = getTool(id);
+  // if (factor == 0xff) return false;
+  // control_item = tools_[factor].getControlItem(item_name);
+  // if (control_item == NULL)
+  // {
+  //   return false;
+  // }
+
+  // dxl_addparam_result = groupBulkRead_->addParam(id, control_item->address, control_item->data_length);
+  // if (dxl_addparam_result != true)
+  // {
+  //   return false;
+  // }
+
+  // return true;
+}
+
+bool DynamixelDriver::bulkRead(uint32_t *data, const char **log)
+{
+  ErrorFromSDK sdk_error = {0, false, false, 0};
+  
+  sdk_error.dxl_comm_result = groupBulkRead_->txRxPacket();
+  if (sdk_error.dxl_comm_result != COMM_SUCCESS) 
+  {
+    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    return false;
+  }
+
+  const ControlItem *control_item;
+
+  for (int i = 0; i < bulk_parameter_cnt_; i++)
+  {
+
+    sdk_error.dxl_getdata_result = groupBulkRead_->isAvailable(bulk_param_[i].id, 
+                                                              bulk_param_[i].address, 
+                                                              bulk_param_[i].data_length);
+    if (sdk_error.dxl_getdata_result != true)
+    {
+      *log = "groupBulkRead getdata failed";
+      return false;
+    }
+    else
+    {
+      data[i] = groupBulkRead_->getData(bulk_param_[i].id, 
+                                        bulk_param_[i].address, 
+                                        bulk_param_[i].data_length);
+    }
+  }
+
+  groupBulkRead_->clearParam();
+  bulk_parameter_cnt_ = 0;
+
+  for (uint8_t i = 0; i < MAX_BULK_PARAMETER; i++)
+  {
+    bulk_param_[i].id = 0;
+    bulk_param_[i].address = 0;
+    bulk_param_[i].data_length = 0;
+  }
+
+  *log = "[DynamixelDriver] Succeeded to bulk read!";
+  return true;
+}
 
 // int32_t DynamixelDriver::convertRadian2Value(uint8_t id, float radian)
 // {
@@ -1465,12 +1522,3 @@ bool DynamixelDriver::bulkWrite(const char **log)
 
 //   return torque;
 // }
-
-void DynamixelDriver::wait(uint16_t msec)
-{
-#if defined(__OPENCR__) || defined(__OPENCM904__)
-    delay(msec);
-#else
-    usleep(1000*msec);
-#endif
-}

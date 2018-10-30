@@ -267,6 +267,48 @@ bool monitoring()
           else
             printf("%s\n", log);
         }
+        else if (strcmp(cmd, "bulk_read_handler") == 0)
+        {
+          wb_result = dxl_wb.initBulkRead(&log);
+          if (wb_result == false)
+          {
+            printf("%s\n", log);
+            printf("Failed to init bulk read handler\n");
+            return 0;
+          }
+          else
+            printf("%s\n", log);
+        }
+        else if (strcmp(cmd, "bulk_read_param") == 0)
+        {
+          uint8_t id = atoi(param[0]);
+          wb_result = dxl_wb.addBulkReadParam(id, param[1], &log);
+          if (wb_result == false)
+          {
+            printf("%s\n", log);
+            printf("Failed to add param for bulk read\n");
+            return 0;
+          }
+          else
+            printf("%s\n", log);
+        }
+        else if (strcmp(cmd, "bulk_read") == 0)
+        {
+          uint32_t data[2] = {0, 0};
+
+          wb_result = dxl_wb.bulkRead(data, &log);
+          if (wb_result == false)
+          {
+            printf("%s\n", log);
+            printf("Failed to bulk read\n");
+            return 0;
+          }
+          else
+          {
+            printf("%s\n", log);
+            printf("data[0] : %d, data[1] : %d\n", data[0], data[1]);
+          }
+        }
         else if (isAvailableID(atoi(param[0])) && isAvailableID(atoi(param[1])))
         {
           if (strcmp(cmd, "sync_write") == 0)
@@ -466,7 +508,7 @@ bool isAvailableID(uint8_t id)
 void printInst(void)
 {
   printf("-------------------------------------\n");
-  printf("Set portHandler Before scan or ping\n");
+  printf("Set begin before scan or ping\n");
   printf("-------------------------------------\n");
   printf("help\n");
   printf("begin  (BAUD)\n");
@@ -487,6 +529,9 @@ void printInst(void)
   printf("bulk_write_handler\n");
   printf("bulk_write_param (ID) (ADDRESS_NAME) (PARAM)\n");
   printf("bulk_write\n");
+  printf("bulk_read_handler\n");
+  printf("bulk_read_param (ID) (ADDRESS_NAME)\n");
+  printf("bulk_read\n");
   printf("reboot (ID) \n");
   printf("reset  (ID) \n");
   printf("exit\n");
