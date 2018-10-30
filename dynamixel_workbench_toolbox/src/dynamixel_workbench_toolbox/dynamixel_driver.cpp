@@ -44,6 +44,11 @@ DynamixelDriver::~DynamixelDriver()
   }  
 
   portHandler_->closePort();
+
+  delete portHandler_;
+  delete packetHandler_;
+  delete packetHandler_1_0;
+  delete packetHandler_2_0;
 }
 
 void DynamixelDriver::initTools(void)
@@ -151,6 +156,8 @@ bool DynamixelDriver::setBaudrate(uint32_t baud_rate, const char **log)
 
 bool DynamixelDriver::setPacketHandler(float protocol_version, const char **log)
 {
+  delete [] packetHandler_;
+
   packetHandler_ = dynamixel::PacketHandler::getPacketHandler(protocol_version);
 
   if (packetHandler_->getProtocolVersion() == protocol_version)
@@ -188,7 +195,7 @@ const char* DynamixelDriver::getModelName(uint8_t id, const char **log)
 uint16_t DynamixelDriver::getModelNumber(uint8_t id, const char **log)
 {
   uint8_t factor = getTool(id, log);
-  if (factor == 0xff) return 0;
+  if (factor == 0xff) return false;
 
   for (int i = 0; i < tools_[factor].getDynamixelCount(); i++)
   {
@@ -196,7 +203,7 @@ uint16_t DynamixelDriver::getModelNumber(uint8_t id, const char **log)
       return tools_[factor].getModelNumber();
   }
 
-  return 0;
+  return false;
 }
 
 const ControlItem* DynamixelDriver::getControlTable(uint8_t id, const char **log)
@@ -210,7 +217,7 @@ const ControlItem* DynamixelDriver::getControlTable(uint8_t id, const char **log
 uint8_t DynamixelDriver::getTheNumberOfControlItem(uint8_t id, const char **log)
 {
   uint8_t factor = getTool(id, log);
-  if (factor == 0xff) return 0;
+  if (factor == 0xff) return false;
 
   return tools_[factor].getTheNumberOfControlItem();
 }
@@ -1192,53 +1199,85 @@ bool DynamixelDriver::syncRead(uint8_t index, uint8_t *id, uint8_t id_num, uint3
   return true;
 }
 
-// void DynamixelDriver::initBulkWrite()
-// {
-//   groupBulkWrite_ = new dynamixel::GroupBulkWrite(portHandler_, packetHandler_[0]);
-// }
+bool DynamixelDriver::initBulkWrite(const char **log)
+{
+  if (portHandler_ == NULL)
+    *log = "[DynamixelDriver] Failed to load portHandler!";
+  else if (packetHandler_ == NULL)
+    *log = "[DynamixelDriver] Failed to load packetHandler!";
+  else
+  {
+    delete groupBulkWrite_;
+    groupBulkWrite_ = new dynamixel::GroupBulkWrite(portHandler_, packetHandler_);
 
-// bool DynamixelDriver::addBulkWriteParam(uint8_t id, const char *item_name, int32_t data)
-// {
-//   bool dxl_addparam_result = false;
-//   uint8_t data_byte[4] = {0, };
+    *log = "[DynamixelDriver] Succeeded to init groupBulkWrite!";
+    return true;
+  }
 
-//   const ControlItem *control_item;
-//   uint8_t factor = getTool(id);
-//   if (factor == 0xff) return false;
-//   control_item = tools_[factor].getControlItem(item_name);
-//   if (control_item == NULL)
-//   {
-//     return false;
-//   }
+  return false;
+}
 
-//   data_byte[0] = DXL_LOBYTE(DXL_LOWORD(data));
-//   data_byte[1] = DXL_HIBYTE(DXL_LOWORD(data));
-//   data_byte[2] = DXL_LOBYTE(DXL_HIWORD(data));
-//   data_byte[3] = DXL_HIBYTE(DXL_HIWORD(data));
+bool DynamixelDriver::addBulkWriteParam(uint8_t id, const char *item_name, uint32_t data, const char **log)
+{
+  ErrorFromSDK sdk_error = {0, false, false, 0};
 
-//   dxl_addparam_result = groupBulkWrite_->addParam(id, control_item->address, control_item->data_length, data_byte);
-//   if (dxl_addparam_result != true)
-//   {
-//     return false;
-//   }
+  // uint8_t data_byte[4] = {0, };
 
-//   return true;
-// }
+  // const ControlItem *control_item;
+  // uint8_t factor = getTool(id);
+  // if (factor == 0xff) return false;
+  // control_item = tools_[factor].getControlItem(item_name);
+  // if (control_item == NULL)
+  // {
+  //   return false;
+  // }
 
-// bool DynamixelDriver::bulkWrite()
-// {
-//   int dxl_comm_result = COMM_TX_FAIL;
+  // data_byte[0] = DXL_LOBYTE(DXL_LOWORD(data));
+  // data_byte[1] = DXL_HIBYTE(DXL_LOWORD(data));
+  // data_byte[2] = DXL_LOBYTE(DXL_HIWORD(data));
+  // data_byte[3] = DXL_HIBYTE(DXL_HIWORD(data));
 
-//   dxl_comm_result = groupBulkWrite_->txPacket();
-//   if (dxl_comm_result != COMM_SUCCESS)
-//   {
-//     return false;
-//   }
+  uint8_t parameter[4] = {0, 0, 0, 0};
 
-//   groupBulkWrite_->clearParam();
+  const ControlItem *control_item;
 
-//   return true;
-// }
+  uint8_t factor = getTool(id, log);
+  if (factor == 0xff) return false; 
+
+  control_item = tools_[factor].getControlItem(item_name, log);
+  if (control_item == NULL) return false;
+
+  getParam(data, parameter);
+  sdk_error.dxl_addparam_result = groupBulkWrite_->addParam(id, 
+                                                            control_item->address, 
+                                                            control_item->data_length, 
+                                                            parameter);
+  if (sdk_error.dxl_addparam_result != true)
+  {
+    *log = "groupBulkWrite addparam failed";
+    return false;
+  }
+
+  *log = "[DynamixelDriver] Succeeded to add param for bulk write!";
+  return true;
+}
+
+bool DynamixelDriver::bulkWrite(const char **log)
+{
+  ErrorFromSDK sdk_error = {0, false, false, 0};
+
+  sdk_error.dxl_comm_result = groupBulkWrite_->txPacket();
+  if (sdk_error.dxl_comm_result != COMM_SUCCESS)
+  {
+    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    return false;
+  }
+
+  groupBulkWrite_->clearParam();
+
+  *log = "[DynamixelDriver] Succeeded to bulk write!";
+  return true;
+}
 
 // void DynamixelDriver::initBulkRead()
 // {

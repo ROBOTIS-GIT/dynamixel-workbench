@@ -27,7 +27,8 @@ using namespace std;
 #define SPACEBAR_ASCII_VALUE        0x20
 #define ENTER_ASCII_VALUE           0x0a
 
-#define DEVICE_NAME "/dev/tty.usbserial-FT1CTA16"
+// #define DEVICE_NAME "/dev/tty.usbserial-FT1CTA16"
+#define DEVICE_NAME "/dev/ttyUSB0"
 
 uint8_t get_id[16];
 uint8_t scan_cnt = 0;
@@ -203,6 +204,69 @@ bool monitoring()
             }
           }
         }
+        else if (strcmp(cmd, "sync_write_handler") == 0)
+        {
+          uint8_t id = atoi(param[0]);
+          wb_result = dxl_wb.addSyncWriteHandler(id, param[1], &log);
+          if (wb_result == false)
+          {
+            printf("%s\n", log);
+            printf("Failed to add sync write handler\n");
+            return 0;
+          }
+          else
+            printf("%s\n", log);
+        }
+        else if (strcmp(cmd, "sync_read_handler") == 0)
+        {
+          uint8_t id = atoi(param[0]);
+          wb_result = dxl_wb.addSyncReadHandler(id, param[1], &log);
+          if (wb_result == false)
+          {
+            printf("%s\n", log);
+            printf("Failed to add sync write handler\n");
+            return 0;
+          }
+          else
+            printf("%s\n", log);
+        }
+        else if (strcmp(cmd, "bulk_write_handler") == 0)
+        {
+          wb_result = dxl_wb.initBulkWrite(&log);
+          if (wb_result == false)
+          {
+            printf("%s\n", log);
+            printf("Failed to init bulk write handler\n");
+            return 0;
+          }
+          else
+            printf("%s\n", log);
+        }
+        else if (strcmp(cmd, "bulk_write_param") == 0)
+        {
+          uint8_t id = atoi(param[0]);
+          wb_result = dxl_wb.addBulkWriteParam(id, param[1], atoi(param[2]), &log);
+          if (wb_result == false)
+          {
+            printf("%s\n", log);
+            printf("Failed to add param for bulk write\n");
+            return 0;
+          }
+          else
+            printf("%s\n", log);
+        }
+        else if (strcmp(cmd, "bulk_write") == 0)
+        {
+          wb_result = dxl_wb.bulkWrite(&log);
+          if (wb_result == false)
+          {
+            printf("%s\n", log);
+            printf("Failed to bulk write\n");
+            return 0;
+          }
+          else
+            printf("%s\n", log);
+        }
         else if (isAvailableID(atoi(param[0])) && isAvailableID(atoi(param[1])))
         {
           if (strcmp(cmd, "sync_write") == 0)
@@ -210,21 +274,13 @@ bool monitoring()
             uint8_t id_1 = atoi(param[0]);
             uint8_t id_2 = atoi(param[1]);
 
-            wb_result = dxl_wb.addSyncWriteHandler(id_1, param[2], &log);
-            if (wb_result == false)
-            {
-              printf("%s\n", log);
-              printf("Failed to add sync write handler\n");
-              return 0;
-            }
-            else
-              printf("%s\n", log);
-
             uint32_t data[2] = {0, 0};
             data[0] = atoi(param[3]);
             data[1] = atoi(param[4]);
 
-            wb_result = dxl_wb.syncWrite(0, data, &log);
+            uint8_t handler_index = atoi(param[2]);
+
+            wb_result = dxl_wb.syncWrite(handler_index, data, &log);
             if (wb_result == false)
             {
               printf("%s\n", log);
@@ -238,21 +294,10 @@ bool monitoring()
             uint8_t id_1 = atoi(param[0]);
             uint8_t id_2 = atoi(param[1]);
 
-            wb_result = dxl_wb.addSyncReadHandler(id_1, param[2], &log);
-            if (wb_result == false)
-            {
-              printf("%s\n", log);
-              printf("Failed to add sync write handler\n");
-              return 0;
-            }
-            else
-              printf("%s\n", log);
-
             uint32_t data[2] = {0, 0};
-            data[0] = atoi(param[3]);
-            data[1] = atoi(param[4]);
+            uint8_t handler_index = atoi(param[2]);
 
-            wb_result = dxl_wb.syncRead(0, data, &log);
+            wb_result = dxl_wb.syncRead(handler_index, data, &log);
             if (wb_result == false)
             {
               printf("%s\n", log);
@@ -433,9 +478,15 @@ void printInst(void)
   printf("torque (ID) (VALUE)\n");
   printf("joint  (ID) (GOAL_POSITION)\n");
   printf("wheel  (ID) (GOAL_VELOCITY)\n");
-  printf("write  (ID) (ADDRESS_NAME) (VALUE)\n");
+  printf("write  (ID) (ADDRESS_NAME) (DATA)\n");
   printf("read   (ID) (ADDRESS_NAME)\n");
-  printf("sync_write (ID_1) (ID_2) (ADDRESS_NAME) (VALUE_1) (VALUE_2)\n");
+  printf("sync_write_handler (ID) (ADDRESS_NAME)\n");
+  printf("sync_write (HANDLER_INDEX) (ID_1) (ID_2) (PARAM_1) (PARAM_2)\n");
+  printf("sync_read_handler (ID) (ADDRESS_NAME)\n");
+  printf("sync_read (HANDLER_INDEX) (ID_1) (ID_2)\n");
+  printf("bulk_write_handler\n");
+  printf("bulk_write_param (ID) (ADDRESS_NAME) (PARAM)\n");
+  printf("bulk_write\n");
   printf("reboot (ID) \n");
   printf("reset  (ID) \n");
   printf("exit\n");
