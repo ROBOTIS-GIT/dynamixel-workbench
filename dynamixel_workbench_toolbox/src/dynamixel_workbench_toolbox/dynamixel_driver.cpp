@@ -134,6 +134,11 @@ bool DynamixelDriver::init(const char *device_name, uint32_t baud_rate, const ch
   return result;
 }
 
+bool DynamixelDriver::begin(const char *device_name, uint32_t baud_rate, const char **log)
+{
+  return init(device_name, baud_rate, log);
+}
+
 bool DynamixelDriver::setPortHandler(const char *device_name, const char **log)
 {
   portHandler_ = dynamixel::PortHandler::getPortHandler(device_name);
@@ -189,7 +194,6 @@ uint32_t DynamixelDriver::getBaudrate(void)
 const char* DynamixelDriver::getModelName(uint8_t id, const char **log)
 {
   uint8_t factor = getTool(id, log);
-
   if (factor == 0xff) 
     return NULL;
   else
@@ -1401,124 +1405,3 @@ bool DynamixelDriver::bulkRead(uint32_t *data, const char **log)
   *log = "[DynamixelDriver] Succeeded to bulk read!";
   return true;
 }
-
-// int32_t DynamixelDriver::convertRadian2Value(uint8_t id, float radian)
-// {
-//   int32_t value = 0;
-//   uint8_t factor = getTool(id);
-
-//   if (radian > 0)
-//   {
-//     value = (radian * (tools_[factor].getValueOfMaxRadianPosition() - tools_[factor].getValueOfZeroRadianPosition()) / tools_[factor].getMaxRadian()) + tools_[factor].getValueOfZeroRadianPosition();
-//   }
-//   else if (radian < 0)
-//   {
-//     value = (radian * (tools_[factor].getValueOfMinRadianPosition() - tools_[factor].getValueOfZeroRadianPosition()) / tools_[factor].getMinRadian()) + tools_[factor].getValueOfZeroRadianPosition();
-//   }
-//   else
-//   {
-//     value = tools_[factor].getValueOfZeroRadianPosition();
-//   }
-
-//   return value;
-// }
-
-// float DynamixelDriver::convertValue2Radian(uint8_t id, int32_t value)
-// {
-//   float radian = 0.0;
-//   uint8_t factor = getTool(id);
-//   if (factor == 0) factor = 0;  // just use first one
-
-//   if (value > tools_[factor].getValueOfZeroRadianPosition())
-//   {
-//     radian = (float)(value - tools_[factor].getValueOfZeroRadianPosition()) * tools_[factor].getMaxRadian() / (float)(tools_[factor].getValueOfMaxRadianPosition() - tools_[factor].getValueOfZeroRadianPosition());
-//   }
-//   else if (value < tools_[factor].getValueOfZeroRadianPosition())
-//   {
-//     radian = (float)(value - tools_[factor].getValueOfZeroRadianPosition()) * tools_[factor].getMinRadian() / (float)(tools_[factor].getValueOfMinRadianPosition() - tools_[factor].getValueOfZeroRadianPosition());
-//   }
-
-//   return radian;
-// }
-
-// int32_t DynamixelDriver::convertRadian2Value(float radian, int32_t max_position, int32_t min_position, float max_radian, float min_radian)
-// {
-//   int32_t value = 0;
-//   int32_t zero_position = (max_position + min_position)/2;
-
-//   if (radian > 0)
-//   {
-//     value = (radian * (max_position - zero_position) / max_radian) + zero_position;
-//   }
-//   else if (radian < 0)
-//   {
-//     value = (radian * (min_position - zero_position) / min_radian) + zero_position;
-//   }
-//   else
-//   {
-//     value = zero_position;
-//   }
-
-//   return value;
-// }
-
-// float DynamixelDriver::convertValue2Radian(int32_t value, int32_t max_position, int32_t min_position, float max_radian, float min_radian)
-// {
-//   float radian = 0.0;
-//   int32_t zero_position = (max_position + min_position)/2;
-
-//   if (value > zero_position)
-//   {
-//     radian = (float)(value - zero_position) * max_radian / (float)(max_position - zero_position);
-//   }
-//   else if (value < zero_position)
-//   {
-//     radian = (float)(value - zero_position) * min_radian / (float)(min_position - zero_position);
-//   }
-
-//   return radian;
-// }
-
-// int32_t DynamixelDriver::convertVelocity2Value(uint8_t id, float velocity)
-// {
-//   int32_t value = 0;
-//   uint8_t factor = getTool(id);
-//   if (factor == 0xff) factor = 0; 
-
-//   // value = velocity * tools_[factor].getVelocityToValueRatio();
-
-//   return value;
-// }
-
-// float DynamixelDriver::convertValue2Velocity(uint8_t id, int32_t value)
-// {
-//   float velocity = 0;
-//   uint8_t factor = getTool(id);
-//   if (factor == 0xff) factor = 0; 
-
-//   // velocity = value / tools_[factor].getVelocityToValueRatio();
-
-//   return velocity;
-// }
-
-// int16_t DynamixelDriver::convertTorque2Value(uint8_t id, float torque)
-// {
-//   int16_t value = 0;
-//   uint8_t factor = getTool(id);
-//   if (factor == 0xff) factor = 0; 
-
-//   value = torque * tools_[factor].getTorqueToCurrentValueRatio();
-
-//   return value;
-// }
-
-// float DynamixelDriver::convertValue2Torque(uint8_t id, int16_t value)
-// {
-//   float torque = 0.0;
-//   uint8_t factor = getTool(id);
-//   if (factor == 0xff) factor = 0; 
-
-//   torque = value / tools_[factor].getTorqueToCurrentValueRatio();
-
-//   return torque;
-// }

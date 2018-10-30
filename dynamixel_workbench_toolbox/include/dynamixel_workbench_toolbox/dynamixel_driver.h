@@ -88,6 +88,10 @@ class DynamixelDriver
             uint32_t baud_rate = 57600, 
             const char **log = NULL);
 
+  bool begin(const char* device_name = "/dev/ttyUSB0", 
+            uint32_t baud_rate = 57600, 
+            const char **log = NULL);
+
   bool setPortHandler(const char *device_name, const char **log = NULL);
   bool setBaudrate(uint32_t baud_rate, const char **log = NULL);
   bool setPacketHandler(float protocol_version, const char **log = NULL);
@@ -158,7 +162,6 @@ class DynamixelDriver
   bool initBulkRead(const char **log = NULL);
   bool addBulkReadParam(uint8_t id, const char *item_name, const char **log = NULL);
   bool bulkRead(uint32_t *data, const char **log = NULL);
-  // bool bulkRead(uint8_t id, const char *item_name, uint32_t *data, const char **log = NULL);
 
  private:
   void initTools(void);
