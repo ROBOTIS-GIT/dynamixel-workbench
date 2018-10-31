@@ -405,7 +405,7 @@ bool DynamixelDriver::reset(uint8_t id, const char **log)
   ErrorFromSDK sdk_error = {0, false, false, 0};
   bool result = false;
 
-  uint32_t new_baud_rate = 0;
+  uint8_t new_baud_rate = 0;
   uint8_t new_id = 1;
 
   const char* model_name = getModelName(id, log);
@@ -416,12 +416,6 @@ bool DynamixelDriver::reset(uint8_t id, const char **log)
 
   if (getProtocolVersion() == 1.0)
   {
-    if (!strncmp(model_name, "AX", strlen("AX")) ||
-        !strncmp(model_name, "MX-12W", strlen("MX-12W")))
-      new_baud_rate = 1000000;
-    else
-      new_baud_rate = 57600;
-
     sdk_error.dxl_comm_result = packetHandler_1_0->factoryReset(portHandler_, id, 0x00, &sdk_error.dxl_error);
 #if defined(__OPENCR__) || defined(__OPENCM904__)
     delay(2000);
@@ -441,6 +435,12 @@ bool DynamixelDriver::reset(uint8_t id, const char **log)
     }
     else
     {
+      if (!strncmp(model_name, "AX", strlen("AX")) ||
+          !strncmp(model_name, "MX-12W", strlen("MX-12W")))
+        new_baud_rate = 1; //1000000
+      else
+        new_baud_rate = 34; //57600
+
       result = setBaudrate(new_baud_rate, log);
       if (result == false) 
         return false;
@@ -494,9 +494,9 @@ bool DynamixelDriver::reset(uint8_t id, const char **log)
     else
     {
       if (!strncmp(model_name, "XL-320", strlen("XL-320"))) 
-        new_baud_rate = 1000000;
+        new_baud_rate = 3; // 1000000
       else 
-        new_baud_rate = 57600;
+        new_baud_rate = 1; // 57600
 
       result = setBaudrate(new_baud_rate, log);
       if (result == false) 
