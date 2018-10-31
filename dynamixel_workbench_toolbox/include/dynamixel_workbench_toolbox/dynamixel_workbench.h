@@ -33,40 +33,42 @@ class DynamixelWorkbench : public DynamixelDriver
 
   bool setID(uint8_t id, uint8_t new_id, const char **log = NULL);
   bool setBaud(uint8_t id, uint32_t new_baudrate, const char **log = NULL);
+  bool setProtocolVersion(uint8_t id, uint8_t version, const char **log = NULL);
 
   bool led(uint8_t id, bool onoff, const char **log = NULL);
   bool ledOn(uint8_t id, const char **log = NULL);
   bool ledOff(uint8_t id, const char **log = NULL);
 
-  // bool changeWheelDirection(void);
-  // bool setTimeBasedControl(void);
+  bool setNormalDirection(uint8_t id, const char **log = NULL);
+  bool setReverseDirection(uint8_t id, const char **log = NULL);
+  
+  bool setVelocityBasedProfile(uint8_t id, const char **log = NULL);
+  bool setTimeBasedProfile(uint8_t id, const char **log = NULL);
 
-  // bool setCurrentControlMode(uint8_t id);
-  // bool setVelocityControlMode(uint8_t id);
+  bool setSecondaryID(uint8_t id, uint8_t secondary_id, const char **log = NULL);
+
+  bool setCurrentControlMode(uint8_t id, const char **log = NULL);
+  bool setTorqueControlMode(uint8_t id, const char **log = NULL);
+  bool setVelocityControlMode(uint8_t id, const char **log = NULL);  
   bool setPositionControlMode(uint8_t id, const char **log = NULL);  
-  // bool setExtendedPositionControlMode();
-  // bool setCurrentBasedPositionControlMode(uint8_t id);
-  // bool pwmControlMode();
+  bool setExtendedPositionControlMode(uint8_t id, const char **log = NULL);
+  bool setCurrentBasedPositionControlMode(uint8_t id, const char **log = NULL);
+  bool setPWMControlMode(uint8_t id, const char **log = NULL);
+
+  bool setOperatingMode(uint8_t id, uint8_t index, const char **log = NULL);
 
   bool jointMode(uint8_t id, uint32_t velocity = 0, uint32_t acceleration = 0, const char **log = NULL);
-  // bool wheelMode(uint8_t id, uint16_t vel = 0, uint16_t acc = 0);
-  // bool currentMode(uint8_t id, uint8_t cur = 50);
-  // bool positionBasedPositionMode(uint8_t id, uint8_t cur = 50);
+  bool wheelMode(uint8_t id, uint32_t acceleration = 0, const char **log = NULL);
+  bool CurrentBasedPositionMode(uint8_t id, uint32_t current = 0, const char **log = NULL);
 
-  // bool goalPosition(uint8_t id, int32_t goal);
-  // bool goalSpeed(uint8_t id, int32_t goal);
+  bool goalPosition(uint8_t id, uint32_t goal, const char **log = NULL);
+  bool goalVelocity(uint8_t id, uint32_t goal, const char **log = NULL);
 
-  // int32_t convertRadian2Value(uint8_t id, float radian);
-  // float convertValue2Radian(uint8_t id, int32_t value);
+  uint32_t convertRadian2Value(uint8_t id, float radian, const char **log = NULL);
+  float convertValue2Radian(uint8_t id, uint32_t value, const char **log = NULL);
 
-  // int32_t convertRadian2Value(float radian, int32_t max_position, int32_t min_position, float max_radian = 3.14, float min_radian = -3.14);
-  // float convertValue2Radian(int32_t value, int32_t max_position, int32_t min_position, float max_radian = 3.14, float min_radian = -3.14);
-
-  // int32_t convertVelocity2Value(uint8_t id, float velocity);
-  // float convertValue2Velocity(uint8_t id, int32_t value);
-
-  // int16_t convertTorque2Value(uint8_t id, float torque);
-  // float convertValue2Torque(uint8_t id, int16_t value);
+  uint32_t convertVelocity2Value(uint8_t id, float velocity, const char **log = NULL);
+  float convertValue2Velocity(uint8_t id, uint32_t value, const char **log = NULL);
 };
 
 #endif /*DYNAMIXEL_WORKBENCH_H_*/
