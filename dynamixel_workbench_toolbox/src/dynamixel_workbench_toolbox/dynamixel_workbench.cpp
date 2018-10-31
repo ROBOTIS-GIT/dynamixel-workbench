@@ -894,50 +894,38 @@ bool DynamixelWorkbench::goalVelocity(uint8_t id, uint32_t goal, const char **lo
 {
   bool result = false;
 
-  // model_name = getModelName(id, log);
-  // if (model_name == NULL) return false;
+  model_name = getModelName(id, log);
+  if (model_name == NULL) return false;
 
-  result = writeRegister(id, "Moving_Speed", goal, log);
-
-  // if (getProtocolVersion() == 1.0)
-  // {
-  //   if (!strncmp(model_name, "MX-28-2", strlen("MX-28-2"))   ||
-  //       !strncmp(model_name, "MX-64-2", strlen("MX-64-2"))   ||
-  //       !strncmp(model_name, "MX-106-2", strlen("MX-106-2")) ||
-  //       !strncmp(model_name, "XL430", strlen("XL430"))       ||
-  //       !strncmp(model_name, "XM", strlen("XM"))             ||
-  //       !strncmp(model_name, "XH", strlen("XH")))
-  //   {
-  //     result = writeRegister(id, "Goal_Velocity", goal, log);
-  //   }
-  //   else
-  //   {
-  //     if (goal < 0)
-  //     {
-  //       goal = (-1) * goal;
-  //       goal |= 1024;
-  //     }
-  //     result = writeRegister(id, "Moving_Speed", (uint16_t)goal, log);
-  //   }
-  // }
-  // else if (getProtocolVersion() == 2.0)
-  // {
-  //   if (!strncmp(model_name, "XL-320", strlen("XL-320")))
-  //   {
-  //     if (goal < 0)
-  //     {
-  //       goal = (-1) * goal;
-  //       goal |= 1024;
-  //     }
-  //     result = writeRegister(id, "Moving_Speed", (uint16_t)goal, log);
-  //   }
-  //   else
-  //     result = writeRegister(id, "Goal_Velocity", goal, log);
-  // }
+  if (getProtocolVersion() == 1.0)
+  {
+    if (!strncmp(model_name, "MX-28-2", strlen("MX-28-2"))   ||
+        !strncmp(model_name, "MX-64-2", strlen("MX-64-2"))   ||
+        !strncmp(model_name, "MX-106-2", strlen("MX-106-2")) ||
+        !strncmp(model_name, "XL430", strlen("XL430"))       ||
+        !strncmp(model_name, "XM", strlen("XM"))             ||
+        !strncmp(model_name, "XH", strlen("XH")))
+    {
+      result = writeRegister(id, "Goal_Velocity", (uint32_t)goal, log);
+    }
+    else
+    {
+      result = writeRegister(id, "Moving_Speed", (uint16_t)goal, log);
+    }
+  }
+  else if (getProtocolVersion() == 2.0)
+  {
+    if (!strncmp(model_name, "XL-320", strlen("XL-320")))
+    {
+      result = writeRegister(id, "Moving_Speed", (uint16_t)goal, log);
+    }
+    else
+      result = writeRegister(id, "Goal_Velocity", (uint32_t)goal, log);
+  }
 
   if (result == false)
   {
-    // log = "[DynamixelWorkbench] Failed to set goal velocity!";
+    *log = "[DynamixelWorkbench] Failed to set goal velocity!";
     return false;
   }
 
