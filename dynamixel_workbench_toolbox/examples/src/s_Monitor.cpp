@@ -111,6 +111,10 @@ bool monitoring()
         else
           printf("Succeed to init(%d)\n", baud);          
       }
+      else if (strcmp(cmd, "end") == 0)
+      {        
+        exit(0);
+      }
       else if (strcmp(cmd, "scan") == 0)
       {
         uint8_t range = 16;  // default
@@ -527,10 +531,6 @@ bool monitoring()
           printf("Wrong command\n");
         }
       }
-      else if (strcmp(cmd, "exit") == 0)
-      {
-        exit(0);
-      }
       else
       {
         printf("Please check ID\n");
@@ -538,7 +538,7 @@ bool monitoring()
     }
   }
 
-  return true;
+  return 0;
 }
 
 bool isAvailableID(uint8_t id)
@@ -581,7 +581,7 @@ void printInst(void)
   printf("bulk_read\n");
   printf("reboot (ID) \n");
   printf("reset  (ID) \n");
-  printf("exit\n");
+  printf("end\n");
   printf("-------------------------------------\n");
   printf("Press Enter Key\n");
 }
