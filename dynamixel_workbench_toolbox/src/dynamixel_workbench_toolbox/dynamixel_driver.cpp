@@ -30,7 +30,7 @@ DynamixelDriver::DynamixelDriver() : tools_cnt_(0),
 }
 
 DynamixelDriver::~DynamixelDriver()
-{
+{ 
   for (int i = 0; i < tools_cnt_; i++)
   {
     for (int j = 0; j < tools_[i].getDynamixelCount(); j++)
@@ -39,30 +39,15 @@ DynamixelDriver::~DynamixelDriver()
     }
   }
 
-  for (int i = 0; i < sync_write_handler_cnt_; i++)
-  {
-    delete[] syncWriteHandler_[i].groupSyncWrite;
-  }  
-
-  for (int i = 0; i < sync_read_handler_cnt_; i++)
-  {
-    delete[] syncReadHandler_[i].groupSyncRead;
-  }  
-
   portHandler_->closePort();
-
-  delete portHandler_;
-  delete packetHandler_;
-  delete packetHandler_1_0;
-  delete packetHandler_2_0;
 }
 
 void DynamixelDriver::initTools(void)
 {
-  tools_cnt_ = 0;
-
   for (uint8_t num = 0; num < tools_cnt_; num++)
     tools_[num].initTool();
+
+  tools_cnt_ = 0;
 }
 
 bool DynamixelDriver::setTool(uint16_t model_number, uint8_t id, const char **log)
@@ -167,7 +152,7 @@ bool DynamixelDriver::setBaudrate(uint32_t baud_rate, const char **log)
 
 bool DynamixelDriver::setPacketHandler(float protocol_version, const char **log)
 {
-  delete [] packetHandler_;
+  // delete [] packetHandler_;
 
   packetHandler_ = dynamixel::PacketHandler::getPacketHandler(protocol_version);
 
@@ -405,7 +390,7 @@ bool DynamixelDriver::reset(uint8_t id, const char **log)
   ErrorFromSDK sdk_error = {0, false, false, 0};
   bool result = false;
 
-  uint8_t new_baud_rate = 0;
+  uint32_t new_baud_rate = 0;
   uint8_t new_id = 1;
 
   const char* model_name = getModelName(id, log);
@@ -437,9 +422,9 @@ bool DynamixelDriver::reset(uint8_t id, const char **log)
     {
       if (!strncmp(model_name, "AX", strlen("AX")) ||
           !strncmp(model_name, "MX-12W", strlen("MX-12W")))
-        new_baud_rate = 1; //1000000
+        new_baud_rate = 1000000;
       else
-        new_baud_rate = 34; //57600
+        new_baud_rate = 57600;
 
       result = setBaudrate(new_baud_rate, log);
       if (result == false) 
@@ -494,9 +479,9 @@ bool DynamixelDriver::reset(uint8_t id, const char **log)
     else
     {
       if (!strncmp(model_name, "XL-320", strlen("XL-320"))) 
-        new_baud_rate = 3; // 1000000
+        new_baud_rate = 1000000;
       else 
-        new_baud_rate = 1; // 57600
+        new_baud_rate = 57600;
 
       result = setBaudrate(new_baud_rate, log);
       if (result == false) 
@@ -1237,7 +1222,6 @@ bool DynamixelDriver::initBulkWrite(const char **log)
     *log = "[DynamixelDriver] Failed to load packetHandler!";
   else
   {
-    delete groupBulkWrite_;
     groupBulkWrite_ = new dynamixel::GroupBulkWrite(portHandler_, packetHandler_);
 
     *log = "[DynamixelDriver] Succeeded to init groupBulkWrite!";
@@ -1301,7 +1285,6 @@ bool DynamixelDriver::initBulkRead(const char **log)
     *log = "[DynamixelDriver] Failed to load packetHandler!";
   else
   {
-    delete groupBulkRead_;
     groupBulkRead_ = new dynamixel::GroupBulkRead(portHandler_, packetHandler_);
 
     *log = "[DynamixelDriver] Succeeded to init groupBulkRead!";
@@ -1347,25 +1330,6 @@ bool DynamixelDriver::addBulkReadParam(uint8_t id, const char *item_name, const 
 
   *log = "[DynamixelDriver] Succeeded to add param for bulk read!";
   return true;
-
-  // bool dxl_addparam_result = false;
-
-  // const ControlItem *control_item;
-  // uint8_t factor = getTool(id);
-  // if (factor == 0xff) return false;
-  // control_item = tools_[factor].getControlItem(item_name);
-  // if (control_item == NULL)
-  // {
-  //   return false;
-  // }
-
-  // dxl_addparam_result = groupBulkRead_->addParam(id, control_item->address, control_item->data_length);
-  // if (dxl_addparam_result != true)
-  // {
-  //   return false;
-  // }
-
-  // return true;
 }
 
 bool DynamixelDriver::bulkRead(uint32_t *data, const char **log)
