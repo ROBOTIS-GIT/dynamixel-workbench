@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright 2016 ROBOTIS CO., LTD.
+* Copyright 2018 ROBOTIS CO., LTD.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -18,24 +18,43 @@
 
 #include <DynamixelWorkbench.h>
 
+// #define DEVICE_NAME "/dev/tty.usbserial-FT1CTA16"
 #define DEVICE_NAME "/dev/ttyUSB0"
-#define BAUDRATE  1000000
+#define BAUDRATE  57600
 
 int main(int argc, char *argv[]) 
 {
   DynamixelWorkbench dxl_wb;
 
+  const char *log;
+  bool result = false;
+
   uint8_t scanned_id[16];
   uint8_t dxl_cnt = 0;
   uint8_t range = 100;
 
-  dxl_wb.begin(DEVICE_NAME, BAUDRATE);
-  dxl_wb.scan(scanned_id, &dxl_cnt, range);
+  result = dxl_wb.init(DEVICE_NAME, BAUDRATE, &log);
+  if (result == false)
+  {
+    printf("%s\n", log);
+    printf("Failed to init\n");
+  }
+  else
+    printf("Succeed to init(%d)\n", BAUDRATE);  
 
-  if (dxl_cnt == 0)
-    printf("Can't find Dynamixels");
-  for (int index = 0; index < dxl_cnt; index++)
-    printf("ID : %d, Model Name : %s\n", scanned_id[index], dxl_wb.getModelName(scanned_id[index]));
+  result = dxl_wb.scan(scanned_id, &dxl_cnt, range, &log);
+  if (result == false)
+  {
+    printf("%s\n", log);
+    printf("Failed to scan\n");
+  }
+  else
+  {
+    printf("Find %d Dynamixels\n", dxl_cnt);
+
+    for (int cnt = 0; cnt < dxl_cnt; cnt++)
+      printf("id : %d, model name : %s\n", scanned_id[cnt], dxl_wb.getModelName(scanned_id[cnt]));
+  }
 
   return 0;
 }
