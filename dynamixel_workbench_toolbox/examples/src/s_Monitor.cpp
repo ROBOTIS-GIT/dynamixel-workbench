@@ -352,61 +352,108 @@ bool monitoring()
             }
           }
         }
-        // else if (strcmp(cmd, "id") == 0)
-        // {
-        //   uint8_t id     = atoi(param[0]);
-        //   uint8_t new_id = atoi(param[1]);
+        else if (strcmp(cmd, "id") == 0)
+        {
+          uint8_t id     = atoi(param[0]);
+          uint8_t new_id = atoi(param[1]);
 
-        //   if (dxl_wb.setID(id, new_id))
-        //     printf("Succeed to change ID");
-        //   else
-        //     printf("Failed");
-        // }
-        // else if (strcmp(cmd, "baud") == 0)
-        // {
-        //   uint8_t  id       = atoi(param[0]);
-        //   uint32_t  new_baud  = atoi(param[1]);
+          wb_result = dxl_wb.setID(id, new_id, &log);
+          if (wb_result == false)
+          {
+            printf("%s\n", log);
+            return 0;
+          }
+          else
+          {
+            printf("%s\n", log);
+          }
+        }
+        else if (strcmp(cmd, "baud") == 0)
+        {
+          uint8_t  id        = atoi(param[0]);
+          uint32_t new_baud  = atoi(param[1]);
 
-        //   if (dxl_wb.setBaud(id, new_baud))
-        //     printf("Succeed to change BaudRate\n");
-        //   else
-        //     printf("Failed\n");
+          wb_result = dxl_wb.setBaud(id, new_baud, &log);
+          if (wb_result == false)
+          {
+            printf("%s\n", log);
+            return 0;
+          }
+          else
+          {
+            printf("%s\n", log);
+          }
+        }
+        else if (strcmp(cmd, "torque") == 0)
+        {
+          uint8_t id       = atoi(param[0]);
+          bool onoff    = atoi(param[1]);
 
-        // }
-        // else if (strcmp(cmd, "torque") == 0)
-        // {
-        //   uint8_t id       = atoi(param[0]);
-        //   uint8_t onoff    = atoi(param[1]);
+          wb_result = dxl_wb.torque(id, onoff, &log);
+          if (wb_result == false)
+          {
+            printf("%s\n", log);
+            return 0;
+          }
+          else
+          {
+            printf("%s\n", log);
+          }
+        }
+        else if (strcmp(cmd, "joint") == 0)
+        {
+          uint8_t id    = atoi(param[0]);
+          uint32_t goal = atoi(param[1]);
 
-        //   if (dxl_wb.itemWrite(id, "Torque_Enable", onoff))
-        //     printf("Succeed to torque command!!\n");
-        //   else
-        //     printf("Failed\n");
+          wb_result = dxl_wb.jointMode(id, 0, 0, &log);
+          if (wb_result == false)
+          {
+            printf("%s\n", log);
+            return 0;
+          }
+          else
+          {
+            printf("%s\n", log);
+          }
 
-        // }
-        // else if (strcmp(cmd, "joint") == 0)
-        // {
-        //   uint8_t id    = atoi(param[0]);
-        //   uint16_t goal = atoi(param[1]);
+          wb_result = dxl_wb.goalPosition(id, goal, &log);
+          if (wb_result == false)
+          {
+            printf("%s\n", log);
+            return 0;
+          }
+          else
+          {
+            printf("%s\n", log);
+          }
+        }
+        else if (strcmp(cmd, "wheel") == 0)
+        {
+          uint8_t id    = atoi(param[0]);
+          uint32_t goal = atoi(param[1]);
 
-        //   dxl_wb.jointMode(id);
-        //   if (dxl_wb.goalPosition(id, goal))
-        //     printf("Succeed to joint command!!\n");
-        //   else
-        //     printf("Failed\n");
+          wb_result = dxl_wb.wheelMode(id, 0, &log);
+          if (wb_result == false)
+          {
+            printf("%s\n", log);
+            return 0;
+          }
+          else
+          {
+            printf("%s\n", log);
+          }
 
-        // }
-        // else if (strcmp(cmd, "wheel") == 0)
-        // {
-        //   uint8_t id    = atoi(param[0]);
-        //   int32_t goal  = atoi(param[1]);
-
-        //   dxl_wb.wheelMode(id);
-        //   if (dxl_wb.goalSpeed(id, goal))
-        //     printf("Succeed to wheel command!!\n");
-        //   else
-        //     printf("Failed\n");
-        // }
+          wb_result = dxl_wb.goalVelocity(id, goal, &log);
+          if (wb_result == false)
+          {
+            printf("%s\n", log);
+            return 0;
+          }
+          else
+          {
+            printf("%s\n", log);
+          }
+        }
         else if (strcmp(cmd, "write") == 0)
         {
           uint8_t id = atoi(param[0]);
