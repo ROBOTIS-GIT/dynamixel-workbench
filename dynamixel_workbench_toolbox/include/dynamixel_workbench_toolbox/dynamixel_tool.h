@@ -39,8 +39,6 @@ class DynamixelTool
 
   uint16_t the_number_of_control_item_;
 
-  char tool_log[200];
-
  public:
   DynamixelTool();
   ~DynamixelTool();

@@ -82,6 +82,9 @@ DynamixelTool::~DynamixelTool(){}
 
 void DynamixelTool::initTool(void)
 {
+  for (uint8_t i = 0; i < DYNAMIXEL_BUFFER; i++)
+    dxl_id_[i] = 0;
+
   dxl_cnt_ = 0;
 }
 
@@ -270,15 +273,6 @@ const ControlItem *DynamixelTool::getControlItem(const char *item_name, const ch
     }
     control_item++;
   }
-
-  if (strncmp(item_name, "Moving_Speed", strlen("Moving_Speed")) == 0)
-    getControlItem("Goal_Velocity");
-  else if (strncmp(item_name, "Goal_Velocity", strlen("Goal_Velocity")) == 0)
-    getControlItem("Moving_Speed");
-  else if (strncmp(item_name, "Present_Velocity", strlen("Present_Velocity")) == 0)
-    getControlItem("Present_Speed");
-  else if (strncmp(item_name, "Present_Speed", strlen("Present_Speed")) == 0)
-    getControlItem("Present_Velocity");
 
   *log = "[DynamixelTool] Can't find Item";
   return NULL;
