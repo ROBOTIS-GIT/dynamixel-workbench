@@ -18,11 +18,6 @@
 
 #include "../../include/dynamixel_workbench_toolbox/dynamixel_workbench.h"
 
-// MX
-// Wheel Mode	both are 0
-// Joint Mode	neither are 0
-// Multi-turn Mode	both are 4095
-
 static const uint8_t WHEEL_MODE = 1;
 static const uint8_t JOINT_MODE = 2;
 
@@ -782,6 +777,9 @@ bool DynamixelWorkbench::jointMode(uint8_t id, uint32_t velocity, uint32_t accel
     return false;
   }
 
+  result = torqueOn(id, log);
+  if (result == false) return false;
+
   *log = "[DynamixelWorkbench] Succeeded to set Joint Mode!";
   return result;
 }
@@ -835,6 +833,9 @@ bool DynamixelWorkbench::wheelMode(uint8_t id, uint32_t acceleration, const char
     return false;
   }
 
+  result = torqueOn(id, log);
+  if (result == false) return false;
+
   *log = "[DynamixelWorkbench] Succeeded to set Wheel Mode!";
   return result;
 }
@@ -866,6 +867,9 @@ bool DynamixelWorkbench::CurrentBasedPositionMode(uint8_t id, uint32_t current, 
     return false;
   }
 
+  result = torqueOn(id, log);
+  if (result == false) return false;
+
   *log = "[DynamixelWorkbench] Succeeded to set Current Based Position Wheel Mode!";
   return result;
 }
@@ -893,7 +897,7 @@ bool DynamixelWorkbench::goalVelocity(uint8_t id, uint32_t goal, const char **lo
   // model_name = getModelName(id, log);
   // if (model_name == NULL) return false;
 
-  result = writeRegister(id, "Goal_Velocity", goal, log);
+  result = writeRegister(id, "Moving_Speed", goal, log);
 
   // if (getProtocolVersion() == 1.0)
   // {
@@ -933,7 +937,7 @@ bool DynamixelWorkbench::goalVelocity(uint8_t id, uint32_t goal, const char **lo
 
   if (result == false)
   {
-    *log = "[DynamixelWorkbench] Failed to set goal velocity!";
+    // log = "[DynamixelWorkbench] Failed to set goal velocity!";
     return false;
   }
 
