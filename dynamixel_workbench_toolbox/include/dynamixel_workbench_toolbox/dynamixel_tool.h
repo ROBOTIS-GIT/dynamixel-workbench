@@ -62,9 +62,9 @@ class DynamixelTool
 
   float getRPM(void);
 
-  int32_t getValueOfMinRadianPosition(void);
-  int32_t getValueOfMaxRadianPosition(void);
-  int32_t getValueOfZeroRadianPosition(void);
+  int64_t getValueOfMinRadianPosition(void);
+  int64_t getValueOfMaxRadianPosition(void);
+  int64_t getValueOfZeroRadianPosition(void);
 
   float getMinRadian(void);
   float getMaxRadian(void);

@@ -226,17 +226,17 @@ float DynamixelTool::getRPM(void)
   return model_info_->rpm;
 }
 
-int32_t DynamixelTool::getValueOfMinRadianPosition(void)
+int64_t DynamixelTool::getValueOfMinRadianPosition(void)
 {
   return model_info_->value_of_min_radian_position;
 }
 
-int32_t DynamixelTool::getValueOfMaxRadianPosition(void)
+int64_t DynamixelTool::getValueOfMaxRadianPosition(void)
 {
   return model_info_->value_of_max_radian_position;
 }
 
-int32_t DynamixelTool::getValueOfZeroRadianPosition(void)
+int64_t DynamixelTool::getValueOfZeroRadianPosition(void)
 {
   return model_info_->value_of_zero_radian_position;
 }
