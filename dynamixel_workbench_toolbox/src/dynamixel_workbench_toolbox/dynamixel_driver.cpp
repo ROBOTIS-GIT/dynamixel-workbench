@@ -232,6 +232,14 @@ uint8_t DynamixelDriver::getTheNumberOfControlItem(uint8_t id, const char **log)
   return tools_[factor].getTheNumberOfControlItem();
 }
 
+const ModelInfo* DynamixelDriver::getModelInfo(uint8_t id, const char **log)
+{
+  uint8_t factor = getTool(id, log);
+  if (factor == 0xff) return NULL;
+
+  return tools_[factor].getModelInfo();
+}
+
 bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_the_number_of_id, uint8_t start_num, uint8_t end_num, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
@@ -300,7 +308,7 @@ bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_the_number_of_id, uint8
     return result;
   }
 
-  return false;
+  return result;
 }
 
 bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_the_number_of_id, uint8_t range, const char **log)
@@ -351,7 +359,7 @@ bool DynamixelDriver::ping(uint8_t id, uint16_t *get_model_number, const char **
     return result;
   }  
 
-  return false;
+  return result;
 }
 
 bool DynamixelDriver::reboot(uint8_t id, const char **log)
@@ -508,7 +516,7 @@ bool DynamixelDriver::reset(uint8_t id, const char **log)
     return true;
   }
 
-  return false;
+  return result;
 }
 
 bool DynamixelDriver::writeRegister(uint8_t id, uint16_t address, uint16_t length, uint8_t* data, const char **log)

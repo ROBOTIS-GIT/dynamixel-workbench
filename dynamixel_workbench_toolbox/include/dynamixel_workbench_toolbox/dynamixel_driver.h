@@ -103,6 +103,7 @@ class DynamixelDriver
   uint16_t getModelNumber(uint8_t id, const char **log = NULL);
   const ControlItem *getControlTable(uint8_t id, const char **log = NULL);
   uint8_t getTheNumberOfControlItem(uint8_t id, const char **log = NULL);
+  const ModelInfo* getModelInfo(uint8_t id, const char **log = NULL);
 
   bool scan(uint8_t *get_id,
             uint8_t *get_the_number_of_id, 
