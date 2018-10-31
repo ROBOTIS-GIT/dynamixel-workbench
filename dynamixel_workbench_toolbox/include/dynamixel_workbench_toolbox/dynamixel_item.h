@@ -84,9 +84,9 @@ typedef struct
 {
   float rpm;
 
-  int32_t value_of_min_radian_position;
-  int32_t value_of_zero_radian_position;
-  int32_t value_of_max_radian_position;
+  int64_t value_of_min_radian_position;
+  int64_t value_of_zero_radian_position;
+  int64_t value_of_max_radian_position;
 
   float  min_radian;
   float  max_radian;
