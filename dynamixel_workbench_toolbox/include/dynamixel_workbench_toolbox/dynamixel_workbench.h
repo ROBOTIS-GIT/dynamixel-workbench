@@ -61,8 +61,17 @@ class DynamixelWorkbench : public DynamixelDriver
   bool wheelMode(uint8_t id, uint32_t acceleration = 0, const char **log = NULL);
   bool CurrentBasedPositionMode(uint8_t id, uint32_t current = 0, const char **log = NULL);
 
-  bool goalPosition(uint8_t id, uint32_t goal, const char **log = NULL);
-  bool goalVelocity(uint8_t id, uint32_t goal, const char **log = NULL);
+  bool goalPosition(uint8_t id, uint32_t value, const char **log = NULL);
+  bool goalPosition(uint8_t id, float radian, const char **log = NULL);
+
+  bool goalVelocity(uint8_t id, uint32_t value, const char **log = NULL);
+  bool goalVelocity(uint8_t id, float velocity, const char **log = NULL);
+
+  bool getPresentPositionData(uint8_t id, uint32_t* data, const char **log = NULL);
+  bool getRadian(uint8_t id, float* radian, const char **log = NULL);
+
+  bool getPresentVelocityData(uint8_t id, uint32_t* data, const char **log = NULL);
+  bool getVelocity(uint8_t id, float* velocity, const char **log = NULL);
 
   uint32_t convertRadian2Value(uint8_t id, float radian, const char **log = NULL);
   float convertValue2Radian(uint8_t id, uint32_t value, const char **log = NULL);
