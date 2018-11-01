@@ -388,12 +388,26 @@ bool monitoring()
             printf("%s\n", log);
           }
         }
-        else if (strcmp(cmd, "torque") == 0)
+        else if (strcmp(cmd, "torque_on") == 0)
         {
-          uint8_t id       = atoi(param[0]);
-          bool onoff    = atoi(param[1]);
+          uint8_t id    = atoi(param[0]);
 
-          wb_result = dxl_wb.torque(id, onoff, &log);
+          wb_result = dxl_wb.torqueOn(id, &log);
+          if (wb_result == false)
+          {
+            printf("%s\n", log);
+            return 0;
+          }
+          else
+          {
+            printf("%s\n", log);
+          }
+        }
+        else if (strcmp(cmd, "torque_off") == 0)
+        {
+          uint8_t id    = atoi(param[0]);
+
+          wb_result = dxl_wb.torqueOff(id, &log);
           if (wb_result == false)
           {
             printf("%s\n", log);
@@ -564,7 +578,8 @@ void printInst(void)
   printf("info   (ID)\n");
   printf("id     (ID) (NEW_ID)\n");
   printf("baud   (ID) (NEW_BAUD)\n");
-  printf("torque (ID) (VALUE)\n");
+  printf("torque_on (ID)\n");
+  printf("torque_off (ID)\n");
   printf("joint  (ID) (GOAL_POSITION)\n");
   printf("wheel  (ID) (GOAL_VELOCITY)\n");
   printf("write  (ID) (ADDRESS_NAME) (DATA)\n");
