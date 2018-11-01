@@ -60,9 +60,9 @@ class DynamixelWorkbench : public DynamixelDriver
 
   bool setOperatingMode(uint8_t id, uint8_t index, const char **log = NULL);
 
-  bool jointMode(uint8_t id, uint32_t velocity = 0, uint32_t acceleration = 0, const char **log = NULL);
-  bool wheelMode(uint8_t id, uint32_t acceleration = 0, const char **log = NULL);
-  bool CurrentBasedPositionMode(uint8_t id, uint32_t current = 0, const char **log = NULL);
+  bool jointMode(uint8_t id, int32_t velocity = 0, int32_t acceleration = 0, const char **log = NULL);
+  bool wheelMode(uint8_t id, int32_t acceleration = 0, const char **log = NULL);
+  bool CurrentBasedPositionMode(uint8_t id, int32_t current = 0, const char **log = NULL);
 
   bool goalPosition(uint8_t id, int32_t value, const char **log = NULL);
   bool goalPosition(uint8_t id, float radian, const char **log = NULL);
@@ -70,17 +70,17 @@ class DynamixelWorkbench : public DynamixelDriver
   bool goalVelocity(uint8_t id, int32_t value, const char **log = NULL);
   bool goalVelocity(uint8_t id, float velocity, const char **log = NULL);
 
-  bool getPresentPositionData(uint8_t id, uint32_t* data, const char **log = NULL);
+  bool getPresentPositionData(uint8_t id, int32_t* data, const char **log = NULL);
   bool getRadian(uint8_t id, float* radian, const char **log = NULL);
 
-  bool getPresentVelocityData(uint8_t id, uint32_t* data, const char **log = NULL);
+  bool getPresentVelocityData(uint8_t id, int32_t* data, const char **log = NULL);
   bool getVelocity(uint8_t id, float* velocity, const char **log = NULL);
 
-  uint32_t convertRadian2Value(uint8_t id, float radian, const char **log = NULL);
-  float convertValue2Radian(uint8_t id, uint32_t value, const char **log = NULL);
+  int32_t convertRadian2Value(uint8_t id, float radian, const char **log = NULL);
+  float convertValue2Radian(uint8_t id, int32_t value, const char **log = NULL);
 
-  uint32_t convertVelocity2Value(uint8_t id, float velocity, const char **log = NULL);
-  float convertValue2Velocity(uint8_t id, uint32_t value, const char **log = NULL);
+  int32_t convertVelocity2Value(uint8_t id, float velocity, const char **log = NULL);
+  float convertValue2Velocity(uint8_t id, int32_t value, const char **log = NULL);
 };
 
 #endif /*DYNAMIXEL_WORKBENCH_H_*/

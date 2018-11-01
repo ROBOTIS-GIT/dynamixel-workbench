@@ -684,14 +684,19 @@ bool DynamixelWorkbench::setOperatingMode(uint8_t id, uint8_t index, const char 
     }
     else if (index == TORQUE_CONTROL_MODE)
     {
-      if (!strncmp(model_name, "PRO", strlen("PRO")))
+      if (!strncmp(model_name, "PRO", strlen("PRO"))   ||
+          strncmp(model_name, "PRO-L42", strlen("PRO-L42")) )
       {
         result = writeRegister(id, "Operating_Mode", (uint8_t)0, log);
       }
     }
     else if (index == EXTENDED_POSITION_CONTROL_MODE)
     {
-      result = writeRegister(id, "Operating_Mode", EXTENDED_POSITION_CONTROL_MODE, log);
+      if (!strncmp(model_name, "PRO", strlen("PRO"))   ||
+          strncmp(model_name, "PRO-L42", strlen("PRO-L42")) )
+      {
+        result = writeRegister(id, "Operating_Mode", EXTENDED_POSITION_CONTROL_MODE, log);
+      }
     }
     else if (index == CURRENT_BASED_POSITION_CONTROL_MODE)
     {
@@ -727,7 +732,7 @@ bool DynamixelWorkbench::setOperatingMode(uint8_t id, uint8_t index, const char 
 }
 
 
-bool DynamixelWorkbench::jointMode(uint8_t id, uint32_t velocity, uint32_t acceleration, const char **log)
+bool DynamixelWorkbench::jointMode(uint8_t id, int32_t velocity, int32_t acceleration, const char **log)
 {
   bool result = false;
 
@@ -749,36 +754,36 @@ bool DynamixelWorkbench::jointMode(uint8_t id, uint32_t velocity, uint32_t accel
         !strncmp(model_name, "XM", strlen("XM"))             ||
         !strncmp(model_name, "XH", strlen("XH")))
     {
-      result = writeRegister(id, "Profile_Acceleration", acceleration, log);
-      result = writeRegister(id, "Profile_Velocity", velocity, log);
+      result = writeRegister(id, "Profile_Acceleration", (uint32_t)acceleration, log);
+      result = writeRegister(id, "Profile_Velocity", (uint32_t)velocity, log);
     }
     else if (!strncmp(model_name, "MX-28", strlen("MX-28"))   ||
              !strncmp(model_name, "MX-64", strlen("MX-64"))   ||
              !strncmp(model_name, "MX-106", strlen("MX-106")))
     {
-      result = writeRegister(id, "Moving_Speed", velocity, log);
-      result = writeRegister(id, "Goal_Acceleration", acceleration, log);
+      result = writeRegister(id, "Moving_Speed", (uint32_t)velocity, log);
+      result = writeRegister(id, "Goal_Acceleration", (uint32_t)acceleration, log);
     }
     else
     {
-      result = writeRegister(id, "Moving_Speed", velocity, log);
+      result = writeRegister(id, "Moving_Speed", (uint32_t)velocity, log);
     }
   }
   else if (getProtocolVersion() == 2.0)
   {
     if (!strncmp(model_name, "XL-320", strlen("XL-320")))
     {
-      result = writeRegister(id, "Moving_Speed", velocity, log);
+      result = writeRegister(id, "Moving_Speed", (uint32_t)velocity, log);
     }
     else if (!strncmp(model_name, "PRO", strlen("PRO")))
     {
-      result = writeRegister(id, "Goal_Velocity", velocity, log);
-      result = writeRegister(id, "Goal_Acceleration", acceleration, log);
+      result = writeRegister(id, "Goal_Velocity", (uint32_t)velocity, log);
+      result = writeRegister(id, "Goal_Acceleration", (uint32_t)acceleration, log);
     }
     else
     {
-      result = writeRegister(id, "Profile_Acceleration", acceleration, log);
-      result = writeRegister(id, "Profile_Velocity", velocity, log);
+      result = writeRegister(id, "Profile_Acceleration", (uint32_t)acceleration, log);
+      result = writeRegister(id, "Profile_Velocity", (uint32_t)velocity, log);
     }
   }
 
@@ -795,7 +800,7 @@ bool DynamixelWorkbench::jointMode(uint8_t id, uint32_t velocity, uint32_t accel
   return result;
 }
 
-bool DynamixelWorkbench::wheelMode(uint8_t id, uint32_t acceleration, const char **log)
+bool DynamixelWorkbench::wheelMode(uint8_t id, int32_t acceleration, const char **log)
 {
   bool result = false;
 
@@ -817,24 +822,24 @@ bool DynamixelWorkbench::wheelMode(uint8_t id, uint32_t acceleration, const char
         !strncmp(model_name, "XM", strlen("XM"))             ||
         !strncmp(model_name, "XH", strlen("XH")))
     {
-      result = writeRegister(id, "Profile_Acceleration", acceleration, log);
+      result = writeRegister(id, "Profile_Acceleration", (uint32_t)acceleration, log);
     }
     else if (!strncmp(model_name, "MX-28", strlen("MX-28"))   ||
              !strncmp(model_name, "MX-64", strlen("MX-64"))   ||
              !strncmp(model_name, "MX-106", strlen("MX-106")))
     {
-      result = writeRegister(id, "Goal_Acceleration", acceleration, log);
+      result = writeRegister(id, "Goal_Acceleration", (uint32_t)acceleration, log);
     }
   }
   else if (getProtocolVersion() == 2.0)
   {
     if (!strncmp(model_name, "PRO", strlen("PRO")))
     {
-      result = writeRegister(id, "Goal_Acceleration", acceleration, log);
+      result = writeRegister(id, "Goal_Acceleration", (uint32_t)acceleration, log);
     }
     else
     {
-      result = writeRegister(id, "Profile_Acceleration", acceleration, log);
+      result = writeRegister(id, "Profile_Acceleration", (uint32_t)acceleration, log);
     }
   }
 
@@ -851,7 +856,7 @@ bool DynamixelWorkbench::wheelMode(uint8_t id, uint32_t acceleration, const char
   return result;
 }
 
-bool DynamixelWorkbench::CurrentBasedPositionMode(uint8_t id, uint32_t current, const char **log)
+bool DynamixelWorkbench::CurrentBasedPositionMode(uint8_t id, int32_t current, const char **log)
 {
   bool result = false;
 
@@ -869,7 +874,7 @@ bool DynamixelWorkbench::CurrentBasedPositionMode(uint8_t id, uint32_t current, 
       !strncmp(model_name, "XM", strlen("XM"))             ||
       !strncmp(model_name, "XH", strlen("XH")))
   {   
-    result = writeRegister(id, "Goal_Current", current, log);
+    result = writeRegister(id, "Goal_Current", (uint32_t)current, log);
   }
 
   if (result == false)
@@ -992,7 +997,7 @@ bool DynamixelWorkbench::goalVelocity(uint8_t id, float velocity, const char **l
   return result;
 }
 
-bool DynamixelWorkbench::getPresentPositionData(uint8_t id, uint32_t* data, const char **log)
+bool DynamixelWorkbench::getPresentPositionData(uint8_t id, int32_t* data, const char **log)
 {
   bool result = 0;
   uint32_t get_data = 0;
@@ -1013,7 +1018,7 @@ bool DynamixelWorkbench::getPresentPositionData(uint8_t id, uint32_t* data, cons
 bool DynamixelWorkbench::getRadian(uint8_t id, float* radian, const char **log)
 {
   bool result = 0;
-  uint32_t get_data = 0;
+  int32_t get_data = 0;
 
   result = getPresentPositionData(id, &get_data, log);
   if (result == false)
@@ -1031,7 +1036,7 @@ bool DynamixelWorkbench::getRadian(uint8_t id, float* radian, const char **log)
 bool DynamixelWorkbench::getVelocity(uint8_t id, float* velocity, const char **log)
 {
   bool result = 0;
-  uint32_t get_data = 0;
+  int32_t get_data = 0;
 
   result = getPresentVelocityData(id, &get_data, log);
   if (result == false)
@@ -1046,7 +1051,7 @@ bool DynamixelWorkbench::getVelocity(uint8_t id, float* velocity, const char **l
   return result;
 }
 
-bool DynamixelWorkbench::getPresentVelocityData(uint8_t id, uint32_t* data, const char **log)
+bool DynamixelWorkbench::getPresentVelocityData(uint8_t id, int32_t* data, const char **log)
 {
   bool result[2] = {false, false};
   uint32_t get_data = 0;
@@ -1078,9 +1083,9 @@ bool DynamixelWorkbench::getPresentVelocityData(uint8_t id, uint32_t* data, cons
   return false;
 }
 
-uint32_t DynamixelWorkbench::convertRadian2Value(uint8_t id, float radian, const char **log)
+int32_t DynamixelWorkbench::convertRadian2Value(uint8_t id, float radian, const char **log)
 {
-  uint32_t position = 0;
+  int32_t position = 0;
 
   model_info = getModelInfo(id, log);
   if (model_info == NULL) return false;
@@ -1101,7 +1106,7 @@ uint32_t DynamixelWorkbench::convertRadian2Value(uint8_t id, float radian, const
   return position;
 }
 
-float DynamixelWorkbench::convertValue2Radian(uint8_t id, uint32_t value, const char **log)
+float DynamixelWorkbench::convertValue2Radian(uint8_t id, int32_t value, const char **log)
 {
   float radian = 0.0;
 
@@ -1120,9 +1125,9 @@ float DynamixelWorkbench::convertValue2Radian(uint8_t id, uint32_t value, const 
   return radian;
 }
 
-uint32_t DynamixelWorkbench::convertVelocity2Value(uint8_t id, float velocity, const char **log)
+int32_t DynamixelWorkbench::convertVelocity2Value(uint8_t id, float velocity, const char **log)
 {
-  uint32_t value = 0;
+  int32_t value = 0;
 
   model_info = getModelInfo(id, log);
   if (model_info == NULL) return false;
@@ -1132,7 +1137,7 @@ uint32_t DynamixelWorkbench::convertVelocity2Value(uint8_t id, float velocity, c
   return value;
 }
 
-float DynamixelWorkbench::convertValue2Velocity(uint8_t id, uint32_t value, const char **log)
+float DynamixelWorkbench::convertValue2Velocity(uint8_t id, int32_t value, const char **log)
 {
   float velocity = 0;
 
