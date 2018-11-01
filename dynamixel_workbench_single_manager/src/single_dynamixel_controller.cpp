@@ -92,19 +92,20 @@ void SingleDynamixelController::viewManagerMenu()
   printf("Single Manager supports GUI (dynamixel_workbench_single_manager_gui)  \n");
   printf("----------------------------------------------------------------------\n");
   printf("Command list :\n");
-  printf("[help|h|?].........: help\n");
-  printf("[info].............: information of a Dynamixel\n");
-  printf("[table]............: check a control table of a Dynamixel\n");
-  printf("[torque_on]........: torque on Dynamixel\n");
-  printf("[torque_off].......: torque off Dynamixel\n");
-  printf("[goal].............: set data to goal position address ex) goal 1024\n");
-  printf("[id]...............: change id ex) id 3\n");
-  printf("[baud].............: change baud rate ex) baud 57600\n");
-  printf("[version]..........: change protocol version ex) version 2.0\n");
-  printf("[reboot]...........: reboot a Dynamixel(only protocol version 2.0)\n");
-  printf("[reset]............: command for all data back to factory settings values\n");
-  printf("[table_item].......: change address value of a Dynamixel ex) Goal_Position 1024\n");
-  printf("[exit].............: shutdown\n");
+  printf("[help|h|?]...............: help\n");
+  printf("[info]...................: information of a Dynamixel\n");
+  printf("[table]..................: check a control table of a Dynamixel\n");
+  printf("[torque_on]..............: torque on Dynamixel\n");
+  printf("[torque_off].............: torque off Dynamixel\n");
+  printf("[joint] [data]...........: set data to goal position address\n");
+  printf("[wheel] [data]...........: set data to goal position address\n");
+  printf("[id] [new id]............: change id\n");
+  printf("[baud] [new baud]........: change baud rate\n");
+  printf("[version] [new version]..: change protocol version\n");
+  printf("[reboot].................: reboot a Dynamixel(only protocol version 2.0)\n");
+  printf("[reset]..................: command for all data back to factory settings values\n");
+  printf("[address name] [data]....: change address value of a Dynamixel\n");
+  printf("[exit]...................: shutdown\n");
   printf("----------------------------------------------------------------------\n");
   printf("Press Enter Key To Command A Dynamixel\n");
 }
@@ -194,7 +195,7 @@ bool SingleDynamixelController::controlLoop()
       }
       else if (strcmp(cmd, "reboot") == 0)
       {
-        if (sendCommandMsg("reboot"))
+        if (!sendCommandMsg("reboot"))
           printf("It didn't reboot to DYNAMIXEL\n");
       }
       else if (strcmp(cmd, "reset") == 0)
@@ -216,13 +217,6 @@ bool SingleDynamixelController::controlLoop()
         else
           printf("Torque Off");
       }
-      else if (strcmp(cmd, "goal") == 0)
-      {
-        if (!sendCommandMsg("addr", "Goal_Position", atoi(param[0])))
-          printf("It didn't works\n");
-        else
-          printf("Move!!");
-      }
       else if (strcmp(cmd, "id") == 0)
       {
         if (!sendCommandMsg("addr", "ID", atoi(param[0])))
@@ -236,6 +230,16 @@ bool SingleDynamixelController::controlLoop()
       else if (strcmp(cmd, "version") == 0)
       {
         if (!sendCommandMsg("addr", "Protocol_Version", atof(param[0])))
+          printf("It didn't works\n");
+      }
+      else if (strcmp(cmd, "joint") == 0)
+      {
+        if (!sendCommandMsg("Joint", "", atoi(param[0])))
+          printf("It didn't works\n");
+      }
+      else if (strcmp(cmd, "wheel") == 0)
+      {
+        if (!sendCommandMsg("Wheel", "", atoi(param[0])))
           printf("It didn't works\n");
       }
       else if (num_param == 1)
