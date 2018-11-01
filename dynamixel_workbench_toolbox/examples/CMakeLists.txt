@@ -34,3 +34,6 @@ target_link_libraries(bps_change LINK_PUBLIC dynamixel_workbench)
 
 add_executable(monitor src/s_Monitor.cpp)
 target_link_libraries(monitor LINK_PUBLIC dynamixel_workbench)
+
+add_executable(find_dynamixel src/t_Find_Dynamixel.cpp)
+target_link_libraries(find_dynamixel LINK_PUBLIC dynamixel_workbench)
