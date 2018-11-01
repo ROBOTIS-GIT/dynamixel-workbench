@@ -67,7 +67,7 @@ bool DynamixelDriver::setTool(uint16_t model_number, uint8_t id, const char **lo
       }
       else
       {
-        *log = "[DynamixelDriver] Too many Dynamixels are connected (default buffer size is 16, the same series of Dynamixels)";
+        if (log != NULL) *log = "[DynamixelDriver] Too many Dynamixels are connected (default buffer size is 16, the same series of Dynamixels)";
         return false;
       }
     }
@@ -81,11 +81,11 @@ bool DynamixelDriver::setTool(uint16_t model_number, uint8_t id, const char **lo
   }
   else
   {
-    *log = "[DynamixelDriver] Too many series are connected (MAX = 5 different series)";
+    if (log != NULL) *log = "[DynamixelDriver] Too many series are connected (MAX = 5 different series)";
     return false;
   }
 
-  *log = "[DynamixelDriver] Failed to set the Tool";
+  if (log != NULL) *log = "[DynamixelDriver] Failed to set the Tool";
   return false;
 }
 
@@ -102,7 +102,7 @@ uint8_t DynamixelDriver::getTool(uint8_t id, const char **log)
     }
   }
 
-  *log = "[DynamixelDriver] Failed to get the Tool";
+  if (log != NULL) *log = "[DynamixelDriver] Failed to get the Tool";
   return 0xff;
 }
 
@@ -130,11 +130,11 @@ bool DynamixelDriver::setPortHandler(const char *device_name, const char **log)
 
   if (portHandler_->openPort())
   {
-    *log = "[DynamixelDriver] Succeeded to open the port!";
+    if (log != NULL) *log = "[DynamixelDriver] Succeeded to open the port!";
     return true;
   }
 
-  *log = "[DynamixelDriver] Failed to open the port!";
+  if (log != NULL) *log = "[DynamixelDriver] Failed to open the port!";
   return false;
 }
 
@@ -142,11 +142,11 @@ bool DynamixelDriver::setBaudrate(uint32_t baud_rate, const char **log)
 {
   if (portHandler_->setBaudRate(baud_rate))
   {
-    *log = "[DynamixelDriver] Succeeded to change the baudrate!";
+    if (log != NULL) *log = "[DynamixelDriver] Succeeded to change the baudrate!";
     return true;
   }
 
-  *log = "[DynamixelDriver] Failed to change the baudrate!";
+  if (log != NULL) *log = "[DynamixelDriver] Failed to change the baudrate!";
   return false;
 }
 
@@ -158,11 +158,11 @@ bool DynamixelDriver::setPacketHandler(float protocol_version, const char **log)
 
   if (packetHandler_->getProtocolVersion() == protocol_version)
   {
-    *log = "[DynamixelDriver] Succeeded to set the protocol!";
+    if (log != NULL) *log = "[DynamixelDriver] Succeeded to set the protocol!";
     return true;
   }
 
-  *log = "[DynamixelDriver] Failed to set the protocol!";
+  if (log != NULL) *log = "[DynamixelDriver] Failed to set the protocol!";
   return false;
 }
 
@@ -225,6 +225,16 @@ const ModelInfo* DynamixelDriver::getModelInfo(uint8_t id, const char **log)
   return tools_[factor].getModelInfo();
 }
 
+uint8_t DynamixelDriver::getTheNumberOfSyncWriteHandler(void)
+{
+  return sync_write_handler_cnt_;
+}
+
+uint8_t DynamixelDriver::getTheNumberOfSyncReadHandler(void)
+{
+  return sync_read_handler_cnt_;
+}
+
 bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_the_number_of_id, uint8_t start_num, uint8_t end_num, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
@@ -247,11 +257,11 @@ bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_the_number_of_id, uint8
     
     if (sdk_error.dxl_comm_result != COMM_SUCCESS)
     {
-      *log = packetHandler_1_0->getTxRxResult(sdk_error.dxl_comm_result);
+      if (log != NULL) *log = packetHandler_1_0->getTxRxResult(sdk_error.dxl_comm_result);
     }
     else if (sdk_error.dxl_error != 0)
     {
-      *log = packetHandler_1_0->getRxPacketError(sdk_error.dxl_error);
+      if (log != NULL) *log = packetHandler_1_0->getRxPacketError(sdk_error.dxl_error);
     }
     else
     {
@@ -273,11 +283,11 @@ bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_the_number_of_id, uint8
     
     if (sdk_error.dxl_comm_result != COMM_SUCCESS)
     {
-      *log = packetHandler_2_0->getTxRxResult(sdk_error.dxl_comm_result);
+      if (log != NULL) *log = packetHandler_2_0->getTxRxResult(sdk_error.dxl_comm_result);
     }
     else if (sdk_error.dxl_error != 0)
     {
-      *log = packetHandler_2_0->getRxPacketError(sdk_error.dxl_error);
+      if (log != NULL) *log = packetHandler_2_0->getRxPacketError(sdk_error.dxl_error);
     }
     else
     {
@@ -312,11 +322,11 @@ bool DynamixelDriver::ping(uint8_t id, uint16_t *get_model_number, const char **
   
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    *log = packetHandler_1_0->getTxRxResult(sdk_error.dxl_comm_result);
+    if (log != NULL) *log = packetHandler_1_0->getTxRxResult(sdk_error.dxl_comm_result);
   }
   else if (sdk_error.dxl_error != 0)
   {
-    *log = packetHandler_1_0->getRxPacketError(sdk_error.dxl_error);
+    if (log != NULL) *log = packetHandler_1_0->getRxPacketError(sdk_error.dxl_error);
   }
   else
   {
@@ -330,11 +340,11 @@ bool DynamixelDriver::ping(uint8_t id, uint16_t *get_model_number, const char **
   
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    *log = packetHandler_2_0->getTxRxResult(sdk_error.dxl_comm_result);
+    if (log != NULL) *log = packetHandler_2_0->getTxRxResult(sdk_error.dxl_comm_result);
   }
   else if (sdk_error.dxl_error != 0)
   {
-    *log = packetHandler_2_0->getRxPacketError(sdk_error.dxl_error);
+    if (log != NULL) *log = packetHandler_2_0->getRxPacketError(sdk_error.dxl_error);
   }
   else
   {
@@ -353,7 +363,7 @@ bool DynamixelDriver::reboot(uint8_t id, const char **log)
 
   if (getProtocolVersion() == 1.0)
   {
-    *log = "[DynamixelDriver] reboot functions is not available with the Dynamixel Protocol 1.0.";
+    if (log != NULL) *log = "[DynamixelDriver] reboot functions is not available with the Dynamixel Protocol 1.0.";
     return false;
   }
   else
@@ -367,17 +377,17 @@ bool DynamixelDriver::reboot(uint8_t id, const char **log)
 
     if (sdk_error.dxl_comm_result != COMM_SUCCESS)
     {
-      *log = packetHandler_2_0->getTxRxResult(sdk_error.dxl_comm_result);
+      if (log != NULL) *log = packetHandler_2_0->getTxRxResult(sdk_error.dxl_comm_result);
       return false;
     }
     else if (sdk_error.dxl_error != 0)
     {
-      *log = packetHandler_2_0->getRxPacketError(sdk_error.dxl_error);
+      if (log != NULL) *log = packetHandler_2_0->getRxPacketError(sdk_error.dxl_error);
       return false;
     }
     else
     {
-      *log = "[DynamixelDriver] Succeeded to reboot!";
+      if (log != NULL) *log = "[DynamixelDriver] Succeeded to reboot!";
       return true;
     }
   }
@@ -410,12 +420,12 @@ bool DynamixelDriver::reset(uint8_t id, const char **log)
 
     if (sdk_error.dxl_comm_result != COMM_SUCCESS)
     {
-      *log = packetHandler_1_0->getTxRxResult(sdk_error.dxl_comm_result);
+      if (log != NULL) *log = packetHandler_1_0->getTxRxResult(sdk_error.dxl_comm_result);
       return false;
     }
     else if (sdk_error.dxl_error != 0)
     {
-      *log = packetHandler_1_0->getRxPacketError(sdk_error.dxl_error);
+      if (log != NULL) *log = packetHandler_1_0->getRxPacketError(sdk_error.dxl_error);
       return false;
     }
     else
@@ -454,7 +464,7 @@ bool DynamixelDriver::reset(uint8_t id, const char **log)
     result = setTool(model_number, new_id, log);
     if (result == false) return false; 
     
-    *log = "[DynamixelDriver] Succeeded to reset!";
+    if (log != NULL) *log = "[DynamixelDriver] Succeeded to reset!";
     return true;
   }
   else if (getProtocolVersion() == 2.0)
@@ -468,12 +478,12 @@ bool DynamixelDriver::reset(uint8_t id, const char **log)
 
     if (sdk_error.dxl_comm_result != COMM_SUCCESS)
     {
-      *log = packetHandler_2_0->getTxRxResult(sdk_error.dxl_comm_result);
+      if (log != NULL) *log = packetHandler_2_0->getTxRxResult(sdk_error.dxl_comm_result);
       return false;
     }
     else if (sdk_error.dxl_error != 0)
     {
-      *log = packetHandler_2_0->getRxPacketError(sdk_error.dxl_error);
+      if (log != NULL) *log = packetHandler_2_0->getRxPacketError(sdk_error.dxl_error);
       return false;
     }
     else
@@ -497,7 +507,7 @@ bool DynamixelDriver::reset(uint8_t id, const char **log)
     result = setTool(model_number, new_id, log);
     if (result == false) return false; 
     
-    *log = "[DynamixelDriver] Succeeded to reset!";
+    if (log != NULL) *log = "[DynamixelDriver] Succeeded to reset!";
     return true;
   }
 
@@ -516,17 +526,17 @@ bool DynamixelDriver::writeRegister(uint8_t id, uint16_t address, uint16_t lengt
                                                         &sdk_error.dxl_error);
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
   else if (sdk_error.dxl_error != 0)
   {
-    *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+    if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
     return false;
   }
   else
   {
-    *log = "[DynamixelDriver] Succeeded to write!";
+    if (log != NULL) *log = "[DynamixelDriver] Succeeded to write!";
     return true;
   }
 
@@ -554,17 +564,17 @@ bool DynamixelDriver::writeRegister(uint8_t id, const char *item_name, uint8_t d
                                                         &sdk_error.dxl_error);
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
   else if (sdk_error.dxl_error != 0)
   {
-    *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+    if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
     return false;
   }
   else
   {
-    *log = "[DynamixelDriver] Succeeded to write!";
+    if (log != NULL) *log = "[DynamixelDriver] Succeeded to write!";
     return true;
   }
 
@@ -592,17 +602,17 @@ bool DynamixelDriver::writeRegister(uint8_t id, const char *item_name, uint16_t 
                                                         &sdk_error.dxl_error);
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
   else if (sdk_error.dxl_error != 0)
   {
-    *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+    if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
     return false;
   }
   else
   {
-    *log = "[DynamixelDriver] Succeeded to write!";
+    if (log != NULL) *log = "[DynamixelDriver] Succeeded to write!";
     return true;
   }
 
@@ -630,17 +640,17 @@ bool DynamixelDriver::writeRegister(uint8_t id, const char *item_name, uint32_t 
                                                         &sdk_error.dxl_error);
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
   else if (sdk_error.dxl_error != 0)
   {
-    *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+    if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
     return false;
   }
   else
   {
-    *log = "[DynamixelDriver] Succeeded to write!";
+    if (log != NULL) *log = "[DynamixelDriver] Succeeded to write!";
     return true;
   }
 
@@ -658,12 +668,12 @@ bool DynamixelDriver::writeOnlyRegister(uint8_t id, uint16_t address, uint16_t l
                                                           data);
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
   else
   {
-    *log = "[DynamixelDriver] Succeeded to write!";
+    if (log != NULL) *log = "[DynamixelDriver] Succeeded to write!";
     return true;
   }
 
@@ -690,12 +700,12 @@ bool DynamixelDriver::writeOnlyRegister(uint8_t id, const char *item_name, uint8
                                                           data_write);
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
   else
   {
-    *log = "[DynamixelDriver] Succeeded to write!";
+    if (log != NULL) *log = "[DynamixelDriver] Succeeded to write!";
     return true;
   }
 
@@ -722,12 +732,12 @@ bool DynamixelDriver::writeOnlyRegister(uint8_t id, const char *item_name, uint1
                                                           data_write);
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
   else
   {
-    *log = "[DynamixelDriver] Succeeded to write!";
+    if (log != NULL) *log = "[DynamixelDriver] Succeeded to write!";
     return true;
   }
 
@@ -754,12 +764,12 @@ bool DynamixelDriver::writeOnlyRegister(uint8_t id, const char *item_name, uint3
                                                           data_write);
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
   else
   {
-    *log = "[DynamixelDriver] Succeeded to write!";
+    if (log != NULL) *log = "[DynamixelDriver] Succeeded to write!";
     return true;
   }
 
@@ -780,12 +790,12 @@ bool DynamixelDriver::readRegister(uint8_t id, uint16_t address, uint16_t length
                                                       &sdk_error.dxl_error);
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
   else if (sdk_error.dxl_error != 0)
   {
-    *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+    if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
     return false;
   }
   else
@@ -811,7 +821,7 @@ bool DynamixelDriver::readRegister(uint8_t id, uint16_t address, uint16_t length
         }
        break;
     }
-    *log = "[DynamixelDriver] Succeeded to read!";
+    if (log != NULL) *log = "[DynamixelDriver] Succeeded to read!";
     return true;
   }
 
@@ -840,18 +850,18 @@ bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, uint8_t *d
                                                        &sdk_error.dxl_error);
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
   else if (sdk_error.dxl_error != 0)
   {
-    *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+    if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
     return false;
   }
   else
   {
     *data = data_read[0];
-    *log = "[DynamixelDriver] Succeeded to read!";
+    if (log != NULL) *log = "[DynamixelDriver] Succeeded to read!";
     return true;
   }
 
@@ -880,18 +890,18 @@ bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, uint16_t *
                                                        &sdk_error.dxl_error);
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
   else if (sdk_error.dxl_error != 0)
   {
-    *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+    if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
     return false;
   }
   else
   {
     *data = DXL_MAKEWORD(data_read[0], data_read[1]);
-    *log = "[DynamixelDriver] Succeeded to read!";
+    if (log != NULL) *log = "[DynamixelDriver] Succeeded to read!";
     return true;
   }
 
@@ -920,18 +930,18 @@ bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, uint32_t *
                                                        &sdk_error.dxl_error);
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
   else if (sdk_error.dxl_error != 0)
   {
-    *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+    if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
     return false;
   }
   else
   {
     *data = DXL_MAKEDWORD(DXL_MAKEWORD(data_read[0], data_read[1]), DXL_MAKEWORD(data_read[2], data_read[3]));
-    *log = "[DynamixelDriver] Succeeded to read!";
+    if (log != NULL) *log = "[DynamixelDriver] Succeeded to read!";
     return true;
   }
 
@@ -952,11 +962,11 @@ void DynamixelDriver::getParam(uint32_t data, uint8_t *param)
   param[3] = DXL_HIBYTE(DXL_HIWORD(data));
 }
 
-bool DynamixelDriver::addSyncWriteHandler(uint8_t id, uint16_t address, uint16_t length, const char **log)
+bool DynamixelDriver::addSyncWriteHandler(uint16_t address, uint16_t length, const char **log)
 {
   if (sync_write_handler_cnt_ > (MAX_HANDLER_NUM-1))
   {
-    *log = "[DynamixelDriver] Too many sync write handler are added (MAX = 5)";
+    if (log != NULL) *log = "[DynamixelDriver] Too many sync write handler are added (MAX = 5)";
     return false;
   }
 
@@ -969,7 +979,7 @@ bool DynamixelDriver::addSyncWriteHandler(uint8_t id, uint16_t address, uint16_t
 
   sync_write_handler_cnt_++;
 
-  *log = "[DynamixelDriver] Succeeded to add sync write handler";
+  if (log != NULL) *log = "[DynamixelDriver] Succeeded to add sync write handler";
   return true;    
 }
 
@@ -985,7 +995,7 @@ bool DynamixelDriver::addSyncWriteHandler(uint8_t id, const char *item_name, con
 
   if (sync_write_handler_cnt_ > (MAX_HANDLER_NUM-1))
   {
-    *log = "[DynamixelDriver] Too many sync write handler are added (MAX = 5)";
+    if (log != NULL) *log = "[DynamixelDriver] Too many sync write handler are added (MAX = 5)";
     return false;
   }
 
@@ -998,11 +1008,11 @@ bool DynamixelDriver::addSyncWriteHandler(uint8_t id, const char *item_name, con
 
   sync_write_handler_cnt_++;
 
-  *log = "[DynamixelDriver] Succeeded to add sync write handler";
+  if (log != NULL) *log = "[DynamixelDriver] Succeeded to add sync write handler";
   return true;                                                            
 }
 
-bool DynamixelDriver::syncWrite(uint8_t index, uint32_t *data, const char **log)
+bool DynamixelDriver::syncWrite(uint8_t index, int32_t *data, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
@@ -1013,11 +1023,11 @@ bool DynamixelDriver::syncWrite(uint8_t index, uint32_t *data, const char **log)
   {
     for (int j = 0; j < tools_[i].getDynamixelCount(); j++)
     {
-      getParam(data[dxl_cnt], parameter);
+      getParam((uint32_t)data[dxl_cnt], parameter);
       sdk_error.dxl_addparam_result = syncWriteHandler_[index].groupSyncWrite->addParam(tools_[i].getID()[j], (uint8_t *)&parameter);
       if (sdk_error.dxl_addparam_result != true)
       {
-        *log = "groupSyncWrite addparam failed";
+        if (log != NULL) *log = "groupSyncWrite addparam failed";
         return false;
       }
       else
@@ -1028,17 +1038,17 @@ bool DynamixelDriver::syncWrite(uint8_t index, uint32_t *data, const char **log)
   sdk_error.dxl_comm_result = syncWriteHandler_[index].groupSyncWrite->txPacket();
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
 
   syncWriteHandler_[index].groupSyncWrite->clearParam();
 
-  *log = "[DynamixelDriver] Succeeded to sync write!";
+  if (log != NULL) *log = "[DynamixelDriver] Succeeded to sync write!";
   return true;
 }
 
-bool DynamixelDriver::syncWrite(uint8_t index, uint8_t *id, uint8_t id_num, uint32_t *data, const char **log)
+bool DynamixelDriver::syncWrite(uint8_t index, uint8_t *id, uint8_t id_num, int32_t *data, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
@@ -1046,11 +1056,11 @@ bool DynamixelDriver::syncWrite(uint8_t index, uint8_t *id, uint8_t id_num, uint
 
   for (int i = 0; i < id_num; i++)
   {
-    getParam(data[i], parameter);
+    getParam((uint32_t)data[i], parameter);
     sdk_error.dxl_addparam_result = syncWriteHandler_[index].groupSyncWrite->addParam(id[i], (uint8_t *)&parameter);
     if (sdk_error.dxl_addparam_result != true)
     {
-      *log = "groupSyncWrite addparam failed";
+      if (log != NULL) *log = "groupSyncWrite addparam failed";
       return false;
     }
   }
@@ -1058,34 +1068,34 @@ bool DynamixelDriver::syncWrite(uint8_t index, uint8_t *id, uint8_t id_num, uint
   sdk_error.dxl_comm_result = syncWriteHandler_[index].groupSyncWrite->txPacket();
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
 
   syncWriteHandler_[index].groupSyncWrite->clearParam();
 
-  *log = "[DynamixelDriver] Succeeded to sync write!";
+  if (log != NULL) *log = "[DynamixelDriver] Succeeded to sync write!";
   return true;
 }
 
-bool DynamixelDriver::addSyncReadHandler(uint8_t id, uint16_t address, uint16_t length, const char **log)
+bool DynamixelDriver::addSyncReadHandler(uint16_t address, uint16_t length, const char **log)
 {
   if (sync_read_handler_cnt_ > (MAX_HANDLER_NUM-1))
   {
-    *log = "[DynamixelDriver] Too many sync read handler are added (MAX = 5)";
+    if (log != NULL) *log = "[DynamixelDriver] Too many sync read handler are added (MAX = 5)";
     return false;
   }
 
   syncReadHandler_[sync_read_handler_cnt_].control_item = NULL;
 
-  syncReadHandler_[sync_read_handler_cnt_++].groupSyncRead = new dynamixel::GroupSyncRead(portHandler_,
+  syncReadHandler_[sync_read_handler_cnt_].groupSyncRead = new dynamixel::GroupSyncRead(portHandler_,
                                                                                           packetHandler_,
                                                                                           address,
                                                                                           length);
 
   sync_read_handler_cnt_++;
 
-  *log = "[DynamixelDriver] Succeeded to add sync read handler";
+  if (log != NULL) *log = "[DynamixelDriver] Succeeded to add sync read handler";
   return true;
 }
 
@@ -1101,24 +1111,24 @@ bool DynamixelDriver::addSyncReadHandler(uint8_t id, const char *item_name, cons
 
   if (sync_read_handler_cnt_ > (MAX_HANDLER_NUM-1))
   {
-    *log = "[DynamixelDriver] Too many sync read handler are added (MAX = 5)";
+    if (log != NULL) *log = "[DynamixelDriver] Too many sync read handler are added (MAX = 5)";
     return false;
   }
 
   syncReadHandler_[sync_read_handler_cnt_].control_item = control_item;
 
-  syncReadHandler_[sync_read_handler_cnt_++].groupSyncRead = new dynamixel::GroupSyncRead(portHandler_,
+  syncReadHandler_[sync_read_handler_cnt_].groupSyncRead = new dynamixel::GroupSyncRead(portHandler_,
                                                                                           packetHandler_,
                                                                                           control_item->address,
                                                                                           control_item->data_length);
 
   sync_read_handler_cnt_++;
 
-  *log = "[DynamixelDriver] Succeeded to add sync read handler";
+  if (log != NULL) *log = "[DynamixelDriver] Succeeded to add sync read handler";
   return true;       
 }
 
-bool DynamixelDriver::syncRead(uint8_t index, uint32_t *data, const char **log)
+bool DynamixelDriver::syncRead(uint8_t index, int32_t *data, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
@@ -1129,7 +1139,7 @@ bool DynamixelDriver::syncRead(uint8_t index, uint32_t *data, const char **log)
       sdk_error.dxl_addparam_result = syncReadHandler_[index].groupSyncRead->addParam(tools_[i].getID()[j]);
       if (sdk_error.dxl_addparam_result != true)
       {
-        *log = "groupSyncWrite addparam failed";
+        if (log != NULL) *log = "groupSyncWrite addparam failed";
         return false;
       }
     }
@@ -1138,7 +1148,7 @@ bool DynamixelDriver::syncRead(uint8_t index, uint32_t *data, const char **log)
   sdk_error.dxl_comm_result = syncReadHandler_[index].groupSyncRead->txRxPacket();
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
 
@@ -1151,7 +1161,7 @@ bool DynamixelDriver::syncRead(uint8_t index, uint32_t *data, const char **log)
                                                                                         syncReadHandler_[index].control_item->data_length);
       if (sdk_error.dxl_getdata_result != true)
       {
-        *log = "groupSyncRead getdata failed";
+        if (log != NULL) *log = "groupSyncRead getdata failed";
         return false;
       }
       else
@@ -1165,11 +1175,11 @@ bool DynamixelDriver::syncRead(uint8_t index, uint32_t *data, const char **log)
 
   syncReadHandler_[index].groupSyncRead->clearParam();
 
-  *log = "[DynamixelDriver] Succeeded to sync read!";
+  if (log != NULL) *log = "[DynamixelDriver] Succeeded to sync read!";
   return true;
 }
 
-bool DynamixelDriver::syncRead(uint8_t index, uint8_t *id, uint8_t id_num, uint32_t *data, const char **log)
+bool DynamixelDriver::syncRead(uint8_t index, uint8_t *id, uint8_t id_num, int32_t *data, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
@@ -1178,7 +1188,7 @@ bool DynamixelDriver::syncRead(uint8_t index, uint8_t *id, uint8_t id_num, uint3
     sdk_error.dxl_addparam_result = syncReadHandler_[index].groupSyncRead->addParam(id[i]);
     if (sdk_error.dxl_addparam_result != true)
     {
-      *log = "groupSyncWrite addparam failed";
+      if (log != NULL) *log = "groupSyncWrite addparam failed";
       return false;
     }
   }
@@ -1186,7 +1196,7 @@ bool DynamixelDriver::syncRead(uint8_t index, uint8_t *id, uint8_t id_num, uint3
   sdk_error.dxl_comm_result = syncReadHandler_[index].groupSyncRead->txRxPacket();
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
 
@@ -1197,7 +1207,7 @@ bool DynamixelDriver::syncRead(uint8_t index, uint8_t *id, uint8_t id_num, uint3
                                                                                       syncReadHandler_[index].control_item->data_length);
     if (sdk_error.dxl_getdata_result != true)
     {
-      *log = "groupSyncRead getdata failed";
+      if (log != NULL) *log = "groupSyncRead getdata failed";
       return false;
     }
     else
@@ -1210,28 +1220,49 @@ bool DynamixelDriver::syncRead(uint8_t index, uint8_t *id, uint8_t id_num, uint3
 
   syncReadHandler_[index].groupSyncRead->clearParam();
 
-  *log = "[DynamixelDriver] Succeeded to sync read!";
+  if (log != NULL) *log = "[DynamixelDriver] Succeeded to sync read!";
   return true;
 }
 
 bool DynamixelDriver::initBulkWrite(const char **log)
 {
   if (portHandler_ == NULL)
-    *log = "[DynamixelDriver] Failed to load portHandler!";
+    if (log != NULL) *log = "[DynamixelDriver] Failed to load portHandler!";
   else if (packetHandler_ == NULL)
-    *log = "[DynamixelDriver] Failed to load packetHandler!";
+    if (log != NULL) *log = "[DynamixelDriver] Failed to load packetHandler!";
   else
   {
     groupBulkWrite_ = new dynamixel::GroupBulkWrite(portHandler_, packetHandler_);
 
-    *log = "[DynamixelDriver] Succeeded to init groupBulkWrite!";
+    if (log != NULL) *log = "[DynamixelDriver] Succeeded to init groupBulkWrite!";
     return true;
   }
 
   return false;
 }
 
-bool DynamixelDriver::addBulkWriteParam(uint8_t id, const char *item_name, uint32_t data, const char **log)
+bool DynamixelDriver::addBulkWriteParam(uint8_t id, uint16_t address, uint16_t length, int32_t data, const char **log)
+{
+  ErrorFromSDK sdk_error = {0, false, false, 0};
+
+  uint8_t parameter[4] = {0, 0, 0, 0};
+
+  getParam((uint32_t)data, parameter);
+  sdk_error.dxl_addparam_result = groupBulkWrite_->addParam(id, 
+                                                            address, 
+                                                            length, 
+                                                            parameter);
+  if (sdk_error.dxl_addparam_result != true)
+  {
+    if (log != NULL) *log = "groupBulkWrite addparam failed";
+    return false;
+  }
+
+  if (log != NULL) *log = "[DynamixelDriver] Succeeded to add param for bulk write!";
+  return true;
+}
+
+bool DynamixelDriver::addBulkWriteParam(uint8_t id, const char *item_name, int32_t data, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
@@ -1245,18 +1276,18 @@ bool DynamixelDriver::addBulkWriteParam(uint8_t id, const char *item_name, uint3
   control_item = tools_[factor].getControlItem(item_name, log);
   if (control_item == NULL) return false;
 
-  getParam(data, parameter);
+  getParam((uint32_t)data, parameter);
   sdk_error.dxl_addparam_result = groupBulkWrite_->addParam(id, 
                                                             control_item->address, 
                                                             control_item->data_length, 
                                                             parameter);
   if (sdk_error.dxl_addparam_result != true)
   {
-    *log = "groupBulkWrite addparam failed";
+    if (log != NULL) *log = "groupBulkWrite addparam failed";
     return false;
   }
 
-  *log = "[DynamixelDriver] Succeeded to add param for bulk write!";
+  if (log != NULL) *log = "[DynamixelDriver] Succeeded to add param for bulk write!";
   return true;
 }
 
@@ -1267,31 +1298,61 @@ bool DynamixelDriver::bulkWrite(const char **log)
   sdk_error.dxl_comm_result = groupBulkWrite_->txPacket();
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
 
   groupBulkWrite_->clearParam();
 
-  *log = "[DynamixelDriver] Succeeded to bulk write!";
+  if (log != NULL) *log = "[DynamixelDriver] Succeeded to bulk write!";
   return true;
 }
 
 bool DynamixelDriver::initBulkRead(const char **log)
 {
   if (portHandler_ == NULL)
-    *log = "[DynamixelDriver] Failed to load portHandler!";
+    if (log != NULL) *log = "[DynamixelDriver] Failed to load portHandler!";
   else if (packetHandler_ == NULL)
-    *log = "[DynamixelDriver] Failed to load packetHandler!";
+    if (log != NULL) *log = "[DynamixelDriver] Failed to load packetHandler!";
   else
   {
     groupBulkRead_ = new dynamixel::GroupBulkRead(portHandler_, packetHandler_);
 
-    *log = "[DynamixelDriver] Succeeded to init groupBulkRead!";
+    if (log != NULL) *log = "[DynamixelDriver] Succeeded to init groupBulkRead!";
     return true;
   }
 
   return false;
+}
+
+bool DynamixelDriver::addBulkReadParam(uint8_t id, uint16_t address, uint16_t length, const char **log)
+{
+  ErrorFromSDK sdk_error = {0, false, false, 0};
+
+  sdk_error.dxl_addparam_result = groupBulkRead_->addParam(id, 
+                                                           address, 
+                                                           length);
+  if (sdk_error.dxl_addparam_result != true)
+  {
+    if (log != NULL) *log = "grouBulkRead addparam failed";
+    return false;
+  }
+
+  if (bulk_parameter_cnt_ < (MAX_BULK_PARAMETER-1))
+  {
+    bulk_param_[bulk_parameter_cnt_].id = id;
+    bulk_param_[bulk_parameter_cnt_].address = address;
+    bulk_param_[bulk_parameter_cnt_].data_length = length;
+    bulk_parameter_cnt_++;
+  }
+  else
+  {
+    if (log != NULL) *log = "[DynamixelDriver] Too many bulk parameter are added (default buffer size is 16)";
+    return false;
+  }
+
+  if (log != NULL) *log = "[DynamixelDriver] Succeeded to add param for bulk read!";
+  return true;
 }
 
 bool DynamixelDriver::addBulkReadParam(uint8_t id, const char *item_name, const char **log)
@@ -1311,7 +1372,7 @@ bool DynamixelDriver::addBulkReadParam(uint8_t id, const char *item_name, const 
                                                           control_item->data_length);
   if (sdk_error.dxl_addparam_result != true)
   {
-    *log = "grouBulkRead addparam failed";
+    if (log != NULL) *log = "grouBulkRead addparam failed";
     return false;
   }
 
@@ -1324,22 +1385,22 @@ bool DynamixelDriver::addBulkReadParam(uint8_t id, const char *item_name, const 
   }
   else
   {
-    *log = "[DynamixelDriver] Too many bulk parameter are added (default buffer size is 16)";
+    if (log != NULL) *log = "[DynamixelDriver] Too many bulk parameter are added (default buffer size is 16)";
     return false;
   }
 
-  *log = "[DynamixelDriver] Succeeded to add param for bulk read!";
+  if (log != NULL) *log = "[DynamixelDriver] Succeeded to add param for bulk read!";
   return true;
 }
 
-bool DynamixelDriver::bulkRead(uint32_t *data, const char **log)
+bool DynamixelDriver::bulkRead(int32_t *data, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
   
   sdk_error.dxl_comm_result = groupBulkRead_->txRxPacket();
   if (sdk_error.dxl_comm_result != COMM_SUCCESS) 
   {
-    *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
 
@@ -1353,7 +1414,7 @@ bool DynamixelDriver::bulkRead(uint32_t *data, const char **log)
                                                               bulk_param_[i].data_length);
     if (sdk_error.dxl_getdata_result != true)
     {
-      *log = "groupBulkRead getdata failed";
+      if (log != NULL) *log = "groupBulkRead getdata failed";
       return false;
     }
     else
@@ -1374,6 +1435,6 @@ bool DynamixelDriver::bulkRead(uint32_t *data, const char **log)
     bulk_param_[i].data_length = 0;
   }
 
-  *log = "[DynamixelDriver] Succeeded to bulk read!";
+  if (log != NULL) *log = "[DynamixelDriver] Succeeded to bulk read!";
   return true;
 }

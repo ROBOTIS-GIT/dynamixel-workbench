@@ -105,6 +105,9 @@ class DynamixelDriver
   uint8_t getTheNumberOfControlItem(uint8_t id, const char **log = NULL);
   const ModelInfo* getModelInfo(uint8_t id, const char **log = NULL);
 
+  uint8_t getTheNumberOfSyncWriteHandler(void);
+  uint8_t getTheNumberOfSyncReadHandler(void);
+
   bool scan(uint8_t *get_id,
             uint8_t *get_the_number_of_id, 
             uint8_t range = 253,
@@ -127,13 +130,13 @@ class DynamixelDriver
 
   bool writeRegister(uint8_t id, const char *item_name, uint8_t data, const char **log = NULL);
   bool writeRegister(uint8_t id, const char *item_name, uint16_t data, const char **log = NULL);
-  bool writeRegister(uint8_t id, const char *item_name, uint32_t data, const char **log = NULL);
+  bool writeRegister(uint8_t id, const char *item_name, uint32_t data, const char **log = NULL);    
 
   bool writeOnlyRegister(uint8_t id, uint16_t address, uint16_t length, uint8_t *data, const char **log = NULL);
 
   bool writeOnlyRegister(uint8_t id, const char *item_name, uint8_t data, const char **log = NULL);
   bool writeOnlyRegister(uint8_t id, const char *item_name, uint16_t data, const char **log = NULL);
-  bool writeOnlyRegister(uint8_t id, const char *item_name, uint32_t data, const char **log = NULL);  
+  bool writeOnlyRegister(uint8_t id, const char *item_name, uint32_t data, const char **log = NULL); 
 
   bool readRegister(uint8_t id, uint16_t address, uint16_t length, uint32_t *data, const char **log = NULL);
 
@@ -144,25 +147,27 @@ class DynamixelDriver
   void getParam(uint16_t data, uint8_t *param);
   void getParam(uint32_t data, uint8_t *param);
 
-  bool addSyncWriteHandler(uint8_t id, uint16_t address, uint16_t length, const char **log = NULL);
+  bool addSyncWriteHandler(uint16_t address, uint16_t length, const char **log = NULL);
   bool addSyncWriteHandler(uint8_t id, const char *item_name, const char **log = NULL);
 
-  bool syncWrite(uint8_t index, uint32_t *data, const char **log = NULL);
-  bool syncWrite(uint8_t index, uint8_t *id, uint8_t id_num, uint32_t *data, const char **log = NULL);
+  bool syncWrite(uint8_t index, int32_t *data, const char **log = NULL);
+  bool syncWrite(uint8_t index, uint8_t *id, uint8_t id_num, int32_t *data, const char **log = NULL);
 
-  bool addSyncReadHandler(uint8_t id, uint16_t address, uint16_t length, const char **log = NULL);
+  bool addSyncReadHandler(uint16_t address, uint16_t length, const char **log = NULL);
   bool addSyncReadHandler(uint8_t id, const char *item_name, const char **log = NULL);
 
-  bool syncRead(uint8_t index, uint32_t *data, const char **log = NULL);
-  bool syncRead(uint8_t index, uint8_t *id, uint8_t id_num, uint32_t *data, const char **log = NULL);
+  bool syncRead(uint8_t index, int32_t *data, const char **log = NULL);
+  bool syncRead(uint8_t index, uint8_t *id, uint8_t id_num, int32_t *data, const char **log = NULL);
 
   bool initBulkWrite(const char **log = NULL);
-  bool addBulkWriteParam(uint8_t id, const char *item_name, uint32_t data, const char **log = NULL);
+  bool addBulkWriteParam(uint8_t id, uint16_t address, uint16_t length, int32_t data, const char **log = NULL);
+  bool addBulkWriteParam(uint8_t id, const char *item_name, int32_t data, const char **log = NULL);
   bool bulkWrite(const char **log = NULL);
 
   bool initBulkRead(const char **log = NULL);
+  bool addBulkReadParam(uint8_t id, uint16_t address, uint16_t length, const char **log = NULL);
   bool addBulkReadParam(uint8_t id, const char *item_name, const char **log = NULL);
-  bool bulkRead(uint32_t *data, const char **log = NULL);
+  bool bulkRead(int32_t *data, const char **log = NULL);
 
  private:
   void initTools(void);

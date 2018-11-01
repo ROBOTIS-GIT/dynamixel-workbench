@@ -143,7 +143,8 @@ bool DynamixelTool::setControlTable(const char *model_name, const char **log)
     }
   }
 
-  *log = "[DynamixelTool] Failed to set control table due to mismatch model name and model number";
+  if (log != NULL)
+    *log = "[DynamixelTool] Failed to set control table due to mismatch model name and model number";
   return false;
 }
 
@@ -155,7 +156,8 @@ bool DynamixelTool::setControlTable(uint16_t model_number, const char **log)
 
   if (control_table_ == NULL || model_info_ == NULL)
   {
-    *log = "[DynamixelTool] Failed to get control table or model info";
+    if (log != NULL)
+      *log = "[DynamixelTool] Failed to get control table or model info";
     return false;
   }
 
@@ -175,7 +177,8 @@ bool DynamixelTool::setModelName(uint16_t model_number, const char **log)
     }
   }
 
-  *log = "[DynamixelTool] Failed to find model name";
+  if (log != NULL)
+    *log = "[DynamixelTool] Failed to find model name";
   return false;
 }
 
@@ -193,7 +196,8 @@ bool DynamixelTool::setModelNumber(const char *model_name, const char **log)
     }
   }
 
-  *log = "[DynamixelTool] Failed to find model number";
+  if (log != NULL)
+    *log = "[DynamixelTool] Failed to find model number";
   return false;
 }
 
@@ -274,7 +278,8 @@ const ControlItem *DynamixelTool::getControlItem(const char *item_name, const ch
     control_item++;
   }
 
-  *log = "[DynamixelTool] Can't find Item";
+  if (log != NULL)
+    *log = "[DynamixelTool] Can't find Item";
   return NULL;
 }
 

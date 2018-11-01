@@ -41,14 +41,14 @@ bool DynamixelWorkbench::torque(uint8_t id, bool onoff, const char **log)
 {
   bool result = false;
 
-  result = writeRegister(id, "Torque_Enable", (uint8_t)onoff, log);
+  result = itemWrite(id, "Torque_Enable", onoff, log);
   if (result == false)
   {
-    *log = "[DynamixelWorkbench] Failed to change torque status!";
+    if (log != NULL) *log = "[DynamixelWorkbench] Failed to change torque status!";
     return false;
   }
 
-  *log = "[DynamixelWorkbench] Succeeded to change torque status!";
+  if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to change torque status!";
   return result;
 }
 
@@ -70,7 +70,7 @@ bool DynamixelWorkbench::torqueOff(uint8_t id, const char **log)
   return result;
 }
 
-bool DynamixelWorkbench::setID(uint8_t id, uint8_t new_id, const char **log)
+bool DynamixelWorkbench::changeID(uint8_t id, uint8_t new_id, const char **log)
 {
   bool result = false;
 
@@ -80,16 +80,16 @@ bool DynamixelWorkbench::setID(uint8_t id, uint8_t new_id, const char **log)
   result = writeRegister(id, "ID", new_id, log);
   if (result == false) 
   {
-    *log = "[DynamixelWorkbench] Failed to change ID!";
+    if (log != NULL) *log = "[DynamixelWorkbench] Failed to change ID!";
     return false;
   }
   // millis(1000);
 
-  *log = "[DynamixelWorkbench] Succeeded to change ID!";
+  if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to change ID!";
   return result;
 }
 
-bool DynamixelWorkbench::setBaud(uint8_t id, uint32_t new_baudrate, const char **log)
+bool DynamixelWorkbench::changeBaudrate(uint8_t id, uint32_t new_baudrate, const char **log)
 {
   bool result = false;
 
@@ -206,15 +206,15 @@ bool DynamixelWorkbench::setBaud(uint8_t id, uint32_t new_baudrate, const char *
 
   if (result == false)
   {
-    *log = "[DynamixelWorkbench] Failed to change Baud Rate!";
+    if (log != NULL) *log = "[DynamixelWorkbench] Failed to change Baud Rate!";
     return result; 
   } 
 
-  *log = "[DynamixelWorkbench] Succeeded to change Baud Rate!";
+  if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to change Baud Rate!";
   return result;
 }
 
-bool DynamixelWorkbench::setProtocolVersion(uint8_t id, uint8_t version, const char **log)
+bool DynamixelWorkbench::changeProtocolVersion(uint8_t id, uint8_t version, const char **log)
 {
   bool result = false;
   uint8_t data = 0;
@@ -232,15 +232,26 @@ bool DynamixelWorkbench::setProtocolVersion(uint8_t id, uint8_t version, const c
     result = writeRegister(id, "Protocol_Version", version, log);
     if (result == false)
     {
-      *log = "[DynamixelWorkbench] Failed to set protocol version!";
+      if (log != NULL) *log = "[DynamixelWorkbench] Failed to set protocol version!";
       return false;
     }
   }
 
-  *log = "[DynamixelWorkbench] Succeeded to set protocol version!";
+  result = setPacketHandler((float)version, log);
+  
+  if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to set protocol version!";
   return result;
 }
 
+bool DynamixelWorkbench::itemWrite(uint8_t id, const char *item_name, int32_t data, const char **log)
+{
+  return writeRegister(id, item_name, (uint32_t)data, log);
+}
+
+bool DynamixelWorkbench::itemRead(uint8_t id, const char *item_name, int32_t *data, const char **log)
+{
+  return readRegister(id, item_name, (uint32_t *)data, log);
+}
 
 bool DynamixelWorkbench::led(uint8_t id, bool onoff, const char **log)
 {
@@ -249,11 +260,11 @@ bool DynamixelWorkbench::led(uint8_t id, bool onoff, const char **log)
   result = writeRegister(id, "LED", (uint8_t)onoff, log);
   if (result == false)
   {
-    *log = "[DynamixelWorkbench] Failed to change led status!";
+    if (log != NULL) *log = "[DynamixelWorkbench] Failed to change led status!";
     return false;
   }
 
-  *log = "[DynamixelWorkbench] Succeeded to change led status!";
+  if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to change led status!";
   return result;
 }
 
@@ -296,12 +307,12 @@ bool DynamixelWorkbench::setNormalDirection(uint8_t id, const char **log)
     result = writeRegister(id, "Drive_Mode", data, log);
     if (result == false)
     {
-      *log = "[DynamixelWorkbench] Failed to set normal direction!";
+      if (log != NULL) *log = "[DynamixelWorkbench] Failed to set normal direction!";
       return false;
     }
   }
 
-  *log = "[DynamixelWorkbench] Succeeded to set normal direction!";
+  if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to set normal direction!";
   return result;
 }
 
@@ -326,12 +337,12 @@ bool DynamixelWorkbench::setReverseDirection(uint8_t id, const char **log)
     result = writeRegister(id, "Drive_Mode", data, log);
     if (result == false)
     {
-      *log = "[DynamixelWorkbench] Failed to set reverse direction!";
+      if (log != NULL) *log = "[DynamixelWorkbench] Failed to set reverse direction!";
       return false;
     }
   }
 
-  *log = "[DynamixelWorkbench] Succeeded to set reverse direction!";
+  if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to set reverse direction!";
   return result;
 }
 
@@ -356,12 +367,12 @@ bool DynamixelWorkbench::setVelocityBasedProfile(uint8_t id, const char **log)
     result = writeRegister(id, "Drive_Mode", data, log);
     if (result == false)
     {
-      *log = "[DynamixelWorkbench] Failed to set velocity based profile!";
+      if (log != NULL) *log = "[DynamixelWorkbench] Failed to set velocity based profile!";
       return false;
     }
   }
 
-  *log = "[DynamixelWorkbench] Succeeded to set velocity based profile!";
+  if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to set velocity based profile!";
   return result;
 }
 
@@ -386,12 +397,12 @@ bool DynamixelWorkbench::setTimeBasedProfile(uint8_t id, const char **log)
     result = writeRegister(id, "Drive_Mode", data, log);
     if (result == false)
     {
-      *log = "[DynamixelWorkbench] Failed to set time based profile!";
+      if (log != NULL) *log = "[DynamixelWorkbench] Failed to set time based profile!";
       return false;
     }
   }
 
-  *log = "[DynamixelWorkbench] Succeeded to set time based profile!";
+  if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to set time based profile!";
   return result;
 }
 
@@ -415,14 +426,14 @@ bool DynamixelWorkbench::setSecondaryID(uint8_t id, uint8_t secondary_id, const 
     result = writeRegister(id, "Secondary_ID", secondary_id, log);
     if (result == false) 
     {
-      *log = "[DynamixelWorkbench] Failed to set secondary ID!";
+      if (log != NULL) *log = "[DynamixelWorkbench] Failed to set secondary ID!";
       return false;
     }
   }
 
   // millis(1000);
 
-  *log = "[DynamixelWorkbench] Succeeded to set secondary ID!";
+  if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to set secondary ID!";
   return result;
 }
 
@@ -434,11 +445,11 @@ bool DynamixelWorkbench::setPositionControlMode(uint8_t id, const char **log)
 
   if (result == false)
   {
-    *log = "[DynamixelWorkbench] Failed to set Position Control Mode!";
+    if (log != NULL) *log = "[DynamixelWorkbench] Failed to set Position Control Mode!";
     return false;
   }
 
-  *log = "[DynamixelWorkbench] Succeeded to set Position Control Mode!";
+  if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to set Position Control Mode!";
   return result;
 }
 
@@ -450,11 +461,11 @@ bool DynamixelWorkbench::setVelocityControlMode(uint8_t id, const char **log)
 
   if (result == false)
   {
-    *log = "[DynamixelWorkbench] Failed to set Velocity Control Mode!";
+    if (log != NULL) *log = "[DynamixelWorkbench] Failed to set Velocity Control Mode!";
     return false;
   }
 
-  *log = "[DynamixelWorkbench] Succeeded to set Velocity Control Mode!";
+  if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to set Velocity Control Mode!";
   return result;
 }
 
@@ -466,11 +477,11 @@ bool DynamixelWorkbench::setCurrentControlMode(uint8_t id, const char **log)
 
   if (result == false)
   {
-    *log = "[DynamixelWorkbench] Failed to set Current Control Mode!";
+    if (log != NULL) *log = "[DynamixelWorkbench] Failed to set Current Control Mode!";
     return false;
   }
 
-  *log = "[DynamixelWorkbench] Succeeded to set Current Control Mode!";
+  if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to set Current Control Mode!";
   return result;
 }
 
@@ -482,11 +493,11 @@ bool DynamixelWorkbench::setTorqueControlMode(uint8_t id, const char **log)
 
   if (result == false)
   {
-    *log = "[DynamixelWorkbench] Failed to set Torque Control Mode!";
+    if (log != NULL) *log = "[DynamixelWorkbench] Failed to set Torque Control Mode!";
     return false;
   }
 
-  *log = "[DynamixelWorkbench] Succeeded to set Torque Control Mode!";
+  if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to set Torque Control Mode!";
   return result;
 }
 
@@ -498,11 +509,11 @@ bool DynamixelWorkbench::setExtendedPositionControlMode(uint8_t id, const char *
 
   if (result == false)
   {
-    *log = "[DynamixelWorkbench] Failed to set Extended Position Control Mode!";
+    if (log != NULL) *log = "[DynamixelWorkbench] Failed to set Extended Position Control Mode!";
     return false;
   }
 
-  *log = "[DynamixelWorkbench] Succeeded to set Extended Position Control Mode!";
+  if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to set Extended Position Control Mode!";
   return result;
 }
 
@@ -514,11 +525,11 @@ bool DynamixelWorkbench::setCurrentBasedPositionControlMode(uint8_t id, const ch
 
   if (result == false)
   {
-    *log = "[DynamixelWorkbench] Failed to set Current Based Position Control Mode!";
+    if (log != NULL) *log = "[DynamixelWorkbench] Failed to set Current Based Position Control Mode!";
     return false;
   }
 
-  *log = "[DynamixelWorkbench] Succeeded to set Current Based Position Control Mode!";
+  if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to set Current Based Position Control Mode!";
   return result;
 }
 
@@ -530,11 +541,11 @@ bool DynamixelWorkbench::setPWMControlMode(uint8_t id, const char **log)
 
   if (result == false)
   {
-    *log = "[DynamixelWorkbench] Failed to set PWM Control Mode!";
+    if (log != NULL) *log = "[DynamixelWorkbench] Failed to set PWM Control Mode!";
     return false;
   }
 
-  *log = "[DynamixelWorkbench] Succeeded to set PWM Control Mode!";
+  if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to set PWM Control Mode!";
   return result;
 }
 
@@ -707,11 +718,11 @@ bool DynamixelWorkbench::setOperatingMode(uint8_t id, uint8_t index, const char 
 
   if (result == false)
   {
-    *log = "[DynamixelWorkbench] Failed to set Operating Mode!";
+    if (log != NULL) *log = "[DynamixelWorkbench] Failed to set Operating Mode!";
     return false;
   }
 
-  *log = "[DynamixelWorkbench] Succeeded to set Operating Mode!";
+  if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to set Operating Mode!";
   return result;
 }
 
@@ -773,14 +784,14 @@ bool DynamixelWorkbench::jointMode(uint8_t id, uint32_t velocity, uint32_t accel
 
   if (result == false)
   {
-    *log = "[DynamixelWorkbench] Failed to set Joint Mode!";
+    if (log != NULL) *log = "[DynamixelWorkbench] Failed to set Joint Mode!";
     return false;
   }
 
   result = torqueOn(id, log);
   if (result == false) return false;
 
-  *log = "[DynamixelWorkbench] Succeeded to set Joint Mode!";
+  if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to set Joint Mode!";
   return result;
 }
 
@@ -829,14 +840,14 @@ bool DynamixelWorkbench::wheelMode(uint8_t id, uint32_t acceleration, const char
 
   if (result == false)
   {
-    *log = "[DynamixelWorkbench] Failed to set Wheel Mode!";
+    if (log != NULL) *log = "[DynamixelWorkbench] Failed to set Wheel Mode!";
     return false;
   }
 
   result = torqueOn(id, log);
   if (result == false) return false;
 
-  *log = "[DynamixelWorkbench] Succeeded to set Wheel Mode!";
+  if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to set Wheel Mode!";
   return result;
 }
 
@@ -863,34 +874,34 @@ bool DynamixelWorkbench::CurrentBasedPositionMode(uint8_t id, uint32_t current, 
 
   if (result == false)
   {
-    *log = "[DynamixelWorkbench] Failed to set Current Based Position Mode!";
+    if (log != NULL) *log = "[DynamixelWorkbench] Failed to set Current Based Position Mode!";
     return false;
   }
 
   result = torqueOn(id, log);
   if (result == false) return false;
 
-  *log = "[DynamixelWorkbench] Succeeded to set Current Based Position Wheel Mode!";
+  if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to set Current Based Position Wheel Mode!";
   return result;
 }
 
-bool DynamixelWorkbench::goalPosition(uint8_t id, uint32_t value, const char **log)
+bool DynamixelWorkbench::goalPosition(uint8_t id, int32_t value, const char **log)
 {
   bool result = false;
   
-  result = writeRegister(id, "Goal_Position", value, log);
+  result = itemWrite(id, "Goal_Position", value, log);
 
   if (result == false)
   {
-    *log = "[DynamixelWorkbench] Failed to set goal position!";
+    if (log != NULL) *log = "[DynamixelWorkbench] Failed to set goal position!";
     return false;
   }
 
-  *log = "[DynamixelWorkbench] Succeeded to set goal position!";
+  if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to set goal position!";
   return result;
 }
 
-bool DynamixelWorkbench::goalVelocity(uint8_t id, uint32_t value, const char **log)
+bool DynamixelWorkbench::goalVelocity(uint8_t id, int32_t value, const char **log)
 {
   bool result[2] = {false, false};
 
@@ -902,18 +913,18 @@ bool DynamixelWorkbench::goalVelocity(uint8_t id, uint32_t value, const char **l
       result[1] = writeRegister(id, "Moving_Speed", (uint16_t)value, log);
       if (result[1] == false)
       {
-        *log = "[DynamixelWorkbench] Failed to set goal velocity!";
+        if (log != NULL) *log = "[DynamixelWorkbench] Failed to set goal velocity!";
         return false;
       }
       else
       {
-        *log = "[DynamixelWorkbench] Succeeded to set goal velocity!";
+        if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to set goal velocity!";
         return true;
       }
     }
     else
     {
-      *log = "[DynamixelWorkbench] Succeeded to set goal velocity!";
+      if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to set goal velocity!";
       return true;
     }
   }
@@ -925,23 +936,23 @@ bool DynamixelWorkbench::goalVelocity(uint8_t id, uint32_t value, const char **l
       result[1] = writeRegister(id, "Goal_Velocity", (uint32_t)value, log);
       if (result[1] == false)
       {
-        *log = "[DynamixelWorkbench] Failed to set goal velocity!";
+        if (log != NULL) *log = "[DynamixelWorkbench] Failed to set goal velocity!";
         return false;
       }
       else
       {
-        *log = "[DynamixelWorkbench] Succeeded to set goal velocity!";
+        if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to set goal velocity!";
         return true;
       }
     }
     else
     {
-      *log = "[DynamixelWorkbench] Succeeded to set goal velocity!";
+      if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to set goal velocity!";
       return true;
     }
   }
 
-  *log = "[DynamixelWorkbench] Failed to set goal velocity!";
+  if (log != NULL) *log = "[DynamixelWorkbench] Failed to set goal velocity!";
   return false;
 }
 
@@ -952,14 +963,14 @@ bool DynamixelWorkbench::goalPosition(uint8_t id, float radian, const char **log
 
   value = convertRadian2Value(id, radian, log);
 
-  result = goalPosition(id, value, log);
+  result = goalPosition(id, (int32_t)value, log);
   if (result == false)
   {
-    *log = "[DynamixelWorkbench] Failed to set goal position!";
+    if (log != NULL) *log = "[DynamixelWorkbench] Failed to set goal position!";
     return false;
   }
 
-  *log = "[DynamixelWorkbench] Succeeded to set goal position!";
+  if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to set goal position!";
   return true;
 }
 
@@ -973,11 +984,11 @@ bool DynamixelWorkbench::goalVelocity(uint8_t id, float velocity, const char **l
   result = goalVelocity(id, velocity, log);
   if (result == false)
   {
-    *log = "[DynamixelWorkbench] Failed to set goal velocity!";
+    if (log != NULL) *log = "[DynamixelWorkbench] Failed to set goal velocity!";
     return result;
   }
 
-  *log = "[DynamixelWorkbench] Succeeded to set goal velocity!";
+  if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to set goal velocity!";
   return result;
 }
 
@@ -989,13 +1000,13 @@ bool DynamixelWorkbench::getPresentPositionData(uint8_t id, uint32_t* data, cons
   result = readRegister(id, "Present_Position", &get_data, log);
   if (result == false)
   {
-    *log = "[DynamixelWorkbench] Failed to get present position data!";
+    if (log != NULL) *log = "[DynamixelWorkbench] Failed to get present position data!";
     return result;
   }
 
   *data = get_data;
 
-  *log = "[DynamixelWorkbench] Succeeded to get present position data!";
+  if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to get present position data!";
   return result;
 }
 
@@ -1007,13 +1018,13 @@ bool DynamixelWorkbench::getRadian(uint8_t id, float* radian, const char **log)
   result = getPresentPositionData(id, &get_data, log);
   if (result == false)
   {
-    *log = "[DynamixelWorkbench] Failed to get radian!";
+    if (log != NULL) *log = "[DynamixelWorkbench] Failed to get radian!";
     return result;
   }
 
   *radian = convertValue2Radian(id, get_data, log);
 
-  *log = "[DynamixelWorkbench] Succeeded to get radian!";
+  if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to get radian!";
   return result;
 }
 
@@ -1025,13 +1036,13 @@ bool DynamixelWorkbench::getVelocity(uint8_t id, float* velocity, const char **l
   result = getPresentVelocityData(id, &get_data, log);
   if (result == false)
   {
-    *log = "[DynamixelWorkbench] Failed to get velocity!";
+    if (log != NULL) *log = "[DynamixelWorkbench] Failed to get velocity!";
     return result;
   }
 
   *velocity = convertValue2Velocity(id, get_data, log);
 
-  *log = "[DynamixelWorkbench] Succeeded to get velocity!";
+  if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to get velocity!";
   return result;
 }
 
@@ -1046,24 +1057,24 @@ bool DynamixelWorkbench::getPresentVelocityData(uint8_t id, uint32_t* data, cons
     result[1] = readRegister(id, "Moving_Speed", (uint16_t *)&get_data, log);
     if (result[1] == false)
     {
-      *log = "[DynamixelWorkbench] Failed to get goal velocity!";
+      if (log != NULL) *log = "[DynamixelWorkbench] Failed to get goal velocity!";
       return false;
     }
     else
     {
-      *log = "[DynamixelWorkbench] Succeeded to get goal velocity!";
+      if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to get goal velocity!";
       return true;
     }
   }
   else
   {
-    *log = "[DynamixelWorkbench] Succeeded to get goal velocity!";
+    if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to get goal velocity!";
     return true;
   }
 
   *data = get_data;
 
-  *log = "[DynamixelWorkbench] Failed to get goal velocity!";
+  if (log != NULL) *log = "[DynamixelWorkbench] Failed to get goal velocity!";
   return false;
 }
 

@@ -31,9 +31,12 @@ class DynamixelWorkbench : public DynamixelDriver
   bool torqueOn(uint8_t id, const char **log = NULL);
   bool torqueOff(uint8_t id, const char **log = NULL);
 
-  bool setID(uint8_t id, uint8_t new_id, const char **log = NULL);
-  bool setBaud(uint8_t id, uint32_t new_baudrate, const char **log = NULL);
-  bool setProtocolVersion(uint8_t id, uint8_t version, const char **log = NULL);
+  bool changeID(uint8_t id, uint8_t new_id, const char **log = NULL);
+  bool changeBaudrate(uint8_t id, uint32_t new_baudrate, const char **log = NULL);
+  bool changeProtocolVersion(uint8_t id, uint8_t version, const char **log = NULL);
+
+  bool itemWrite(uint8_t id, const char *item_name, int32_t data, const char **log = NULL);
+  bool itemRead(uint8_t id, const char *item_name, int32_t *data, const char **log = NULL);
 
   bool led(uint8_t id, bool onoff, const char **log = NULL);
   bool ledOn(uint8_t id, const char **log = NULL);
@@ -61,10 +64,10 @@ class DynamixelWorkbench : public DynamixelDriver
   bool wheelMode(uint8_t id, uint32_t acceleration = 0, const char **log = NULL);
   bool CurrentBasedPositionMode(uint8_t id, uint32_t current = 0, const char **log = NULL);
 
-  bool goalPosition(uint8_t id, uint32_t value, const char **log = NULL);
+  bool goalPosition(uint8_t id, int32_t value, const char **log = NULL);
   bool goalPosition(uint8_t id, float radian, const char **log = NULL);
 
-  bool goalVelocity(uint8_t id, uint32_t value, const char **log = NULL);
+  bool goalVelocity(uint8_t id, int32_t value, const char **log = NULL);
   bool goalVelocity(uint8_t id, float velocity, const char **log = NULL);
 
   bool getPresentPositionData(uint8_t id, uint32_t* data, const char **log = NULL);
