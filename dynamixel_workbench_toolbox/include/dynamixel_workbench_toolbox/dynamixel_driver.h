@@ -144,8 +144,7 @@ class DynamixelDriver
   bool readRegister(uint8_t id, const char *item_name, uint16_t *data, const char **log = NULL);
   bool readRegister(uint8_t id, const char *item_name, uint32_t *data, const char **log = NULL);
 
-  void getParam(uint16_t data, uint8_t *param);
-  void getParam(uint32_t data, uint8_t *param);
+  void getParam(int32_t data, uint8_t *param);
 
   bool addSyncWriteHandler(uint16_t address, uint16_t length, const char **log = NULL);
   bool addSyncWriteHandler(uint8_t id, const char *item_name, const char **log = NULL);

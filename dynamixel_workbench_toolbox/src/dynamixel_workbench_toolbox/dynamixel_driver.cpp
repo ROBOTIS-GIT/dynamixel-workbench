@@ -948,13 +948,7 @@ bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, uint32_t *
   return false;
 }
 
-void DynamixelDriver::getParam(uint16_t data, uint8_t *param)
-{
-  param[0] = DXL_LOWORD(data);
-  param[1] = DXL_LOWORD(data);
-}
-
-void DynamixelDriver::getParam(uint32_t data, uint8_t *param)
+void DynamixelDriver::getParam(int32_t data, uint8_t *param)
 {
   param[0] = DXL_LOBYTE(DXL_LOWORD(data));
   param[1] = DXL_HIBYTE(DXL_LOWORD(data));
@@ -1023,7 +1017,7 @@ bool DynamixelDriver::syncWrite(uint8_t index, int32_t *data, const char **log)
   {
     for (int j = 0; j < tools_[i].getDynamixelCount(); j++)
     {
-      getParam((uint32_t)data[dxl_cnt], parameter);
+      getParam(data[dxl_cnt], parameter);
       sdk_error.dxl_addparam_result = syncWriteHandler_[index].groupSyncWrite->addParam(tools_[i].getID()[j], (uint8_t *)&parameter);
       if (sdk_error.dxl_addparam_result != true)
       {
@@ -1056,7 +1050,7 @@ bool DynamixelDriver::syncWrite(uint8_t index, uint8_t *id, uint8_t id_num, int3
 
   for (int i = 0; i < id_num; i++)
   {
-    getParam((uint32_t)data[i], parameter);
+    getParam(data[i], parameter);
     sdk_error.dxl_addparam_result = syncWriteHandler_[index].groupSyncWrite->addParam(id[i], (uint8_t *)&parameter);
     if (sdk_error.dxl_addparam_result != true)
     {
@@ -1227,9 +1221,13 @@ bool DynamixelDriver::syncRead(uint8_t index, uint8_t *id, uint8_t id_num, int32
 bool DynamixelDriver::initBulkWrite(const char **log)
 {
   if (portHandler_ == NULL)
+  {
     if (log != NULL) *log = "[DynamixelDriver] Failed to load portHandler!";
+  }
   else if (packetHandler_ == NULL)
+  {
     if (log != NULL) *log = "[DynamixelDriver] Failed to load packetHandler!";
+  }
   else
   {
     groupBulkWrite_ = new dynamixel::GroupBulkWrite(portHandler_, packetHandler_);
@@ -1247,7 +1245,7 @@ bool DynamixelDriver::addBulkWriteParam(uint8_t id, uint16_t address, uint16_t l
 
   uint8_t parameter[4] = {0, 0, 0, 0};
 
-  getParam((uint32_t)data, parameter);
+  getParam(data, parameter);
   sdk_error.dxl_addparam_result = groupBulkWrite_->addParam(id, 
                                                             address, 
                                                             length, 
@@ -1276,7 +1274,7 @@ bool DynamixelDriver::addBulkWriteParam(uint8_t id, const char *item_name, int32
   control_item = tools_[factor].getControlItem(item_name, log);
   if (control_item == NULL) return false;
 
-  getParam((uint32_t)data, parameter);
+  getParam(data, parameter);
   sdk_error.dxl_addparam_result = groupBulkWrite_->addParam(id, 
                                                             control_item->address, 
                                                             control_item->data_length, 
@@ -1305,20 +1303,26 @@ bool DynamixelDriver::bulkWrite(const char **log)
   groupBulkWrite_->clearParam();
 
   if (log != NULL) *log = "[DynamixelDriver] Succeeded to bulk write!";
+
   return true;
 }
 
 bool DynamixelDriver::initBulkRead(const char **log)
 {
   if (portHandler_ == NULL)
+  {
     if (log != NULL) *log = "[DynamixelDriver] Failed to load portHandler!";
+  }
   else if (packetHandler_ == NULL)
+  {
     if (log != NULL) *log = "[DynamixelDriver] Failed to load packetHandler!";
+  }
   else
   {
     groupBulkRead_ = new dynamixel::GroupBulkRead(portHandler_, packetHandler_);
 
     if (log != NULL) *log = "[DynamixelDriver] Succeeded to init groupBulkRead!";
+
     return true;
   }
 
