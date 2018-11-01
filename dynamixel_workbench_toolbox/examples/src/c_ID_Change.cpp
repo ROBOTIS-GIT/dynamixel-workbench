@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
       printf("id : %d, model name : %s\n", scanned_id[cnt], dxl_wb.getModelName(scanned_id[cnt]));
   }
 
-  result = dxl_wb.setID(scanned_id[0], NEW_ID, &log);
+  result = dxl_wb.changeID(scanned_id[0], NEW_ID, &log);
   if (result == false)
   {
     printf("%s\n", log);

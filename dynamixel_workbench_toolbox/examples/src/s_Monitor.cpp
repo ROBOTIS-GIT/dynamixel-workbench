@@ -219,7 +219,7 @@ bool monitoring()
             return 0;
           }
           else
-            printf("%s\n", log);
+            printf("%s, sync_write_handler_cnt = %d\n", log, dxl_wb.getTheNumberOfSyncWriteHandler());
         }
         else if (strcmp(cmd, "sync_read_handler") == 0)
         {
@@ -232,7 +232,7 @@ bool monitoring()
             return 0;
           }
           else
-            printf("%s\n", log);
+            printf("%s, sync_read_handler_cnt = %d\n", log, dxl_wb.getTheNumberOfSyncReadHandler());
         }
         else if (strcmp(cmd, "bulk_write_handler") == 0)
         {
@@ -300,7 +300,7 @@ bool monitoring()
         {
           uint32_t data[2] = {0, 0};
 
-          wb_result = dxl_wb.bulkRead(data, &log);
+          wb_result = dxl_wb.bulkRead((int32_t *)data, &log);
           if (wb_result == false)
           {
             printf("%s\n", log);
@@ -326,7 +326,7 @@ bool monitoring()
 
             uint8_t handler_index = atoi(param[2]);
 
-            wb_result = dxl_wb.syncWrite(handler_index, data, &log);
+            wb_result = dxl_wb.syncWrite(handler_index, (int32_t *)data, &log);
             if (wb_result == false)
             {
               printf("%s\n", log);
@@ -343,7 +343,7 @@ bool monitoring()
             uint32_t data[2] = {0, 0};
             uint8_t handler_index = atoi(param[2]);
 
-            wb_result = dxl_wb.syncRead(handler_index, data, &log);
+            wb_result = dxl_wb.syncRead(handler_index, (int32_t *)data, &log);
             if (wb_result == false)
             {
               printf("%s\n", log);
@@ -361,7 +361,7 @@ bool monitoring()
           uint8_t id     = atoi(param[0]);
           uint8_t new_id = atoi(param[1]);
 
-          wb_result = dxl_wb.setID(id, new_id, &log);
+          wb_result = dxl_wb.changeID(id, new_id, &log);
           if (wb_result == false)
           {
             printf("%s\n", log);
@@ -377,7 +377,7 @@ bool monitoring()
           uint8_t  id        = atoi(param[0]);
           uint32_t new_baud  = atoi(param[1]);
 
-          wb_result = dxl_wb.setBaud(id, new_baud, &log);
+          wb_result = dxl_wb.changeBaudrate(id, new_baud, &log);
           if (wb_result == false)
           {
             printf("%s\n", log);
@@ -385,6 +385,7 @@ bool monitoring()
           }
           else
           {
+            wb_result = dxl_wb.setBaudrate(new_baud, &log);
             printf("%s\n", log);
           }
         }
@@ -434,7 +435,7 @@ bool monitoring()
             printf("%s\n", log);
           }
 
-          wb_result = dxl_wb.goalPosition(id, goal, &log);
+          wb_result = dxl_wb.goalPosition(id, (int32_t)goal, &log);
           if (wb_result == false)
           {
             printf("%s\n", log);
@@ -461,7 +462,7 @@ bool monitoring()
             printf("%s\n", log);
           }
 
-          wb_result = dxl_wb.goalVelocity(id, goal, &log);
+          wb_result = dxl_wb.goalVelocity(id, (int32_t)goal, &log);
           if (wb_result == false)
           {
             printf("%s\n", log);
@@ -585,9 +586,9 @@ void printInst(void)
   printf("write  (ID) (ADDRESS_NAME) (DATA)\n");
   printf("read   (ID) (ADDRESS_NAME)\n");
   printf("sync_write_handler (ID) (ADDRESS_NAME)\n");
-  printf("sync_write (HANDLER_INDEX) (ID_1) (ID_2) (PARAM_1) (PARAM_2)\n");
+  printf("sync_write (ID_1) (ID_2) (HANDLER_INDEX) (PARAM_1) (PARAM_2)\n");
   printf("sync_read_handler (ID) (ADDRESS_NAME)\n");
-  printf("sync_read (HANDLER_INDEX) (ID_1) (ID_2)\n");
+  printf("sync_read (ID_1) (ID_2) (HANDLER_INDEX)\n");
   printf("bulk_write_handler\n");
   printf("bulk_write_param (ID) (ADDRESS_NAME) (PARAM)\n");
   printf("bulk_write\n");

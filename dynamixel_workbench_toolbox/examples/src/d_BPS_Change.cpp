@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
       printf("id : %d, model name : %s\n", scanned_id[cnt], dxl_wb.getModelName(scanned_id[cnt]));
   }
 
-  result = dxl_wb.setBaud(scanned_id[0], NEW_BAUDRATE, &log);
+  result = dxl_wb.changeBaudrate(scanned_id[0], NEW_BAUDRATE, &log);
   if (result == false)
   {
     printf("%s\n", log);
