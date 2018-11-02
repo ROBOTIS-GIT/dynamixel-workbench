@@ -102,6 +102,7 @@ class DynamixelDriver
   const char * getModelName(uint8_t id, const char **log = NULL);
   uint16_t getModelNumber(uint8_t id, const char **log = NULL);
   const ControlItem *getControlTable(uint8_t id, const char **log = NULL);
+  const ControlItem *getItemInfo(uint8_t id, const char *item_name, const char **log = NULL);
   uint8_t getTheNumberOfControlItem(uint8_t id, const char **log = NULL);
   const ModelInfo* getModelInfo(uint8_t id, const char **log = NULL);
 
@@ -157,6 +158,8 @@ class DynamixelDriver
 
   bool syncRead(uint8_t index, int32_t *data, const char **log = NULL);
   bool syncRead(uint8_t index, uint8_t *id, uint8_t id_num, int32_t *data, const char **log = NULL);
+
+  // bool syncRead(uint8_t index, uint8_t *id, uint8_t id_num, uint16_t address, uint16_t length, int32_t *data, const char **log);
 
   bool initBulkWrite(const char **log = NULL);
   bool addBulkWriteParam(uint8_t id, uint16_t address, uint16_t length, int32_t data, const char **log = NULL);

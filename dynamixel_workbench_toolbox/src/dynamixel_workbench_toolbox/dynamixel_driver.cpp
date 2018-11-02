@@ -209,6 +209,20 @@ const ControlItem* DynamixelDriver::getControlTable(uint8_t id, const char **log
   return tools_[factor].getControlTable();
 }
 
+const ControlItem* DynamixelDriver::getItemInfo(uint8_t id, const char *item_name, const char **log)
+{
+  const ControlItem *control_item;
+
+  uint8_t factor = getTool(id, log);
+  if (factor == 0xff) return false; 
+
+  control_item = tools_[factor].getControlItem(item_name, log);
+  if (control_item == NULL) return false;
+  else return control_item;
+
+  return NULL;
+}
+
 uint8_t DynamixelDriver::getTheNumberOfControlItem(uint8_t id, const char **log)
 {
   uint8_t factor = getTool(id, log);
@@ -1217,6 +1231,51 @@ bool DynamixelDriver::syncRead(uint8_t index, uint8_t *id, uint8_t id_num, int32
   if (log != NULL) *log = "[DynamixelDriver] Succeeded to sync read!";
   return true;
 }
+
+// bool DynamixelDriver::syncRead(uint8_t index, uint8_t *id, uint8_t id_num, uint16_t address, uint16_t length, int32_t *data, const char **log)
+// {
+//   ErrorFromSDK sdk_error = {0, false, false, 0};
+
+//   for (int i = 0; i < id_num; i++)
+//   {
+//     sdk_error.dxl_addparam_result = syncReadHandler_[index].groupSyncRead->addParam(id[i]);
+//     if (sdk_error.dxl_addparam_result != true)
+//     {
+//       if (log != NULL) *log = "groupSyncWrite addparam failed";
+//       return false;
+//     }
+//   }
+
+//   sdk_error.dxl_comm_result = syncReadHandler_[index].groupSyncRead->txRxPacket();
+//   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
+//   {
+//     if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+//     return false;
+//   }
+
+//   for (int i = 0; i < id_num; i++)
+//   {
+//     sdk_error.dxl_getdata_result = syncReadHandler_[index].groupSyncRead->isAvailable(id[i], 
+//                                                                                       address, 
+//                                                                                       length);
+//     if (sdk_error.dxl_getdata_result != true)
+//     {
+//       if (log != NULL) *log = "groupSyncRead getdata failed";
+//       return false;
+//     }
+//     else
+//     {
+//       data[i] = syncReadHandler_[index].groupSyncRead->getData(id[i], 
+//                                                                 address, 
+//                                                                 length);
+//     }
+//   }
+
+//   syncReadHandler_[index].groupSyncRead->clearParam();
+
+//   if (log != NULL) *log = "[DynamixelDriver] Succeeded to sync read!";
+//   return true;
+// }
 
 bool DynamixelDriver::initBulkWrite(const char **log)
 {
