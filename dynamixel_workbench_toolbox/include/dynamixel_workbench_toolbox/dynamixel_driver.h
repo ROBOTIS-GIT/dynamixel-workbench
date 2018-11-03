@@ -156,10 +156,11 @@ class DynamixelDriver
   bool addSyncReadHandler(uint16_t address, uint16_t length, const char **log = NULL);
   bool addSyncReadHandler(uint8_t id, const char *item_name, const char **log = NULL);
 
-  bool syncRead(uint8_t index, int32_t *data, const char **log = NULL);
-  bool syncRead(uint8_t index, uint8_t *id, uint8_t id_num, int32_t *data, const char **log = NULL);
+  bool syncRead(uint8_t index, const char **log = NULL);
+  bool syncRead(uint8_t index, uint8_t *id, uint8_t id_num, const char **log = NULL);
 
-  // bool syncRead(uint8_t index, uint8_t *id, uint8_t id_num, uint16_t address, uint16_t length, int32_t *data, const char **log);
+  bool getSyncReadData(uint8_t index, int32_t *data, const char **log = NULL);
+  bool getSyncReadData(uint8_t index, uint8_t *id, uint8_t id_num, int32_t *data, const char **log = NULL);
 
   bool initBulkWrite(const char **log = NULL);
   bool addBulkWriteParam(uint8_t id, uint16_t address, uint16_t length, int32_t data, const char **log = NULL);
@@ -169,7 +170,8 @@ class DynamixelDriver
   bool initBulkRead(const char **log = NULL);
   bool addBulkReadParam(uint8_t id, uint16_t address, uint16_t length, const char **log = NULL);
   bool addBulkReadParam(uint8_t id, const char *item_name, const char **log = NULL);
-  bool bulkRead(int32_t *data, const char **log = NULL);
+  bool bulkRead(const char **log = NULL);
+  bool getBulkReadData(int32_t *data, const char **log = NULL);
 
  private:
   void initTools(void);

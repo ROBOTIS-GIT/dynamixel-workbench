@@ -27,8 +27,8 @@ using namespace std;
 #define SPACEBAR_ASCII_VALUE        0x20
 #define ENTER_ASCII_VALUE           0x0a
 
-// #define DEVICE_NAME "/dev/tty.usbserial-FT1CTA16"
-#define DEVICE_NAME "/dev/ttyUSB0"
+#define DEVICE_NAME "/dev/tty.usbserial-FT1CTA16"
+// #define DEVICE_NAME "/dev/ttyUSB0"
 
 uint8_t get_id[16];
 uint8_t scan_cnt = 0;
@@ -300,7 +300,7 @@ bool monitoring()
         {
           uint32_t data[2] = {0, 0};
 
-          wb_result = dxl_wb.bulkRead((int32_t *)data, &log);
+          wb_result = dxl_wb.getBulkReadData((int32_t *)data, &log);
           if (wb_result == false)
           {
             printf("%s\n", log);
@@ -320,7 +320,7 @@ bool monitoring()
             uint8_t id_1 = atoi(param[0]);
             uint8_t id_2 = atoi(param[1]);
 
-            uint32_t data[2] = {0, 0};
+            int32_t data[2] = {0, 0};
             data[0] = atoi(param[3]);
             data[1] = atoi(param[4]);
 
@@ -339,11 +339,24 @@ bool monitoring()
           {
             uint8_t id_1 = atoi(param[0]);
             uint8_t id_2 = atoi(param[1]);
+            uint8_t id[2] = {id_1, id_2};
+            uint8_t id_num = 2;
 
-            uint32_t data[2] = {0, 0};
+            int32_t data[2] = {0, 0};
             uint8_t handler_index = atoi(param[2]);
 
-            wb_result = dxl_wb.syncRead(handler_index, (int32_t *)data, &log);
+            wb_result = dxl_wb.syncRead(handler_index, id, id_num, &log);
+            if (wb_result == false)
+            {
+              printf("%s\n", log);
+              return 0;
+            }
+            else
+            {
+              printf("%s\n", log);
+            }
+
+            wb_result = dxl_wb.getSyncReadData(handler_index, id, id_num, data, &log);
             if (wb_result == false)
             {
               printf("%s\n", log);
