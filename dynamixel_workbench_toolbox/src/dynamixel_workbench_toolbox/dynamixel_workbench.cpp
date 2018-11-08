@@ -1128,11 +1128,12 @@ float DynamixelWorkbench::convertValue2Radian(uint8_t id, int32_t value, const c
 int32_t DynamixelWorkbench::convertVelocity2Value(uint8_t id, float velocity, const char **log)
 {
   int32_t value = 0;
+  const float RPM2RADPERSEC = 0.104719755f;
 
   model_info = getModelInfo(id, log);
   if (model_info == NULL) return false;
 
-  value = velocity * (model_info->rpm * 0.104719755f);
+  value = velocity / (model_info->rpm * RPM2RADPERSEC);
 
   return value;
 }
@@ -1140,11 +1141,38 @@ int32_t DynamixelWorkbench::convertVelocity2Value(uint8_t id, float velocity, co
 float DynamixelWorkbench::convertValue2Velocity(uint8_t id, int32_t value, const char **log)
 {
   float velocity = 0;
+  const float RPM2RADPERSEC = 0.104719755f;
 
   model_info = getModelInfo(id, log);
   if (model_info == NULL) return false;
 
-  velocity = value / (model_info->rpm * 0.104719755f);
+  velocity = value * (model_info->rpm * RPM2RADPERSEC);
 
   return velocity;
+}
+
+int16_t DynamixelWorkbench::convertCurrent2Value(uint8_t id, float current, const char **log)
+{
+  int16_t value = 0;
+  const float CURRENT_UNIT = 2.69f; //mA, Ref : http://emanual.robotis.com/docs/en/dxl/x/xm430-w350/#goal-current102
+
+  model_info = getModelInfo(id, log);
+  if (model_info == NULL) return false;
+
+  value = current / CURRENT_UNIT;
+
+  return value;
+}
+
+float DynamixelWorkbench::convertValue2Current(uint8_t id, int16_t value, const char **log)
+{
+  float current = 0;
+  const float CURRENT_UNIT = 2.69f; //mA, Ref : http://emanual.robotis.com/docs/en/dxl/x/xm430-w350/#goal-current102
+
+  model_info = getModelInfo(id, log);
+  if (model_info == NULL) return false;
+
+  current = (int16_t)value * CURRENT_UNIT;
+
+  return current;
 }
