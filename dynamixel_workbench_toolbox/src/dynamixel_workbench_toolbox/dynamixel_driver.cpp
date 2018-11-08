@@ -1140,6 +1140,8 @@ bool DynamixelDriver::syncRead(uint8_t index, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
+  syncReadHandler_[index].groupSyncRead->clearParam();
+
   for (int i = 0; i < tools_cnt_; i++)
   {
     for (int j = 0; j < tools_[i].getDynamixelCount(); j++)
@@ -1168,6 +1170,7 @@ bool DynamixelDriver::syncRead(uint8_t index, uint8_t *id, uint8_t id_num, const
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
+  syncReadHandler_[index].groupSyncRead->clearParam();
   for (int i = 0; i < id_num; i++)
   {
     sdk_error.dxl_addparam_result = syncReadHandler_[index].groupSyncRead->addParam(id[i]);
@@ -1214,8 +1217,6 @@ bool DynamixelDriver::getSyncReadData(uint8_t index, int32_t *data, const char *
     }
   }
 
-  syncReadHandler_[index].groupSyncRead->clearParam();
-
   if (log != NULL) *log = "[DynamixelDriver] Succeeded to get sync read data!";
   return true;
 }
@@ -1242,8 +1243,6 @@ bool DynamixelDriver::getSyncReadData(uint8_t index, uint8_t *id, uint8_t id_num
     }
   }
 
-  syncReadHandler_[index].groupSyncRead->clearParam();
-
   if (log != NULL) *log = "[DynamixelDriver] Succeeded to get sync read data!";
   return true;
 }
@@ -1269,8 +1268,6 @@ bool DynamixelDriver::getSyncReadData(uint8_t index, uint8_t *id, uint8_t id_num
                                                               length);
     }
   }
-
-  syncReadHandler_[index].groupSyncRead->clearParam();
 
   if (log != NULL) *log = "[DynamixelDriver] Succeeded to get sync read data!";
   return true;
@@ -1303,6 +1300,8 @@ bool DynamixelDriver::addBulkWriteParam(uint8_t id, uint16_t address, uint16_t l
 
   uint8_t parameter[4] = {0, 0, 0, 0};
 
+  groupBulkWrite_->clearParam();
+
   getParam(data, parameter);
   sdk_error.dxl_addparam_result = groupBulkWrite_->addParam(id, 
                                                             address, 
@@ -1332,6 +1331,8 @@ bool DynamixelDriver::addBulkWriteParam(uint8_t id, const char *item_name, int32
   control_item = tools_[factor].getControlItem(item_name, log);
   if (control_item == NULL) return false;
 
+  groupBulkWrite_->clearParam();
+
   getParam(data, parameter);
   sdk_error.dxl_addparam_result = groupBulkWrite_->addParam(id, 
                                                             control_item->address, 
@@ -1357,8 +1358,6 @@ bool DynamixelDriver::bulkWrite(const char **log)
     if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
-
-  groupBulkWrite_->clearParam();
 
   if (log != NULL) *log = "[DynamixelDriver] Succeeded to bulk write!";
 
@@ -1391,6 +1390,7 @@ bool DynamixelDriver::addBulkReadParam(uint8_t id, uint16_t address, uint16_t le
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
+  groupBulkRead_->clearParam();
   sdk_error.dxl_addparam_result = groupBulkRead_->addParam(id, 
                                                            address, 
                                                            length);
@@ -1429,6 +1429,7 @@ bool DynamixelDriver::addBulkReadParam(uint8_t id, const char *item_name, const 
   control_item = tools_[factor].getControlItem(item_name, log);
   if (control_item == NULL) return false;
 
+  groupBulkRead_->clearParam();
   sdk_error.dxl_addparam_result = groupBulkRead_->addParam(id, 
                                                           control_item->address, 
                                                           control_item->data_length);
@@ -1494,15 +1495,7 @@ bool DynamixelDriver::getBulkReadData(int32_t *data, const char **log)
     }
   }
 
-  groupBulkRead_->clearParam();
   bulk_parameter_cnt_ = 0;
-
-  // for (uint8_t i = 0; i < MAX_BULK_PARAMETER; i++)
-  // {
-  //   bulk_param_[i].id = 0;
-  //   bulk_param_[i].address = 0;
-  //   bulk_param_[i].data_length = 0;
-  // }
 
   if (log != NULL) *log = "[DynamixelDriver] Succeeded to get bulk read data!";
   return true;
