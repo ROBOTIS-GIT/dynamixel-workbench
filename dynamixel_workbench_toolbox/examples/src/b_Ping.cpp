@@ -18,19 +18,11 @@
 
 #include <DynamixelWorkbench.h>
 
-#define DEVICE_NAME "/dev/tty.usbserial-FT1CTA16"
-// #define DEVICE_NAME "/dev/ttyUSB0"
+// #define DEVICE_NAME "/dev/tty.usbserial-FT1CTA16"
+#define DEVICE_NAME "/dev/ttyUSB0"
 #define BAUDRATE  57600
 
 #define DXL_ID  1
-
-#define ADDR_PRESENT_CURRENT_2 126
-#define ADDR_PRESENT_VELOCITY_2 128
-#define ADDR_PRESENT_POSITION_2 132
-
-#define LENGTH_PRESENT_CURRENT_2 2
-#define LENGTH_PRESENT_VELOCITY_2 4
-#define LENGTH_PRESENT_POSITION_2 4
 
 int main(int argc, char *argv[]) 
 {
@@ -62,52 +54,5 @@ int main(int argc, char *argv[])
     printf("id : %d, model_number : %d\n", DXL_ID, model_number);
   }
 
-
-  result = dxl_wb.addSyncReadHandler(ADDR_PRESENT_CURRENT_2, 
-                                                    (LENGTH_PRESENT_CURRENT_2 + LENGTH_PRESENT_VELOCITY_2 + LENGTH_PRESENT_POSITION_2), 
-                                                    &log);
-  if (result == false)
-  {
-    printf("%s\n", log);
-
-  }
-  else
-  {
-    printf("%s\n", log);
-  }
-
-  result = dxl_wb.syncRead(0, 
-                                          &id, 
-                                          1, 
-                                          &log);
-  if (result == false)
-  {
-    printf("%s\n", log);
-
-  }
-  else
-  {
-    printf("%s\n", log);
-  }
-
-  int32_t get_value = 0;
-  result = dxl_wb.getSyncReadData(0, 
-                                            &id, 
-                                            1,
-                                            ADDR_PRESENT_CURRENT_2,
-                                            LENGTH_PRESENT_CURRENT_2 + LENGTH_PRESENT_VELOCITY_2 + LENGTH_PRESENT_POSITION_2,
-                                            &get_value, 
-                                            &log);
-  if (result == false)
-  {
-    printf("%s\n", log);
-  } 
-  else
-  {
-    printf("%s\n", log);
-    printf("%d\n", get_value);
-  }
-
-
-
+  return 0;
 }

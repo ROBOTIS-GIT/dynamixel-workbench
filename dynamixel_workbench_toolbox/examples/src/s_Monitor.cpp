@@ -27,8 +27,8 @@ using namespace std;
 #define SPACEBAR_ASCII_VALUE        0x20
 #define ENTER_ASCII_VALUE           0x0a
 
-#define DEVICE_NAME "/dev/tty.usbserial-FT1CTA16"
-// #define DEVICE_NAME "/dev/ttyUSB0"
+// #define DEVICE_NAME "/dev/tty.usbserial-FT1CTA16"
+#define DEVICE_NAME "/dev/ttyUSB0"
 
 uint8_t get_id[16];
 uint8_t scan_cnt = 0;
