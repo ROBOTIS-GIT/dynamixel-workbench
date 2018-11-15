@@ -217,7 +217,6 @@ bool DynamixelWorkbench::changeBaudrate(uint8_t id, uint32_t new_baudrate, const
 bool DynamixelWorkbench::changeProtocolVersion(uint8_t id, uint8_t version, const char **log)
 {
   bool result = false;
-  uint8_t data = 0;
 
   model_name = getModelName(id, log);
   if (model_name == NULL) return false;
@@ -982,11 +981,11 @@ bool DynamixelWorkbench::goalPosition(uint8_t id, float radian, const char **log
 bool DynamixelWorkbench::goalVelocity(uint8_t id, float velocity, const char **log)
 {
   bool result = 0;
-  uint32_t value = 0;
+  int32_t value = 0;
 
   value = convertVelocity2Value(id, velocity, log);
 
-  result = goalVelocity(id, velocity, log);
+  result = goalVelocity(id, value, log);
   if (result == false)
   {
     if (log != NULL) *log = "[DynamixelWorkbench] Failed to set goal velocity!";

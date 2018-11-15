@@ -48,8 +48,7 @@ class DynamixelTool
   bool addTool(const char *model_name, uint8_t id, const char **log = NULL);
   bool addTool(uint16_t model_number, uint8_t id, const char **log = NULL);
 
-  void addDXL(uint16_t model_number, uint8_t id);
-  void addDXL(const char *model_name, uint8_t id);
+  void addDXL(uint8_t id);
 
   const char *getModelName(void);
   uint16_t getModelNumber(void);

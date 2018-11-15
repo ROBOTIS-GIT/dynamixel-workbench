@@ -120,12 +120,7 @@ bool DynamixelTool::addTool(uint16_t model_number, uint8_t id, const char **log)
   return result;
 }
 
-void DynamixelTool::addDXL(const char *model_name, uint8_t id)
-{
-  dxl_id_[dxl_cnt_++] = id;
-}
-
-void DynamixelTool::addDXL(uint16_t model_number, uint8_t id)
+void DynamixelTool::addDXL(uint8_t id)
 {
   dxl_id_[dxl_cnt_++] = id;
 }

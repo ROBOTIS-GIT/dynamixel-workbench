@@ -62,7 +62,7 @@ bool DynamixelDriver::setTool(uint16_t model_number, uint8_t id, const char **lo
       if (tools_[num].getDynamixelCount() < tools_[num].getDynamixelBuffer())
       {
         // Found one with the right model number and it is not full
-        tools_[num].addDXL(model_number, id);
+        tools_[num].addDXL(id);
         return true;
       }
       else
@@ -261,11 +261,11 @@ bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_the_number_of_id, uint8
 
   uint8_t get_end_num = end_num;
 
-  if (end_num > 253) end_num = 253;
+  if (get_end_num > 253) get_end_num = 253;
 
   initTools();
 
-  for (id = start_num; id <= end_num; id++)
+  for (id = start_num; id <= get_end_num; id++)
   {
     sdk_error.dxl_comm_result = packetHandler_1_0->ping(portHandler_, id, &model_number, &sdk_error.dxl_error);
     
@@ -291,7 +291,7 @@ bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_the_number_of_id, uint8
     return result;
   }
 
-  for (id = start_num; id <= end_num; id++)
+  for (id = start_num; id <= get_end_num; id++)
   {
     sdk_error.dxl_comm_result = packetHandler_2_0->ping(portHandler_, id, &model_number, &sdk_error.dxl_error);
     
@@ -1474,8 +1474,6 @@ bool DynamixelDriver::bulkRead(const char **log)
 bool DynamixelDriver::getBulkReadData(int32_t *data, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
-
-  const ControlItem *control_item;
 
   for (int i = 0; i < bulk_parameter_cnt_; i++)
   {
