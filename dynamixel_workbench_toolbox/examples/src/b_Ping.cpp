@@ -51,6 +51,7 @@ int main(int argc, char *argv[])
   }
   else
   {
+    printf("Succeed to ping\n");
     printf("id : %d, model_number : %d\n", DXL_ID, model_number);
   }
 

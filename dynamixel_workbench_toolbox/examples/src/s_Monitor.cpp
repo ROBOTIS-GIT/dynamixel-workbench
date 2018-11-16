@@ -117,7 +117,7 @@ bool monitoring()
       }
       else if (strcmp(cmd, "scan") == 0)
       {
-        uint8_t range = 16;  // default
+        uint8_t range = 100;  // default
         
         range = atoi(param[0]);
         wb_result = dxl_wb.scan(get_id, &scan_cnt, range, &log);
