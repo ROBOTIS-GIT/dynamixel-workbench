@@ -18,9 +18,6 @@
 
 #include "../../include/dynamixel_workbench_toolbox/dynamixel_driver.h"
 
-static dynamixel::PacketHandler *packetHandler_1_0 = dynamixel::PacketHandler::getPacketHandler(1.0f);
-static dynamixel::PacketHandler *packetHandler_2_0 = dynamixel::PacketHandler::getPacketHandler(2.0f);
-
 DynamixelDriver::DynamixelDriver() : tools_cnt_(0), 
                                     sync_write_handler_cnt_(0), 
                                     sync_read_handler_cnt_(0),
@@ -44,7 +41,7 @@ DynamixelDriver::~DynamixelDriver()
 
 void DynamixelDriver::initTools(void)
 {
-  for (uint8_t num = 0; num < tools_cnt_; num++)
+  for (uint8_t num = 0; num < MAX_DXL_SERIES_NUM; num++)
     tools_[num].initTool();
 
   tools_cnt_ = 0;
@@ -116,6 +113,9 @@ bool DynamixelDriver::init(const char *device_name, uint32_t baud_rate, const ch
   result = setBaudrate(baud_rate, log);
   if (result == false) return false;
 
+  result = setPacketHandler(2.0f, log);
+  if (result == false) return false;
+
   return result;
 }
 
@@ -140,7 +140,7 @@ bool DynamixelDriver::setPortHandler(const char *device_name, const char **log)
 
 bool DynamixelDriver::setBaudrate(uint32_t baud_rate, const char **log)
 {
-  if (portHandler_->setBaudRate(baud_rate))
+  if (portHandler_->setBaudRate((int)baud_rate))
   {
     if (log != NULL) *log = "[DynamixelDriver] Succeeded to change the baudrate!";
     return true;
@@ -152,8 +152,6 @@ bool DynamixelDriver::setBaudrate(uint32_t baud_rate, const char **log)
 
 bool DynamixelDriver::setPacketHandler(float protocol_version, const char **log)
 {
-  // delete [] packetHandler_;
-
   packetHandler_ = dynamixel::PacketHandler::getPacketHandler(protocol_version);
 
   if (packetHandler_->getProtocolVersion() == protocol_version)
@@ -265,17 +263,19 @@ bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_the_number_of_id, uint8
 
   initTools();
 
+  result = setPacketHandler(1.0f, log);
+  if (result == false) return false;
+
   for (id = start_num; id <= get_end_num; id++)
-  {
-    sdk_error.dxl_comm_result = packetHandler_1_0->ping(portHandler_, id, &model_number, &sdk_error.dxl_error);
-    
+  { 
+    sdk_error.dxl_comm_result = packetHandler_->ping(portHandler_, id, &model_number, &sdk_error.dxl_error);
     if (sdk_error.dxl_comm_result != COMM_SUCCESS)
     {
-      if (log != NULL) *log = packetHandler_1_0->getTxRxResult(sdk_error.dxl_comm_result);
+      if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     }
     else if (sdk_error.dxl_error != 0)
     {
-      if (log != NULL) *log = packetHandler_1_0->getRxPacketError(sdk_error.dxl_error);
+      if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
     }
     else
     {
@@ -287,21 +287,23 @@ bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_the_number_of_id, uint8
   if (id_cnt > 0)
   {
     *get_the_number_of_id = id_cnt;
-    result = setPacketHandler(1.0f, log);
     return result;
   }
 
+  result = setPacketHandler(2.0f, log);
+  if (result == false) return false;
+
   for (id = start_num; id <= get_end_num; id++)
   {
-    sdk_error.dxl_comm_result = packetHandler_2_0->ping(portHandler_, id, &model_number, &sdk_error.dxl_error);
+    sdk_error.dxl_comm_result = packetHandler_->ping(portHandler_, id, &model_number, &sdk_error.dxl_error);
     
     if (sdk_error.dxl_comm_result != COMM_SUCCESS)
     {
-      if (log != NULL) *log = packetHandler_2_0->getTxRxResult(sdk_error.dxl_comm_result);
+      if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     }
     else if (sdk_error.dxl_error != 0)
     {
-      if (log != NULL) *log = packetHandler_2_0->getRxPacketError(sdk_error.dxl_error);
+      if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
     }
     else
     {
@@ -313,7 +315,6 @@ bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_the_number_of_id, uint8
   if (id_cnt > 0)
   {
     *get_the_number_of_id = id_cnt;
-    result = setPacketHandler(2.0f, log);
     return result;
   }
 
@@ -322,7 +323,7 @@ bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_the_number_of_id, uint8
 
 bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_the_number_of_id, uint8_t range, const char **log)
 {
-  return scan(get_id, get_the_number_of_id, 0, range, log);
+  return scan(get_id, get_the_number_of_id, 1, range, log);
 }
 
 bool DynamixelDriver::ping(uint8_t id, uint16_t *get_model_number, const char **log)
@@ -332,39 +333,41 @@ bool DynamixelDriver::ping(uint8_t id, uint16_t *get_model_number, const char **
 
   uint16_t model_number = 0;
 
-  sdk_error.dxl_comm_result = packetHandler_1_0->ping(portHandler_, id, &model_number, &sdk_error.dxl_error);
-  
+  result = setPacketHandler(1.0f, log);
+  if (result == false) return false;
+
+  sdk_error.dxl_comm_result = packetHandler_->ping(portHandler_, id, &model_number, &sdk_error.dxl_error);  
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    if (log != NULL) *log = packetHandler_1_0->getTxRxResult(sdk_error.dxl_comm_result);
+    if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
   }
   else if (sdk_error.dxl_error != 0)
   {
-    if (log != NULL) *log = packetHandler_1_0->getRxPacketError(sdk_error.dxl_error);
+    if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
   }
   else
   {
     setTool(model_number, id);
     *get_model_number = model_number;
-    result = setPacketHandler(1.0f, log);
     return result;
   }
 
-  sdk_error.dxl_comm_result = packetHandler_2_0->ping(portHandler_, id, &model_number, &sdk_error.dxl_error);
-  
+  result = setPacketHandler(2.0f, log);
+  if (result == false) return false;
+
+  sdk_error.dxl_comm_result = packetHandler_->ping(portHandler_, id, &model_number, &sdk_error.dxl_error);  
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
-    if (log != NULL) *log = packetHandler_2_0->getTxRxResult(sdk_error.dxl_comm_result);
+    if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
   }
   else if (sdk_error.dxl_error != 0)
   {
-    if (log != NULL) *log = packetHandler_2_0->getRxPacketError(sdk_error.dxl_error);
+    if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
   }
   else
   {
     setTool(model_number, id);
     *get_model_number = model_number;
-    result = setPacketHandler(2.0f, log);
     return result;
   }  
 
@@ -382,7 +385,7 @@ bool DynamixelDriver::reboot(uint8_t id, const char **log)
   }
   else
   {
-    sdk_error.dxl_comm_result = packetHandler_2_0->reboot(portHandler_, id, &sdk_error.dxl_error);
+    sdk_error.dxl_comm_result = packetHandler_->reboot(portHandler_, id, &sdk_error.dxl_error);
 #if defined(__OPENCR__) || defined(__OPENCM904__)
     delay(1000);
 #else
@@ -391,12 +394,12 @@ bool DynamixelDriver::reboot(uint8_t id, const char **log)
 
     if (sdk_error.dxl_comm_result != COMM_SUCCESS)
     {
-      if (log != NULL) *log = packetHandler_2_0->getTxRxResult(sdk_error.dxl_comm_result);
+      if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
       return false;
     }
     else if (sdk_error.dxl_error != 0)
     {
-      if (log != NULL) *log = packetHandler_2_0->getRxPacketError(sdk_error.dxl_error);
+      if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
       return false;
     }
     else
@@ -425,7 +428,7 @@ bool DynamixelDriver::reset(uint8_t id, const char **log)
 
   if (getProtocolVersion() == 1.0)
   {
-    sdk_error.dxl_comm_result = packetHandler_1_0->factoryReset(portHandler_, id, 0x00, &sdk_error.dxl_error);
+    sdk_error.dxl_comm_result = packetHandler_->factoryReset(portHandler_, id, 0x00, &sdk_error.dxl_error);
 #if defined(__OPENCR__) || defined(__OPENCM904__)
     delay(2000);
 #else
@@ -434,12 +437,12 @@ bool DynamixelDriver::reset(uint8_t id, const char **log)
 
     if (sdk_error.dxl_comm_result != COMM_SUCCESS)
     {
-      if (log != NULL) *log = packetHandler_1_0->getTxRxResult(sdk_error.dxl_comm_result);
+      if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
       return false;
     }
     else if (sdk_error.dxl_error != 0)
     {
-      if (log != NULL) *log = packetHandler_1_0->getRxPacketError(sdk_error.dxl_error);
+      if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
       return false;
     }
     else
@@ -483,7 +486,7 @@ bool DynamixelDriver::reset(uint8_t id, const char **log)
   }
   else if (getProtocolVersion() == 2.0)
   {
-    sdk_error.dxl_comm_result = packetHandler_2_0->factoryReset(portHandler_, id, 0xff, &sdk_error.dxl_error);
+    sdk_error.dxl_comm_result = packetHandler_->factoryReset(portHandler_, id, 0xff, &sdk_error.dxl_error);
 #if defined(__OPENCR__) || defined(__OPENCM904__)
     delay(2000);
 #else
@@ -492,12 +495,12 @@ bool DynamixelDriver::reset(uint8_t id, const char **log)
 
     if (sdk_error.dxl_comm_result != COMM_SUCCESS)
     {
-      if (log != NULL) *log = packetHandler_2_0->getTxRxResult(sdk_error.dxl_comm_result);
+      if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
       return false;
     }
     else if (sdk_error.dxl_error != 0)
     {
-      if (log != NULL) *log = packetHandler_2_0->getRxPacketError(sdk_error.dxl_error);
+      if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
       return false;
     }
     else
