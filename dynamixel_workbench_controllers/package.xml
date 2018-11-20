@@ -18,4 +18,6 @@
   <depend>geometry_msgs</depend>
   <depend>dynamixel_workbench_msgs</depend>
   <depend>dynamixel_workbench_toolbox</depend>
+  <depend>cmake_modules</depend>
+  <depend>yaml-cpp</depend>
 </package>

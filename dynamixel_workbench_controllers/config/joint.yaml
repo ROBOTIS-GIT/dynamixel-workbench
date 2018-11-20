@@ -1,0 +1,11 @@
+# You can find control table of Dynamixel on emanual (http://emanual.robotis.com/#control-table)
+# Control table item has to be set CamelCase and not included whitespace
+# You are supposed to set at least Dynamixel ID
+pan:
+  ID: 1
+  LED: 1
+  Operating_Mode: 3
+tilt:
+  ID: 2
+  LED: 1
+  Operating_Mode: 3

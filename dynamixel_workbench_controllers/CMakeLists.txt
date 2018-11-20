@@ -16,7 +16,26 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   dynamixel_workbench_msgs
   dynamixel_workbench_toolbox
+  cmake_modules
 )
+
+# Resolve system dependency on yaml-cpp, which apparently does not
+# provide a CMake find_package() module.
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(YAML_CPP REQUIRED yaml-cpp)
+find_path(YAML_CPP_INCLUDE_DIR
+  NAMES yaml_cpp.h
+  PATHS ${YAML_CPP_INCLUDE_DIRS}
+)
+find_library(YAML_CPP_LIBRARY
+  NAMES YAML_CPP
+  PATHS ${YAML_CPP_LIBRARY_DIRS}
+)
+link_directories(${YAML_CPP_LIBRARY_DIRS})
+
+if(NOT ${YAML_CPP_VERSION} VERSION_LESS "0.5")
+add_definitions(-DHAVE_NEW_YAMLCPP)
+endif(NOT ${YAML_CPP_VERSION} VERSION_LESS "0.5")
 
 ################################################################################
 # Setup for python modules and scripts
@@ -35,7 +54,7 @@ find_package(catkin REQUIRED COMPONENTS
 ################################################################################
 catkin_package(
  INCLUDE_DIRS include
- CATKIN_DEPENDS roscpp sensor_msgs geometry_msgs dynamixel_workbench_msgs dynamixel_workbench_toolbox
+ CATKIN_DEPENDS roscpp sensor_msgs geometry_msgs dynamixel_workbench_msgs dynamixel_workbench_toolbox cmake_modules
 )
 
 ################################################################################
@@ -44,28 +63,18 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  ${YAML_CPP_INCLUDE_DIRS}
 )
 
-add_executable(position_control src/position_control.cpp)
-add_dependencies(position_control ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(position_control ${catkin_LIBRARIES})
-
-add_executable(velocity_control src/velocity_control.cpp)
-add_dependencies(velocity_control ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(velocity_control ${catkin_LIBRARIES})
-
-add_executable(multi_port src/multi_port.cpp)
-add_dependencies(multi_port ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(multi_port ${catkin_LIBRARIES})
-
-add_executable(torque_control src/torque_control.cpp)
-add_dependencies(torque_control ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(torque_control ${catkin_LIBRARIES})
+add_executable(dynamixel_workbench_controllers src/dynamixel_workbench_controllers.cpp)
+add_dependencies(dynamixel_workbench_controllers ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(dynamixel_workbench_controllers ${catkin_LIBRARIES} ${YAML_CPP_LIBRARIES})
 
 #################################################################################
 ## Install
 #################################################################################
-install(TARGETS position_control velocity_control multi_port torque_control
+#install(TARGETS position_control velocity_control multi_port torque_control
+install(TARGETS dynamixel_workbench_controllers
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

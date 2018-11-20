@@ -1,0 +1,12 @@
+<launch>
+  <arg name="usb_port"                default="/dev/ttyUSB0"/>
+  <arg name="dxl_baud_rate"           default="57600"/>  
+
+  <param name="dynamixel_info"          value="$(find dynamixel_workbench_controllers)/config/joint.yaml"/>
+
+  <param name="use_cmd_vel_topic"       value="true"/>
+  <param name="use_joint_states_topic"  value="true"/>
+
+  <node name="dynamixel_workbench_controllers" pkg="dynamixel_workbench_controllers" type="dynamixel_workbench_controllers"
+        required="true" output="screen" args="$(arg usb_port) $(arg dxl_baud_rate)"/>
+</launch>
