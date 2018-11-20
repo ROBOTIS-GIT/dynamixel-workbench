@@ -121,7 +121,10 @@ class DynamixelDriver
             const char **log = NULL);
 
   bool ping(uint8_t id, 
-            uint16_t *get_model_number = NULL,
+            uint16_t *get_model_number,
+            const char **log = NULL);
+
+  bool ping(uint8_t id,
             const char **log = NULL);
 
   bool reboot(uint8_t id, const char **log = NULL);
