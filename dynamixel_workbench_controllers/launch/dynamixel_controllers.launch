@@ -4,9 +4,14 @@
 
   <param name="dynamixel_info"          value="$(find dynamixel_workbench_controllers)/config/joint.yaml"/>
 
-  <param name="use_cmd_vel_topic"       value="true"/>
-  <param name="use_joint_states_topic"  value="true"/>
-
-  <node name="dynamixel_workbench_controllers" pkg="dynamixel_workbench_controllers" type="dynamixel_workbench_controllers"
-        required="true" output="screen" args="$(arg usb_port) $(arg dxl_baud_rate)"/>
+  <node name="dynamixel_workbench" pkg="dynamixel_workbench_controllers" type="dynamixel_workbench_controllers"
+        required="true" output="screen" args="$(arg usb_port) $(arg dxl_baud_rate)">
+    <rosparam>
+      use_joint_states_topic: true
+      use_cmd_vel_topic: true
+      mobile_robot_config:                <!--this values will be set when 'use_cmd_vel_topic' is true-->
+        seperation_between_wheels: 0.160  <!--default value is set by reference of TB3-->
+        radius_of_wheel: 0.033            <!--default value is set by reference of TB3-->
+    </rosparam>
+  </node>
 </launch>

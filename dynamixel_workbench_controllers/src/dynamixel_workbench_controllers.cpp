@@ -18,175 +18,16 @@
 
 #include "dynamixel_workbench_controllers/dynamixel_workbench_controllers.h"
 
-//DynamixelController::DynamixelController()
-//{
-//  std::string port_name   = priv_node_handle_.param<std::string>("port_name", "/dev/ttyUSB0");
-//  uint32_t baud_rate      = priv_node_handle_.param<int>("baud_rate", 57600);
-
-//  uint8_t scan_range      = priv_node_handle_.param<int>("scan_range", 253);
-
-//  bool result = false;
-//  const char *log = NULL;
-
-//  dxl_wb_ = new DynamixelWorkbench;
-
-//  result = dxl_wb_->init(port_name.c_str(), baud_rate, &log);
-//  if (result == false)
-//  {
-//    printf("%s\n", log);
-//    printf("Please check USB port name");
-//    return;
-//  }
-//  else
-//    printf("\n%s\n", log);
-
-
-
-//  if (dxl_wb_->scan(dxl_id_, &dxl_cnt_, scan_range) != true)
-//  {
-//    ROS_ERROR("Not found Motors, Please check scan range or baud rate");
-//    ros::shutdown();
-//    return;
-//  }
-
-//  initMsg();
-
-//  for (int index = 0; index < dxl_cnt_; index++)
-//    dxl_wb_->jointMode(dxl_id_[index], profile_velocity, profile_acceleration);
-
-//  dxl_wb_->addSyncWrite("Goal_Position");
-
-//  initPublisher();
-//  initSubscriber();
-//  initServer();
-//}
-
-//DynamixelController::~DynamixelController(){}
-
-//PositionControl::~PositionControl()
-//{
-//  for (int index = 0; index < dxl_cnt_; index++)
-//    dxl_wb_->itemWrite(dxl_id_[index], "Torque_Enable", 0);
-
-//  ros::shutdown();
-//}
-
-//void PositionControl::initMsg()
-//{
-//  printf("-----------------------------------------------------------------------\n");
-//  printf("  dynamixel_workbench controller; position control example             \n");
-//  printf("-----------------------------------------------------------------------\n");
-//  printf("\n");
-
-//  for (int index = 0; index < dxl_cnt_; index++)
-//  {
-//    printf("MODEL   : %s\n", dxl_wb_->getModelName(dxl_id_[index]));
-//    printf("ID      : %d\n", dxl_id_[index]);
-//    printf("\n");
-//  }
-//  printf("-----------------------------------------------------------------------\n");
-//}
-
-//void PositionControl::dynamixelStatePublish()
-//{
-//  dynamixel_workbench_msgs::DynamixelState     dynamixel_state[dxl_cnt_];
-//  dynamixel_workbench_msgs::DynamixelStateList dynamixel_state_list;
-
-//  for (int index = 0; index < dxl_cnt_; index++)
-//  {
-//    dynamixel_state[index].model_name          = std::string(dxl_wb_->getModelName(dxl_id_[index]));
-//    dynamixel_state[index].id                  = dxl_id_[index];
-//    dynamixel_state[index].torque_enable       = dxl_wb_->itemRead(dxl_id_[index], "Torque_Enable");
-//    dynamixel_state[index].present_position    = dxl_wb_->itemRead(dxl_id_[index], "Present_Position");
-//    dynamixel_state[index].present_velocity    = dxl_wb_->itemRead(dxl_id_[index], "Present_Velocity");
-//    dynamixel_state[index].goal_position       = dxl_wb_->itemRead(dxl_id_[index], "Goal_Position");
-//    dynamixel_state[index].goal_velocity       = dxl_wb_->itemRead(dxl_id_[index], "Goal_Velocity");
-//    dynamixel_state[index].moving              = dxl_wb_->itemRead(dxl_id_[index], "Moving");
-
-//    dynamixel_state_list.dynamixel_state.push_back(dynamixel_state[index]);
-//  }
-//  dynamixel_state_list_pub_.publish(dynamixel_state_list);
-//}
-
-//void PositionControl::jointStatePublish()
-//{
-//  int32_t present_position[dxl_cnt_] = {0, };
-
-//  for (int index = 0; index < dxl_cnt_; index++)
-//    present_position[index] = dxl_wb_->itemRead(dxl_id_[index], "Present_Position");
-
-//  int32_t present_velocity[dxl_cnt_] = {0, };
-
-//  for (int index = 0; index < dxl_cnt_; index++)
-//    present_velocity[index] = dxl_wb_->itemRead(dxl_id_[index], "Present_Velocity");
-
-//  sensor_msgs::JointState dynamixel_;
-//  dynamixel_.header.stamp = ros::Time::now();
-
-//  for (int index = 0; index < dxl_cnt_; index++)
-//  {
-//    std::stringstream id_num;
-//    id_num << "id_" << (int)(dxl_id_[index]);
-
-//    dynamixel_.name.push_back(id_num.str());
-
-//    dynamixel_.position.push_back(dxl_wb_->convertValue2Radian(dxl_id_[index], present_position[index]));
-//    dynamixel_.velocity.push_back(dxl_wb_->convertValue2Velocity(dxl_id_[index], present_velocity[index]));
-//  }
-//  joint_states_pub_.publish(dynamixel_);
-//}
-
-//void PositionControl::controlLoop()
-//{
-//  dynamixelStatePublish();
-//  jointStatePublish();
-//}
-
-//bool PositionControl::jointCommandMsgCallback(dynamixel_workbench_msgs::JointCommand::Request &req,
-//                                              dynamixel_workbench_msgs::JointCommand::Response &res)
-//{
-//  int32_t goal_position = 0;
-//  int32_t present_position = 0;
-
-//  if (req.unit == "rad")
-//  {
-//    goal_position = dxl_wb_->convertRadian2Value(req.id, req.goal_position);
-//  }
-//  else if (req.unit == "raw")
-//  {
-//    goal_position = req.goal_position;
-//  }
-//  else
-//  {
-//    goal_position = req.goal_position;
-//  }
-
-//  bool ret = dxl_wb_->goalPosition(req.id, goal_position);
-
-//  res.result = ret;
-//}
-
-//void PositionControl::goalJointPositionCallback(const sensor_msgs::JointState::ConstPtr &msg)
-//{
-//  double goal_position[dxl_cnt_] = {0.0, };
-
-//  for (int index = 0; index < dxl_cnt_; index++)
-//    goal_position[index] = msg->position.at(index);
-
-//  int32_t goal_dxl_position[dxl_cnt_] = {0, };
-
-//  for (int index = 0; index < dxl_cnt_; index++)
-//  {
-//    goal_dxl_position[index] = dxl_wb_->convertRadian2Value(dxl_id_[index], goal_position[index]);
-//  }
-
-//  dxl_wb_->syncWrite("Goal_Position", goal_dxl_position);
-//}
-
-DynamixelController::DynamixelController():node_handle_("")
+DynamixelController::DynamixelController():node_handle_(""), priv_node_handle_("~")
 {
-  joint_state_topic_ = node_handle_.param<bool>("use_joint_states_topic", true);
-  cmd_vel_topic_ = node_handle_.param<bool>("use_cmd_vel_topic", false);
+  is_joint_state_topic_ = priv_node_handle_.param<bool>("use_joint_states_topic", true);
+  is_cmd_vel_topic_ = priv_node_handle_.param<bool>("use_cmd_vel_topic", false);
+
+  if (is_cmd_vel_topic_ == true)
+  {
+    wheel_separation_ = priv_node_handle_.param<double>("mobile_robot_config/seperation_between_wheels", 0.0);
+    wheel_radius_ = priv_node_handle_.param<double>("mobile_robot_config/radius_of_wheel", 0.0);
+  }
 
   dxl_wb_ = new DynamixelWorkbench;
 }
@@ -224,6 +65,10 @@ bool DynamixelController::getDynamixelsInfo(const std::string yaml_file)
     }
     else
     {
+      if (is_joint_state_topic_)
+      {
+        joint_state_msg_.name.push_back(name);
+      }
 //      ROS_INFO("Dynamixel Name: %s", name.c_str());
     }
 
@@ -231,20 +76,17 @@ bool DynamixelController::getDynamixelsInfo(const std::string yaml_file)
     for (YAML::const_iterator it_item = item.begin(); it_item != item.end(); it_item++)
     {
       std::string item_name = it_item->first.as<std::string>();
-      uint32_t value = it_item->second.as<uint32_t>();
+      int32_t value = it_item->second.as<int32_t>();
 
       if (item_name == "ID")
         dynamixel_[name] = value;
 
-      std::pair<std::string, uint32_t> info(item_name, value);
+      ItemValue item_value = {item_name, value};
+      std::pair<std::string, ItemValue> info(name, item_value);
+//      ROS_INFO("item_name: %s, value: %d", item_value.item_name.c_str(), item_value.value);
       dynamixel_info_.push_back(info);
     }
   }
-
-//  for (auto const& item:dynamixel_info_)
-//  {
-//    ROS_INFO("item_name: %s, value: %d", item.first.c_str(), item.second);
-//  }
 
   return true;
 }
@@ -283,13 +125,17 @@ bool DynamixelController::initDynamixels(void)
 
     for (auto const& info:dynamixel_info_)
     {
-      if (info.first != "ID" && info.first != "Baud_Rate")
+      if (dxl.first == info.first)
       {
-        bool result = dxl_wb_->writeRegister((uint8_t)dxl.second, info.first.c_str(), info.second, &log);
-        if (result == false)
+        if (info.second.item_name != "ID" && info.second.item_name != "Baud_Rate")
         {
-          ROS_ERROR("%s", log);
-          ROS_ERROR("Failed to write items[%s] to Dynamixel[Name : %s, ID : %d]", info.first.c_str(), dxl.first.c_str(), dxl.second);
+          bool result = dxl_wb_->itemWrite((uint8_t)dxl.second, info.second.item_name.c_str(), info.second.value, &log);
+          if (result == false)
+          {
+            ROS_ERROR("%s", log);
+            ROS_ERROR("Failed to write value[%d] on items[%s] to Dynamixel[Name : %s, ID : %d]", info.second.value, info.second.item_name.c_str(), dxl.first.c_str(), dxl.second);
+            return false;
+          }
         }
       }
     }
@@ -298,26 +144,36 @@ bool DynamixelController::initDynamixels(void)
   return true;
 }
 
-bool DynamixelController::initHandlers(void)
+bool DynamixelController::initSDKHandlers(void)
 {
   bool result = false;
   const char* log = NULL;
 
-  auto const& it = dynamixel_.begin();
-  result = dxl_wb_->addSyncWriteHandler(it.second, "Goal_Position", &log);
+  auto it = dynamixel_.begin();
+  result = dxl_wb_->addSyncWriteHandler(it->second, "Goal_Position", &log);
   if (result == false)
   {
     ROS_ERROR("%s", log);
     return result;
   }
 
-  result = dxl_wb_->addSyncReadHandler(ADDR_PRESENT_CURRENT_2,
-                                      (LENGTH_PRESENT_CURRENT_2 + LENGTH_PRESENT_VELOCITY_2 + LENGTH_PRESENT_POSITION_2),
-                                      &log);
+  result = dxl_wb_->addSyncWriteHandler(it->second, "Goal_Velocity", &log);
   if (result == false)
   {
     ROS_ERROR("%s", log);
     return result;
+  }
+
+  if (dxl_wb_->getProtocolVersion() == 2.0f)
+  {
+    result = dxl_wb_->addSyncReadHandler(ADDR_PRESENT_CURRENT_2,
+                                        (LENGTH_PRESENT_CURRENT_2 + LENGTH_PRESENT_VELOCITY_2 + LENGTH_PRESENT_POSITION_2),
+                                        &log);
+    if (result == false)
+    {
+      ROS_ERROR("%s", log);
+      return result;
+    }
   }
 
   return result;
@@ -325,98 +181,274 @@ bool DynamixelController::initHandlers(void)
 
 void DynamixelController::initPublisher()
 {
-  dynamixel_state_list_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::DynamixelStateList>("dynamixel_state", 100);
-  if (joint_state_topic_) joint_states_pub_ = node_handle_.advertise<sensor_msgs::JointState>("joint_states", 100);
+  dynamixel_state_list_pub_ = priv_node_handle_.advertise<dynamixel_workbench_msgs::DynamixelStateList>("dynamixel_state", 100);
+  if (is_joint_state_topic_) joint_states_pub_ = node_handle_.advertise<sensor_msgs::JointState>("joint_states", 100);
 }
 
 void DynamixelController::initSubscriber()
 {
-  if (cmd_vel_topic_) cmd_vel_sub_ = node_handle_.subscribe("cmd_vel", 10, &DynamixelController::commandVelocityCallback, this);
+  trajectory_sub_ = node_handle_.subscribe("joint_command", 100, &DynamixelController::trajectoryMsgCallback, this);
+  if (is_cmd_vel_topic_) cmd_vel_sub_ = node_handle_.subscribe("cmd_vel", 10, &DynamixelController::commandVelocityCallback, this);
 }
 
 void DynamixelController::initServer()
 {
-  joint_command_server_     = node_handle_.advertiseService("joint_command", &DynamixelController::jointCommandMsgCallback, this);
   dynamixel_command_server_ = node_handle_.advertiseService("dynamixel_command", &DynamixelController::dynamixelCommandMsgCallback, this);
 }
 
+static double priv_secs[3] = {0.0, 0.0, 0.0};
 void DynamixelController::readCallback(const ros::TimerEvent&)
 {
+  double secs =ros::Time::now().toSec();
 
+  bool result = false;
+  const char* log = NULL;
 
-//  ROS_INFO("callback_1");
-}
+  dynamixel_workbench_msgs::DynamixelState  dynamixel_state[dynamixel_.size()];
+  dynamixel_state_list_.dynamixel_state.clear();
 
-void DynamixelController::writeCallback(const ros::TimerEvent&)
-{
-//  dynamixel_workbench_msgs::DynamixelState     dynamixel_state[dynamixel_.size()];
-//  dynamixel_workbench_msgs::DynamixelStateList dynamixel_state_list;
+  int32_t get_value[dynamixel_.size()];
 
-//  for (int index = 0; index < dxl_cnt_; index++)
-//  {
-//    dynamixel_state[index].model_name          = std::string(dxl_wb_->getModelName(dxl_id_[index]));
-//    dynamixel_state[index].id                  = dxl_id_[index];
-//    dynamixel_state[index].torque_enable       = dxl_wb_->itemRead(dxl_id_[index], "Torque_Enable");
-//    dynamixel_state[index].present_position    = dxl_wb_->itemRead(dxl_id_[index], "Present_Position");
-//    dynamixel_state[index].present_velocity    = dxl_wb_->itemRead(dxl_id_[index], "Present_Velocity");
-//    dynamixel_state[index].goal_position       = dxl_wb_->itemRead(dxl_id_[index], "Goal_Position");
-//    dynamixel_state[index].goal_velocity       = dxl_wb_->itemRead(dxl_id_[index], "Goal_Velocity");
-//    dynamixel_state[index].moving              = dxl_wb_->itemRead(dxl_id_[index], "Moving");
+  uint8_t id_array[dynamixel_.size()];
+  uint8_t id_cnt = 0;
 
-//    dynamixel_state_list.dynamixel_state.push_back(dynamixel_state[index]);
-//  }
-//  dynamixel_state_list_pub_.publish(dynamixel_state_list);
+  for (auto const& dxl:dynamixel_)
+  {
+    dynamixel_state[id_cnt].name = dxl.first;
+    dynamixel_state[id_cnt].id = (uint8_t)dxl.second;
 
-//  if (joint_state_topic_)
-//  {
-//    sensor_msgs::JointState joint_state_msg_;
-//    joint_state_msg_.name.push_back(name);
-//  }
-//  ROS_INFO("callback_2");
+    id_array[id_cnt++] = (uint8_t)dxl.second;
+  }
+
+  result = dxl_wb_->syncRead(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
+                             id_array,
+                             dynamixel_.size(),
+                             &log);
+  if (result == false)
+  {
+    ROS_ERROR("%s", log);
+  }
+
+  id_cnt = 0;
+  for (auto const& dxl:dynamixel_)
+  {
+    uint8_t id = id_array[id_cnt];
+
+    result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
+                                                  &id,
+                                                  1,
+                                                  ADDR_PRESENT_CURRENT_2,
+                                                  LENGTH_PRESENT_CURRENT_2,
+                                                  &get_value[id_cnt],
+                                                  &log);
+    if (result == false)
+    {
+      ROS_ERROR("%s", log);
+    }
+    else
+    {
+      dynamixel_state[id_cnt].present_current = get_value[id_cnt];
+    }
+
+    result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
+                                                  &id,
+                                                  1,
+                                                  ADDR_PRESENT_VELOCITY_2,
+                                                  LENGTH_PRESENT_VELOCITY_2,
+                                                  &get_value[id_cnt],
+                                                  &log);
+    if (result == false)
+    {
+      ROS_ERROR("%s", log);
+    }
+    else
+    {
+      dynamixel_state[id_cnt].present_velocity = get_value[id_cnt];
+    }
+
+    result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
+                                                  &id,
+                                                  1,
+                                                  ADDR_PRESENT_POSITION_2,
+                                                  LENGTH_PRESENT_POSITION_2,
+                                                  &get_value[id_cnt],
+                                                  &log);
+    if (result == false)
+    {
+      ROS_ERROR("%s", log);
+    }
+    else
+    {
+      dynamixel_state[id_cnt].present_position = get_value[id_cnt];
+    }
+
+//    ROS_INFO("ID : %d, present_position : %d, present_velocity : %d, present_current : %d", id, dynamixel_state[id_cnt].present_position, dynamixel_state[id_cnt].present_velocity, dynamixel_state[id_cnt].present_current);
+    dynamixel_state_list_.dynamixel_state.push_back(dynamixel_state[id_cnt]);
+    id_cnt++;
+  }
+
+//  ROS_WARN("[readCallback] diff_secs : %f", secs - priv_secs[0]);
+  priv_secs[0] = secs;
 }
 
 void DynamixelController::publishCallback(const ros::TimerEvent&)
 {
-//  dynamixel_workbench_msgs::DynamixelState     dynamixel_state[dynamixel_.size()];
-//  dynamixel_workbench_msgs::DynamixelStateList dynamixel_state_list;
+//  double secs =ros::Time::now().toSec();
 
-//  for (int index = 0; index < dxl_cnt_; index++)
-//  {
-//    dynamixel_state[index].model_name          = std::string(dxl_wb_->getModelName(dxl_id_[index]));
-//    dynamixel_state[index].id                  = dxl_id_[index];
-//    dynamixel_state[index].torque_enable       = dxl_wb_->itemRead(dxl_id_[index], "Torque_Enable");
-//    dynamixel_state[index].present_position    = dxl_wb_->itemRead(dxl_id_[index], "Present_Position");
-//    dynamixel_state[index].present_velocity    = dxl_wb_->itemRead(dxl_id_[index], "Present_Velocity");
-//    dynamixel_state[index].goal_position       = dxl_wb_->itemRead(dxl_id_[index], "Goal_Position");
-//    dynamixel_state[index].goal_velocity       = dxl_wb_->itemRead(dxl_id_[index], "Goal_Velocity");
-//    dynamixel_state[index].moving              = dxl_wb_->itemRead(dxl_id_[index], "Moving");
+  dynamixel_state_list_pub_.publish(dynamixel_state_list_);
 
-//    dynamixel_state_list.dynamixel_state.push_back(dynamixel_state[index]);
-//  }
-//  dynamixel_state_list_pub_.publish(dynamixel_state_list);
+  if (is_joint_state_topic_)
+  {
+    joint_state_msg_.header.stamp = ros::Time::now();
 
-//  if (joint_state_topic_)
-//  {
-//    sensor_msgs::JointState joint_state_msg_;
-//    joint_state_msg_.name.push_back(name);
-//  }
-//  ROS_INFO("callback_3");
-}
+    joint_state_msg_.position.clear();
+    joint_state_msg_.velocity.clear();
+    joint_state_msg_.effort.clear();
 
-bool DynamixelController::jointCommandMsgCallback(dynamixel_workbench_msgs::JointCommand::Request &req,
-                                                  dynamixel_workbench_msgs::JointCommand::Response &res)
-{
-  return true;
+    uint8_t id_cnt = 0;
+    for (auto const& dxl:dynamixel_)
+    {
+      double position = 0.0;
+      double velocity = 0.0;
+      double effort = 0.0;
+
+      effort = dxl_wb_->convertValue2Current((uint8_t)dxl.second, (int16_t)dynamixel_state_list_.dynamixel_state[id_cnt].present_current);
+      velocity = dxl_wb_->convertValue2Velocity((uint8_t)dxl.second, (int32_t)dynamixel_state_list_.dynamixel_state[id_cnt].present_velocity);
+      position = dxl_wb_->convertValue2Radian((uint8_t)dxl.second, (int32_t)dynamixel_state_list_.dynamixel_state[id_cnt].present_position);
+
+      joint_state_msg_.effort.push_back(position);
+      joint_state_msg_.velocity.push_back(velocity);
+      joint_state_msg_.position.push_back(position);
+
+      id_cnt++;
+    }
+
+    joint_states_pub_.publish(joint_state_msg_);
+  }
+
+//  ROS_WARN("[publishCallback] diff_secs : %f", secs - priv_secs[1]);
+//  priv_secs[1] = secs;
 }
 
 void DynamixelController::commandVelocityCallback(const geometry_msgs::Twist::ConstPtr &msg)
 {
+  bool result = false;
+  const char* log = NULL;
 
+  double wheel_velocity[dynamixel_.size()];
+  int32_t dynamixel_velocity[dynamixel_.size()];
+
+  const uint8_t LEFT = 0;
+  const uint8_t RIGHT = 1;
+
+  double robot_lin_vel = msg->linear.x;
+  double robot_ang_vel = msg->angular.z;
+
+  uint8_t id_array[dynamixel_.size()];
+  uint8_t id_cnt = 0;
+
+  float rpm = 0.0;
+  for (auto const& dxl:dynamixel_)
+  {
+    const ModelInfo *modelInfo = dxl_wb_->getModelInfo((uint8_t)dxl.second);
+    rpm = modelInfo->rpm;
+    id_array[id_cnt++] = (uint8_t)dxl.second;
+  }
+
+//  V = r * w = r * (RPM * 0.10472) (Change rad/sec to RPM)
+//       = r * ((RPM * Goal_Velocity) * 0.10472)		=> Goal_Velocity = V / (r * RPM * 0.10472) = V * VELOCITY_CONSTATNE_VALUE
+
+  double velocity_constant_value = 1 / (wheel_radius_ * rpm * 0.10472);
+
+  wheel_velocity[LEFT]  = robot_lin_vel - (robot_ang_vel * wheel_separation_ / 2);
+  wheel_velocity[RIGHT] = robot_lin_vel + (robot_ang_vel * wheel_separation_ / 2);
+
+  dynamixel_velocity[LEFT]  = wheel_velocity[LEFT] * velocity_constant_value;
+  dynamixel_velocity[RIGHT] = wheel_velocity[RIGHT] * velocity_constant_value;
+
+  result = dxl_wb_->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_VELOCITY, id_array, dynamixel_.size(), dynamixel_velocity, &log);
+  if (result == false)
+  {
+    ROS_ERROR("%s", log);
+  }
+}
+
+void DynamixelController::trajectoryMsgCallback(const trajectory_msgs::JointTrajectory::ConstPtr &msg)
+{
+  bool result = false;
+  const char* log = NULL;
+
+  JointTrajectory joint_trajectory_;
+
+  std::string joint_name = msg->joint_names.at(0);
+  trajectory_msgs::JointTrajectoryPoint jnt_tra_point = msg->points.at(0);
+
+  uint8_t id_array[msg->joint_names.size()];
+  uint8_t id_cnt = 0;
+
+  for (auto const& dxl:dynamixel_)
+  {
+    for (auto const& joint:msg->joint_names)
+    {
+      if (dxl.first == joint)
+      {
+        id_array[id_cnt++] = dxl.second;
+      }
+    }
+  }
+
+//  jnt_tra_point.time_from_start.
+
+//  uint8_t id_array[req.id.size()];
+//  int32_t goal_position[req.id.size()];
+
+//  for (auto const& id:req.id)
+//  {
+//    goal_position[index] = dynamixel_workbench_->convertRadian2Value(actuator_id.at(index), radian_vector.at(index));
+//  }
+
+//  int32_t goal_position = 0;
+//  int32_t present_position = 0;
+
+//  if (req.unit == "rad")
+//  {
+//    goal_position = dxl_wb_->convertRadian2Value(req.id, req.goal_position);
+//  }
+//  else if (req.unit == "raw")
+//  {
+//    goal_position = req.goal_position;
+//  }
+//  else
+//  {
+//    goal_position = req.goal_position;
+//  }
+
+//  bool ret = dxl_wb_->goalPosition(req.id, goal_position);
+
+//  res.result = ret;
+
+//  return true;
 }
 
 bool DynamixelController::dynamixelCommandMsgCallback(dynamixel_workbench_msgs::DynamixelCommand::Request &req,
                                                       dynamixel_workbench_msgs::DynamixelCommand::Response &res)
 {
+  bool result = false;
+  const char* log;
+
+  uint8_t id = req.id;
+  std::string item_name = req.addr_name;
+  int32_t value = req.value;
+
+  result = dxl_wb_->itemWrite(id, item_name.c_str(), value, &log);
+  if (result == false)
+  {
+    ROS_ERROR("%s", log);
+    ROS_ERROR("Failed to write value[%d] on items[%s] to Dynamixel[ID : %d]", value, item_name.c_str(), id);
+  }
+
+  res.comm_result = result;
+
   return true;
 }
 
@@ -424,8 +456,6 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "dynamixel_workbench_controllers");
   ros::NodeHandle node_handle("");
-
-  std::string yaml_file = node_handle.param<std::string>("dynamixel_info", "");
 
   std::string port_name = "/dev/ttyUSB0";
   uint32_t baud_rate = 57600;
@@ -444,6 +474,8 @@ int main(int argc, char **argv)
   DynamixelController dynamixel_controller;
   bool result = false;
 
+  std::string yaml_file = node_handle.param<std::string>("dynamixel_info", "");
+
   result = dynamixel_controller.initWorkbench(port_name, baud_rate);
   if (result == false)  ROS_ERROR("Please check USB port name");
 
@@ -454,17 +486,17 @@ int main(int argc, char **argv)
   if (result == false) ROS_ERROR("Please check Dynamixel ID or BaudRate");
 
   result = dynamixel_controller.initDynamixels();
+  if (result == false) ROS_ERROR("Please check control table (http://emanual.robotis.com/#control-table)");
 
-  result = dynamixel_controller.initHandlers();
+  result = dynamixel_controller.initSDKHandlers();
   if (result == false) ROS_ERROR("Failed to set Dynamixel SDK Handler");
 
   dynamixel_controller.initPublisher();
   dynamixel_controller.initSubscriber();
   dynamixel_controller.initServer();
 
-  ros::Timer read_timer = node_handle.createTimer(ros::Duration(0.010), &DynamixelController::readCallback, &dynamixel_controller);
-  ros::Timer write_timer = node_handle.createTimer(ros::Duration(0.010), &DynamixelController::writeCallback, &dynamixel_controller);
-  ros::Timer publish_timer = node_handle.createTimer(ros::Duration(0.010), &DynamixelController::publishCallback, &dynamixel_controller);
+  ros::Timer read_timer = node_handle.createTimer(ros::Duration(0.010f), &DynamixelController::readCallback, &dynamixel_controller);
+  ros::Timer publish_timer = node_handle.createTimer(ros::Duration(0.010f), &DynamixelController::publishCallback, &dynamixel_controller);
 
   ros::spin();
 

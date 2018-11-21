@@ -25,13 +25,20 @@
 
 #include <sensor_msgs/JointState.h>
 #include <geometry_msgs/Twist.h>
+#include <trajectory_msgs/JointTrajectory.h>
+#include <trajectory_msgs/JointTrajectoryPoint.h>
 
 #include <dynamixel_workbench_toolbox/dynamixel_workbench.h>
 #include <dynamixel_workbench_msgs/DynamixelStateList.h>
 #include <dynamixel_workbench_msgs/DynamixelCommand.h>
-#include <dynamixel_workbench_msgs/JointCommand.h>
 
+#include "trajectory_generator.h"
+
+// SYNC_WRITE_HANDLER
 #define SYNC_WRITE_HANDLER_FOR_GOAL_POSITION 0
+#define SYNC_WRITE_HANDLER_FOR_GOAL_VELOCITY 1
+
+// SYNC_READ_HANDLER(Only for Protocol 2.0)
 #define SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT 0
 
 // Protocol 2.0
@@ -44,19 +51,26 @@
 #define LENGTH_PRESENT_POSITION_2 4
 
 // Protocol 1.0
-#define ADDR_PRESENT_CURRENT_1 = 40;
-#define ADDR_PRESENT_VELOCITY_1 = 38;
-#define ADDR_PRESENT_POSITION_1 = 36;
+#define ADDR_PRESENT_CURRENT_1  40
+#define ADDR_PRESENT_VELOCITY_1 38
+#define ADDR_PRESENT_POSITION_1 36
 
-#define LENGTH_PRESENT_CURRENT_1 = 2;
-#define LENGTH_PRESENT_VELOCITY_1 = 2;
-#define LENGTH_PRESENT_POSITION_1 = 2;
+#define LENGTH_PRESENT_CURRENT_1 2
+#define LENGTH_PRESENT_VELOCITY_1 2
+#define LENGTH_PRESENT_POSITION_1 2
+
+typedef struct
+{
+  std::string item_name;
+  int32_t value;
+} ItemValue;
 
 class DynamixelController
 {
  private:
   // ROS NodeHandle
   ros::NodeHandle node_handle_;
+  ros::NodeHandle priv_node_handle_;
 
   // ROS Parameters
 
@@ -66,20 +80,25 @@ class DynamixelController
 
   // ROS Topic Subscriber
   ros::Subscriber cmd_vel_sub_;
+  ros::Subscriber trajectory_sub_;
 
   // ROS Service Server
   ros::ServiceServer dynamixel_command_server_;
-  ros::ServiceServer joint_command_server_;
 
   // ROS Service Client
 
   // Dynamixel Workbench Parameters
   DynamixelWorkbench *dxl_wb_;
   std::map<std::string, uint32_t> dynamixel_;
-  std::vector<std::pair<std::string, uint32_t>> dynamixel_info_;
+  std::vector<std::pair<std::string, ItemValue>> dynamixel_info_;
+  dynamixel_workbench_msgs::DynamixelStateList dynamixel_state_list_;
+  sensor_msgs::JointState joint_state_msg_;
 
-  bool joint_state_topic_;
-  bool cmd_vel_topic_;
+  bool is_joint_state_topic_;
+  bool is_cmd_vel_topic_;
+
+  double wheel_separation_;
+  double wheel_radius_;
 
  public:
   DynamixelController();
@@ -89,27 +108,20 @@ class DynamixelController
   bool getDynamixelsInfo(const std::string yaml_file);
   bool loadDynamixels(void);
   bool initDynamixels(void);
-  bool initHandlers(void);
-
-//  void initMsg();
+  bool initSDKHandlers(void);
 
   void initPublisher(void);
   void initSubscriber(void);
-//  void dynamixelStatePublish();
-//  void jointStatePublish();
 
   void initServer();
 
   void readCallback(const ros::TimerEvent&);
-  void writeCallback(const ros::TimerEvent&);
   void publishCallback(const ros::TimerEvent&);
 
   void commandVelocityCallback(const geometry_msgs::Twist::ConstPtr &msg);
+  void trajectoryMsgCallback(const trajectory_msgs::JointTrajectory::ConstPtr &msg);
   bool dynamixelCommandMsgCallback(dynamixel_workbench_msgs::DynamixelCommand::Request &req,
                                    dynamixel_workbench_msgs::DynamixelCommand::Response &res);
-  bool jointCommandMsgCallback(dynamixel_workbench_msgs::JointCommand::Request &req,
-                               dynamixel_workbench_msgs::JointCommand::Response &res);
-  void goalJointPositionCallback(const sensor_msgs::JointState::ConstPtr &msg);
 };
 
 #endif //DYNAMIXEL_WORKBENCH_CONTROLLERS_H
