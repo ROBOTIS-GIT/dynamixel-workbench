@@ -14,10 +14,13 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs
   geometry_msgs
+  trajectory_msgs
   dynamixel_workbench_msgs
   dynamixel_workbench_toolbox
   cmake_modules
 )
+
+find_package(Eigen3 REQUIRED)
 
 # Resolve system dependency on yaml-cpp, which apparently does not
 # provide a CMake find_package() module.
@@ -54,7 +57,9 @@ endif(NOT ${YAML_CPP_VERSION} VERSION_LESS "0.5")
 ################################################################################
 catkin_package(
  INCLUDE_DIRS include
- CATKIN_DEPENDS roscpp sensor_msgs geometry_msgs dynamixel_workbench_msgs dynamixel_workbench_toolbox cmake_modules
+ LIBRARIES trajectory_generator
+ CATKIN_DEPENDS roscpp sensor_msgs geometry_msgs dynamixel_workbench_msgs trajectory_msgs dynamixel_workbench_toolbox cmake_modules
+ DEPENDS EIGEN3
 )
 
 ################################################################################
@@ -64,7 +69,15 @@ include_directories(
   include
   ${catkin_INCLUDE_DIRS}
   ${YAML_CPP_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIRS}
 )
+
+add_library(trajectory_generator
+  src/trajectory_generator.cpp
+)
+
+add_dependencies(trajectory_generator ${catkin_EXPORTED_TARGETS})
+target_link_libraries(trajectory_generator ${catkin_LIBRARIES} ${Eigen3_LIBRARIES})
 
 add_executable(dynamixel_workbench_controllers src/dynamixel_workbench_controllers.cpp)
 add_dependencies(dynamixel_workbench_controllers ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
@@ -82,7 +95,7 @@ install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 )
 
-install(DIRECTORY launch
+install(DIRECTORY launch config
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
