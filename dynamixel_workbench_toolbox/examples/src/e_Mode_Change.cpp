@@ -22,16 +22,18 @@ int main(int argc, char *argv[])
 {
   const char* port_name = "/dev/ttyUSB0";
   int baud_rate = 57600;
+  int dxl_id = 1;
 
-  if (argc < 2)
+  if (argc < 3)
   {
-    printf("Please set '-port_name' and  '-baud_rate' arguments for connected Dynamixels\n");
+    printf("Please set '-port_name', '-baud_rate', '-dynamixel id' arguments for connected Dynamixels\n");
     return 0;
   }
   else
   {
     port_name = argv[1];
     baud_rate = atoi(argv[2]);
+    dxl_id = atoi(argv[3]);
   }
 
   DynamixelWorkbench dxl_wb;
@@ -39,9 +41,10 @@ int main(int argc, char *argv[])
   const char *log;
   bool result = false;
 
-  uint8_t scanned_id[16];
-  uint8_t dxl_cnt = 0;
-  uint8_t range = 100;
+  uint8_t id = dxl_id;
+  uint16_t model_number = 0;
+
+  int count = 0;
 
   result = dxl_wb.init(port_name, baud_rate, &log);
   if (result == false)
@@ -54,18 +57,60 @@ int main(int argc, char *argv[])
   else
     printf("Succeed to init(%d)\n", baud_rate);  
 
-  result = dxl_wb.scan(scanned_id, &dxl_cnt, range, &log);
+  result = dxl_wb.ping(dxl_id, &model_number, &log);
   if (result == false)
   {
     printf("%s\n", log);
-    printf("Failed to scan\n");
+    printf("Failed to ping\n");
   }
   else
   {
-    printf("Find %d Dynamixels\n", dxl_cnt);
+    printf("Succeed to ping\n");
+    printf("id : %d, model_number : %d\n", dxl_id, model_number);
+  }
 
-    for (int cnt = 0; cnt < dxl_cnt; cnt++)
-      printf("id : %d, model name : %s\n", scanned_id[cnt], dxl_wb.getModelName(scanned_id[cnt]));
+  result = dxl_wb.jointMode(dxl_id, 0, 0, &log);
+  if (result == false)
+  {
+    printf("%s\n", log);
+    printf("Failed to change joint mode\n");
+  }
+  else
+  {
+    printf("Succeed to change joint mode\n");
+
+    int count = 0;
+
+    for (count = 1; count <= 3; count++)
+    {
+      dxl_wb.goalPosition(dxl_id, 0);
+      sleep(2000);
+
+      dxl_wb.goalPosition(dxl_id, 1023);
+      sleep(2000);
+    }
+  }
+
+  result = dxl_wb.wheelMode(dxl_id, 0, &log);
+  if (result == false)
+  {
+    printf("%s\n", log);
+    printf("Failed to change wheel mode\n");
+  }
+  else
+  {
+    printf("Succeed to change wheel mode\n");
+
+    int count = 0;
+
+    for (count = 1; count <= 3; count++)
+    {
+      dxl_wb.goalVelocity(dxl_id, -150);
+      sleep(2000);
+
+      dxl_wb.goalVelocity(dxl_id, 150);
+      sleep(2000);
+    }
   }
 
   return 0;

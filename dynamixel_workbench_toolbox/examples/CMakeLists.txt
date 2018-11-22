@@ -32,6 +32,9 @@ target_link_libraries(id_change LINK_PUBLIC dynamixel_workbench)
 add_executable(bps_change src/d_BPS_Change.cpp)
 target_link_libraries(bps_change LINK_PUBLIC dynamixel_workbench)
 
+add_executable(mode_change src/e_Mode_Change.cpp)
+target_link_libraries(mode_change LINK_PUBLIC dynamixel_workbench)
+
 add_executable(monitor src/s_Monitor.cpp)
 target_link_libraries(monitor LINK_PUBLIC dynamixel_workbench)
 

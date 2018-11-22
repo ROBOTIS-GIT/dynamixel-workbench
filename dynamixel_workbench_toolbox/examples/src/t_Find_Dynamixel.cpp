@@ -18,12 +18,22 @@
 
 #include <DynamixelWorkbench.h>
 
-// #define DEVICE_NAME "/dev/tty.usbserial-FT1CTA16"
-#define DEVICE_NAME "/dev/ttyUSB0"
-#define BAUDRATE_NUM 3
+#define BAUDRATE_NUM 8
 
 int main(int argc, char *argv[]) 
 {
+  const char* port_name = "/dev/ttyUSB0";
+
+  if (argc < 1)
+  {
+    printf("Please set '-port_name' arguments for connected Dynamixels\n");
+    return 0;
+  }
+  else
+  {
+    port_name = argv[1];
+  }
+
   DynamixelWorkbench dxl_wb;
 
   const char *log;
@@ -32,14 +42,14 @@ int main(int argc, char *argv[])
   uint8_t scanned_id[100];
   uint8_t dxl_cnt = 0;
 
-  uint32_t baudrate[BAUDRATE_NUM] = {9600, 57600, 1000000};
+  uint32_t baudrate[BAUDRATE_NUM] = {9600, 57600, 115200, 1000000, 2000000, 3000000, 4000000, 4500000};
   uint8_t range = 253;
 
   uint8_t index = 0;
 
   while (index < BAUDRATE_NUM)
   {
-    result = dxl_wb.init(DEVICE_NAME, baudrate[index], &log);
+    result = dxl_wb.init(port_name, baudrate[index], &log);
     if (result == false)
     {
       printf("%s\n", log);

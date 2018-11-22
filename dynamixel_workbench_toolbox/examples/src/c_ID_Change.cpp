@@ -18,49 +18,58 @@
 
 #include <DynamixelWorkbench.h>
 
-#define DEVICE_NAME "/dev/tty.usbserial-FT1CTA16"
-// #define DEVICE_NAME "/dev/ttyUSB0"
-#define BAUDRATE  57600
-
-#define NEW_ID  2
-
 int main(int argc, char *argv[]) 
 {
+  const char* port_name = "/dev/ttyUSB0";
+  int baud_rate = 57600;
+  int dxl_id = 1;
+  int new_dxl_id = 2;
+
+  if (argc < 4)
+  {
+    printf("Please set '-port_name', '-baud_rate', '-dynamixel id', '-new_dynamixel_id' arguments for connected Dynamixels\n");
+    return 0;
+  }
+  else
+  {
+    port_name = argv[1];
+    baud_rate = atoi(argv[2]);
+    dxl_id = atoi(argv[3]);
+    new_dxl_id = atoi(argv[4]);
+  }
+
   DynamixelWorkbench dxl_wb;
 
   const char *log;
   bool result = false;
 
-  uint8_t scanned_id[16];
-  uint8_t dxl_cnt = 0;
-  uint8_t range = 100;
-
-  uint8_t get_new_id = 0;
-
-  result = dxl_wb.init(DEVICE_NAME, BAUDRATE, &log);
+  result = dxl_wb.init(port_name, baud_rate, &log);
   if (result == false)
   {
     printf("%s\n", log);
     printf("Failed to init\n");
+
+    return 0;
   }
   else
-    printf("Succeed to init(%d)\n", BAUDRATE);  
+    printf("Succeed to init(%d)\n", baud_rate);  
 
-  result = dxl_wb.scan(scanned_id, &dxl_cnt, range, &log);
+  uint16_t model_number = 0;
+  result = dxl_wb.ping(dxl_id, &model_number, &log);
   if (result == false)
   {
     printf("%s\n", log);
-    printf("Failed to scan\n");
+    printf("Failed to ping\n");
+
+    return 0;
   }
   else
   {
-    printf("Find %d Dynamixels\n", dxl_cnt);
-
-    for (int cnt = 0; cnt < dxl_cnt; cnt++)
-      printf("id : %d, model name : %s\n", scanned_id[cnt], dxl_wb.getModelName(scanned_id[cnt]));
+    printf("Succeed to ping\n");
+    printf("id : %d, model_number : %d\n", dxl_id, model_number);
   }
 
-  result = dxl_wb.changeID(scanned_id[0], NEW_ID, &log);
+  result = dxl_wb.changeID(dxl_id, new_dxl_id, &log);
   if (result == false)
   {
     printf("%s\n", log);
@@ -70,6 +79,10 @@ int main(int argc, char *argv[])
   {
     printf("%s\n", log);
   }
+
+  uint8_t scanned_id[16];
+  uint8_t dxl_cnt = 0;
+  uint8_t range = 100;
 
   result = dxl_wb.scan(scanned_id, &dxl_cnt, range, &log);
   if (result == false)

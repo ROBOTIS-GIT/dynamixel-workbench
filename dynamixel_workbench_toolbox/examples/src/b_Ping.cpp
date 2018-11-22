@@ -18,32 +18,44 @@
 
 #include <DynamixelWorkbench.h>
 
-// #define DEVICE_NAME "/dev/tty.usbserial-FT1CTA16"
-#define DEVICE_NAME "/dev/ttyUSB0"
-#define BAUDRATE  57600
-
-#define DXL_ID  1
-
 int main(int argc, char *argv[]) 
 {
+  const char* port_name = "/dev/ttyUSB0";
+  int baud_rate = 57600;
+  int dxl_id = 1;
+
+  if (argc < 3)
+  {
+    printf("Please set '-port_name', '-baud_rate', '-dynamixel id' arguments for connected Dynamixels\n");
+    return 0;
+  }
+  else
+  {
+    port_name = argv[1];
+    baud_rate = atoi(argv[2]);
+    dxl_id = atoi(argv[3]);
+  }
+
   DynamixelWorkbench dxl_wb;
 
   const char *log;
   bool result = false;
 
-  uint8_t id = DXL_ID;
+  uint8_t id = dxl_id;
   uint16_t model_number = 0;
 
-  result = dxl_wb.init(DEVICE_NAME, BAUDRATE, &log);
+  result = dxl_wb.init(port_name, baud_rate, &log);
   if (result == false)
   {
     printf("%s\n", log);
     printf("Failed to init\n");
+
+    return 0;
   }
   else
-    printf("Succeed to init(%d)\n", BAUDRATE);  
+    printf("Succeed to init(%d)\n", baud_rate);  
 
-  result = dxl_wb.ping(DXL_ID, &model_number, &log);
+  result = dxl_wb.ping(dxl_id, &model_number, &log);
   if (result == false)
   {
     printf("%s\n", log);
@@ -52,7 +64,7 @@ int main(int argc, char *argv[])
   else
   {
     printf("Succeed to ping\n");
-    printf("id : %d, model_number : %d\n", DXL_ID, model_number);
+    printf("id : %d, model_number : %d\n", dxl_id, model_number);
   }
 
   return 0;
