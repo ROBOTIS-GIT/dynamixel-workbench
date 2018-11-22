@@ -32,7 +32,7 @@
 #include <dynamixel_workbench_msgs/DynamixelStateList.h>
 #include <dynamixel_workbench_msgs/DynamixelCommand.h>
 
-#include "trajectory_generator.h"
+#include <dynamixel_workbench_controllers/trajectory_generator.h>
 
 // SYNC_WRITE_HANDLER
 #define SYNC_WRITE_HANDLER_FOR_GOAL_POSITION 0
@@ -100,6 +100,15 @@ class DynamixelController
   double wheel_separation_;
   double wheel_radius_;
 
+  JointTrajectory *jnt_tra_;
+  std::vector<WayPoint> way_point_;
+
+  int32_t read_freq_;
+  int32_t write_freq_;
+  int32_t pub_freq_;
+
+  bool is_moving_;
+
  public:
   DynamixelController();
   ~DynamixelController();
@@ -109,6 +118,11 @@ class DynamixelController
   bool loadDynamixels(void);
   bool initDynamixels(void);
   bool initSDKHandlers(void);
+  bool getPresentPosition(void);
+
+  int32_t getReadFrequency(){return read_freq_;}
+  int32_t getWriteFrequency(){return write_freq_;}
+  int32_t getPublishFrequency(){return pub_freq_;}
 
   void initPublisher(void);
   void initSubscriber(void);
@@ -116,6 +130,7 @@ class DynamixelController
   void initServer();
 
   void readCallback(const ros::TimerEvent&);
+  void writeCallback(const ros::TimerEvent&);
   void publishCallback(const ros::TimerEvent&);
 
   void commandVelocityCallback(const geometry_msgs::Twist::ConstPtr &msg);

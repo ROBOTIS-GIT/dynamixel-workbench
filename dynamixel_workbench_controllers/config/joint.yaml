@@ -3,9 +3,11 @@
 # You are supposed to set at least Dynamixel ID
 pan:
   ID: 1
+  Return_Delay_Time: 0
   LED: 0
-  Operating_Mode: 1
+  Operating_Mode: 3
 tilt:
   ID: 2
+  Return_Delay_Time: 0
   LED: 0
-  Operating_Mode: 1
+  Operating_Mode: 3

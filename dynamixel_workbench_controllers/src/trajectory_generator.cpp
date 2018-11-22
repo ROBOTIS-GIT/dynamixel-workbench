@@ -64,8 +64,7 @@ Eigen::VectorXd MinimumJerk::getCoefficient()
 
 //-------------------- Joint trajectory --------------------//
 
-JointTrajectory::JointTrajectory()
-{}
+JointTrajectory::JointTrajectory(){}
 
 JointTrajectory::~JointTrajectory() {}
 

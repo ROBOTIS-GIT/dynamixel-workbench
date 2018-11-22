@@ -12,7 +12,9 @@ add_compile_options(-std=c++11)
 ################################################################################
 find_package(catkin REQUIRED COMPONENTS
   roscpp
-  dynamixel_workbench_msgs
+  geometry_msgs
+  sensor_msgs
+  trajectory_msgs
 )
 
 ################################################################################
@@ -31,7 +33,7 @@ find_package(catkin REQUIRED COMPONENTS
 # Declare catkin specific configuration to be passed to dependent projects
 ################################################################################
 catkin_package(
-  CATKIN_DEPENDS roscpp dynamixel_workbench_msgs
+  CATKIN_DEPENDS roscpp sensor_msgs trajectory_msgs geometry_msgs
 )
 
 ################################################################################
@@ -41,9 +43,9 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(joint_operator src/joint_operator.cpp)
-add_dependencies(joint_operator ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(joint_operator ${catkin_LIBRARIES})
+#add_executable(joint_operator src/joint_operator.cpp)
+#add_dependencies(joint_operator ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+#target_link_libraries(joint_operator ${catkin_LIBRARIES})
 
 add_executable(wheel_operator src/wheel_operator.cpp)
 add_dependencies(wheel_operator ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
@@ -52,7 +54,7 @@ target_link_libraries(wheel_operator ${catkin_LIBRARIES})
 #################################################################################
 ## Install
 #################################################################################
-install(TARGETS joint_operator wheel_operator
+install(TARGETS wheel_operator
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

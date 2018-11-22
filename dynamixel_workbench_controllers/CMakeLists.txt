@@ -72,22 +72,18 @@ include_directories(
   ${EIGEN3_INCLUDE_DIRS}
 )
 
-add_library(trajectory_generator
-  src/trajectory_generator.cpp
-)
-
-add_dependencies(trajectory_generator ${catkin_EXPORTED_TARGETS})
-target_link_libraries(trajectory_generator ${catkin_LIBRARIES} ${Eigen3_LIBRARIES})
-
-add_executable(dynamixel_workbench_controllers src/dynamixel_workbench_controllers.cpp)
+add_executable(dynamixel_workbench_controllers src/dynamixel_workbench_controllers.cpp src/trajectory_generator.cpp)
 add_dependencies(dynamixel_workbench_controllers ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(dynamixel_workbench_controllers ${catkin_LIBRARIES} ${YAML_CPP_LIBRARIES})
+target_link_libraries(dynamixel_workbench_controllers ${catkin_LIBRARIES} ${YAML_CPP_LIBRARIES} ${Eigen3_LIBRARIES})
+
+add_executable(find_dynamixel src/find_dynamixel.cpp)
+add_dependencies(find_dynamixel ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(find_dynamixel ${catkin_LIBRARIES})
 
 #################################################################################
 ## Install
 #################################################################################
-#install(TARGETS position_control velocity_control multi_port torque_control
-install(TARGETS dynamixel_workbench_controllers
+install(TARGETS dynamixel_workbench_controllers find_dynamixel
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
