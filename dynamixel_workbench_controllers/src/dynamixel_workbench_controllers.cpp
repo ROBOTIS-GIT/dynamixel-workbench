@@ -254,7 +254,7 @@ void DynamixelController::initPublisher()
 
 void DynamixelController::initSubscriber()
 {
-  trajectory_sub_ = priv_node_handle_.subscribe("joint_command", 100, &DynamixelController::trajectoryMsgCallback, this);
+  trajectory_sub_ = priv_node_handle_.subscribe("joint_trajectory", 100, &DynamixelController::trajectoryMsgCallback, this);
   if (is_cmd_vel_topic_) cmd_vel_sub_ = priv_node_handle_.subscribe("cmd_vel", 10, &DynamixelController::commandVelocityCallback, this);
 }
 
@@ -446,6 +446,7 @@ void DynamixelController::writeCallback(const ros::TimerEvent&)
 
   if (is_moving_)
   {
+    ROS_ERROR("write");
     static double priv_sec = ros::Time::now().toSec();
 
     uint8_t id_array[dynamixel_.size()];
@@ -475,57 +476,72 @@ void DynamixelController::writeCallback(const ros::TimerEvent&)
 void DynamixelController::trajectoryMsgCallback(const trajectory_msgs::JointTrajectory::ConstPtr &msg)
 {
   uint8_t id_cnt = 0;
-  const double path_time = 0.100f;
+  std::vector<WayPoint> goal;
+  static double priv_path_time = 0.0f;
+  double path_time = 0.0f;
 
   for (auto const& joint:msg->joint_names)
   {
-    if (dynamixel_.find(joint) != dynamixel_.end())
+    ROS_INFO("%s joint is ready to move", joint.c_str());
+    if (dynamixel_.find(joint) == dynamixel_.end())
     {
       continue;
     }
     else
     {
-      ROS_INFO("%s joint is ready to move", joint.c_str());
+      id_cnt++;
     }
   }
 
   if (id_cnt != 0)
   {
-    std::vector<WayPoint> goal;
     uint8_t cnt = 0;
-
     while(cnt < msg->points.size())
     {
-      goal.clear();
-      for (uint8_t num = 0; num < msg->points[cnt].positions.size(); num++)
+      for (std::vector<int>::size_type id_num = 0; id_num < msg->points[cnt].positions.size(); id_num++)
       {
         WayPoint wp;
-        wp.position = msg->points[cnt].positions[num];
-        wp.velocity = msg->points[cnt].velocities[num];
-        wp.effort = msg->points[cnt].accelerations[num];
+        wp.position = msg->points[cnt].positions.at(id_num);
+
+        if (msg->points[cnt].velocities.size() != 0)  wp.velocity = msg->points[cnt].velocities.at(id_num);
+        else wp.velocity = 0.0f;
+
+        if (msg->points[cnt].effort.size() != 0)  wp.effort = msg->points[cnt].effort.at(id_num);
+        else wp.effort = 0.0f;
+
+        ROS_INFO("id_num : %d, position : %lf, velocity : %lf, current : %lf", (int)id_num, wp.position, wp.velocity, wp.effort);
 
         goal.push_back(wp);
+
+        path_time = msg->points[cnt].time_from_start.toSec();
+
+        ROS_INFO("path_time : %f", path_time);
       }
 
+      ROS_WARN("Ready to make joint trajectory");
       jnt_tra_->setJointNum(id_cnt);
 
-      jnt_tra_->init(path_time,
+      jnt_tra_->init(path_time-priv_path_time,
                      1/write_freq_,
                      way_point_,
                      goal);
 
       is_moving_ = true;
 
+      ros::WallDuration sleep_time(path_time-priv_path_time);
+      sleep_time.sleep();
+
       if (is_moving_ == false)
       {
         cnt++;
+        priv_path_time = path_time;
         way_point_ = goal;
       }
     }
   }
   else
   {
-    ROS_WARN("Please check joint's name");
+    ROS_WARN("Please check joint_name");
   }
 }
 
@@ -577,22 +593,46 @@ int main(int argc, char **argv)
   std::string yaml_file = node_handle.param<std::string>("dynamixel_info", "");
 
   result = dynamixel_controller.initWorkbench(port_name, baud_rate);
-  if (result == false)  ROS_ERROR("Please check USB port name");
+  if (result == false)
+  {
+    ROS_ERROR("Please check USB port name");
+    return 0;
+  }
 
   result = dynamixel_controller.getDynamixelsInfo(yaml_file);
-  if (result == false)  ROS_ERROR("Please check YAML file");
+  if (result == false)
+  {
+    ROS_ERROR("Please check YAML file");
+    return 0;
+  }
 
   result = dynamixel_controller.loadDynamixels();
-  if (result == false) ROS_ERROR("Please check Dynamixel ID or BaudRate");
+  if (result == false)
+  {
+    ROS_ERROR("Please check Dynamixel ID or BaudRate");
+    return 0;
+  }
 
   result = dynamixel_controller.initDynamixels();
-  if (result == false) ROS_ERROR("Please check control table (http://emanual.robotis.com/#control-table)");
+  if (result == false)
+  {
+    ROS_ERROR("Please check control table (http://emanual.robotis.com/#control-table)");
+    return 0;
+  }
 
   result = dynamixel_controller.initSDKHandlers();
-  if (result == false) ROS_ERROR("Failed to set Dynamixel SDK Handler");
+  if (result == false)
+  {
+    ROS_ERROR("Failed to set Dynamixel SDK Handler");
+    return 0;
+  }
 
   result = dynamixel_controller.getPresentPosition();
-  if (result == false) ROS_ERROR("Failed to get Present Position");
+  if (result == false)
+  {
+    ROS_ERROR("Failed to get Present Position");
+    return 0;
+  }
 
   dynamixel_controller.initPublisher();
   dynamixel_controller.initSubscriber();
