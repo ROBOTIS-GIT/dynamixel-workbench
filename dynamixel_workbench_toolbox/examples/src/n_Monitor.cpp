@@ -228,7 +228,7 @@ bool monitoring()
           if (wb_result == false)
           {
             printf("%s\n", log);
-            printf("Failed to add sync write handler\n");
+            printf("Failed to add sync read handler\n");
             return 0;
           }
           else

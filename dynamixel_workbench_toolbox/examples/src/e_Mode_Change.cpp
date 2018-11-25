@@ -23,10 +23,11 @@ int main(int argc, char *argv[])
   const char* port_name = "/dev/ttyUSB0";
   int baud_rate = 57600;
   int dxl_id = 1;
+  int mode = 0;
 
-  if (argc < 3)
+  if (argc < 4)
   {
-    printf("Please set '-port_name', '-baud_rate', '-dynamixel id' arguments for connected Dynamixels\n");
+    printf("Please set '-port_name', '-baud_rate', '-dynamixel id' '-select control mode' arguments for connected Dynamixels\n");
     return 0;
   }
   else
@@ -34,7 +35,16 @@ int main(int argc, char *argv[])
     port_name = argv[1];
     baud_rate = atoi(argv[2]);
     dxl_id = atoi(argv[3]);
+    mode = atoi(argv[4]);
   }
+
+  printf("Please insert the right number from 0 to 6 to set constrol mode \n");
+  printf("0 - current control mode\n");
+  printf("1 - velocity control mode\n");
+  printf("2 - position control mode\n");
+  printf("3 - extended position control mode\n");
+  printf("4 - current based position control mode\n");
+  printf("5 - pwm control mode\n");
 
   DynamixelWorkbench dxl_wb;
 
@@ -69,48 +79,98 @@ int main(int argc, char *argv[])
     printf("id : %d, model_number : %d\n", dxl_id, model_number);
   }
 
-  result = dxl_wb.jointMode(dxl_id, 0, 0, &log);
-  if (result == false)
+  switch (mode)
   {
-    printf("%s\n", log);
-    printf("Failed to change joint mode\n");
-  }
-  else
-  {
-    printf("Succeed to change joint mode\n");
+    case 0:
+      dxl_wb.setCurrentControlMode(dxl_id, &log);
+      if (result == false)
+      {
+        printf("%s\n", log);
+        printf("Failed to set mode\n");
+      }
+      else
+      {
+        printf("Succeed to set mode\n");
+      }
+     break;
 
-    int count = 0;
+    case 1:
+      dxl_wb.setVelocityControlMode(dxl_id, &log);
+      if (result == false)
+      {
+        printf("%s\n", log);
+        printf("Failed to set mode\n");
+      }
+      else
+      {
+        printf("Succeed to set mode\n");
+      }
+     break;
 
-    for (count = 1; count <= 3; count++)
-    {
-      dxl_wb.goalPosition(dxl_id, 0);
-      sleep(2000);
+    case 2:
+      dxl_wb.setPositionControlMode(dxl_id, &log);
+      if (result == false)
+      {
+        printf("%s\n", log);
+        printf("Failed to set mode\n");
+      }
+      else
+      {
+        printf("Succeed to set mode\n");
+      }
+     break;
 
-      dxl_wb.goalPosition(dxl_id, 1023);
-      sleep(2000);
-    }
-  }
+    case 3:
+      dxl_wb.setExtendedPositionControlMode(dxl_id, &log);
+      if (result == false)
+      {
+        printf("%s\n", log);
+        printf("Failed to set mode\n");
+      }
+      else
+      {
+        printf("Succeed to set mode\n");
+      }
+     break;
 
-  result = dxl_wb.wheelMode(dxl_id, 0, &log);
-  if (result == false)
-  {
-    printf("%s\n", log);
-    printf("Failed to change wheel mode\n");
-  }
-  else
-  {
-    printf("Succeed to change wheel mode\n");
+    case 4:
+      dxl_wb.setCurrentBasedPositionControlMode(dxl_id, &log);
+      if (result == false)
+      {
+        printf("%s\n", log);
+        printf("Failed to set mode\n");
+      }
+      else
+      {
+        printf("Succeed to set mode\n");
+      }
+     break;
 
-    int count = 0;
+    case 5:
+      dxl_wb.setPWMControlMode(dxl_id, &log);
+      if (result == false)
+      {
+        printf("%s\n", log);
+        printf("Failed to set mode\n");
+      }
+      else
+      {
+        printf("Succeed to set mode\n");
+      }
+     break;
 
-    for (count = 1; count <= 3; count++)
-    {
-      dxl_wb.goalVelocity(dxl_id, -150);
-      sleep(2000);
-
-      dxl_wb.goalVelocity(dxl_id, 150);
-      sleep(2000);
-    }
+    default:
+      dxl_wb.setPositionControlMode(dxl_id, &log);
+      if (result == false)
+      {
+        printf("%s\n", log);
+        printf("Failed to set mode\n");
+      }
+      else
+      {
+        printf("Succeed to set mode\n");
+      }
+     break;
   }
 
   return 0;
