@@ -181,7 +181,7 @@ class DynamixelDriver
   bool bulkRead(const char **log = NULL);
 
   bool getBulkReadData(int32_t *data, const char **log = NULL);
-  bool getBulkReadData(uint8_t *id, uint8_t id_num, uint16_t *address, uint16_t *length, const char **log = NULL);
+  bool getBulkReadData(uint8_t *id, uint8_t id_num, uint16_t *address, uint16_t *length, int32_t *data, const char **log = NULL);
 
  private:
   void initTools(void);
