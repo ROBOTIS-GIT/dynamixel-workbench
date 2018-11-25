@@ -855,7 +855,7 @@ bool DynamixelWorkbench::wheelMode(uint8_t id, int32_t acceleration, const char 
   return result;
 }
 
-bool DynamixelWorkbench::CurrentBasedPositionMode(uint8_t id, int32_t current, const char **log)
+bool DynamixelWorkbench::currentBasedPositionMode(uint8_t id, int32_t current, const char **log)
 {
   bool result = false;
 

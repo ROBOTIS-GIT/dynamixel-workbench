@@ -62,7 +62,7 @@ class DynamixelWorkbench : public DynamixelDriver
 
   bool jointMode(uint8_t id, int32_t velocity = 0, int32_t acceleration = 0, const char **log = NULL);
   bool wheelMode(uint8_t id, int32_t acceleration = 0, const char **log = NULL);
-  bool CurrentBasedPositionMode(uint8_t id, int32_t current = 0, const char **log = NULL);
+  bool currentBasedPositionMode(uint8_t id, int32_t current = 0, const char **log = NULL);
 
   bool goalPosition(uint8_t id, int32_t value, const char **log = NULL);
   bool goalPosition(uint8_t id, float radian, const char **log = NULL);
