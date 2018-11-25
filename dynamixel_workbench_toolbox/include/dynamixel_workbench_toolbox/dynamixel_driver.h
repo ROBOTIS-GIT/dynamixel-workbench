@@ -31,7 +31,7 @@
 
 #define MAX_DXL_SERIES_NUM  5
 #define MAX_HANDLER_NUM     5
-#define MAX_BULK_PARAMETER 16
+#define MAX_BULK_PARAMETER  10
 
 typedef struct 
 {
@@ -167,15 +167,21 @@ class DynamixelDriver
   bool getSyncReadData(uint8_t index, uint8_t *id, uint8_t id_num, uint16_t address, uint16_t length, int32_t *data, const char **log = NULL);
 
   bool initBulkWrite(const char **log = NULL);
+
   bool addBulkWriteParam(uint8_t id, uint16_t address, uint16_t length, int32_t data, const char **log = NULL);
   bool addBulkWriteParam(uint8_t id, const char *item_name, int32_t data, const char **log = NULL);
+
   bool bulkWrite(const char **log = NULL);
 
   bool initBulkRead(const char **log = NULL);
+
   bool addBulkReadParam(uint8_t id, uint16_t address, uint16_t length, const char **log = NULL);
   bool addBulkReadParam(uint8_t id, const char *item_name, const char **log = NULL);
+
   bool bulkRead(const char **log = NULL);
+
   bool getBulkReadData(int32_t *data, const char **log = NULL);
+  bool getBulkReadData(uint8_t *id, uint8_t id_num, uint16_t *address, uint16_t *length, const char **log = NULL);
 
  private:
   void initTools(void);

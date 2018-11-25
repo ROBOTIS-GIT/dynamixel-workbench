@@ -1417,7 +1417,7 @@ bool DynamixelDriver::addBulkReadParam(uint8_t id, uint16_t address, uint16_t le
   }
   else
   {
-    if (log != NULL) *log = "[DynamixelDriver] Too many bulk parameter are added (default buffer size is 16)";
+    if (log != NULL) *log = "[DynamixelDriver] Too many bulk parameter are added (default buffer size is 10)";
     return false;
   }
 
@@ -1456,7 +1456,7 @@ bool DynamixelDriver::addBulkReadParam(uint8_t id, const char *item_name, const 
   }
   else
   {
-    if (log != NULL) *log = "[DynamixelDriver] Too many bulk parameter are added (default buffer size is 16)";
+    if (log != NULL) *log = "[DynamixelDriver] Too many bulk parameter are added (default buffer size is 10)";
     return false;
   }
 
@@ -1498,6 +1498,34 @@ bool DynamixelDriver::getBulkReadData(int32_t *data, const char **log)
       data[i] = groupBulkRead_->getData(bulk_param_[i].id, 
                                         bulk_param_[i].address, 
                                         bulk_param_[i].data_length);
+    }
+  }
+
+  bulk_parameter_cnt_ = 0;
+
+  if (log != NULL) *log = "[DynamixelDriver] Succeeded to get bulk read data!";
+  return true;
+}
+
+bool DynamixelDriver::getBulkReadData(uint8_t *id, uint8_t id_num, uint16_t *address, uint16_t *length, int32_t *data, const char **log)
+{
+  ErrorFromSDK sdk_error = {0, false, false, 0};
+
+  for (int i = 0; i < id_num; i++)
+  {
+    sdk_error.dxl_getdata_result = groupBulkRead_->isAvailable(id[i], 
+                                                              address[i], 
+                                                              length[i]);
+    if (sdk_error.dxl_getdata_result != true)
+    {
+      if (log != NULL) *log = "groupBulkRead getdata failed";
+      return false;
+    }
+    else
+    {
+      data[i] = groupBulkRead_->getData(id[i], 
+                                        address[i], 
+                                        length[i]);
     }
   }
 
