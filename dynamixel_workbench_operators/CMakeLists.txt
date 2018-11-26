@@ -12,6 +12,7 @@ add_compile_options(-std=c++11)
 ################################################################################
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  std_srvs
   geometry_msgs
   sensor_msgs
   trajectory_msgs
@@ -52,14 +53,17 @@ endif(NOT ${YAML_CPP_VERSION} VERSION_LESS "0.5")
 # Declare catkin specific configuration to be passed to dependent projects
 ################################################################################
 catkin_package(
-  CATKIN_DEPENDS roscpp sensor_msgs trajectory_msgs geometry_msgs cmake_modules
+  INCLUDE_DIRS include
+  CATKIN_DEPENDS roscpp std_srvs sensor_msgs trajectory_msgs geometry_msgs cmake_modules
 )
 
 ################################################################################
 # Build
 ################################################################################
 include_directories(
+  include
   ${catkin_INCLUDE_DIRS}
+  ${YAML_CPP_INCLUDE_DIRS}
 )
 
 add_executable(joint_operator src/joint_operator.cpp)
@@ -75,6 +79,10 @@ target_link_libraries(wheel_operator ${catkin_LIBRARIES})
 #################################################################################
 install(TARGETS joint_operator wheel_operator
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 )
 
 install(DIRECTORY launch config

@@ -43,11 +43,11 @@ void MinimumJerk::calcCoefficient(WayPoint start,
 
   coefficient_(0) = start.position;
   coefficient_(1) = start.velocity;
-  coefficient_(2) = 0.5 * start.effort;
+  coefficient_(2) = 0.5 * start.acceleration;
 
-  b << (goal.position - start.position - (start.velocity * move_time + 0.5 * start.effort * pow(move_time, 2))),
-      (goal.velocity - start.velocity - (start.effort * move_time)),
-      (goal.effort - start.effort);
+  b << (goal.position - start.position - (start.velocity * move_time + 0.5 * start.acceleration * pow(move_time, 2))),
+      (goal.velocity - start.velocity - (start.acceleration * move_time)),
+      (goal.acceleration - start.acceleration);
 
   Eigen::ColPivHouseholderQR<Eigen::Matrix3d> dec(A);
   x = dec.solve(b);
@@ -69,14 +69,16 @@ JointTrajectory::JointTrajectory(){}
 JointTrajectory::~JointTrajectory() {}
 
 void JointTrajectory::init(double move_time,
-                           double control_time, std::vector<WayPoint> start,
+                           double control_time,
+                           std::vector<WayPoint> start,
                            std::vector<WayPoint> goal)
 {
+  static double priv_move_time = 0.0;
   for (uint8_t index = 0; index < start.size(); index++)
   {
     trajectory_generator_.calcCoefficient(start.at(index),
                                     goal.at(index),
-                                    move_time,
+                                    (move_time - priv_move_time),
                                     control_time);
 
     coefficient_.col(index) = trajectory_generator_.getCoefficient();
@@ -97,7 +99,7 @@ std::vector<WayPoint> JointTrajectory::getJointWayPoint(double tick)
     WayPoint single_joint_way_point;
     single_joint_way_point.position = 0.0;
     single_joint_way_point.velocity = 0.0;
-    single_joint_way_point.effort = 0.0;
+    single_joint_way_point.acceleration = 0.0;
 
     single_joint_way_point.position = coefficient_(0, index) +
              coefficient_(1, index) * pow(tick, 1) +
@@ -112,7 +114,7 @@ std::vector<WayPoint> JointTrajectory::getJointWayPoint(double tick)
              4 * coefficient_(4, index) * pow(tick, 3) +
              5 * coefficient_(5, index) * pow(tick, 4);
 
-    single_joint_way_point.effort = 2 * coefficient_(2, index) +
+    single_joint_way_point.acceleration = 2 * coefficient_(2, index) +
              6 * coefficient_(3, index) * pow(tick, 1) +
              12 * coefficient_(4, index) * pow(tick, 2) +
              20 * coefficient_(5, index) * pow(tick, 3);

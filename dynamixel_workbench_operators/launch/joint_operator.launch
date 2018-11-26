@@ -3,6 +3,5 @@
 
   <node name="joint_operator" pkg="dynamixel_workbench_operators" type="joint_operator"
         required="true" output="screen" ns="dynamixel_workbench">
-    <param name="loop" value="false"/>
   </node>
 </launch>

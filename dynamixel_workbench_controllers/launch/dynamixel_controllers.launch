@@ -7,9 +7,9 @@
   <node name="dynamixel_workbench" pkg="dynamixel_workbench_controllers" type="dynamixel_workbench_controllers"
         required="true" output="screen" args="$(arg usb_port) $(arg dxl_baud_rate)">
     <rosparam>
-      publish_frequency: 100
-      dxl_read_frequency: 100
-      dxl_write_frequency: 100
+      publish_period: 0.010
+      dxl_read_period: 0.010
+      dxl_write_period: 0.010
       use_joint_states_topic: true
       use_cmd_vel_topic: true
       mobile_robot_config:                <!--this values will be set when 'use_cmd_vel_topic' is true-->

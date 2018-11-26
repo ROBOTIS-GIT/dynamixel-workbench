@@ -101,11 +101,12 @@ class DynamixelController
   double wheel_radius_;
 
   JointTrajectory *jnt_tra_;
-  std::vector<WayPoint> way_point_;
+  trajectory_msgs::JointTrajectory *jnt_tra_msg_;
+  std::vector<WayPoint> pre_goal_;
 
-  int32_t read_freq_;
-  int32_t write_freq_;
-  int32_t pub_freq_;
+  double read_period_;
+  double write_period_;
+  double pub_period_;
 
   bool is_moving_;
 
@@ -120,9 +121,9 @@ class DynamixelController
   bool initSDKHandlers(void);
   bool getPresentPosition(void);
 
-  int32_t getReadFrequency(){return read_freq_;}
-  int32_t getWriteFrequency(){return write_freq_;}
-  int32_t getPublishFrequency(){return pub_freq_;}
+  double getReadPeriod(){return read_period_;}
+  double getWritePeriod(){return write_period_;}
+  double getPublishPeriod(){return pub_period_;}
 
   void initPublisher(void);
   void initSubscriber(void);

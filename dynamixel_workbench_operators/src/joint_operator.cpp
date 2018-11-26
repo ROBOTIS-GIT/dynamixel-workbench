@@ -16,13 +16,31 @@
 
 /* Authors: Taehun Lim (Darby) */
 
-#include <ros/ros.h>
-#include <yaml-cpp/yaml.h>
+#include "dynamixel_workbench_operators/joint_operator.h"
 
-#include <trajectory_msgs/JointTrajectory.h>
-#include <trajectory_msgs/JointTrajectoryPoint.h>
+JointOperator::JointOperator()
+  :node_handle_(""),
+   priv_node_handle_("~")
+{
+  std::string yaml_file = node_handle_.param<std::string>("trajectory_info", "");
+  jnt_tra_msg_ = new trajectory_msgs::JointTrajectory;
 
-bool getTrajectoryInfo(const std::string yaml_file, trajectory_msgs::JointTrajectory *jnt_tra_msg)
+  bool result = getTrajectoryInfo(yaml_file, jnt_tra_msg_);
+  if (result == false)
+  {
+    ROS_ERROR("Please check YAML file");
+    exit(0);
+  }
+
+  joint_trajectory_pub_ = node_handle_.advertise<trajectory_msgs::JointTrajectory>("joint_trajectory", 100);
+  move_command_server_ = node_handle_.advertiseService("command", &JointOperator::moveCommandMsgCallback, this);
+}
+
+JointOperator::~JointOperator()
+{
+}
+
+bool JointOperator::getTrajectoryInfo(const std::string yaml_file, trajectory_msgs::JointTrajectory *jnt_tra_msg)
 {
   YAML::Node file;
   file = YAML::LoadFile(yaml_file.c_str());
@@ -77,47 +95,26 @@ bool getTrajectoryInfo(const std::string yaml_file, trajectory_msgs::JointTrajec
   return true;
 }
 
+bool JointOperator::moveCommandMsgCallback(std_srvs::Trigger::Request &req,
+                                           std_srvs::Trigger::Response &res)
+{
+  joint_trajectory_pub_.publish(*jnt_tra_msg_);
+
+  res.success = true;
+  res.message = "Success to publish joint trajectory";
+
+  return true;
+}
+
 int main(int argc, char **argv)
 {
   // Init ROS node
   ros::init(argc, argv, "joint_operator");
-  ros::NodeHandle node_handle("");
-  ros::NodeHandle priv_node_handle("~");
+  JointOperator joint_operator;
 
-  bool is_loop = priv_node_handle.param<bool>("loop", false);
+  ROS_INFO("For now, you can use publish joint trajectory msgs by triggering service(/command)");
 
-  std::string yaml_file = node_handle.param<std::string>("trajectory_info", "");
-  trajectory_msgs::JointTrajectory *jnt_tra_msg = new trajectory_msgs::JointTrajectory;
-
-  ros::Publisher joint_trajectory_pub = node_handle.advertise<trajectory_msgs::JointTrajectory>("joint_trajectory", 100);
-
-  bool result = getTrajectoryInfo(yaml_file, jnt_tra_msg);
-  if (result == false)
-  {
-    ROS_ERROR("Please check YAML file");
-    return 0;
-  }
-
-  ros::Rate loop_rate(10);
-
-  while(ros::ok())
-  {
-    if (!is_loop)
-    {
-      while (!joint_trajectory_pub.getNumSubscribers())
-
-      joint_trajectory_pub.publish(*jnt_tra_msg);
-
-      ros::spin();
-    }
-    else
-    {
-      joint_trajectory_pub.publish(*jnt_tra_msg);
-
-      ros::spinOnce();
-      loop_rate.sleep();
-    }
-  }
+  ros::spin();
 
   return 0;
 }
