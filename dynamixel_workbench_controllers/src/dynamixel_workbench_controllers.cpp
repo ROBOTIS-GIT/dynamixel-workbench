@@ -436,33 +436,53 @@ void DynamixelController::writeCallback(const ros::TimerEvent&)
 
   int32_t dynamixel_position[dynamixel_.size()];
 
-//  for (auto const& dxl:dynamixel_)
-//  {
-//    id_array[id_cnt] = (uint8_t)dxl.second;
-//    id_cnt++;
-//  }
+  static uint32_t point_cnt = 0;
+  static uint32_t position_cnt = 0;
 
-//  if (is_moving_)
-//  {
-//    ROS_ERROR("write!!!!!!");
+  for (auto const& dxl:dynamixel_)
+  {
+    id_array[id_cnt] = (uint8_t)dxl.second;
+    id_cnt++;
+  }
 
-//    for (double index = 0.0; index < jnt_tra_msg_->points[cnt].time_from_start.toSec(); index = index + write_period_)
-//    {
-//      result = dxl_wb_->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_POSITION, id_array, id_cnt, dynamixel_position, &log);
-//      if (result == false)
-//      {
-//        ROS_ERROR("%s", log);
-//      }
-//    }
+  if (is_moving_)
+  {
+    ROS_ERROR("write!!!!!!");
+    ROS_WARN("point_cnt = %d, position_cnt = %d", point_cnt, position_cnt);
 
-//    for (auto const& point:jnt_tra_msg_->points)
-//    {
+    if (point_cnt < jnt_tra_msg_->points.size())
+    {
+      if (position_cnt < jnt_tra_msg_->points[point_cnt].position.size())
+      {
+        for (uint8_t index = 0; index < id_cnt; index++)
+          dynamixel_position[index] = jnt_tra_msg_->points[point_cnt].position.at(index);
 
-//    }
+        result = dxl_wb_->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_POSITION, id_array, id_cnt, dynamixel_position, &log);
+        if (result == false)
+        {
+          ROS_ERROR("%s", log);
+        }
+      }
+    }
 
-//    is_moving_ = false;
-//    jnt_tra_msg_->points.clear();
-//  }
+    position_cnt++;
+    if (position_cnt >= jnt_tra_msg_->points[point_cnt].position.size())
+    {
+      point_cnt++;
+      if (point_cnt >= jnt_tra_msg_->points.size())
+      {
+        is_moving_ = false;
+        point_cnt = 0;
+        position_cnt = 0;
+
+        ROS_INFO("Complete Execution");
+      }
+      else
+      {
+        position_cnt = 0;
+      }
+    }
+  }
 }
 
 void DynamixelController::trajectoryMsgCallback(const trajectory_msgs::JointTrajectory::ConstPtr &msg)
