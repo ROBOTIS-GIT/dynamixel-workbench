@@ -450,25 +450,20 @@ void DynamixelController::writeCallback(const ros::TimerEvent&)
     ROS_ERROR("write!!!!!!");
     ROS_WARN("point_cnt = %d, position_cnt = %d", point_cnt, position_cnt);
 
-    if (point_cnt < jnt_tra_msg_->points.size())
-    {
-      if (position_cnt < jnt_tra_msg_->points[point_cnt].position.size())
-      {
-        for (uint8_t index = 0; index < id_cnt; index++)
-          dynamixel_position[index] = jnt_tra_msg_->points[point_cnt].position.at(index);
+    for (uint8_t index = 0; index < id_cnt; index++)
+      dynamixel_position[index] = jnt_tra_msg_->points[point_cnt].position.at(index);
 
-        result = dxl_wb_->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_POSITION, id_array, id_cnt, dynamixel_position, &log);
-        if (result == false)
-        {
-          ROS_ERROR("%s", log);
-        }
-      }
+    result = dxl_wb_->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_POSITION, id_array, id_cnt, dynamixel_position, &log);
+    if (result == false)
+    {
+      ROS_ERROR("%s", log);
     }
 
     position_cnt++;
     if (position_cnt >= jnt_tra_msg_->points[point_cnt].position.size())
     {
       point_cnt++;
+      position_cnt = 0;
       if (point_cnt >= jnt_tra_msg_->points.size())
       {
         is_moving_ = false;
@@ -476,10 +471,6 @@ void DynamixelController::writeCallback(const ros::TimerEvent&)
         position_cnt = 0;
 
         ROS_INFO("Complete Execution");
-      }
-      else
-      {
-        position_cnt = 0;
       }
     }
   }
