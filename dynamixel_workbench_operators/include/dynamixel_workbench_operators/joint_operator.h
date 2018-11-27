@@ -47,10 +47,13 @@ class JointOperator
   // ROS Service Client
 
   trajectory_msgs::JointTrajectory *jnt_tra_msg_;
+  bool is_loop_;
 
  public:
   JointOperator();
   ~JointOperator();
+
+  bool isLoop(void){ return is_loop_;}
 
   bool getTrajectoryInfo(const std::string yaml_file, trajectory_msgs::JointTrajectory *jnt_tra_msg);
   bool moveCommandMsgCallback(std_srvs::Trigger::Request &req,

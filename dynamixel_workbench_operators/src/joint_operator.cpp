@@ -20,7 +20,8 @@
 
 JointOperator::JointOperator()
   :node_handle_(""),
-   priv_node_handle_("~")
+   priv_node_handle_("~"),
+   is_loop_(false)
 {
   std::string yaml_file = node_handle_.param<std::string>("trajectory_info", "");
   jnt_tra_msg_ = new trajectory_msgs::JointTrajectory;
@@ -33,7 +34,9 @@ JointOperator::JointOperator()
   }
 
   joint_trajectory_pub_ = node_handle_.advertise<trajectory_msgs::JointTrajectory>("joint_trajectory", 100);
-  move_command_server_ = node_handle_.advertiseService("command", &JointOperator::moveCommandMsgCallback, this);
+  move_command_server_ = node_handle_.advertiseService("execution", &JointOperator::moveCommandMsgCallback, this);
+
+  is_loop_ = priv_node_handle_.param<bool>("is_loop", "false");
 }
 
 JointOperator::~JointOperator()
@@ -112,7 +115,16 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "joint_operator");
   JointOperator joint_operator;
 
-  ROS_INFO("For now, you can use publish joint trajectory msgs by triggering service(/command)");
+  ROS_INFO("For now, you can use publish joint trajectory msgs by triggering service(/execution)");
+
+  if (joint_operator.isLoop())
+  {
+    while(1)
+    {
+      std_srvs::Trigger trig;
+      joint_operator.moveCommandMsgCallback(trig.request, trig.response);
+    }
+  }
 
   ros::spin();
 

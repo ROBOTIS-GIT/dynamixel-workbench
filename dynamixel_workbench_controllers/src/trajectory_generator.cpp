@@ -73,12 +73,11 @@ void JointTrajectory::init(double move_time,
                            std::vector<WayPoint> start,
                            std::vector<WayPoint> goal)
 {
-  static double priv_move_time = 0.0;
   for (uint8_t index = 0; index < start.size(); index++)
   {
     trajectory_generator_.calcCoefficient(start.at(index),
                                     goal.at(index),
-                                    (move_time - priv_move_time),
+                                    move_time,
                                     control_time);
 
     coefficient_.col(index) = trajectory_generator_.getCoefficient();
