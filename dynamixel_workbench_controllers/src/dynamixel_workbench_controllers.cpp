@@ -171,15 +171,15 @@ bool DynamixelController::initSDKHandlers(void)
     return result;
   }
 
-  result = dxl_wb_->addSyncWriteHandler(it->second, "Goal_Velocity", &log);
-  if (result == false)
-  {
-    ROS_ERROR("%s", log);
-    return result;
-  }
-
   if (dxl_wb_->getProtocolVersion() == 2.0f)
-  {
+  {    
+    result = dxl_wb_->addSyncWriteHandler(it->second, "Goal_Velocity", &log);
+    if (result == false)
+    {
+      ROS_ERROR("%s", log);
+      return result;
+    }
+
     result = dxl_wb_->addSyncReadHandler(ADDR_PRESENT_CURRENT_2,
                                         (LENGTH_PRESENT_CURRENT_2 + LENGTH_PRESENT_VELOCITY_2 + LENGTH_PRESENT_POSITION_2),
                                         &log);
@@ -188,6 +188,15 @@ bool DynamixelController::initSDKHandlers(void)
       ROS_ERROR("%s", log);
       return result;
     }
+  }
+  else if (dxl_wb_->getProtocolVersion() == 1.0f)
+  {
+//    result = dxl_wb_->addSyncWriteHandler(it->second, "Moving_Speed", &log);
+//    if (result == false)
+//    {
+//      ROS_ERROR("%s", log);
+//      return result;
+//    }
   }
 
   return result;
@@ -208,32 +217,55 @@ bool DynamixelController::getPresentPosition(void)
     id_array[id_cnt++] = (uint8_t)dxl.second;
   }
 
-  result = dxl_wb_->syncRead(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
-                             id_array,
-                             dynamixel_.size(),
-                             &log);
-  if (result == false)
+  if (dxl_wb_->getProtocolVersion() == 2.0f)
   {
-    ROS_ERROR("%s", log);
-  }
-
-  WayPoint wp;
-  result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
-                                                id_array,
-                                                id_cnt,
-                                                ADDR_PRESENT_POSITION_2,
-                                                LENGTH_PRESENT_POSITION_2,
-                                                get_position,
-                                                &log);
-  if (result == false)
-  {
-    ROS_ERROR("%s", log);
-  }
-  else
-  {
-    for(uint8_t index = 0; index < id_cnt; index++)
+    result = dxl_wb_->syncRead(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
+                               id_array,
+                               dynamixel_.size(),
+                               &log);
+    if (result == false)
     {
-      wp.position = dxl_wb_->convertValue2Radian(id_array[index], get_position[index]);
+      ROS_ERROR("%s", log);
+    }
+
+    WayPoint wp;
+    result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
+                                                  id_array,
+                                                  id_cnt,
+                                                  ADDR_PRESENT_POSITION_2,
+                                                  LENGTH_PRESENT_POSITION_2,
+                                                  get_position,
+                                                  &log);
+    if (result == false)
+    {
+      ROS_ERROR("%s", log);
+    }
+    else
+    {
+      for(uint8_t index = 0; index < id_cnt; index++)
+      {
+        wp.position = dxl_wb_->convertValue2Radian(id_array[index], get_position[index]);
+        pre_goal_.push_back(wp);
+      }
+    }
+  }
+  else if (dxl_wb_->getProtocolVersion() == 1.0f)
+  {
+    WayPoint wp;
+    uint32_t read_position;
+    for (auto const& dxl:dynamixel_)
+    {
+      result = dxl_wb_->readRegister((uint8_t)dxl.second,
+                                     ADDR_PRESENT_POSITION_1,
+                                     LENGTH_PRESENT_POSITION_1,
+                                     &read_position,
+                                     &log);
+      if (result == false)
+      {
+        ROS_ERROR("%s", log);
+      }
+
+      wp.position = dxl_wb_->convertValue2Radian((uint8_t)dxl.second, read_position);
       pre_goal_.push_back(wp);
     }
   }
@@ -260,7 +292,7 @@ void DynamixelController::initServer()
 
 void DynamixelController::readCallback(const ros::TimerEvent&)
 {
-//  static double priv_read_secs =ros::Time::now().toSec();
+  static double priv_read_secs =ros::Time::now().toSec();
 
   bool result = false;
   const char* log = NULL;
@@ -283,65 +315,92 @@ void DynamixelController::readCallback(const ros::TimerEvent&)
     id_array[id_cnt++] = (uint8_t)dxl.second;
   }
 
-  if (is_moving_ == false)
-  {
-    result = dxl_wb_->syncRead(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
-                               id_array,
-                               dynamixel_.size(),
-                               &log);
-    if (result == false)
+//  if (is_moving_ == false)
+//  {
+    if (dxl_wb_->getProtocolVersion() == 2.0f)
     {
-      ROS_ERROR("%s", log);
-    }
+      result = dxl_wb_->syncRead(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
+                                 id_array,
+                                 dynamixel_.size(),
+                                 &log);
+      if (result == false)
+      {
+        ROS_ERROR("%s", log);
+      }
 
-    result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
-                                                  id_array,
-                                                  id_cnt,
-                                                  ADDR_PRESENT_CURRENT_2,
-                                                  LENGTH_PRESENT_CURRENT_2,
-                                                  get_current,
-                                                  &log);
-    if (result == false)
+      result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
+                                                    id_array,
+                                                    id_cnt,
+                                                    ADDR_PRESENT_CURRENT_2,
+                                                    LENGTH_PRESENT_CURRENT_2,
+                                                    get_current,
+                                                    &log);
+      if (result == false)
+      {
+        ROS_ERROR("%s", log);
+      }
+
+      result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
+                                                    id_array,
+                                                    id_cnt,
+                                                    ADDR_PRESENT_VELOCITY_2,
+                                                    LENGTH_PRESENT_VELOCITY_2,
+                                                    get_velocity,
+                                                    &log);
+      if (result == false)
+      {
+        ROS_ERROR("%s", log);
+      }
+
+      result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
+                                                    id_array,
+                                                    id_cnt,
+                                                    ADDR_PRESENT_POSITION_2,
+                                                    LENGTH_PRESENT_POSITION_2,
+                                                    get_position,
+                                                    &log);
+      if (result == false)
+      {
+        ROS_ERROR("%s", log);
+      }
+
+      for(uint8_t index = 0; index < id_cnt; index++)
+      {
+        dynamixel_state[index].present_current = get_current[index];
+        dynamixel_state[index].present_velocity = get_velocity[index];
+        dynamixel_state[index].present_position = get_position[index];
+
+        dynamixel_state_list_.dynamixel_state.push_back(dynamixel_state[index]);
+      }
+    }
+    else if(dxl_wb_->getProtocolVersion() == 1.0f)
     {
-      ROS_ERROR("%s", log);
+      uint32_t get_all_data[LENGTH_PRESENT_POSITION_1 + LENGTH_PRESENT_VELOCITY_1 + LENGTH_PRESENT_LOAD_1];
+      uint8_t dxl_cnt = 0;
+      for (auto const& dxl:dynamixel_)
+      {
+        result = dxl_wb_->readRegister((uint8_t)dxl.second,
+                                       ADDR_PRESENT_POSITION_1,
+                                       LENGTH_PRESENT_POSITION_1 + LENGTH_PRESENT_VELOCITY_1 + LENGTH_PRESENT_LOAD_1,
+                                       get_all_data,
+                                       &log);
+        if (result == false)
+        {
+          ROS_ERROR("%s", log);
+        }
+
+        dynamixel_state[dxl_cnt].present_current = DXL_MAKEWORD(get_all_data[4], get_all_data[5]);
+        dynamixel_state[dxl_cnt].present_velocity = DXL_MAKEWORD(get_all_data[2], get_all_data[3]);
+        dynamixel_state[dxl_cnt].present_position = DXL_MAKEWORD(get_all_data[0], get_all_data[1]);
+
+        dynamixel_state_list_.dynamixel_state.push_back(dynamixel_state[dxl_cnt]);
+        dxl_cnt++;
+      }
     }
+//  }
 
-    result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
-                                                  id_array,
-                                                  id_cnt,
-                                                  ADDR_PRESENT_VELOCITY_2,
-                                                  LENGTH_PRESENT_VELOCITY_2,
-                                                  get_velocity,
-                                                  &log);
-    if (result == false)
-    {
-      ROS_ERROR("%s", log);
-    }
-
-    result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
-                                                  id_array,
-                                                  id_cnt,
-                                                  ADDR_PRESENT_POSITION_2,
-                                                  LENGTH_PRESENT_POSITION_2,
-                                                  get_position,
-                                                  &log);
-    if (result == false)
-    {
-      ROS_ERROR("%s", log);
-    }
-
-    for(uint8_t index = 0; index < id_cnt; index++)
-    {
-      dynamixel_state[index].present_current = get_current[index];
-      dynamixel_state[index].present_velocity = get_velocity[index];
-      dynamixel_state[index].present_position = get_position[index];
-
-      dynamixel_state_list_.dynamixel_state.push_back(dynamixel_state[index]);
-    }
-  }
-
-//  ROS_WARN("[readCallback] diff_secs : %f", ros::Time::now().toSec() - priv_read_secs);
-//  priv_read_secs = ros::Time::now().toSec();
+  ROS_WARN("[readCallback] diff_secs : %f", ros::Time::now().toSec() - priv_read_secs);
+  priv_read_secs = ros::Time::now().toSec();
 }
 
 void DynamixelController::publishCallback(const ros::TimerEvent&)
@@ -365,7 +424,9 @@ void DynamixelController::publishCallback(const ros::TimerEvent&)
       double velocity = 0.0;
       double effort = 0.0;
 
-      effort = dxl_wb_->convertValue2Current((uint8_t)dxl.second, (int16_t)dynamixel_state_list_.dynamixel_state[id_cnt].present_current);
+      if (dxl_wb_->getProtocolVersion() == 2.0f)      effort = dxl_wb_->convertValue2Current((uint8_t)dxl.second, (int16_t)dynamixel_state_list_.dynamixel_state[id_cnt].present_current);
+      else if (dxl_wb_->getProtocolVersion() == 1.0f) effort = dxl_wb_->convertValue2Load((uint8_t)dxl.second, (int16_t)dynamixel_state_list_.dynamixel_state[id_cnt].present_current);
+
       velocity = dxl_wb_->convertValue2Velocity((uint8_t)dxl.second, (int32_t)dynamixel_state_list_.dynamixel_state[id_cnt].present_velocity);
       position = dxl_wb_->convertValue2Radian((uint8_t)dxl.second, (int32_t)dynamixel_state_list_.dynamixel_state[id_cnt].present_position);
 
