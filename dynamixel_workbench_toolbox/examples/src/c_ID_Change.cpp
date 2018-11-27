@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
   int dxl_id = 1;
   int new_dxl_id = 2;
 
-  if (argc < 4)
+  if (argc < 5)
   {
     printf("Please set '-port_name', '-baud_rate', '-dynamixel id', '-new_dynamixel_id' arguments for connected Dynamixels\n");
     return 0;
@@ -84,6 +84,7 @@ int main(int argc, char *argv[])
   uint8_t dxl_cnt = 0;
   uint8_t range = 100;
 
+  printf("Wait for scan...\n");
   result = dxl_wb.scan(scanned_id, &dxl_cnt, range, &log);
   if (result == false)
   {

@@ -210,6 +210,7 @@ bool monitoring()
         }
         else if (strcmp(cmd, "sync_write_handler") == 0)
         {
+          static uint8_t sync_write_handler_index = 0;
           uint8_t id = atoi(param[0]);
           wb_result = dxl_wb.addSyncWriteHandler(id, param[1], &log);
           if (wb_result == false)
@@ -219,10 +220,11 @@ bool monitoring()
             return 0;
           }
           else
-            printf("%s, sync_write_handler_cnt = %d\n", log, dxl_wb.getTheNumberOfSyncWriteHandler());
+            printf("%s, sync_write_handler_index = %d\n", log, sync_write_handler_index++);
         }
         else if (strcmp(cmd, "sync_read_handler") == 0)
         {
+          static uint8_t sync_read_handler_index = 0;
           uint8_t id = atoi(param[0]);
           wb_result = dxl_wb.addSyncReadHandler(id, param[1], &log);
           if (wb_result == false)
@@ -232,7 +234,7 @@ bool monitoring()
             return 0;
           }
           else
-            printf("%s, sync_read_handler_cnt = %d\n", log, dxl_wb.getTheNumberOfSyncReadHandler());
+            printf("%s, sync_read_handler_index = %d\n", log, sync_read_handler_index++);
         }
         else if (strcmp(cmd, "bulk_write_handler") == 0)
         {
@@ -298,9 +300,7 @@ bool monitoring()
         }
         else if (strcmp(cmd, "bulk_read") == 0)
         {
-          uint32_t data[2] = {0, 0};
-
-          wb_result = dxl_wb.getBulkReadData((int32_t *)data, &log);
+          wb_result = dxl_wb.bulkRead(&log);
           if (wb_result == false)
           {
             printf("%s\n", log);
@@ -308,10 +308,26 @@ bool monitoring()
             return 0;
           }
           else
+            printf("%s\n", log);
+
+          int32_t get_data[dxl_wb.getTheNumberOfBulkReadParam()];
+          wb_result = dxl_wb.getBulkReadData(&get_data[0], &log);
+          if (wb_result == false)
           {
             printf("%s\n", log);
-            printf("data[0] : %d, data[1] : %d\n", data[0], data[1]);
+            printf("Failed to get bulk read data\n");
+            return 0;
           }
+          else
+          {
+            printf("%s\n", log);
+            for (uint8_t index = 0; index < dxl_wb.getTheNumberOfBulkReadParam(); index++)
+              printf("data[%d] : %d  ", index, get_data[index]);
+
+            printf("\n");
+          }
+
+          dxl_wb.clearBulkReadParam();
         }
         else if (isAvailableID(atoi(param[0])) && isAvailableID(atoi(param[1])))
         {
@@ -598,9 +614,9 @@ void printInst(void)
   printf("wheel  (ID) (GOAL_VELOCITY)\n");
   printf("write  (ID) (ADDRESS_NAME) (DATA)\n");
   printf("read   (ID) (ADDRESS_NAME)\n");
-  printf("sync_write_handler (ID) (ADDRESS_NAME)\n");
+  printf("sync_write_handler (Ref_ID) (ADDRESS_NAME)\n");
   printf("sync_write (ID_1) (ID_2) (HANDLER_INDEX) (PARAM_1) (PARAM_2)\n");
-  printf("sync_read_handler (ID) (ADDRESS_NAME)\n");
+  printf("sync_read_handler (Ref_ID) (ADDRESS_NAME)\n");
   printf("sync_read (ID_1) (ID_2) (HANDLER_INDEX)\n");
   printf("bulk_write_handler\n");
   printf("bulk_write_param (ID) (ADDRESS_NAME) (PARAM)\n");

@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
   int baud_rate = 57600;
   int dxl_id = 1;
 
-  if (argc < 3)
+  if (argc < 4)
   {
     printf("Please set '-port_name', '-baud_rate', '-dynamixel id' arguments for connected Dynamixels\n");
     return 0;

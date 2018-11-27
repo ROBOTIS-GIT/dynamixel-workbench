@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
   int dxl_id = 1;
   int mode = 0;
 
-  if (argc < 4)
+  if (argc < 5)
   {
     printf("Please set '-port_name', '-baud_rate', '-dynamixel id' '-select control mode' arguments for connected Dynamixels\n");
     return 0;
@@ -38,6 +38,7 @@ int main(int argc, char *argv[])
     mode = atoi(argv[4]);
   }
 
+  printf("---> \n");
   printf("Please insert the right number from 0 to 6 to set constrol mode \n");
   printf("0 - current control mode\n");
   printf("1 - velocity control mode\n");
@@ -45,6 +46,7 @@ int main(int argc, char *argv[])
   printf("3 - extended position control mode\n");
   printf("4 - current based position control mode\n");
   printf("5 - pwm control mode\n");
+  printf("<--- \n\n");
 
   DynamixelWorkbench dxl_wb;
 

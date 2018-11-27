@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
   int baud_rate = 57600;
   int dxl_id = 1;
 
-  if (argc < 3)
+  if (argc < 4)
   {
     printf("Please set '-port_name', '-baud_rate', '-dynamixel id' arguments for connected Dynamixels\n");
     return 0;
@@ -78,17 +78,18 @@ int main(int argc, char *argv[])
   else
   {
     printf("Succeed to change wheel mode\n");
+    printf("Dynamixel is moving...\n");
 
-    int count = 0;
-
-    for (count = 1; count <= 3; count++)
+    for (int count = 0; count < 3; count++)
     {
-      dxl_wb.goalVelocity(dxl_id, -150);
-      sleep(2000);
+      dxl_wb.goalVelocity(dxl_id, -100);
+      sleep(3);
 
-      dxl_wb.goalVelocity(dxl_id, 150);
-      sleep(2000);
+      dxl_wb.goalVelocity(dxl_id, 100);
+      sleep(3);
     }
+
+    dxl_wb.goalVelocity(dxl_id, 0);
   }
 
   return 0;

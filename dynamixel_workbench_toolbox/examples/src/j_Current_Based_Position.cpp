@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
   int baud_rate = 57600;
   int dxl_id = 1;
 
-  if (argc < 3)
+  if (argc < 4)
   {
     printf("Please set '-port_name', '-baud_rate', '-dynamixel id' arguments for connected Dynamixels\n");
     return 0;
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
     printf("id : %d, model_number : %d\n", dxl_id, model_number);
   }
 
-  result = dxl_wb.currentBasedPositionMode(dxl_id, 0, &log);
+  result = dxl_wb.currentBasedPositionMode(dxl_id, 30, &log);
   if (result == false)
   {
     printf("%s\n", log);
@@ -78,16 +78,15 @@ int main(int argc, char *argv[])
   else
   {
     printf("Succeed to change current based position mode\n");
+    printf("Dynamixel is moving...\n");
 
-    int count = 0;
-
-    for (count = 1; count <= 3; count++)
+    for (int count = 0; count < 3; count++)
     {
       dxl_wb.goalPosition(dxl_id, 0);
-      sleep(2000);
+      sleep(3);
 
-      dxl_wb.goalPosition(dxl_id, 1023);
-      sleep(2000);
+      dxl_wb.goalPosition(dxl_id, 2048);
+      sleep(3);
     }
   }
 

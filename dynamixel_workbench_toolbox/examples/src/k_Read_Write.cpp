@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
   int baud_rate = 57600;
   int dxl_id = 1;
 
-  if (argc < 3)
+  if (argc < 4)
   {
     printf("Please set '-port_name', '-baud_rate', '-dynamixel id' arguments for connected Dynamixels\n");
     return 0;
@@ -89,8 +89,7 @@ int main(int argc, char *argv[])
   }
   else
   {
-    printf("Succeed to get present position\n");
-    printf("Present Position : %d\n", get_data);
+    printf("Succeed to get present position(value : %d)\n", get_data);
   }
 
   return 0;

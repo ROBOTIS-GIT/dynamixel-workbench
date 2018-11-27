@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
   uint8_t dxl_cnt = 0;
   uint8_t range = 253;
 
-  if (argc < 3)
+  if (argc < 4)
   {
     printf("Please set '-port_name', '-baud_rate', '-scan range' arguments for connected Dynamixels\n");
     return 0;
@@ -84,125 +84,59 @@ int main(int argc, char *argv[])
     }
   }
 
-  result = dxl_wb.initBulkWrite(&log);
+  result = dxl_wb.addSyncWriteHandler(scanned_id[0], "Goal_Position", &log);
   if (result == false)
   {
     printf("%s\n", log);
-  }
-  else
-  {
-    printf("%s\n", log);
+    printf("Failed to add sync write handler\n");
   }
 
-  result = dxl_wb.initBulkRead(&log);
+  result = dxl_wb.addSyncReadHandler(scanned_id[0], "Present_Position", &log);
   if (result == false)
   {
     printf("%s\n", log);
-  }
-  else
-  {
-    printf("%s\n", log);
-  }
-
-  result = dxl_wb.addBulkReadParam(scanned_id[0], "Present_Position", &log);
-  if (result == false)
-  {
-    printf("%s\n", log);
-    printf("Failed to add bulk read position param\n");
-  }
-  else
-  {
-    printf("%s\n", log);
-    printf("Succeeded to add bulk read position param\n");
-  }
-
-  result = dxl_wb.addBulkReadParam(scanned_id[1], "LED", &log);
-  if (result == false)
-  {
-    printf("%s\n", log);
-    printf("Failed to add bulk read led param\n");
-  }
-  else
-  {
-    printf("%s\n", log);
-    printf("Succeeded to add bulk read led param\n");
+    printf("Failed to add sync read handler\n");
   }
 
   int32_t goal_position[2] = {0, 1023};
-  int32_t led[2] = {0, 1};
-
-  int32_t get_data[2] = {0, 0};
+  int32_t present_position[2] = {0, 0};
 
   const uint8_t handler_index = 0;
-
+  
   while(1)
   {
-    result = dxl_wb.addBulkWriteParam(scanned_id[0], "Goal_Position", goal_position[0], &log);
+    result = dxl_wb.syncWrite(handler_index, &goal_position[0], &log);
     if (result == false)
     {
       printf("%s\n", log);
-      printf("Failed to add bulk write position param\n");
-    }
-    else
-    {
-      printf("%s\n", log);
-      printf("Succeeded to add bulk write position param\n");
-    }
-
-    result = dxl_wb.addBulkWriteParam(scanned_id[1], "LED", led[0], &log);
-    if (result == false)
-    {
-      printf("%s\n", log);
-      printf("Failed to add bulk write led param\n");
-    }
-    else
-    {
-      printf("%s\n", log);
-      printf("Succeeded to add bulk write led param\n");
-    }
-
-    result = dxl_wb.bulkWrite(&log);
-    if (result == false)
-    {
-      printf("%s\n", log);
-      printf("Failed to bulk write\n");
-    }
-    else
-    {
-      printf("%s\n", log);
-      printf("Succeeded to bulk write\n");
+      printf("Failed to sync write position\n");
     }
 
     do
     {
-      result = dxl_wb.bulkRead(&log);
+      result = dxl_wb.syncRead(handler_index, &log);
       if (result == false)
       {
         printf("%s\n", log);
-        printf("Failed to bulk read\n");
-      }
-      else
-      {
-        printf("%s\n", log);
-        printf("Succeeded to bulk read\n");
+        printf("Failed to sync read position\n");
       }
 
-      result = dxl_wb.getBulkReadData(&get_data[0], &log);
+      result = dxl_wb.getSyncReadData(handler_index, &present_position[0], &log);
       if (result == false)
       {
         printf("%s\n", log);
       }
       else
       {
-        printf("[ID %d]\tGoal Position : %d\tPresent Position : %d\t, [ID %d]\tLED : %d\n"
-                ,scanned_id[0], goal_position[0], get_data[0], scanned_id[1], get_data[0]);
+        printf("[ID %d]\tGoal Position : %d\tPresent Position : %d, [ID %d]\tGoal Position : %d\tPresent Position : %d\n"
+                ,scanned_id[0], goal_position[0], present_position[0], scanned_id[1], goal_position[1], present_position[1]);
       }
 
-    }while(abs(goal_position[0] - get_data[0]) > 50);
+    }while(abs(goal_position[0] - present_position[0]) > 15 && 
+          abs(goal_position[1] - present_position[1]) > 15);
+
+    swap(goal_position);
   }
-
-  swap(goal_position);
-  swap(led);
 
   return 0;
 }

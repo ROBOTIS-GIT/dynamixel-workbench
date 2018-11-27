@@ -18,13 +18,13 @@
 
 #include <DynamixelWorkbench.h>
 
-#define BAUDRATE_NUM 8
+#define BAUDRATE_NUM 7
 
 int main(int argc, char *argv[]) 
 {
   const char* port_name = "/dev/ttyUSB0";
 
-  if (argc < 1)
+  if (argc < 2)
   {
     printf("Please set '-port_name' arguments for connected Dynamixels\n");
     return 0;
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
   uint8_t scanned_id[100];
   uint8_t dxl_cnt = 0;
 
-  uint32_t baudrate[BAUDRATE_NUM] = {9600, 57600, 115200, 1000000, 2000000, 3000000, 4000000, 4500000};
+  uint32_t baudrate[BAUDRATE_NUM] = {9600, 57600, 115200, 1000000, 2000000, 3000000, 4000000};
   uint8_t range = 253;
 
   uint8_t index = 0;

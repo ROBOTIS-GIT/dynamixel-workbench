@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
   uint8_t dxl_cnt = 0;
   uint8_t range = 253;
 
-  if (argc < 3)
+  if (argc < 4)
   {
     printf("Please set '-port_name', '-baud_rate', '-scan range' arguments for connected Dynamixels\n");
     return 0;
@@ -91,15 +91,7 @@ int main(int argc, char *argv[])
     printf("Failed to add sync write handler\n");
   }
 
-  result = dxl_wb.addSyncReadHandler(scanned_id[0], "Present_Position", &log);
-  if (result == false)
-  {
-    printf("%s\n", log);
-    printf("Failed to add sync read handler\n");
-  }
-
   int32_t goal_position[2] = {0, 1023};
-  int32_t present_position[2] = {0, 0};
 
   const uint8_t handler_index = 0;
   
@@ -111,42 +103,11 @@ int main(int argc, char *argv[])
       printf("%s\n", log);
       printf("Failed to sync write position\n");
     }
-    else
-    {
-      printf("%s\n", log);
-      printf("Succeeded to sync write position\n");
-    }
 
-    do
-    {
-      result = dxl_wb.syncRead(handler_index, &log);
-      if (result == false)
-      {
-        printf("%s\n", log);
-        printf("Failed to sync read position\n");
-      }
-      else
-      {
-        printf("%s\n", log);
-        printf("Succeeded to sync read position\n");
-      }
+    sleep(3);
 
-      result = dxl_wb.getSyncReadData(handler_index, &present_position[0], &log);
-      if (result == false)
-      {
-        printf("%s\n", log);
-      }
-      else
-      {
-        printf("[ID %d]\tGoal Position : %d\tPresent Position : %d\t, [ID %d]\tGoal Position : %d\tPresent Position : %d\n"
-                ,scanned_id[0], goal_position[0], present_position[0], scanned_id[1], goal_position[1], present_position[1]);
-      }
-
-    }while(abs(goal_position[0] - present_position[0]) > 50 && 
-          abs(goal_position[1] - present_position[1]) > 50);
+    swap(goal_position);
   }
-
-  swap(goal_position);
 
   return 0;
 }

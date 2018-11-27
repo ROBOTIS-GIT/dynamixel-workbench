@@ -47,20 +47,23 @@ target_link_libraries(position LINK_PUBLIC dynamixel_workbench)
 add_executable(velocity src/i_Velocity.cpp)
 target_link_libraries(velocity LINK_PUBLIC dynamixel_workbench)
 
-add_executable(current src/j_Current.cpp)
-target_link_libraries(current LINK_PUBLIC dynamixel_workbench)
+add_executable(current_based_position src/j_Current_Based_Position.cpp)
+target_link_libraries(current_based_position LINK_PUBLIC dynamixel_workbench)
 
 add_executable(read_write src/k_Read_Write.cpp)
 target_link_libraries(read_write LINK_PUBLIC dynamixel_workbench)
 
-add_executable(sync_read_write src/l_Sync_Read_Write.cpp)
+add_executable(sync_write src/l_Sync_Write.cpp)
+target_link_libraries(sync_write LINK_PUBLIC dynamixel_workbench)
+
+add_executable(sync_read_write src/m_Sync_Read_Write.cpp)
 target_link_libraries(sync_read_write LINK_PUBLIC dynamixel_workbench)
 
-add_executable(bulk_read_write src/m_Bulk_Read_Write.cpp)
+add_executable(bulk_read_write src/n_Bulk_Read_Write.cpp)
 target_link_libraries(bulk_read_write LINK_PUBLIC dynamixel_workbench)
-
-add_executable(monitor src/n_Monitor.cpp)
-target_link_libraries(monitor LINK_PUBLIC dynamixel_workbench)
 
 add_executable(find_dynamixel src/o_Find_Dynamixel.cpp)
 target_link_libraries(find_dynamixel LINK_PUBLIC dynamixel_workbench)
+
+add_executable(monitor src/p_Monitor.cpp)
+target_link_libraries(monitor LINK_PUBLIC dynamixel_workbench)
