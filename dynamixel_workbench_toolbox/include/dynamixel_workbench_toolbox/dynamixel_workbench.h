@@ -84,6 +84,8 @@ class DynamixelWorkbench : public DynamixelDriver
 
   int16_t convertCurrent2Value(uint8_t id, float current, const char **log = NULL);
   float convertValue2Current(uint8_t id, int16_t value, const char **log = NULL);
+
+  float convertValue2Load(uint8_t id, int16_t value, const char **log = NULL);
 };
 
 #endif /*DYNAMIXEL_WORKBENCH_H_*/

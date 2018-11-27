@@ -182,28 +182,36 @@ bool monitoring()
               {
                 uint32_t data = 0;
 
-                switch (control_item[index].data_length)
+                if (dxl_wb.getProtocolVersion() == 2.0f)
                 {
-                  case BYTE:
-                    data = getAllRegisteredData[control_item[index].address];
-                    printf("\t%s : %d\n", control_item[index].item_name, data);
-                   break;
+                  data = getAllRegisteredData[control_item[index].address];
+                  printf("\t%s : %d\n", control_item[index].item_name, data);
+                }
+                else if (dxl_wb.getProtocolVersion() == 1.0f)
+                {
+                  switch (control_item[index].data_length)
+                  {
+                    case BYTE:
+                      data = getAllRegisteredData[control_item[index].address];
+                      printf("\t%s : %d\n", control_item[index].item_name, data);
+                    break;
 
-                  case WORD:
-                    data = DXL_MAKEWORD(getAllRegisteredData[control_item[index].address], getAllRegisteredData[control_item[index].address+1]);
-                    printf("\t%s : %d\n", control_item[index].item_name, data);
-                   break;
+                    case WORD:
+                      data = DXL_MAKEWORD(getAllRegisteredData[control_item[index].address], getAllRegisteredData[control_item[index].address+1]);
+                      printf("\t%s : %d\n", control_item[index].item_name, data);
+                    break;
 
-                  case DWORD:
-                    data = DXL_MAKEDWORD(DXL_MAKEWORD(getAllRegisteredData[control_item[index].address],   getAllRegisteredData[control_item[index].address+1]),
-                                         DXL_MAKEWORD(getAllRegisteredData[control_item[index].address+2], getAllRegisteredData[control_item[index].address+3]));
-                    printf("\t%s : %d\n", control_item[index].item_name, data);
-                   break;
+                    case DWORD:
+                      data = DXL_MAKEDWORD(DXL_MAKEWORD(getAllRegisteredData[control_item[index].address],   getAllRegisteredData[control_item[index].address+1]),
+                                          DXL_MAKEWORD(getAllRegisteredData[control_item[index].address+2], getAllRegisteredData[control_item[index].address+3]));
+                      printf("\t%s : %d\n", control_item[index].item_name, data);
+                    break;
 
-                  default:
-                    data = getAllRegisteredData[control_item[index].address];
-                   break;
-                } 
+                    default:
+                      data = getAllRegisteredData[control_item[index].address];
+                    break;
+                  } 
+                }
               }
             }
           }

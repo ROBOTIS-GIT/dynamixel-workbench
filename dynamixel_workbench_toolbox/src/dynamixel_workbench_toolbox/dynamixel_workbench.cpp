@@ -1165,9 +1165,6 @@ int16_t DynamixelWorkbench::convertCurrent2Value(uint8_t id, float current, cons
   int16_t value = 0;
   const float CURRENT_UNIT = 2.69f; //mA, Ref : http://emanual.robotis.com/docs/en/dxl/x/xm430-w350/#goal-current102
 
-  model_info = getModelInfo(id, log);
-  if (model_info == NULL) return false;
-
   value = current / CURRENT_UNIT;
 
   return value;
@@ -1178,10 +1175,19 @@ float DynamixelWorkbench::convertValue2Current(uint8_t id, int16_t value, const 
   float current = 0;
   const float CURRENT_UNIT = 2.69f; //mA, Ref : http://emanual.robotis.com/docs/en/dxl/x/xm430-w350/#goal-current102
 
-  model_info = getModelInfo(id, log);
-  if (model_info == NULL) return false;
-
   current = (int16_t)value * CURRENT_UNIT;
 
   return current;
+}
+
+float DynamixelWorkbench::convertValue2Load(uint8_t id, int16_t value, const char **log)
+{
+  float load = 0;
+  const float LOAD_UNIT = 0.1f; //%, Ref : http://emanual.robotis.com/docs/en/dxl/mx/mx-28/#present-load
+
+  if (value == 1023) load = 0.0f;
+  else if (value > 0 && value < 1023) load = (int16_t)value * LOAD_UNIT * (-1.0);
+  else if (value > 1023 && value < 2048) load = ((int16_t)value - 1023) * LOAD_UNIT;
+
+  return load;
 }
