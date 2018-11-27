@@ -914,6 +914,11 @@ bool DynamixelWorkbench::goalVelocity(uint8_t id, int32_t value, const char **lo
     result[0] = writeRegister(id, "Goal_Velocity", (uint32_t)value, log);
     if (result[0] == false)
     {
+      if (value < 0)
+      {
+        value = (-1) * value;
+        value |= 1024;
+      }
       result[1] = writeRegister(id, "Moving_Speed", (uint16_t)value, log);
       if (result[1] == false)
       {
@@ -934,10 +939,15 @@ bool DynamixelWorkbench::goalVelocity(uint8_t id, int32_t value, const char **lo
   }
   else
   {
-    result[0] = writeRegister(id, "Moving_Speed", (uint16_t)value, log);
+    result[0] = writeRegister(id, "Goal_Velocity", (uint32_t)value, log);
     if (result[0] == false)
     {
-      result[1] = writeRegister(id, "Goal_Velocity", (uint32_t)value, log);
+      if (value < 0)
+      {
+        value = (-1) * value;
+        value |= 1024;
+      }
+      result[1] = writeRegister(id, "Moving_Speed", (uint16_t)value, log);
       if (result[1] == false)
       {
         if (log != NULL) *log = "[DynamixelWorkbench] Failed to set goal velocity!";
