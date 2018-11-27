@@ -31,7 +31,7 @@
 
 #define MAX_DXL_SERIES_NUM  5
 #define MAX_HANDLER_NUM     5
-#define MAX_BULK_PARAMETER  10
+#define MAX_BULK_PARAMETER  20
 
 typedef struct 
 {
@@ -71,14 +71,14 @@ class DynamixelDriver
 
   dynamixel::GroupBulkRead  *groupBulkRead_;  
   dynamixel::GroupBulkWrite *groupBulkWrite_;
-  BulkParameter bulk_param_[MAX_BULK_PARAMETER];
+  BulkParameter bulk_read_param_[MAX_BULK_PARAMETER];
  
   DynamixelTool tools_[MAX_DXL_SERIES_NUM];
 
   uint8_t tools_cnt_;
   uint8_t sync_write_handler_cnt_;
   uint8_t sync_read_handler_cnt_;
-  uint8_t bulk_parameter_cnt_;
+  uint8_t bulk_read_parameter_cnt_;
 
  public:
   DynamixelDriver();
@@ -108,6 +108,7 @@ class DynamixelDriver
 
   uint8_t getTheNumberOfSyncWriteHandler(void);
   uint8_t getTheNumberOfSyncReadHandler(void);
+  uint8_t getTheNumberOfBulkReadParam(void);
 
   bool scan(uint8_t *get_id,
             uint8_t *get_the_number_of_id, 
@@ -182,6 +183,8 @@ class DynamixelDriver
 
   bool getBulkReadData(int32_t *data, const char **log = NULL);
   bool getBulkReadData(uint8_t *id, uint8_t id_num, uint16_t *address, uint16_t *length, int32_t *data, const char **log = NULL);
+
+  bool clearBulkReadParam(void);
 
  private:
   void initTools(void);
