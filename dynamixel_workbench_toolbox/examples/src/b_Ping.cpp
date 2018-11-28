@@ -41,7 +41,6 @@ int main(int argc, char *argv[])
   const char *log;
   bool result = false;
 
-  uint8_t id = dxl_id;
   uint16_t model_number = 0;
 
   result = dxl_wb.init(port_name, baud_rate, &log);
@@ -53,7 +52,7 @@ int main(int argc, char *argv[])
     return 0;
   }
   else
-    printf("Succeed to init(%d)\n", baud_rate);  
+    printf("Succeeded to init(%d)\n", baud_rate);  
 
   result = dxl_wb.ping(dxl_id, &model_number, &log);
   if (result == false)
@@ -63,7 +62,7 @@ int main(int argc, char *argv[])
   }
   else
   {
-    printf("Succeed to ping\n");
+    printf("Succeeded to ping\n");
     printf("id : %d, model_number : %d\n", dxl_id, model_number);
   }
 

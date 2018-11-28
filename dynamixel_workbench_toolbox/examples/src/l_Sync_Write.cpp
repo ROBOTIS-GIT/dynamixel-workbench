@@ -25,20 +25,20 @@ int main(int argc, char *argv[])
   const char* port_name = "/dev/ttyUSB0";
   int baud_rate = 57600;
 
-  uint8_t scanned_id[2];
-  uint8_t dxl_cnt = 0;
-  uint8_t range = 253;
+  uint16_t model_number = 0;
+  uint8_t dxl_id[2] = {0, 0};
 
-  if (argc < 4)
+  if (argc < 5)
   {
-    printf("Please set '-port_name', '-baud_rate', '-scan range' arguments for connected Dynamixels\n");
+    printf("Please set '-port_name', '-baud_rate', '-dxl_id', '-dxl_id' arguments for connected Dynamixels\n");
     return 0;
   }
   else
   {
     port_name = argv[1];
     baud_rate = atoi(argv[2]);
-    range = atoi(argv[3]);
+    dxl_id[0] = atoi(argv[3]);
+    dxl_id[1] = atoi(argv[4]);
   }
 
   DynamixelWorkbench dxl_wb;
@@ -57,34 +57,33 @@ int main(int argc, char *argv[])
   else
     printf("Succeed to init(%d)\n", baud_rate);  
 
-  result = dxl_wb.scan(scanned_id, &dxl_cnt, range, &log);
-  if (result == false)
+  for (int cnt = 0; cnt < 2; cnt++)
   {
-    printf("%s\n", log);
-    printf("Failed to scan\n");
-  }
-  else
-  {
-    printf("Find %d Dynamixels\n", dxl_cnt);
-
-    for (int cnt = 0; cnt < dxl_cnt; cnt++)
+    result = dxl_wb.ping(dxl_id[cnt], &model_number, &log);
+    if (result == false)
     {
-      printf("id : %d, model name : %s\n", scanned_id[cnt], dxl_wb.getModelName(scanned_id[cnt]));
+      printf("%s\n", log);
+      printf("Failed to ping\n");
+    }
+    else
+    {
+      printf("Succeeded to ping\n");
+      printf("id : %d, model_number : %d\n", dxl_id[cnt], model_number);
+    }
 
-      result = dxl_wb.jointMode(scanned_id[cnt], 0, 0, &log);
-      if (result == false)
-      {
-        printf("%s\n", log);
-        printf("Failed to change joint mode\n");
-      }
-      else
-      {
-        printf("Succeed to change joint mode\n");
-      }
+    result = dxl_wb.jointMode(dxl_id[cnt], 0, 0, &log);
+    if (result == false)
+    {
+      printf("%s\n", log);
+      printf("Failed to change joint mode\n");
+    }
+    else
+    {
+      printf("Succeed to change joint mode\n");
     }
   }
 
-  result = dxl_wb.addSyncWriteHandler(scanned_id[0], "Goal_Position", &log);
+  result = dxl_wb.addSyncWriteHandler(dxl_id[0], "Goal_Position", &log);
   if (result == false)
   {
     printf("%s\n", log);

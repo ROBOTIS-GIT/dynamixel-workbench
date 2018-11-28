@@ -126,7 +126,7 @@ bool monitoring(const char* port_name)
       }
       else if (strcmp(cmd, "scan") == 0)
       {
-        uint8_t range = 100;  // default
+        uint8_t range = 253;  // default
         
         range = atoi(param[0]);
         wb_result = dxl_wb.scan(get_id, &scan_cnt, range, &log);
@@ -352,6 +352,8 @@ bool monitoring(const char* port_name)
           {
             uint8_t id_1 = atoi(param[0]);
             uint8_t id_2 = atoi(param[1]);
+            uint8_t id[2] = {id_1, id_2};
+            uint8_t id_num = 2;    
 
             int32_t data[2] = {0, 0};
             data[0] = atoi(param[3]);
@@ -359,7 +361,7 @@ bool monitoring(const char* port_name)
 
             uint8_t handler_index = atoi(param[2]);
 
-            wb_result = dxl_wb.syncWrite(handler_index, (int32_t *)data, &log);
+            wb_result = dxl_wb.syncWrite(handler_index, id, id_num, (int32_t *)data, &log);
             if (wb_result == false)
             {
               printf("%s\n", log);
@@ -398,7 +400,7 @@ bool monitoring(const char* port_name)
             else
             {
               printf("%s\n", log);
-              printf("data[0] : %d, data[1] : %d\n", data[0], data[1]);
+              printf("id[%d] : %d, id[%d] : %d\n", id_1, data[0], id_2, data[1]);
             }
           }
         }

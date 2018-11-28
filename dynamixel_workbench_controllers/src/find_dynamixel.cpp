@@ -65,6 +65,7 @@ int main(int argc, char *argv[])
     dxl_cnt = 0;
     for (uint8_t num = 0; num < 100; num++) scanned_id[num] = 0;
 
+    ROS_INFO("Wait for scan...");
     result = dxl_wb.scan(scanned_id, &dxl_cnt, range, &log);
     if (result == false)
     {

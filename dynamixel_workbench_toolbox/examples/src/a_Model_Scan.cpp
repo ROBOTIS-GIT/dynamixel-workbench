@@ -52,8 +52,9 @@ int main(int argc, char *argv[])
     return 0;
   }
   else
-    printf("Succeed to init(%d)\n", baud_rate);  
+    printf("Succeeded to init(%d)\n", baud_rate);  
 
+  printf("Wait for scan...\n");
   result = dxl_wb.scan(scanned_id, &dxl_cnt, range, &log);
   if (result == false)
   {

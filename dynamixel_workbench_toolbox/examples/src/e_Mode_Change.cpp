@@ -53,10 +53,7 @@ int main(int argc, char *argv[])
   const char *log;
   bool result = false;
 
-  uint8_t id = dxl_id;
   uint16_t model_number = 0;
-
-  int count = 0;
 
   result = dxl_wb.init(port_name, baud_rate, &log);
   if (result == false)
@@ -67,7 +64,7 @@ int main(int argc, char *argv[])
     return 0;
   }
   else
-    printf("Succeed to init(%d)\n", baud_rate);  
+    printf("Succeeded to init(%d)\n", baud_rate);  
 
   result = dxl_wb.ping(dxl_id, &model_number, &log);
   if (result == false)
@@ -77,14 +74,14 @@ int main(int argc, char *argv[])
   }
   else
   {
-    printf("Succeed to ping\n");
+    printf("Succeeded to ping\n");
     printf("id : %d, model_number : %d\n", dxl_id, model_number);
   }
 
   switch (mode)
   {
     case 0:
-      dxl_wb.setCurrentControlMode(dxl_id, &log);
+      result = dxl_wb.setCurrentControlMode(dxl_id, &log);
       if (result == false)
       {
         printf("%s\n", log);
@@ -92,12 +89,12 @@ int main(int argc, char *argv[])
       }
       else
       {
-        printf("Succeed to set mode\n");
+        printf("Succeeded to set mode\n");
       }
      break;
 
     case 1:
-      dxl_wb.setVelocityControlMode(dxl_id, &log);
+      result = dxl_wb.setVelocityControlMode(dxl_id, &log);
       if (result == false)
       {
         printf("%s\n", log);
@@ -105,12 +102,12 @@ int main(int argc, char *argv[])
       }
       else
       {
-        printf("Succeed to set mode\n");
+        printf("Succeeded to set mode\n");
       }
      break;
 
     case 2:
-      dxl_wb.setPositionControlMode(dxl_id, &log);
+      result = dxl_wb.setPositionControlMode(dxl_id, &log);
       if (result == false)
       {
         printf("%s\n", log);
@@ -118,12 +115,12 @@ int main(int argc, char *argv[])
       }
       else
       {
-        printf("Succeed to set mode\n");
+        printf("Succeeded to set mode\n");
       }
      break;
 
     case 3:
-      dxl_wb.setExtendedPositionControlMode(dxl_id, &log);
+      result = dxl_wb.setExtendedPositionControlMode(dxl_id, &log);
       if (result == false)
       {
         printf("%s\n", log);
@@ -131,12 +128,12 @@ int main(int argc, char *argv[])
       }
       else
       {
-        printf("Succeed to set mode\n");
+        printf("Succeeded to set mode\n");
       }
      break;
 
     case 4:
-      dxl_wb.setCurrentBasedPositionControlMode(dxl_id, &log);
+      result = dxl_wb.setCurrentBasedPositionControlMode(dxl_id, &log);
       if (result == false)
       {
         printf("%s\n", log);
@@ -144,12 +141,12 @@ int main(int argc, char *argv[])
       }
       else
       {
-        printf("Succeed to set mode\n");
+        printf("Succeeded to set mode\n");
       }
      break;
 
     case 5:
-      dxl_wb.setPWMControlMode(dxl_id, &log);
+      result = dxl_wb.setPWMControlMode(dxl_id, &log);
       if (result == false)
       {
         printf("%s\n", log);
@@ -157,12 +154,12 @@ int main(int argc, char *argv[])
       }
       else
       {
-        printf("Succeed to set mode\n");
+        printf("Succeeded to set mode\n");
       }
      break;
 
     default:
-      dxl_wb.setPositionControlMode(dxl_id, &log);
+      result = dxl_wb.setPositionControlMode(dxl_id, &log);
       if (result == false)
       {
         printf("%s\n", log);
@@ -170,7 +167,7 @@ int main(int argc, char *argv[])
       }
       else
       {
-        printf("Succeed to set mode\n");
+        printf("Succeeded to set mode\n");
       }
      break;
   }

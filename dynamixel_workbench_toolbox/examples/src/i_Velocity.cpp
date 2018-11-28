@@ -41,10 +41,7 @@ int main(int argc, char *argv[])
   const char *log;
   bool result = false;
 
-  uint8_t id = dxl_id;
   uint16_t model_number = 0;
-
-  int count = 0;
 
   result = dxl_wb.init(port_name, baud_rate, &log);
   if (result == false)
@@ -82,14 +79,14 @@ int main(int argc, char *argv[])
 
     for (int count = 0; count < 3; count++)
     {
-      dxl_wb.goalVelocity(dxl_id, -100);
+      dxl_wb.goalVelocity(dxl_id, (int32_t)-100);
       sleep(3);
 
-      dxl_wb.goalVelocity(dxl_id, 100);
+      dxl_wb.goalVelocity(dxl_id, (int32_t)100);
       sleep(3);
     }
 
-    dxl_wb.goalVelocity(dxl_id, 0);
+    dxl_wb.goalVelocity(dxl_id, (int32_t)0);
   }
 
   return 0;

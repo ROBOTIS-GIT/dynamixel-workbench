@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
     return 0;
   }
   else
-    printf("Succeed to init(%d)\n", baud_rate);  
+    printf("Succeeded to init(%d)\n", baud_rate);  
 
   uint16_t model_number = 0;
   result = dxl_wb.ping(dxl_id, &model_number, &log);
@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
   }
   else
   {
-    printf("Succeed to ping\n");
+    printf("Succeeded to ping\n");
     printf("id : %d, model_number : %d\n", dxl_id, model_number);
   }
 
