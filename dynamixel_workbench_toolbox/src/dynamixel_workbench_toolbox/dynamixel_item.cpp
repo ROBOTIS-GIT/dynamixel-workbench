@@ -152,7 +152,7 @@ static const ControlItem items_AX[]{
     {s_Punch, 48, sizeof(s_Punch) - 1, 2}};
 #define COUNT_AX_ITEMS (sizeof(items_AX) / sizeof(items_AX[0]))
 
-static const ModelInfo info_AX = {0.1,  // The unit is about percentage NOT RPM
+static const ModelInfo info_AX = {0.11,
                                   0,
                                   512,
                                   1024,
@@ -199,7 +199,7 @@ static const ControlItem items_RX[]{
 
 #define COUNT_RX_ITEMS (sizeof(items_RX) / sizeof(items_RX[0]))
 
-static const ModelInfo info_RX = {0.1,  // The unit is about percentage NOT RPM
+static const ModelInfo info_RX = {0.11,
                                   0,
                                   512,
                                   1024,
@@ -248,7 +248,7 @@ static const ControlItem items_EX[]{
 
 #define COUNT_EX_ITEMS (sizeof(items_EX) / sizeof(items_EX[0]))
 
-static const ModelInfo info_EX = {0.1,  // The unit is about percentage NOT RPM
+static const ModelInfo info_EX = {0.11,
                                   0,
                                   2048,
                                   4096,
@@ -297,7 +297,7 @@ static const ControlItem items_MX[]{
 
 #define COUNT_MX_ITEMS (sizeof(items_MX) / sizeof(items_MX[0]))
 
-static const ModelInfo info_MX = {0.916,
+static const ModelInfo info_MX = {0.11,
                                   0,
                                   2048,
                                   4096,
@@ -525,7 +525,7 @@ static const ControlItem items_XL320[]{
 
 #define COUNT_XL320_ITEMS (sizeof(items_XL320) / sizeof(items_XL320[0]))
 
-static const ModelInfo info_XL320 = {0.1,   // The unit is about percentage NOT RPM
+static const ModelInfo info_XL320 = {0.11,
                                   0,
                                   512,
                                   1024,
