@@ -27,9 +27,6 @@ using namespace std;
 #define SPACEBAR_ASCII_VALUE        0x20
 #define ENTER_ASCII_VALUE           0x0a
 
-// #define DEVICE_NAME "/dev/tty.usbserial-FT1CTA16"
-#define DEVICE_NAME "/dev/ttyUSB0"
-
 uint8_t get_id[16];
 uint8_t scan_cnt = 0;
 uint8_t ping_cnt = 0;
@@ -38,23 +35,35 @@ int getch(void);
 int kbhit(void);
 bool isAvailableID(uint8_t id);
 void printInst();
-bool monitoring();
+bool monitoring(const char* port_name);
 
 DynamixelWorkbench dxl_wb;
 
 int main(int argc, char *argv[]) 
 {
+  const char* port_name = "/dev/ttyUSB0";
+
+  if (argc < 2)
+  {
+    printf("Please set '-port_name' arguments for connected Dynamixels\n");
+    return 0;
+  }
+  else
+  {
+    port_name = argv[1];
+  }
+
   printInst();
 
   while(true)
   {
-    monitoring();
+    monitoring(port_name);
   }
 
   return 0;
 }
 
-bool monitoring()
+bool monitoring(const char* port_name)
 {
   char input[128];
   char cmd[80];
@@ -102,7 +111,7 @@ bool monitoring()
         uint32_t baud = 57600;
         
         baud = atoi(param[0]);
-        wb_result = dxl_wb.init(DEVICE_NAME, baud, &log);
+        wb_result = dxl_wb.init(port_name, baud, &log);
         if (wb_result == false)
         {
           printf("%s\n", log);
