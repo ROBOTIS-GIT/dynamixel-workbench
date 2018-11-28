@@ -12,6 +12,6 @@ tilt:
   ID: 2
   Return_Delay_Time: 0
   Operating_Mode: 1
-  Drive_Mode: 4
+  #Drive_Mode: 4
   Profile_Acceleration: 0
   Profile_Velocity: 0
