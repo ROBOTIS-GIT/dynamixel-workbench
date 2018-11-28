@@ -516,6 +516,22 @@ bool DynamixelWorkbench::setExtendedPositionControlMode(uint8_t id, const char *
   return result;
 }
 
+bool DynamixelWorkbench::setMultiTurnControlMode(uint8_t id, const char **log)
+{
+  bool result = false;
+
+  result = setOperatingMode(id, MULTI_TURN_MODE, log);
+
+  if (result == false)
+  {
+    if (log != NULL) *log = "[DynamixelWorkbench] Failed to set Multi-Turn Control Mode!";
+    return false;
+  }
+
+  if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to set Multi-Turn Control Mode!";
+  return result;
+}
+
 bool DynamixelWorkbench::setCurrentBasedPositionControlMode(uint8_t id, const char **log)
 {
   bool result = false;

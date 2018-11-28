@@ -55,6 +55,7 @@ class DynamixelWorkbench : public DynamixelDriver
   bool setVelocityControlMode(uint8_t id, const char **log = NULL);  
   bool setPositionControlMode(uint8_t id, const char **log = NULL);  
   bool setExtendedPositionControlMode(uint8_t id, const char **log = NULL);
+  bool setMultiTurnControlMode(uint8_t id, const char **log = NULL);
   bool setCurrentBasedPositionControlMode(uint8_t id, const char **log = NULL);
   bool setPWMControlMode(uint8_t id, const char **log = NULL);
 
