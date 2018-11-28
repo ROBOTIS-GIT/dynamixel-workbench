@@ -1534,4 +1534,6 @@ bool DynamixelDriver::clearBulkReadParam(void)
 {
   groupBulkRead_->clearParam();
   bulk_read_parameter_cnt_ = 0;
+
+  return true;
 }
