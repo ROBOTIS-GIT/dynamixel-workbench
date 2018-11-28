@@ -173,30 +173,51 @@ bool DynamixelController::initSDKHandlers(void)
 
   if (dxl_wb_->getProtocolVersion() == 2.0f)
   {    
-    result = dxl_wb_->addSyncWriteHandler(it->second, "Goal_Velocity", &log);
-    if (result == false)
+    if (strcmp(dxl_wb_->getModelName(it->second), "XL-320") == 0)
     {
-      ROS_ERROR("%s", log);
-      return result;
-    }
+      result = dxl_wb_->addSyncWriteHandler(it->second, "Moving_Speed", &log);
+      if (result == false)
+      {
+        ROS_ERROR("%s", log);
+        return result;
+      }
 
-    result = dxl_wb_->addSyncReadHandler(ADDR_PRESENT_CURRENT_2,
-                                        (LENGTH_PRESENT_CURRENT_2 + LENGTH_PRESENT_VELOCITY_2 + LENGTH_PRESENT_POSITION_2),
-                                        &log);
-    if (result == false)
+      result = dxl_wb_->addSyncReadHandler(ADDR_PRESENT_POSITION_XL_320,
+                                          (LENGTH_PRESENT_POSITION_XL_320 + LENGTH_PRESENT_VELOCITY_XL_320 + LENGTH_PRESENT_LOAD_XL_320),
+                                          &log);
+      if (result == false)
+      {
+        ROS_ERROR("%s", log);
+        return result;
+      }
+    }
+    else
     {
-      ROS_ERROR("%s", log);
-      return result;
+      result = dxl_wb_->addSyncWriteHandler(it->second, "Goal_Velocity", &log);
+      if (result == false)
+      {
+        ROS_ERROR("%s", log);
+        return result;
+      }
+
+      result = dxl_wb_->addSyncReadHandler(ADDR_PRESENT_CURRENT_2,
+                                          (LENGTH_PRESENT_CURRENT_2 + LENGTH_PRESENT_VELOCITY_2 + LENGTH_PRESENT_POSITION_2),
+                                          &log);
+      if (result == false)
+      {
+        ROS_ERROR("%s", log);
+        return result;
+      }
     }
   }
   else if (dxl_wb_->getProtocolVersion() == 1.0f)
   {
-//    result = dxl_wb_->addSyncWriteHandler(it->second, "Moving_Speed", &log);
-//    if (result == false)
-//    {
-//      ROS_ERROR("%s", log);
-//      return result;
-//    }
+    result = dxl_wb_->addSyncWriteHandler(it->second, "Moving_Speed", &log);
+    if (result == false)
+    {
+      ROS_ERROR("%s", log);
+      return result;
+    }
   }
 
   return result;
@@ -229,13 +250,26 @@ bool DynamixelController::getPresentPosition(void)
     }
 
     WayPoint wp;
-    result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
-                                                  id_array,
-                                                  id_cnt,
-                                                  ADDR_PRESENT_POSITION_2,
-                                                  LENGTH_PRESENT_POSITION_2,
-                                                  get_position,
-                                                  &log);
+    if (strcmp(dxl_wb_->getModelName(id_array[0]), "XL-320") == 0)
+    {
+      result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
+                                                    id_array,
+                                                    id_cnt,
+                                                    ADDR_PRESENT_POSITION_XL_320,
+                                                    LENGTH_PRESENT_POSITION_XL_320,
+                                                    get_position,
+                                                    &log);
+    }
+    else
+    {
+      result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
+                                                    id_array,
+                                                    id_cnt,
+                                                    ADDR_PRESENT_POSITION_2,
+                                                    LENGTH_PRESENT_POSITION_2,
+                                                    get_position,
+                                                    &log);
+    }
     if (result == false)
     {
       ROS_ERROR("%s", log);
@@ -292,7 +326,7 @@ void DynamixelController::initServer()
 
 void DynamixelController::readCallback(const ros::TimerEvent&)
 {
-  static double priv_read_secs =ros::Time::now().toSec();
+//  static double priv_read_secs =ros::Time::now().toSec();
 
   bool result = false;
   const char* log = NULL;
@@ -315,53 +349,103 @@ void DynamixelController::readCallback(const ros::TimerEvent&)
     id_array[id_cnt++] = (uint8_t)dxl.second;
   }
 
-//  if (is_moving_ == false)
-//  {
+  if (is_moving_ == false)
+  {
     if (dxl_wb_->getProtocolVersion() == 2.0f)
     {
-      result = dxl_wb_->syncRead(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
-                                 id_array,
-                                 dynamixel_.size(),
-                                 &log);
-      if (result == false)
+      if (strcmp(dxl_wb_->getModelName(id_array[0]), "XL-320") == 0)
       {
-        ROS_ERROR("%s", log);
-      }
+        result = dxl_wb_->syncRead(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
+                                   id_array,
+                                   dynamixel_.size(),
+                                   &log);
+        if (result == false)
+        {
+          ROS_ERROR("%s", log);
+        }
 
-      result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
-                                                    id_array,
-                                                    id_cnt,
-                                                    ADDR_PRESENT_CURRENT_2,
-                                                    LENGTH_PRESENT_CURRENT_2,
-                                                    get_current,
-                                                    &log);
-      if (result == false)
-      {
-        ROS_ERROR("%s", log);
-      }
+        result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
+                                                      id_array,
+                                                      id_cnt,
+                                                      ADDR_PRESENT_LOAD_XL_320,
+                                                      LENGTH_PRESENT_LOAD_XL_320,
+                                                      get_current,
+                                                      &log);
+        if (result == false)
+        {
+          ROS_ERROR("%s", log);
+        }
 
-      result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
-                                                    id_array,
-                                                    id_cnt,
-                                                    ADDR_PRESENT_VELOCITY_2,
-                                                    LENGTH_PRESENT_VELOCITY_2,
-                                                    get_velocity,
-                                                    &log);
-      if (result == false)
-      {
-        ROS_ERROR("%s", log);
-      }
+        result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
+                                                      id_array,
+                                                      id_cnt,
+                                                      ADDR_PRESENT_VELOCITY_XL_320,
+                                                      LENGTH_PRESENT_VELOCITY_XL_320,
+                                                      get_velocity,
+                                                      &log);
+        if (result == false)
+        {
+          ROS_ERROR("%s", log);
+        }
 
-      result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
-                                                    id_array,
-                                                    id_cnt,
-                                                    ADDR_PRESENT_POSITION_2,
-                                                    LENGTH_PRESENT_POSITION_2,
-                                                    get_position,
-                                                    &log);
-      if (result == false)
+        result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
+                                                      id_array,
+                                                      id_cnt,
+                                                      ADDR_PRESENT_POSITION_XL_320,
+                                                      LENGTH_PRESENT_POSITION_XL_320,
+                                                      get_position,
+                                                      &log);
+        if (result == false)
+        {
+          ROS_ERROR("%s", log);
+        }
+      }
+      else
       {
-        ROS_ERROR("%s", log);
+        result = dxl_wb_->syncRead(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
+                                   id_array,
+                                   dynamixel_.size(),
+                                   &log);
+        if (result == false)
+        {
+          ROS_ERROR("%s", log);
+        }
+
+        result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
+                                                      id_array,
+                                                      id_cnt,
+                                                      ADDR_PRESENT_CURRENT_2,
+                                                      LENGTH_PRESENT_CURRENT_2,
+                                                      get_current,
+                                                      &log);
+        if (result == false)
+        {
+          ROS_ERROR("%s", log);
+        }
+
+        result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
+                                                      id_array,
+                                                      id_cnt,
+                                                      ADDR_PRESENT_VELOCITY_2,
+                                                      LENGTH_PRESENT_VELOCITY_2,
+                                                      get_velocity,
+                                                      &log);
+        if (result == false)
+        {
+          ROS_ERROR("%s", log);
+        }
+
+        result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
+                                                      id_array,
+                                                      id_cnt,
+                                                      ADDR_PRESENT_POSITION_2,
+                                                      LENGTH_PRESENT_POSITION_2,
+                                                      get_position,
+                                                      &log);
+        if (result == false)
+        {
+          ROS_ERROR("%s", log);
+        }
       }
 
       for(uint8_t index = 0; index < id_cnt; index++)
@@ -397,10 +481,10 @@ void DynamixelController::readCallback(const ros::TimerEvent&)
         dxl_cnt++;
       }
     }
-//  }
+  }
 
-  ROS_WARN("[readCallback] diff_secs : %f", ros::Time::now().toSec() - priv_read_secs);
-  priv_read_secs = ros::Time::now().toSec();
+//  ROS_WARN("[readCallback] diff_secs : %f", ros::Time::now().toSec() - priv_read_secs);
+//  priv_read_secs = ros::Time::now().toSec();
 }
 
 void DynamixelController::publishCallback(const ros::TimerEvent&)
@@ -424,8 +508,12 @@ void DynamixelController::publishCallback(const ros::TimerEvent&)
       double velocity = 0.0;
       double effort = 0.0;
 
-      if (dxl_wb_->getProtocolVersion() == 2.0f)      effort = dxl_wb_->convertValue2Current((uint8_t)dxl.second, (int16_t)dynamixel_state_list_.dynamixel_state[id_cnt].present_current);
-      else if (dxl_wb_->getProtocolVersion() == 1.0f) effort = dxl_wb_->convertValue2Load((uint8_t)dxl.second, (int16_t)dynamixel_state_list_.dynamixel_state[id_cnt].present_current);
+      if (dxl_wb_->getProtocolVersion() == 2.0f)
+      {
+        if (strcmp(dxl_wb_->getModelName((uint8_t)dxl.second), "XL-320") == 0) effort = dxl_wb_->convertValue2Load((int16_t)dynamixel_state_list_.dynamixel_state[id_cnt].present_current);
+        else  effort = dxl_wb_->convertValue2Current((int16_t)dynamixel_state_list_.dynamixel_state[id_cnt].present_current);
+      }
+      else if (dxl_wb_->getProtocolVersion() == 1.0f) effort = dxl_wb_->convertValue2Load((int16_t)dynamixel_state_list_.dynamixel_state[id_cnt].present_current);
 
       velocity = dxl_wb_->convertValue2Velocity((uint8_t)dxl.second, (int32_t)dynamixel_state_list_.dynamixel_state[id_cnt].present_velocity);
       position = dxl_wb_->convertValue2Radian((uint8_t)dxl.second, (int32_t)dynamixel_state_list_.dynamixel_state[id_cnt].present_position);
@@ -477,8 +565,34 @@ void DynamixelController::commandVelocityCallback(const geometry_msgs::Twist::Co
   wheel_velocity[LEFT]  = robot_lin_vel - (robot_ang_vel * wheel_separation_ / 2);
   wheel_velocity[RIGHT] = robot_lin_vel + (robot_ang_vel * wheel_separation_ / 2);
 
-  dynamixel_velocity[LEFT]  = wheel_velocity[LEFT] * velocity_constant_value;
-  dynamixel_velocity[RIGHT] = wheel_velocity[RIGHT] * velocity_constant_value;
+  if (dxl_wb_->getProtocolVersion() == 2.0f)
+  {
+    if (strcmp(dxl_wb_->getModelName(id_array[0]), "XL-320") == 0)
+    {
+      if (wheel_velocity[LEFT] == 0.0f) dynamixel_velocity[LEFT] = 0;
+      else if (wheel_velocity[LEFT] < 0.0f) dynamixel_velocity[LEFT] = ((-1.0f) * wheel_velocity[LEFT]) * velocity_constant_value + 1023;
+      else if (wheel_velocity[LEFT] > 0.0f) dynamixel_velocity[LEFT] = (wheel_velocity[LEFT] * velocity_constant_value);
+
+      if (wheel_velocity[RIGHT] == 0.0f) dynamixel_velocity[RIGHT] = 0;
+      else if (wheel_velocity[RIGHT] < 0.0f)  dynamixel_velocity[RIGHT] = ((-1.0f) * wheel_velocity[RIGHT] * velocity_constant_value) + 1023;
+      else if (wheel_velocity[RIGHT] > 0.0f)  dynamixel_velocity[RIGHT] = (wheel_velocity[RIGHT] * velocity_constant_value);
+    }
+    else
+    {
+      dynamixel_velocity[LEFT]  = wheel_velocity[LEFT] * velocity_constant_value;
+      dynamixel_velocity[RIGHT] = wheel_velocity[RIGHT] * velocity_constant_value;
+    }
+  }
+  else if (dxl_wb_->getProtocolVersion() == 1.0f)
+  {
+    if (wheel_velocity[LEFT] == 0.0f) dynamixel_velocity[LEFT] = 0;
+    else if (wheel_velocity[LEFT] < 0.0f) dynamixel_velocity[LEFT] = ((-1.0f) * wheel_velocity[LEFT]) * velocity_constant_value + 1023;
+    else if (wheel_velocity[LEFT] > 0.0f) dynamixel_velocity[LEFT] = (wheel_velocity[LEFT] * velocity_constant_value);
+
+    if (wheel_velocity[RIGHT] == 0.0f) dynamixel_velocity[RIGHT] = 0;
+    else if (wheel_velocity[RIGHT] < 0.0f)  dynamixel_velocity[RIGHT] = ((-1.0f) * wheel_velocity[RIGHT] * velocity_constant_value) + 1023;
+    else if (wheel_velocity[RIGHT] > 0.0f)  dynamixel_velocity[RIGHT] = (wheel_velocity[RIGHT] * velocity_constant_value);
+  }
 
   result = dxl_wb_->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_VELOCITY, id_array, dynamixel_.size(), dynamixel_velocity, &log);
   if (result == false)
