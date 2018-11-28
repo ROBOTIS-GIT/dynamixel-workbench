@@ -76,16 +76,16 @@ class DynamixelWorkbench : public DynamixelDriver
   bool getPresentVelocityData(uint8_t id, int32_t* data, const char **log = NULL);
   bool getVelocity(uint8_t id, float* velocity, const char **log = NULL);
 
-  int32_t convertRadian2Value(uint8_t id, float radian, const char **log = NULL);
-  float convertValue2Radian(uint8_t id, int32_t value, const char **log = NULL);
+  int32_t convertRadian2Value(uint8_t id, float radian);
+  float convertValue2Radian(uint8_t id, int32_t value);
 
-  int32_t convertVelocity2Value(uint8_t id, float velocity, const char **log = NULL);
-  float convertValue2Velocity(uint8_t id, int32_t value, const char **log = NULL);
+  int32_t convertVelocity2Value(uint8_t id, float velocity);
+  float convertValue2Velocity(uint8_t id, int32_t value);
 
-  int16_t convertCurrent2Value(uint8_t id, float current, const char **log = NULL);
-  float convertValue2Current(uint8_t id, int16_t value, const char **log = NULL);
+  int16_t convertCurrent2Value(float current);
+  float convertValue2Current(int16_t value);
 
-  float convertValue2Load(uint8_t id, int16_t value, const char **log = NULL);
+  float convertValue2Load(int16_t value);
 };
 
 #endif /*DYNAMIXEL_WORKBENCH_H_*/
