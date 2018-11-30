@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright 2016 ROBOTIS CO., LTD.
+* Copyright 2018 ROBOTIS CO., LTD.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -18,397 +18,277 @@
 
 #include "../../include/dynamixel_workbench_toolbox/dynamixel_tool.h"
 
-DynamixelTool::DynamixelTool() : dxl_info_cnt_(0), the_number_of_item_(0){}
+//===================================================================
+// Define Serial ID to Namd table
+//===================================================================
+typedef struct 
+{
+  uint16_t      number;
+  const char*   name; 
+} DynamixelModel;
+
+static const DynamixelModel dynamixel_model_table[] = {
+    {AX_12A, "AX-12A"},
+    {AX_12W, "AX-12W"},
+    {AX_18A, "AX-18A"},
+
+    {RX_10, "RX-10"},
+    {RX_24F, "RX-24F"},
+    {RX_28, "RX-28"},
+    {RX_64, "RX-64"},
+
+    {EX_106, "EX-106"},
+
+    {MX_12W, "MX-12W"},
+    {MX_28, "MX-28"},
+    {MX_28_2, "MX-28-2"},
+    {MX_64, "MX-64"},
+    {MX_64_2, "MX-64-2"},
+    {MX_106, "MX-106"},
+    {MX_106_2, "MX-106-2"},
+
+    {XL_320, "XL-320"},
+    {XL430_W250, "XL430-W250"},
+
+    {XM430_W210, "XM430-W210"},
+    {XM430_W350, "XM430-W350"},
+    {XM540_W150, "XM540-W150"},
+    {XM540_W270, "XM540-W270"},
+
+    {XH430_V210, "XH430-V210"},
+    {XH430_V350, "XH430-V350"},
+    {XH430_W210, "XH430-W210"},
+    {XH430_W350, "XH430-W350"},
+
+    {PRO_L42_10_S300_R, "PRO-L42-10-S300-R"},
+    {PRO_L54_30_S400_R, "PRO-L54-30-S400-R"},
+    {PRO_L54_30_S500_R, "PRO-L54-30-S500-R"},
+    {PRO_L54_50_S290_R, "PRO-L54-50-S290-R"},
+    {PRO_L54_50_S500_R, "PRO-L54-50-S500-R"},
+
+    {PRO_M42_10_S260_R, "PRO-M42-10-S260-R"},
+    {PRO_M54_40_S250_R, "PRO-M54-40-S250-R"},
+    {PRO_M54_60_S250_R, "PRO-M54-60-S250-R"},
+
+    {PRO_H42_20_S300_R, "PRO-H42-20-S300-R"},
+    {PRO_H54_100_S500_R, "PRO-H54-100-S500-R"},
+    {PRO_H54_200_S500_R, "PRO-H54-200-S500-R"},
+
+    {PRO_H42P_020_S300_R, "PRO-H42P-020-S300-R"},
+    {PRO_H54P_100_S500_R, "PRO-H54P-100-S500-R"},
+    {PRO_H54P_200_S500_R, "PRO-H54P-200-S500-R"}
+};
+#define COUNT_DYNAMIXEL_MODEL  (sizeof(dynamixel_model_table)/sizeof(dynamixel_model_table[0]))
+
+DynamixelTool::DynamixelTool() : dxl_cnt_(0), the_number_of_control_item_(0){}
 
 DynamixelTool::~DynamixelTool(){}
 
-void DynamixelTool::addTool(const char* model_name, uint8_t id)
+void DynamixelTool::initTool(void)
 {
-  strcpy(dxl_info_[dxl_info_cnt_].model_name, model_name);
-  setModelNum(model_name);
-  dxl_info_[dxl_info_cnt_].id = id;
+  for (uint8_t i = 0; i < DYNAMIXEL_BUFFER; i++)
+    dxl_id_[i] = 0;
 
-  setControlTable(model_name);
-  dxl_info_cnt_++;
+  dxl_cnt_ = 0;
 }
 
-void DynamixelTool::addTool(uint16_t model_number, uint8_t id)
+bool DynamixelTool::addTool(const char *model_name, uint8_t id, const char **log)
 {
-  setModelName(model_number);
-  dxl_info_[dxl_info_cnt_].model_num = model_number;
-  dxl_info_[dxl_info_cnt_].id = id;
+  bool result = false;
+  initTool();
 
-  setControlTable(model_number);
-  dxl_info_cnt_++;
+  model_name_ = model_name;
+  result = setModelNumber(model_name, log);
+  if (result == false) return false;
+  dxl_id_[dxl_cnt_++] = id;
+
+  result = setControlTable(model_name, log);
+  if (result == false) return false;
+
+  return true;
 }
 
-void DynamixelTool::addDXL(const char* model_name, uint8_t id)
+bool DynamixelTool::addTool(uint16_t model_number, uint8_t id, const char **log)
 {
-  strcpy(dxl_info_[dxl_info_cnt_].model_name, model_name);
-  setModelNum(model_name);
-  dxl_info_[dxl_info_cnt_].id = id;
+  bool result = false;
+  initTool();
 
-  dxl_info_cnt_++;
+  result = setModelName(model_number, log);
+  if (result == false) return false;
+  model_number_ = model_number;
+  dxl_id_[dxl_cnt_++] = id;
+
+  result = setControlTable(model_number, log);
+  if (result == false) return false;
+
+  return result;
 }
 
-void DynamixelTool::addDXL(uint16_t model_number, uint8_t id)
+void DynamixelTool::addDXL(uint8_t id)
 {
-  setModelName(model_number);
-  dxl_info_[dxl_info_cnt_].model_num = model_number;
-  dxl_info_[dxl_info_cnt_].id = id;
-
-  dxl_info_cnt_++;
+  dxl_id_[dxl_cnt_++] = id;
 }
 
-void DynamixelTool::setControlTable(const char *model_name)
+bool DynamixelTool::setControlTable(const char *model_name, const char **log)
 {  
   const char* name = model_name;
+  uint8_t name_length = strlen(name);
 
-  if (!strncmp(name, "AX-12A", strlen(name))) 
-    setControlTable(AX_12A);
-  else if (!strncmp(name, "AX-12W", strlen(name)))
-    setControlTable(AX_12W);
-  else if (!strncmp(name, "AX-18A", strlen(name)))
-    setControlTable(AX_18A);
+  for (uint8_t index=0; index < COUNT_DYNAMIXEL_MODEL; index++)
+  {
+    if(strncmp(name, dynamixel_model_table[index].name, name_length) == 0)
+    {
+      return setControlTable(dynamixel_model_table[index].number, log);
+    }
+  }
 
-  else if (!strncmp(name, "RX-24F", strlen(name)))
-    setControlTable(RX_24F);
-  else if (!strncmp(name, "RX-28", strlen(name)))
-    setControlTable(RX_28);
-  else if (!strncmp(name, "RX-64", strlen(name)))
-    setControlTable(RX_64);
-
-  else if (!strncmp(name, "EX-106", strlen(name)))
-    setControlTable(EX_106);
-
-  else if (!strncmp(name, "MX-12W", strlen(name)))
-    setControlTable(MX_12W);
-  else if (!strncmp(name, "MX-28", strlen(name)))
-    setControlTable(MX_28);
-  else if (!strncmp(name, "MX-28-2", strlen(name)))
-    setControlTable(MX_28_2);
-  else if (!strncmp(name, "MX-64", strlen(name)))
-    setControlTable(MX_64);
-  else if (!strncmp(name, "MX-64-2", strlen(name)))
-    setControlTable(MX_64_2);
-  else if (!strncmp(name, "MX-106", strlen(name)))
-    setControlTable(MX_106);
-  else if (!strncmp(name, "MX-106-2", strlen(name)))
-    setControlTable(MX_106_2);
-
-  else if (!strncmp(name, "XL-320", strlen(name)))
-    setControlTable(XL_320);
-  else if (!strncmp(name, "XL430-W250", strlen(name)))
-    setControlTable(XL430_W250);
-
-  else if (!strncmp(name, "XM430-W210", strlen(name)))
-    setControlTable(XM430_W210);
-  else if (!strncmp(name, "XM430-W350", strlen(name)))
-    setControlTable(XM430_W350);
-  else if (!strncmp(name, "XM540-W150", strlen(name)))
-    setControlTable(XM540_W150);
-  else if (!strncmp(name, "XM540-W270", strlen(name)))
-    setControlTable(XM540_W270);
-
-  else if (!strncmp(name, "XH430-V210", strlen(name)))
-    setControlTable(XH430_V210);
-  else if (!strncmp(name, "XH430-V350", strlen(name)))
-    setControlTable(XH430_V350);
-  else if (!strncmp(name, "XH430-W210", strlen(name)))
-    setControlTable(XH430_W210);
-  else if (!strncmp(name, "XH430-W350", strlen(name)))
-    setControlTable(XH430_W350);
-
-  else if (!strncmp(name, "PRO-L42-10-S300-R", strlen(name)))
-    setControlTable(PRO_L42_10_S300_R);
-  else if (!strncmp(name, "PRO-L54-30-S400-R", strlen(name)))
-    setControlTable(PRO_L54_30_S400_R);
-  else if (!strncmp(name, "PRO-L54-30-S500-R", strlen(name)))
-    setControlTable(PRO_L54_30_S500_R);
-  else if (!strncmp(name, "PRO-L54-50-S290-R", strlen(name)))
-    setControlTable(PRO_L54_50_S290_R);
-  else if (!strncmp(name, "PRO-L54-50-S500-R", strlen(name)))
-    setControlTable(PRO_L54_50_S500_R);
-
-  else if (!strncmp(name, "PRO-M42-10-S260-R", strlen(name)))
-    setControlTable(PRO_M42_10_S260_R);
-  else if (!strncmp(name, "PRO-M54-40-S250-R", strlen(name)))
-    setControlTable(PRO_M54_40_S250_R);
-  else if (!strncmp(name, "PRO-M54-60-S250-R", strlen(name)))
-    setControlTable(PRO_M54_60_S250_R);
-
-  else if (!strncmp(name, "PRO-H42-20-S300-R", strlen(name)))
-    setControlTable(PRO_H42_20_S300_R);
-  else if (!strncmp(name, "PRO-H54-100-S500-R", strlen(name)))
-    setControlTable(PRO_H54_100_S500_R);
-  else if (!strncmp(name, "PRO-H54-200-S500-R", strlen(name)))
-    setControlTable(PRO_H54_200_S500_R);
+  if (log != NULL)
+    *log = "[DynamixelTool] Failed to set control table due to mismatch model name and model number";
+  return false;
 }
 
-void DynamixelTool::setControlTable(uint16_t model_number)
+bool DynamixelTool::setControlTable(uint16_t model_number, const char **log)
 {
-  item_ptr_           = getConrolTableItem(model_number);
-  the_number_of_item_ = getTheNumberOfControlItem();
-  info_ptr_           = getModelInfo(model_number);
+  control_table_              = DynamixelItem::getControlTable(model_number);
+  the_number_of_control_item_ = DynamixelItem::getTheNumberOfControlItem();
+  model_info_                 = DynamixelItem::getModelInfo(model_number);
 
-  for (int index = 0; index < the_number_of_item_; index++)
-    item_[index] = item_ptr_[index];
+  if (control_table_ == NULL || model_info_ == NULL)
+  {
+    if (log != NULL)
+      *log = "[DynamixelTool] Failed to get control table or model info";
+    return false;
+  }
 
-
-  info_.velocity_to_value_ratio         = info_ptr_->velocity_to_value_ratio;
-  info_.torque_to_current_value_ratio   = info_ptr_->torque_to_current_value_ratio;
-
-  info_.value_of_0_radian_position      = info_ptr_->value_of_0_radian_position;
-  info_.value_of_min_radian_position    = info_ptr_->value_of_min_radian_position;
-  info_.value_of_max_radian_position    = info_ptr_->value_of_max_radian_position;
-
-  info_.min_radian                      = info_ptr_->min_radian;
-  info_.max_radian                      = info_ptr_->max_radian;
+  return true;
 }
 
-void DynamixelTool::setModelName(uint16_t model_number)
+bool DynamixelTool::setModelName(uint16_t model_number, const char **log)
 {
   uint16_t num = model_number;
 
-  if (num == AX_12A)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "AX-12A");
-  else if (num == AX_12W)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "AX-12W");
-  else if (num == AX_18A)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "AX-18A");
+  for (uint8_t index=0; index < COUNT_DYNAMIXEL_MODEL; index++)
+  {
+    if (num == dynamixel_model_table[index].number)
+    {
+      model_name_ = dynamixel_model_table[index].name;
+      return true;
+    }
+  }
 
-  else if (num == RX_10)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "RX-10");
-  else if (num == RX_24F)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "RX-24F");
-  else if (num == RX_28)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "RX-28");
-  else if (num == RX_64)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "RX-64");
-
-  else if (num == EX_106)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "EX-106");
-
-  else if (num == MX_12W)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "MX-12W");
-  else if (num == MX_28)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "MX-28");
-  else if (num == MX_28_2)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "MX-28-2");
-  else if (num == MX_64)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "MX-64");
-  else if (num == MX_64_2)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "MX-64-2");
-  else if (num == MX_106)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "MX-106");
-  else if (num == MX_106_2)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "MX-106-2");
-
-  else if (num == XL_320)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "XL-320");
-  else if (num == XL430_W250)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "XL430-W250");
-
-  else if (num == XM430_W210)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "XM430-W210");
-  else if (num == XM430_W350)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "XM430-W350");
-  else if (num == XM540_W150)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "XM540-W150");
-  else if (num == XM540_W270)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "XM540-W270");
-
-  else if (num == XH430_V210)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "XH430-V210");
-  else if (num == XH430_V350)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "XH430-V350");
-  else if (num == XH430_W210)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "XH430-W210");
-  else if (num == XH430_W350)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "XH430-W350");
-
-  else if (num == PRO_L42_10_S300_R)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "PRO-L42-10-S300-R");
-  else if (num == PRO_L54_30_S400_R)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "PRO-L54-30-S400-R");
-  else if (num == PRO_L54_30_S500_R)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "PRO-L54-30-S500-R");
-  else if (num == PRO_L54_50_S290_R)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "PRO-L54-50-S290-R");
-  else if (num == PRO_L54_50_S500_R)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "PRO-L54-50-S500-R");
-
-  else if (num == PRO_M42_10_S260_R)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "PRO-M42-10-S260-R");
-  else if (num == PRO_M54_40_S250_R)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "PRO-M54-40-S250-R");
-  else if (num == PRO_M54_60_S250_R)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "PRO-M54-60-S250-R");
-
-  else if (num == PRO_H42_20_S300_R)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "PRO-H42-20-S300-R");
-  else if (num == PRO_H54_100_S500_R)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "PRO-H54-100-S500-R");
-  else if (num == PRO_H54_200_S500_R)
-    strcpy(dxl_info_[dxl_info_cnt_].model_name, "PRO-H54-200-S500-R");
+  if (log != NULL)
+    *log = "[DynamixelTool] Failed to find model name";
+  return false;
 }
 
-void DynamixelTool::setModelNum(const char* model_name)
+bool DynamixelTool::setModelNumber(const char *model_name, const char **log)
 {
   const char* name = model_name;
+  uint8_t name_length = strlen(name);
 
-  if (!strncmp(name, "AX-12A", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = AX_12A;
-  else if (!strncmp(name, "AX-12W", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = AX_12W;
-  else if (!strncmp(name, "AX-18A", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = AX_18A;
+  for (uint8_t index=0; index < COUNT_DYNAMIXEL_MODEL; index++)
+  {
+    if(strncmp(name, model_name_, name_length) == 0)
+    {
+      model_number_ = dynamixel_model_table[index].number;
+      return true;
+    }
+  }
 
-  else if (!strncmp(name, "RX-10", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = RX_10;
-  else if (!strncmp(name, "RX-24F", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = RX_24F;
-  else if (!strncmp(name, "RX-28", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = RX_28;
-  else if (!strncmp(name, "RX-64", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = RX_64;
-
-  else if (!strncmp(name, "EX-106", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = EX_106;
-
-  else if (!strncmp(name, "MX-12W", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = MX_12W;
-  else if (!strncmp(name, "MX-28", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = MX_28;
-  else if (!strncmp(name, "MX-28-2", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = MX_28_2;
-  else if (!strncmp(name, "MX-64", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = MX_64;
-  else if (!strncmp(name, "MX-64-2", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = MX_64_2;
-  else if (!strncmp(name, "MX-106", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = MX_106;
-  else if (!strncmp(name, "MX-106-2", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = MX_106_2;
-
-  else if (!strncmp(name, "XL-320", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = XL_320;
-  else if (!strncmp(name, "XL430-W250", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = XL430_W250;
-
-  else if (!strncmp(name, "XM430-W210", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = XM430_W210;
-  else if (!strncmp(name, "XM430-W350", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = XM430_W350;
-  else if (!strncmp(name, "XM540-W150", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = XM540_W150;
-  else if (!strncmp(name, "XM540-W270", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = XM540_W270;
-
-  else if (!strncmp(name, "XH430-V210", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = XH430_V210;
-  else if (!strncmp(name, "XH430-V350", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = XH430_V350;
-  else if (!strncmp(name, "XH430-W210", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = XH430_W210;
-  else if (!strncmp(name, "XH430-W350", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = XH430_W350;
-
-  else if (!strncmp(name, "PRO-L42-10-S300-R", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = PRO_L42_10_S300_R;
-  else if (!strncmp(name, "PRO-L54-30-S400-R", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = PRO_L54_30_S400_R;
-  else if (!strncmp(name, "PRO-L54-30-S500-R", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = PRO_L54_30_S500_R;
-  else if (!strncmp(name, "PRO-L54-50-S290-R", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = PRO_L54_50_S290_R;
-  else if (!strncmp(name, "PRO-L54-50-S500-R", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = PRO_L54_50_S500_R;
-
-  else if (!strncmp(name, "PRO-M42-10-S260-R", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = PRO_M42_10_S260_R;
-  else if (!strncmp(name, "PRO-M54-40-S250-R", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = PRO_M54_40_S250_R;
-  else if (!strncmp(name, "PRO-M54-60-S250-R", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = PRO_M54_60_S250_R;
-
-  else if (!strncmp(name, "PRO-H42-20-S300-R", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = PRO_H42_20_S300_R;
-  else if (!strncmp(name, "PRO-H54-100-S500-R", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = PRO_H54_100_S500_R;
-  else if (!strncmp(name, "PRO-H54-200-S500-R", strlen(name)))
-    dxl_info_[dxl_info_cnt_].model_num = PRO_H54_200_S500_R;
+  if (log != NULL)
+    *log = "[DynamixelTool] Failed to find model number";
+  return false;
 }
 
-float DynamixelTool::getVelocityToValueRatio(void)
+const char* DynamixelTool::getModelName(void)
 {
-  return info_.velocity_to_value_ratio;
+  return model_name_;
 }
 
-float DynamixelTool::getTorqueToCurrentValueRatio(void)
+uint16_t DynamixelTool::getModelNumber(void)
 {
-  return info_.torque_to_current_value_ratio;
+  return model_number_;
 }
 
-int32_t DynamixelTool::getValueOfMinRadianPosition(void)
+const uint8_t* DynamixelTool::getID(void)
 {
-  return info_.value_of_min_radian_position;
+  const uint8_t* id_table_ = dxl_id_;
+
+  return id_table_;
 }
 
-int32_t DynamixelTool::getValueOfMaxRadianPosition(void)
+uint8_t DynamixelTool::getDynamixelCount(void)
 {
-  return info_.value_of_max_radian_position;
+  return dxl_cnt_;
 }
 
-int32_t DynamixelTool::getValueOfZeroRadianPosition(void)
+uint8_t DynamixelTool::getDynamixelBuffer(void)
 {
-  return info_.value_of_0_radian_position;
+  return DYNAMIXEL_BUFFER;
+}
+
+float DynamixelTool::getRPM(void)
+{
+  return model_info_->rpm;
+}
+
+int64_t DynamixelTool::getValueOfMinRadianPosition(void)
+{
+  return model_info_->value_of_min_radian_position;
+}
+
+int64_t DynamixelTool::getValueOfMaxRadianPosition(void)
+{
+  return model_info_->value_of_max_radian_position;
+}
+
+int64_t DynamixelTool::getValueOfZeroRadianPosition(void)
+{
+  return model_info_->value_of_zero_radian_position;
 }
 
 float DynamixelTool::getMinRadian(void)
 {
-  return info_.min_radian;
+  return model_info_->min_radian;
 }
 
 float DynamixelTool::getMaxRadian(void)
 {
-  return info_.max_radian;
+  return model_info_->max_radian;
 }
 
-uint8_t DynamixelTool::getTheNumberOfItem(void)
+uint8_t DynamixelTool::getTheNumberOfControlItem(void)
 {
-  return the_number_of_item_;
+  return the_number_of_control_item_;
 }
 
-ControlTableItem* DynamixelTool::getControlItem(const char* item_name)
+const ControlItem *DynamixelTool::getControlItem(const char *item_name, const char **log)
 {
-  static ControlTableItem* cti;    
+  const ControlItem* control_item = control_table_;  
+  uint8_t name_length = strlen(item_name);
 
-  for (int num = 0; num < the_number_of_item_; num++)
+  for (uint8_t num = 0; num < the_number_of_control_item_; num++)
   {
-    if (!strncmp(item_name, item_[num].item_name, strlen(item_[num].item_name)))
+    if ((name_length == control_item->item_name_length) && 
+        (memcmp(item_name, control_item->item_name, name_length) == 0))
     {
-      cti = &item_[num];
-      return cti;
+      return control_item;
     }
+    control_item++;
   }
 
-  if (!strncmp(item_name, "Moving_Speed", strlen("Moving_Speed")))
-    getControlItem("Goal_Velocity");
-  else if (!strncmp(item_name, "Goal_Velocity", strlen("Goal_Velocity")))
-    getControlItem("Moving_Speed");
-  else if (!strncmp(item_name, "Present_Velocity", strlen("Present_Velocity")))
-    getControlItem("Present_Speed");
-  else if (!strncmp(item_name, "Present_Speed", strlen("Present_Speed")))
-    getControlItem("Present_Velocity");
+  if (log != NULL)
+    *log = "[DynamixelTool] Can't find Item";
+  return NULL;
 }
 
-ControlTableItem* DynamixelTool::getControlItemPtr(void)
+const ControlItem *DynamixelTool::getControlTable(void)
 {
-  return item_ptr_;
+  return control_table_;
 }
 
-ModelInfo* DynamixelTool::getModelInfoPtr(void)
+const ModelInfo *DynamixelTool::getModelInfo(void)
 {
-  return info_ptr_;
+  return model_info_;
 }
+

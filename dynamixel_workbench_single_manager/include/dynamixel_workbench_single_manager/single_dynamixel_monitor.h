@@ -22,7 +22,7 @@
 #include <ros/ros.h>
 
 #include "dynamixel_sdk/dynamixel_sdk.h"
-#include "dynamixel_workbench_toolbox/dynamixel_driver.h"
+#include "dynamixel_workbench_toolbox/dynamixel_workbench.h"
 
 #include "dynamixel_workbench_msgs/DynamixelCommand.h"
 #include "dynamixel_workbench_msgs/GetDynamixelInfo.h"
@@ -47,7 +47,7 @@ class SingleDynamixelMonitor
   ros::ServiceServer dynamixel_info_server_;
   ros::ServiceServer dynamixel_command_server_;
 
-  DynamixelDriver *dynamixel_driver_;
+  DynamixelWorkbench *dynamixel_workbench_;
 
   std::string device_name_;
   uint32_t dxl_baud_rate_;

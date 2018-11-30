@@ -1,0 +1,8 @@
+<launch>
+  <param name="dynamixel_workbench/trajectory_info" value="$(find dynamixel_workbench_operators)/config/motion.yaml"/>
+
+  <node name="joint_operator" pkg="dynamixel_workbench_operators" type="joint_operator"
+        required="true" output="screen" ns="dynamixel_workbench">
+    <param name="is_loop" value="false"/>
+  </node>
+</launch>
