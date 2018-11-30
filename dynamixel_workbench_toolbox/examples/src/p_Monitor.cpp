@@ -165,7 +165,7 @@ bool monitoring(const char* port_name)
       }
       else if (isAvailableID(atoi(param[0])))
       {
-        if (strcmp(cmd, "info") == 0)
+        if (strcmp(cmd, "control_table") == 0)
         {
           uint8_t id = atoi(param[0]);
 
@@ -624,7 +624,7 @@ void printInst(void)
   printf("begin  (BAUD)\n");
   printf("scan   (RANGE)\n");
   printf("ping   (ID)\n");
-  printf("info   (ID)\n");
+  printf("control_table (ID)\n");
   printf("id     (ID) (NEW_ID)\n");
   printf("baud   (ID) (NEW_BAUD)\n");
   printf("torque_on (ID)\n");
