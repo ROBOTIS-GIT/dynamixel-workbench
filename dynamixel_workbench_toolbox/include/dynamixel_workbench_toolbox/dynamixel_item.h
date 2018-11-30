@@ -68,6 +68,10 @@
 #define PRO_H54_100_S500_R 53768
 #define PRO_H54_200_S500_R 54024
 
+#define PRO_H42P_020_S300_R  2000
+#define PRO_H54P_100_S500_R 2010
+#define PRO_H54P_200_S500_R 2020
+
 #define BYTE  1
 #define WORD  2
 #define DWORD 4
