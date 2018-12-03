@@ -594,7 +594,7 @@ void DynamixelController::commandVelocityCallback(const geometry_msgs::Twist::Co
     else if (wheel_velocity[RIGHT] > 0.0f)  dynamixel_velocity[RIGHT] = (wheel_velocity[RIGHT] * velocity_constant_value);
   }
 
-  result = dxl_wb_->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_VELOCITY, id_array, dynamixel_.size(), dynamixel_velocity, &log);
+  result = dxl_wb_->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_VELOCITY, id_array, dynamixel_.size(), dynamixel_velocity, 1, &log);
   if (result == false)
   {
     ROS_ERROR("%s", log);
@@ -626,7 +626,7 @@ void DynamixelController::writeCallback(const ros::TimerEvent&)
     for (uint8_t index = 0; index < id_cnt; index++)
       dynamixel_position[index] = dxl_wb_->convertRadian2Value(id_array[index], jnt_tra_msg_->points[point_cnt].positions.at(index));
 
-    result = dxl_wb_->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_POSITION, id_array, id_cnt, dynamixel_position, &log);
+    result = dxl_wb_->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_POSITION, id_array, id_cnt, dynamixel_position, 1, &log);
     if (result == false)
     {
       ROS_ERROR("%s", log);
