@@ -59,13 +59,12 @@ int main(int argc, char *argv[])
     else
     {
       ROS_INFO("Succeed to init(%d)", baudrate[index]);
-      ROS_INFO("Wait for seconds...");
     }
 
     dxl_cnt = 0;
     for (uint8_t num = 0; num < 100; num++) scanned_id[num] = 0;
 
-    ROS_INFO("Wait for scan...");
+    ROS_INFO("Wait for scanning...");
     result = dxl_wb.scan(scanned_id, &dxl_cnt, range, &log);
     if (result == false)
     {
