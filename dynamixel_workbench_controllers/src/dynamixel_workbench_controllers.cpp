@@ -686,7 +686,7 @@ void DynamixelController::trajectoryMsgCallback(const trajectory_msgs::JointTraj
           if (msg->points[cnt].velocities.size() != 0)  wp.velocity = msg->points[cnt].velocities.at(id_num);
           else wp.velocity = 0.0f;
 
-          if (msg->points[cnt].accelerations.size() != 0)  wp.acceleration = msg->points[cnt].effort.at(id_num);
+          if (msg->points[cnt].accelerations.size() != 0)  wp.acceleration = msg->points[cnt].accelerations.at(id_num);
           else wp.acceleration = 0.0f;
 
           goal.push_back(wp);
