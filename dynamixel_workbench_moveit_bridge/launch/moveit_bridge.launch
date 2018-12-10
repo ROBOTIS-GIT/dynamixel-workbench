@@ -1,0 +1,9 @@
+<launch>
+  <arg name="use_platform"     default="true"/>
+  <arg name="use_robot_name"   default="manipulator"/>
+
+  <node name="$(arg use_robot_name)" pkg="open_manipulator_moveit_bridge" type="moveit_bridge" output="screen">
+    <param name="use_platform"        value="$(arg use_platform)"/>
+    <param name="planning_group"      value="$(arg use_robot_name)"/>
+  </node>
+</launch>
