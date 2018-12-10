@@ -66,16 +66,7 @@ class MoveItBridge
 
   // ROS Publisher
   std::vector<ros::Publisher> gazebo_goal_joint_position_pub_;
-
   ros::Publisher dynamixel_workbench_pub_;
-
-  ros::Publisher joint_position_pub_;
-  ros::Publisher joint_move_time_pub_;
-
-  ros::Publisher gripper_position_pub_;
-  ros::Publisher gripper_move_time_pub_;
-
-  ros::Publisher moving_state_pub_;
 
   // ROS Subscribers
   ros::Subscriber display_planned_path_sub_;
@@ -85,8 +76,6 @@ class MoveItBridge
   ros::ServiceServer get_kinematics_pose_server_;
   ros::ServiceServer set_joint_position_server_;
   ros::ServiceServer set_kinematics_pose_server_;
-
-  ros::ServiceClient open_manipulator_joint_control_client_;
 
   // ROS Service Client
 

@@ -52,8 +52,6 @@ void MoveItBridge::initPublisher()
   {
     dynamixel_workbench_pub_ = priv_nh_.advertise<trajectory_msgs::JointTrajectory>("joint_trajectory", 100);
   }
-
-  moving_state_pub_ = priv_nh_.advertise<open_manipulator_msgs::OpenManipulatorState>("moving_state", 10);
 }
 
 void MoveItBridge::initSubscriber()

@@ -1,9 +1,10 @@
 <launch>
   <arg name="use_platform"     default="true"/>
-  <arg name="use_robot_name"   default="manipulator"/>
+  <arg name="planning_group"   default="arm"/>
 
-  <node name="$(arg use_robot_name)" pkg="open_manipulator_moveit_bridge" type="moveit_bridge" output="screen">
+  <node name="$(arg planning_group)" pkg="dynamixel_workbench_moveit_bridge" type="moveit_bridge" output="screen">
     <param name="use_platform"        value="$(arg use_platform)"/>
-    <param name="planning_group"      value="$(arg use_robot_name)"/>
+    <param name="planning_group"      value="$(arg planning_group)"/>
+    <remap from="$(arg planning_group)/joint_trajectory" to="/dynamixel_workbench/joint_trajectory"/>
   </node>
 </launch>
