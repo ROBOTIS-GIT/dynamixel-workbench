@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 
   if (argc < 2)
   {
-    printf("Please set '-port_name'arguments for connected Dynamixels");
+    printf("Please set '-port_name'arguments for connected Dynamixels\n");
     return 0;
   }
   else
