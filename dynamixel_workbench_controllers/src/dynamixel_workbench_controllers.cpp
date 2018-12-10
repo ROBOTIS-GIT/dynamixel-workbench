@@ -23,12 +23,14 @@ DynamixelController::DynamixelController()
    priv_node_handle_("~"),
    is_joint_state_topic_(false),
    is_cmd_vel_topic_(false),
+   use_moveit_(false),
    wheel_separation_(0.0f),
    wheel_radius_(0.0f),
    is_moving_(false)
 {
   is_joint_state_topic_ = priv_node_handle_.param<bool>("use_joint_states_topic", true);
   is_cmd_vel_topic_ = priv_node_handle_.param<bool>("use_cmd_vel_topic", false);
+  use_moveit_ = priv_node_handle_.param<bool>("use_moveit", false);
 
   read_period_ = priv_node_handle_.param<double>("dxl_read_period", 0.010f);
   write_period_ = priv_node_handle_.param<double>("dxl_write_period", 0.010f);
@@ -75,13 +77,6 @@ bool DynamixelController::getDynamixelsInfo(const std::string yaml_file)
     if (name.size() == 0)
     {
       continue;
-    }
-    else
-    {
-      if (is_joint_state_topic_)
-      {
-        joint_state_msg_.name.push_back(name);
-      }
     }
 
     YAML::Node item = dynamixel[name];
@@ -223,26 +218,26 @@ bool DynamixelController::initSDKHandlers(void)
   return result;
 }
 
-bool DynamixelController::getPresentPosition(void)
+bool DynamixelController::getPresentPosition(std::vector<std::string> dxl_name)
 {
   bool result = false;
   const char* log = NULL;
 
-  int32_t get_position[dynamixel_.size()];
+  int32_t get_position[dxl_name.size()];
 
-  uint8_t id_array[dynamixel_.size()];
+  uint8_t id_array[dxl_name.size()];
   uint8_t id_cnt = 0;
 
-  for (auto const& dxl:dynamixel_)
+  for (auto const& name:dxl_name)
   {
-    id_array[id_cnt++] = (uint8_t)dxl.second;
+    id_array[id_cnt++] = dynamixel_[name];
   }
 
   if (dxl_wb_->getProtocolVersion() == 2.0f)
   {
     result = dxl_wb_->syncRead(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
                                id_array,
-                               dynamixel_.size(),
+                               dxl_name.size(),
                                &log);
     if (result == false)
     {
@@ -497,6 +492,7 @@ void DynamixelController::publishCallback(const ros::TimerEvent&)
   {
     joint_state_msg_.header.stamp = ros::Time::now();
 
+    joint_state_msg_.name.clear();
     joint_state_msg_.position.clear();
     joint_state_msg_.velocity.clear();
     joint_state_msg_.effort.clear();
@@ -507,6 +503,8 @@ void DynamixelController::publishCallback(const ros::TimerEvent&)
       double position = 0.0;
       double velocity = 0.0;
       double effort = 0.0;
+
+      joint_state_msg_.name.push_back(dxl.first);
 
       if (dxl_wb_->getProtocolVersion() == 2.0f)
       {
@@ -615,13 +613,13 @@ void DynamixelController::writeCallback(const ros::TimerEvent&)
   static uint32_t point_cnt = 0;
   static uint32_t position_cnt = 0;
 
-  for (auto const& dxl:dynamixel_)
+  for (auto const& joint:jnt_tra_msg_->joint_names)
   {
-    id_array[id_cnt] = (uint8_t)dxl.second;
+    id_array[id_cnt] = (uint8_t)dynamixel_[joint];
     id_cnt++;
   }
 
-  if (is_moving_)
+  if (is_moving_ == true)
   {
     for (uint8_t index = 0; index < id_cnt; index++)
       dynamixel_position[index] = dxl_wb_->convertRadian2Value(id_array[index], jnt_tra_msg_->points[point_cnt].positions.at(index));
@@ -640,7 +638,6 @@ void DynamixelController::writeCallback(const ros::TimerEvent&)
       if (point_cnt >= jnt_tra_msg_->points.size())
       {
         is_moving_ = false;
-        jnt_tra_msg_->points.clear();
         point_cnt = 0;
         position_cnt = 0;
 
@@ -656,20 +653,25 @@ void DynamixelController::writeCallback(const ros::TimerEvent&)
 void DynamixelController::trajectoryMsgCallback(const trajectory_msgs::JointTrajectory::ConstPtr &msg)
 {
   uint8_t id_cnt = 0;
+  bool result = false;
+  WayPoint wp;
 
   if (is_moving_ == false)
   {
+    jnt_tra_msg_->joint_names.clear();
+    jnt_tra_msg_->points.clear();
+    pre_goal_.clear();
+
+    result = getPresentPosition(msg->joint_names);
+    if (result == false)
+      ROS_ERROR("Failed to get Present Position");
+
     for (auto const& joint:msg->joint_names)
     {
-      ROS_INFO("%s joint is ready to move", joint.c_str());
-      if (dynamixel_.find(joint) == dynamixel_.end())
-      {
-        continue;
-      }
-      else
-      {
-        id_cnt++;
-      }
+      ROS_INFO("'%s' is ready to move", joint.c_str());
+
+      jnt_tra_msg_->joint_names.push_back(joint);
+      id_cnt++;
     }
 
     if (id_cnt != 0)
@@ -680,7 +682,6 @@ void DynamixelController::trajectoryMsgCallback(const trajectory_msgs::JointTraj
         std::vector<WayPoint> goal;
         for (std::vector<int>::size_type id_num = 0; id_num < msg->points[cnt].positions.size(); id_num++)
         {
-          WayPoint wp;
           wp.position = msg->points[cnt].positions.at(id_num);
 
           if (msg->points[cnt].velocities.size() != 0)  wp.velocity = msg->points[cnt].velocities.at(id_num);
@@ -692,40 +693,59 @@ void DynamixelController::trajectoryMsgCallback(const trajectory_msgs::JointTraj
           goal.push_back(wp);
         }
 
-        jnt_tra_->setJointNum((uint8_t)msg->points.size());
-
-        double move_time = 0.0f;
-        if (cnt == 0) move_time = msg->points[cnt].time_from_start.toSec();
-        else move_time = msg->points[cnt].time_from_start.toSec() - msg->points[cnt-1].time_from_start.toSec();
-
-        jnt_tra_->init(move_time,
-                       write_period_,
-                       pre_goal_,
-                       goal);
-
-        std::vector<WayPoint> way_point;
-        trajectory_msgs::JointTrajectoryPoint jnt_tra_point_msg;
-
-        for (double index = 0.0; index < move_time; index = index + write_period_)
+        if (use_moveit_ == true)
         {
-          way_point = jnt_tra_->getJointWayPoint(index);
+          trajectory_msgs::JointTrajectoryPoint jnt_tra_point_msg;
 
           for (uint8_t id_num = 0; id_num < id_cnt; id_num++)
           {
-            jnt_tra_point_msg.positions.push_back(way_point[id_num].position);
-            jnt_tra_point_msg.velocities.push_back(way_point[id_num].velocity);
-            jnt_tra_point_msg.accelerations.push_back(way_point[id_num].acceleration);
+            jnt_tra_point_msg.positions.push_back(goal[id_num].position);
+            jnt_tra_point_msg.velocities.push_back(goal[id_num].velocity);
+            jnt_tra_point_msg.accelerations.push_back(goal[id_num].acceleration);
           }
 
           jnt_tra_msg_->points.push_back(jnt_tra_point_msg);
-          jnt_tra_point_msg.positions.clear();
-          jnt_tra_point_msg.velocities.clear();
-          jnt_tra_point_msg.accelerations.clear();
-        }
 
-        pre_goal_ = goal;
-        cnt++;
+          cnt++;
+        }
+        else
+        {
+          jnt_tra_->setJointNum((uint8_t)msg->points[cnt].positions.size());
+
+          double move_time = 0.0f;
+          if (cnt == 0) move_time = msg->points[cnt].time_from_start.toSec();
+          else move_time = msg->points[cnt].time_from_start.toSec() - msg->points[cnt-1].time_from_start.toSec();
+
+          jnt_tra_->init(move_time,
+                         write_period_,
+                         pre_goal_,
+                         goal);
+
+          std::vector<WayPoint> way_point;
+          trajectory_msgs::JointTrajectoryPoint jnt_tra_point_msg;
+
+          for (double index = 0.0; index < move_time; index = index + write_period_)
+          {
+            way_point = jnt_tra_->getJointWayPoint(index);
+
+            for (uint8_t id_num = 0; id_num < id_cnt; id_num++)
+            {
+              jnt_tra_point_msg.positions.push_back(way_point[id_num].position);
+              jnt_tra_point_msg.velocities.push_back(way_point[id_num].velocity);
+              jnt_tra_point_msg.accelerations.push_back(way_point[id_num].acceleration);
+            }
+
+            jnt_tra_msg_->points.push_back(jnt_tra_point_msg);
+            jnt_tra_point_msg.positions.clear();
+            jnt_tra_point_msg.velocities.clear();
+            jnt_tra_point_msg.accelerations.clear();
+          }
+
+          pre_goal_ = goal;
+          cnt++;
+        }
       }
+      ROS_INFO("Succeeded to get joint trajectory!");
       is_moving_ = true;
     }
     else
@@ -818,13 +838,6 @@ int main(int argc, char **argv)
   if (result == false)
   {
     ROS_ERROR("Failed to set Dynamixel SDK Handler");
-    return 0;
-  }
-
-  result = dynamixel_controller.getPresentPosition();
-  if (result == false)
-  {
-    ROS_ERROR("Failed to get Present Position");
     return 0;
   }
 
