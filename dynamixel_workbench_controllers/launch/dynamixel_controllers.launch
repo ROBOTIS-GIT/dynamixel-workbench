@@ -11,8 +11,9 @@
       publish_period: 0.010
       dxl_read_period: 0.010
       dxl_write_period: 0.010
+      use_moveit: false
       use_joint_states_topic: true
-      use_cmd_vel_topic: true
+      use_cmd_vel_topic: false
       mobile_robot_config:                <!--this values will be set when 'use_cmd_vel_topic' is true-->
         seperation_between_wheels: 0.160  <!--default value is set by reference of TB3-->
         radius_of_wheel: 0.033            <!--default value is set by reference of TB3-->
