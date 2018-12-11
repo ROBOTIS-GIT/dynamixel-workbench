@@ -128,6 +128,8 @@ class DynamixelDriver
   bool ping(uint8_t id,
             const char **log = NULL);
 
+  bool clearMultiTurn(uint8_t id, const char **log = NULL);
+
   bool reboot(uint8_t id, const char **log = NULL);
   bool reset(uint8_t id, const char **log = NULL);
 

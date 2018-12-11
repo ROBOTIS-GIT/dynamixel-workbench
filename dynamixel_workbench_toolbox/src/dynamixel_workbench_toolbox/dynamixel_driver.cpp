@@ -384,6 +384,30 @@ bool DynamixelDriver::ping(uint8_t id, const char **log)
   return ping(id, NULL, log);
 }
 
+bool DynamixelDriver::clearMultiTurn(uint8_t id, const char **log)
+{
+  ErrorFromSDK sdk_error = {0, false, false, 0};
+
+  sdk_error.dxl_comm_result = packetHandler_->clearMultiTurn(portHandler_, id, &sdk_error.dxl_error);
+  if (sdk_error.dxl_comm_result != COMM_SUCCESS)
+  {
+    if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
+    return false;
+  }
+  else if (sdk_error.dxl_error != 0)
+  {
+    if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+    return false;
+  }
+  else
+  {
+    if (log != NULL) *log = "[DynamixelDriver] Succeeded to clear!";
+    return true;
+  }
+
+  return false;
+}
+
 bool DynamixelDriver::reboot(uint8_t id, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
