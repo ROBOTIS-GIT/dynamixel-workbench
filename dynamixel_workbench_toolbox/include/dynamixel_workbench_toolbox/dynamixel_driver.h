@@ -132,22 +132,13 @@ class DynamixelDriver
   bool reset(uint8_t id, const char **log = NULL);
 
   bool writeRegister(uint8_t id, uint16_t address, uint16_t length, uint8_t* data, const char **log = NULL);
-
-  bool writeRegister(uint8_t id, const char *item_name, uint8_t data, const char **log = NULL);
-  bool writeRegister(uint8_t id, const char *item_name, uint16_t data, const char **log = NULL);
-  bool writeRegister(uint8_t id, const char *item_name, uint32_t data, const char **log = NULL);    
+  bool writeRegister(uint8_t id, const char *item_name, int32_t data, const char **log = NULL);
 
   bool writeOnlyRegister(uint8_t id, uint16_t address, uint16_t length, uint8_t *data, const char **log = NULL);
-
-  bool writeOnlyRegister(uint8_t id, const char *item_name, uint8_t data, const char **log = NULL);
-  bool writeOnlyRegister(uint8_t id, const char *item_name, uint16_t data, const char **log = NULL);
-  bool writeOnlyRegister(uint8_t id, const char *item_name, uint32_t data, const char **log = NULL); 
+  bool writeOnlyRegister(uint8_t id, const char *item_name, int32_t data, const char **log = NULL);
 
   bool readRegister(uint8_t id, uint16_t address, uint16_t length, uint32_t *data, const char **log = NULL);
-
-  bool readRegister(uint8_t id, const char *item_name, uint8_t *data, const char **log = NULL);
-  bool readRegister(uint8_t id, const char *item_name, uint16_t *data, const char **log = NULL);
-  bool readRegister(uint8_t id, const char *item_name, uint32_t *data, const char **log = NULL);
+  bool readRegister(uint8_t id, const char *item_name, int32_t *data, const char **log = NULL);
 
   void getParam(int32_t data, uint8_t *param);
 
