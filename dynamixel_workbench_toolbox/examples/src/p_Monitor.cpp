@@ -524,7 +524,7 @@ bool monitoring(const char* port_name)
         else if (strcmp(cmd, "write") == 0)
         {
           uint8_t id = atoi(param[0]);
-          uint32_t value = atoi(param[2]);
+          int32_t value = atoi(param[2]);
 
           wb_result = dxl_wb.writeRegister(id, param[1], value, &log);
           if (wb_result == false)
@@ -542,7 +542,7 @@ bool monitoring(const char* port_name)
         {
           uint8_t id = atoi(param[0]);
 
-          uint32_t data = 0;
+          int32_t data = 0;
           
           wb_result = dxl_wb.readRegister(id, param[1], &data, &log);
           if (wb_result == false)

@@ -226,7 +226,7 @@ bool SingleDynamixelMonitor::showDynamixelControlTable(void)
     }
   }
 
-  result = dynamixel_workbench_->readRegister(dxl_id_, "Torque_Enable", (uint8_t *)&torque_status);
+  result = dynamixel_workbench_->readRegister(dxl_id_, "Torque_Enable", &torque_status);
 
   for (int item_num = 0; item_num < dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_); item_num++)
   {
