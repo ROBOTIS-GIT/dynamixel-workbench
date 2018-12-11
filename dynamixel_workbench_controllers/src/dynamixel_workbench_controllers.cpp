@@ -321,8 +321,9 @@ void DynamixelController::initServer()
 
 void DynamixelController::readCallback(const ros::TimerEvent&)
 {
-//  static double priv_read_secs =ros::Time::now().toSec();
-
+#ifdef DEBUG
+  static double priv_read_secs =ros::Time::now().toSec();
+#endif
   bool result = false;
   const char* log = NULL;
 
@@ -343,9 +344,10 @@ void DynamixelController::readCallback(const ros::TimerEvent&)
 
     id_array[id_cnt++] = (uint8_t)dxl.second;
   }
-
+#ifndef DEBUG
   if (is_moving_ == false)
   {
+#endif
     if (dxl_wb_->getProtocolVersion() == 2.0f)
     {
       if (strcmp(dxl_wb_->getModelName(id_array[0]), "XL-320") == 0)
@@ -476,16 +478,21 @@ void DynamixelController::readCallback(const ros::TimerEvent&)
         dxl_cnt++;
       }
     }
+#ifndef DEBUG
   }
+#endif
 
-//  ROS_WARN("[readCallback] diff_secs : %f", ros::Time::now().toSec() - priv_read_secs);
-//  priv_read_secs = ros::Time::now().toSec();
+#ifdef DEBUG
+  ROS_WARN("[readCallback] diff_secs : %f", ros::Time::now().toSec() - priv_read_secs);
+  priv_read_secs = ros::Time::now().toSec();
+#endif
 }
 
 void DynamixelController::publishCallback(const ros::TimerEvent&)
 {
-//  static double priv_pub_secs =ros::Time::now().toSec();
-
+#ifdef DEBUG
+  static double priv_pub_secs =ros::Time::now().toSec();
+#endif
   dynamixel_state_list_pub_.publish(dynamixel_state_list_);
 
   if (is_joint_state_topic_)
@@ -526,8 +533,10 @@ void DynamixelController::publishCallback(const ros::TimerEvent&)
     joint_states_pub_.publish(joint_state_msg_);
   }
 
-//  ROS_WARN("[publishCallback] diff_secs : %f", ros::Time::now().toSec() - priv_pub_secs);
-//  priv_pub_secs = ros::Time::now().toSec();
+#ifdef DEBUG
+  ROS_WARN("[publishCallback] diff_secs : %f", ros::Time::now().toSec() - priv_pub_secs);
+  priv_pub_secs = ros::Time::now().toSec();
+#endif
 }
 
 void DynamixelController::commandVelocityCallback(const geometry_msgs::Twist::ConstPtr &msg)
@@ -601,7 +610,9 @@ void DynamixelController::commandVelocityCallback(const geometry_msgs::Twist::Co
 
 void DynamixelController::writeCallback(const ros::TimerEvent&)
 {
-//  static double priv_pub_secs =ros::Time::now().toSec();
+#ifdef DEBUG
+  static double priv_pub_secs =ros::Time::now().toSec();
+#endif
   bool result = false;
   const char* log = NULL;
 
@@ -646,8 +657,10 @@ void DynamixelController::writeCallback(const ros::TimerEvent&)
     }
   }
 
-//  ROS_WARN("[writeCallback] diff_secs : %f", ros::Time::now().toSec() - priv_pub_secs);
-//  priv_pub_secs = ros::Time::now().toSec();
+#ifdef DEBUG
+  ROS_WARN("[writeCallback] diff_secs : %f", ros::Time::now().toSec() - priv_pub_secs);
+  priv_pub_secs = ros::Time::now().toSec();
+#endif
 }
 
 void DynamixelController::trajectoryMsgCallback(const trajectory_msgs::JointTrajectory::ConstPtr &msg)

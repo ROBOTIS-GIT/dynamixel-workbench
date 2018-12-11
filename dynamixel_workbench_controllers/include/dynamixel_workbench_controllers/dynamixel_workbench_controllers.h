@@ -68,6 +68,8 @@
 #define LENGTH_PRESENT_VELOCITY_1 2
 #define LENGTH_PRESENT_POSITION_1 2
 
+//#define DEBUG
+
 typedef struct
 {
   std::string item_name;
