@@ -4,7 +4,7 @@ motion:
   names: [right, zero, left]
   right:
     step: [-3.14, -3.14]  # radian
-    time_from_start: 2.0         # sec
+    time_from_start: 2.0  # sec
   zero:
     step: [0.0, 0.0]
     time_from_start: 3.0

@@ -68,6 +68,8 @@
 #define LENGTH_PRESENT_VELOCITY_1 2
 #define LENGTH_PRESENT_POSITION_1 2
 
+//#define DEBUG
+
 typedef struct
 {
   std::string item_name;
@@ -102,16 +104,17 @@ class DynamixelController
   std::vector<std::pair<std::string, ItemValue>> dynamixel_info_;
   dynamixel_workbench_msgs::DynamixelStateList dynamixel_state_list_;
   sensor_msgs::JointState joint_state_msg_;
+  std::vector<WayPoint> pre_goal_;
 
   bool is_joint_state_topic_;
   bool is_cmd_vel_topic_;
+  bool use_moveit_;
 
   double wheel_separation_;
   double wheel_radius_;
 
   JointTrajectory *jnt_tra_;
   trajectory_msgs::JointTrajectory *jnt_tra_msg_;
-  std::vector<WayPoint> pre_goal_;
 
   double read_period_;
   double write_period_;
@@ -128,7 +131,7 @@ class DynamixelController
   bool loadDynamixels(void);
   bool initDynamixels(void);
   bool initSDKHandlers(void);
-  bool getPresentPosition(void);
+  bool getPresentPosition(std::vector<std::string> dxl_name);
 
   double getReadPeriod(){return read_period_;}
   double getWritePeriod(){return write_period_;}
