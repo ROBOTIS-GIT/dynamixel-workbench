@@ -36,8 +36,6 @@
 
 #include <vector>
 
-#include <std_msgs/Float64.h>
-#include <std_msgs/Float64MultiArray.h>
 #include <std_msgs/String.h>
 
 #include <sensor_msgs/JointState.h>
@@ -61,7 +59,6 @@ class MoveItBridge
   ros::NodeHandle priv_nh_;
 
   // ROS Parameters
-  bool use_platform_;
   std::string planning_group_;
 
   // ROS Publisher

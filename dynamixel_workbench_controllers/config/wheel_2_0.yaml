@@ -1,5 +1,5 @@
 # You can find control table of Dynamixel on emanual (http://emanual.robotis.com/#control-table)
-# Control table item has to be set CamelCase and not included whitespace
+# Control table item has to be set Camel_Case and not included whitespace
 # You are supposed to set at least Dynamixel ID
 # This example is compatible with Dynamixel using protocol 2.0
 pan:

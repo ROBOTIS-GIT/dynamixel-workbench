@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 
   if (argc < 5)
   {
-    printf("Please set '-port_name', '-baud_rate', '-dxl_id', '-dxl_id' arguments for connected Dynamixels\n");
+    printf("Please set '-port_name', '-baud_rate', '-dynamixel_id_1', '-dynamixel_id_2' arguments for connected Dynamixels\n");
     return 0;
   }
   else

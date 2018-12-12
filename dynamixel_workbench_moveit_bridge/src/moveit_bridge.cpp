@@ -20,11 +20,9 @@
 
 MoveItBridge::MoveItBridge()
     :nh_(""),
-     priv_nh_("~"),
-     use_platform_(true)
+     priv_nh_("~")
 {
   // Init parameter
-  use_platform_ = priv_nh_.param<bool>("use_platform", true);
   planning_group_ = priv_nh_.param<std::string>("planning_group", "manipulator");
 
   move_group_ = new moveit::planning_interface::MoveGroupInterface(planning_group_);
@@ -38,20 +36,7 @@ MoveItBridge::~MoveItBridge()
 
 void MoveItBridge::initPublisher()
 {
-  if (use_platform_ == false)
-  {
-    ROS_INFO("SET Gazebo Simulation Mode(Joint)");
-
-    for (auto const& joint_name:move_group_->getJointNames())
-    {
-      ros::Publisher publisher = priv_nh_.advertise<std_msgs::Float64>(joint_name + "_position/command", 10);
-      gazebo_goal_joint_position_pub_.push_back(publisher);
-    }
-  }
-  else
-  {
-    dynamixel_workbench_pub_ = priv_nh_.advertise<trajectory_msgs::JointTrajectory>("joint_trajectory", 100);
-  }
+  dynamixel_workbench_pub_ = priv_nh_.advertise<trajectory_msgs::JointTrajectory>("joint_trajectory", 100);
 }
 
 void MoveItBridge::initSubscriber()

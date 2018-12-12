@@ -1,0 +1,4 @@
+<launch>
+  <arg name="namespace"               default="dynamixel_workbench"/>
+  <node name="wheel_operator" pkg="dynamixel_workbench_operators" type="wheel_operator" required="true" output="screen" ns="$(arg namespace)"/>
+</launch>
