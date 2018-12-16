@@ -352,7 +352,8 @@ bool monitoring(const char* port_name)
           {
             uint8_t id_1 = atoi(param[0]);
             uint8_t id_2 = atoi(param[1]);
-            uint8_t id[2] = {id_1, id_2}; 
+            uint8_t id[2] = {id_1, id_2};
+            uint8_t id_num = 2;    
 
             int32_t data[2] = {0, 0};
             data[0] = atoi(param[3]);
@@ -360,7 +361,7 @@ bool monitoring(const char* port_name)
 
             uint8_t handler_index = atoi(param[2]);
 
-            wb_result = dxl_wb.syncWrite(handler_index, id, (int32_t *)data, &log);
+            wb_result = dxl_wb.syncWrite(handler_index, id, id_num, (int32_t *)data, 1, &log);
             if (wb_result == false)
             {
               printf("%s\n", log);
