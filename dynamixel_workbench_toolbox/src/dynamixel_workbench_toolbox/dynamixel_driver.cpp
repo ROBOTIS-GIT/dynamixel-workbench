@@ -964,13 +964,17 @@ bool DynamixelDriver::syncWrite(uint8_t index, int32_t *data, const char **log)
   return true;
 }
 
-bool DynamixelDriver::syncWrite(uint8_t index, uint8_t *id, uint8_t id_num, int32_t *data, uint8_t data_num_for_each_id, const char **log)
+bool DynamixelDriver::syncWrite(uint8_t index, uint8_t *id, int32_t *data, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
   uint8_t parameter[4] = {0, 0, 0, 0};
-  uint8_t multi_parameter[4*data_num_for_each_id];
   uint8_t cnt = 0;
+  uint8_t id_num = sizeof(id) / sizeof(id[0]);
+  uint8_t data_num_for_each_id = (sizeof(data) / sizeof(data[0])) / id_num;
+  uint8_t multi_parameter[4*data_num_for_each_id];
+
+  printf("id_num = %d, data_num_for_each_id = %d\n", id_num, data_num_for_each_id);
 
   for (int i = 0; i < id_num; i++)
   {
