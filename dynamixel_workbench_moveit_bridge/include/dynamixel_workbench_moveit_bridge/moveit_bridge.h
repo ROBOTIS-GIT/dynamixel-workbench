@@ -38,7 +38,6 @@
 
 #include <std_msgs/String.h>
 
-#include <sensor_msgs/JointState.h>
 #include <geometry_msgs/PoseStamped.h>
 
 #include "open_manipulator_msgs/OpenManipulatorState.h"
@@ -48,8 +47,6 @@
 
 #include "open_manipulator_msgs/SetJointPosition.h"
 #include "open_manipulator_msgs/SetKinematicsPose.h"
-
-#include <eigen3/Eigen/Eigen>
 
 class MoveItBridge
 {
@@ -62,7 +59,6 @@ class MoveItBridge
   std::string planning_group_;
 
   // ROS Publisher
-  std::vector<ros::Publisher> gazebo_goal_joint_position_pub_;
   ros::Publisher dynamixel_workbench_pub_;
 
   // ROS Subscribers
