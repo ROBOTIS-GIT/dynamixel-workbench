@@ -11,12 +11,14 @@
   <license>Apache 2.0</license>
   <author email="thlim@robotis.com">Darby Lim</author>
   <maintainer email="pyo@robotis.com">Pyo</maintainer>
+  <maintainer email="thlim@robotis.com">Darby Lim</maintainer>
   <url type="website">http://wiki.ros.org/dynamixel_workbench</url>
   <url type="emanual">http://emanual.robotis.com/docs/en/software/dynamixel/dynamixel_workbench/</url>
   <url type="repository">https://github.com/ROBOTIS-GIT/dynamixel-workbench</url>
   <url type="bugtracker">https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues</url>
   <buildtool_depend>catkin</buildtool_depend>
   <exec_depend>dynamixel_workbench_controllers</exec_depend>
+  <exec_depend>dynamixel_workbench_moveit_bridge</exec_depend>
   <exec_depend>dynamixel_workbench_operators</exec_depend>
   <exec_depend>dynamixel_workbench_single_manager</exec_depend>
   <exec_depend>dynamixel_workbench_single_manager_gui</exec_depend>
