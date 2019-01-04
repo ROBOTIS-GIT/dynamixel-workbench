@@ -30,56 +30,71 @@ SingleDynamixelMonitor::SingleDynamixelMonitor(void)
    dxl_id_(0)
 {
   // Check Dynamixel Ping or Scan (default : Scan (1~253))
+  const char* log = NULL;
+  bool result = false;
 
   // Dynamixel Monitor variable
   bool use_ping  = node_handle_.param<bool>("ping", false);
   int ping_id    = node_handle_.param<int>("ping_id", 1);
-  int scan_range = node_handle_.param<int>("scan_range", 200);
+  int scan_range = node_handle_.param<int>("scan_range", 253);
 
   device_name_   = node_handle_.param<std::string>("device_name", "/dev/ttyUSB0");
   dxl_baud_rate_ = node_handle_.param<int>("baud_rate", 57600);
 
   // Init Dynamixel Driver
-  dynamixel_driver_ = new DynamixelDriver;
+  dynamixel_workbench_ = new DynamixelWorkbench;
 
-  dynamixel_driver_->init(device_name_.c_str(), dxl_baud_rate_);
+  result = dynamixel_workbench_->init(device_name_.c_str(), dxl_baud_rate_, &log);
+  if (result == false)
+  {
+    printf("%s\n", log);
+    printf("Failed to init\n");
 
+    ros::shutdown();
+    exit(1);
+  }
+  else
+    printf("Succeed to init(%d)\n", dxl_baud_rate_);
 
   if(use_ping == true)
   {
     uint16_t model_number = 0;
-    if (dynamixel_driver_->ping(ping_id, &model_number))
-    {
-      dxl_id_ = ping_id;
-      printf("[ID] %u, [Model Name] %s, [BAUD RATE] %d [VERSION] %.1f\n",
-               dxl_id_, dynamixel_driver_->getModelName(dxl_id_), dxl_baud_rate_, dynamixel_driver_->getProtocolVersion());
-    }
-    else
+    result = dynamixel_workbench_->ping(ping_id, &model_number, &log);
+    if (result == false)
     {
       printf("Please Check USB Port authorization and\n");
       printf("Baudrate [ex : 9600, 57600, 115200, 1000000, 2000000]\n");
       printf("...Failed to find dynamixel!\n");
+      printf("Log Message : %s\n", log);
 
       ros::shutdown();
       exit(1);
+    }
+    else
+    {
+      dxl_id_ = ping_id;
+      printf("[ID] %u, [Model Name] %s, [BAUD RATE] %d [VERSION] %.1f\n",
+               dxl_id_, dynamixel_workbench_->getModelName(dxl_id_), dxl_baud_rate_, dynamixel_workbench_->getProtocolVersion());
     }
   }
   else
   {
     uint8_t id_cnt = 0;
-    if (dynamixel_driver_->scan(&dxl_id_, &id_cnt, scan_range))
-    {
-      printf("[ID] %u, [Model Name] %s, [BAUD RATE] %d [VERSION] %.1f\n",
-               dxl_id_, dynamixel_driver_->getModelName(dxl_id_), dxl_baud_rate_, dynamixel_driver_->getProtocolVersion());
-    }
-    else
+    result = dynamixel_workbench_->scan(&dxl_id_, &id_cnt, scan_range, &log);
+    if (result == false)
     {
       printf("Please Check USB Port authorization and\n");
       printf("Baudrate [ex : 9600, 57600, 115200, 1000000, 2000000]\n");
       printf("...Failed to find dynamixel!\n");
+      printf("Log Message : %s\n", log);
 
       ros::shutdown();
       exit(1);
+    }
+    else
+    {
+      printf("[ID] %u, [Model Name] %s, [BAUD RATE] %d [VERSION] %.1f\n",
+               dxl_id_, dynamixel_workbench_->getModelName(dxl_id_), dxl_baud_rate_, dynamixel_workbench_->getProtocolVersion());
     }
   }
 
@@ -102,14 +117,14 @@ void SingleDynamixelMonitor::initSingleDynamixelMonitor(void)
 
 void SingleDynamixelMonitor::shutdownSingleDynamixelMonitor(void)
 {
-  dynamixel_driver_->writeRegister(dxl_id_, "Torque_Enable", false);
+  dynamixel_workbench_->writeRegister(dxl_id_, "Torque_Enable", (uint8_t)0);
 
   ros::shutdown();
 }
 
 void SingleDynamixelMonitor::initDynamixelStatePublisher()
 {
-  char* model_name = dynamixel_driver_->getModelName(dxl_id_);
+  const char* model_name = dynamixel_workbench_->getModelName(dxl_id_);
 
   if (!strncmp(model_name, "AX", strlen("AX")))
   {
@@ -177,11 +192,11 @@ void SingleDynamixelMonitor::initDynamixelStatePublisher()
   {
     if ((!strncmp(model_name, "PRO_L42_10_S300_R", strlen(model_name))))
     {
-      dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::PROExt>("dynamixel/" + std::string("PRO"), 10);
+      dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::PRO>("dynamixel/" + std::string("PRO"), 10);
     }
     else
     {
-      dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::PRO>("dynamixel/" + std::string("PRO"), 10);
+      dynamixel_status_pub_ = node_handle_.advertise<dynamixel_workbench_msgs::PROExt>("dynamixel/" + std::string("PRO"), 10);
     }
   }
 }
@@ -198,12 +213,12 @@ void SingleDynamixelMonitor::initDynamixelCommandServer(void)
 
 bool SingleDynamixelMonitor::showDynamixelControlTable(void)
 {
-  bool comm_result = false;
+  bool result = false;
   int32_t torque_status = 0;
   uint16_t torque_enable_address = 0;
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlItem* item_ptr = dynamixel_workbench_->getControlTable(dxl_id_);
 
-  for (int item_num = 0; item_num < dynamixel_driver_->getTheNumberOfItem(dxl_id_); item_num++)
+  for (int item_num = 0; item_num < dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_); item_num++)
   {
     if (!strncmp(item_ptr[item_num].item_name, "Torque_Enable", strlen("Torque_Enable")))
     {
@@ -211,9 +226,9 @@ bool SingleDynamixelMonitor::showDynamixelControlTable(void)
     }
   }
 
-  comm_result = dynamixel_driver_->readRegister(dxl_id_, "Torque_Enable", &torque_status);
+  result = dynamixel_workbench_->readRegister(dxl_id_, "Torque_Enable", &torque_status);
 
-  for (int item_num = 0; item_num < dynamixel_driver_->getTheNumberOfItem(dxl_id_); item_num++)
+  for (int item_num = 0; item_num < dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_); item_num++)
   {
     if (torque_status == false)
     {
@@ -226,14 +241,14 @@ bool SingleDynamixelMonitor::showDynamixelControlTable(void)
     }
   }
 
-  return comm_result;
+  return result;
 }
 
 bool SingleDynamixelMonitor::checkValidationCommand(std::string cmd)
 {
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlItem* item_ptr = dynamixel_workbench_->getControlTable(dxl_id_);
 
-  for (int item_num = 0; item_num < dynamixel_driver_->getTheNumberOfItem(dxl_id_); item_num++)
+  for (int item_num = 0; item_num < dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_); item_num++)
   {
     if (!strncmp(item_ptr[item_num].item_name, cmd.c_str(), strlen(item_ptr[item_num].item_name)))
       return true;
@@ -245,39 +260,53 @@ bool SingleDynamixelMonitor::checkValidationCommand(std::string cmd)
 
 bool SingleDynamixelMonitor::changeId(uint8_t new_id)
 {
-  bool comm_result = false;
+  const char* log = NULL;
+  bool result = false;
 
   if (new_id > 0 && new_id < 254)
   {
-    comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Torque_Enable", false);
-
-    comm_result = dynamixel_driver_->writeRegister(dxl_id_, "ID", new_id);
-    millis(1000);
-
-    uint16_t model_number = 0;
-    if (comm_result && dynamixel_driver_->ping(new_id, &model_number))
+    result = dynamixel_workbench_->changeID(dxl_id_, new_id, &log);
+    if (result == false)
     {
-      dxl_id_ = new_id;
-
-      printf("...Succeeded to set Dynamixel ID [%u]\n", dxl_id_);
-      return true;
+      printf("%s\n", log);
+      printf("...Failed to change ID!\n");
+      return false;
     }
     else
     {
-      printf("...Failed to change ID!\n");
+      printf("%s\n", log);
+      uint16_t model_number = 0;
+      result = dynamixel_workbench_->ping(new_id, &model_number, &log);
+      if (result == false)
+      {
+        printf("%s\n", log);
+        printf("...Failed to ping Dynamixel ID [%u]\n", dxl_id_);
+        return false;
+      }
+      else
+      {
+        dxl_id_ = new_id;
+
+        printf("...Succeeded to ping Dynamixel ID [%u]\n", dxl_id_);
+        return true;
+      }
+
       return false;
     }
   }
   else
   {
     printf("Dynamixel ID can be set 1~253\n");
-    return comm_result;
+    return false;
   }
+
+  return false;
 }
 
 bool SingleDynamixelMonitor::changeBaudrate(uint32_t new_baud_rate)
 {
-  bool comm_result = false;
+  const char* log = NULL;
+  bool result = false;
   bool check_baud_rate = false;
 
   uint64_t baud_rate_list[14] = {9600, 19200, 57600, 115200, 200000, 250000, 400000, 500000,
@@ -299,103 +328,46 @@ bool SingleDynamixelMonitor::changeBaudrate(uint32_t new_baud_rate)
   }
   else
   {
-    comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Torque_Enable", false);
-
-    if (dynamixel_driver_->getProtocolVersion() == 1.0)
+    result = dynamixel_workbench_->changeBaudrate(dxl_id_, new_baud_rate, &log);
+    if (result == false)
     {
-      if (new_baud_rate == 9600)
-        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 207);
-      else if (new_baud_rate == 19200)
-        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 103);
-      else if (new_baud_rate == 57600)
-        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 34);
-      else if (new_baud_rate == 115200)
-        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 16);
-      else if (new_baud_rate == 200000)
-        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 9);
-      else if (new_baud_rate == 250000)
-        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 7);
-      else if (new_baud_rate == 400000)
-        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 4);
-      else if (new_baud_rate == 500000)
-        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 3);
-      else if (new_baud_rate == 1000000)
-        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 1);
-      else
-        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 34);
-    }
-    else if (dynamixel_driver_->getProtocolVersion() == 2.0)
-    {
-      if (new_baud_rate == 9600)
-        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 0);
-      else if (new_baud_rate == 57600)
-        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 1);
-      else if (new_baud_rate == 115200)
-        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 2);
-      else if (new_baud_rate == 1000000)
-        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 3);
-      else if (new_baud_rate == 2000000)
-        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 4);
-      else if (new_baud_rate == 3000000)
-        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 5);
-      else if (new_baud_rate == 4000000)
-        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 6);
-      else if (new_baud_rate == 4500000)
-        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 7);
-      else if (new_baud_rate == 10500000)
-        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 8);
-      else
-        comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Baud_Rate", 1);
-    }
+      printf("%s\n", log);
+      printf("Failed to change baudrate!\n");
 
-    millis(2000);
-
-    if (comm_result)
-    {
-      if (dynamixel_driver_->setBaudrate(new_baud_rate))
-      {
-        printf("Success to change baudrate! [ BAUD RATE: %d ]\n", new_baud_rate);
-        return true;
-      }
-      else
-      {
-        printf("Failed to change baudrate!\n");
-        return false;
-      }
+      return false;
     }
     else
     {
-      printf("Failed to change baudrate!\n");
-      return false;
+      result = dynamixel_workbench_->setBaudrate(new_baud_rate, &log);
+      printf("%s\n", log);
+      printf("Success to change baudrate! [ BAUD RATE: %d ]\n", new_baud_rate);
+      return true;
     }
   }
+
+  return false;
 }
 
 bool SingleDynamixelMonitor::changeProtocolVersion(float ver)
 {
-  bool error = false;
-  bool comm_result = false;
+  const char* log = NULL;
+  bool result = false;
 
-  if (ver == 1.0 || ver == 2.0)
+  if (ver == 1.0f || ver == 2.0f)
   {
-    comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Torque_Enable", false);
-
-    comm_result = dynamixel_driver_->writeRegister(dxl_id_, "Protocol_Version", (int)(ver));
-    millis(2000);
-
-    if (comm_result)
+    result = dynamixel_workbench_->changeProtocolVersion(dxl_id_, ver, &log);
+    if (result == false)
     {
-      if (dynamixel_driver_->setPacketHandler(ver))
-      {
-        printf("Success to change protocol version [PROTOCOL VERSION: %.1f]\n", dynamixel_driver_->getProtocolVersion());
-        return true;
-      }
-      else
-        return false;
+      printf("%s\n", log);
+      printf("Failed to change protocol version\n");
+
+      return false;
     }
     else
     {
-      return false;
+      result = dynamixel_workbench_->setPacketHandler(ver, &log);
+      printf("Success to change protocol version [PROTOCOL VERSION: %.1f]\n", dynamixel_workbench_->getProtocolVersion());
+      return true;
     }
   }
   else
@@ -403,6 +375,8 @@ bool SingleDynamixelMonitor::changeProtocolVersion(float ver)
     printf("Dynamixel supports protocol version [1.0] or [2.0]\n");
     return false;
   }
+
+  return false;
 }
 
 bool SingleDynamixelMonitor::controlLoop(void)
@@ -416,12 +390,12 @@ bool SingleDynamixelMonitor::dynamixelInfoMsgCallback(dynamixel_workbench_msgs::
                                                    dynamixel_workbench_msgs::GetDynamixelInfo::Response &res)
 {
   res.dynamixel_info.load_info.device_name      = device_name_;
-  res.dynamixel_info.load_info.baud_rate        = dynamixel_driver_->getBaudrate();
-  res.dynamixel_info.load_info.protocol_version = dynamixel_driver_->getProtocolVersion();
+  res.dynamixel_info.load_info.baud_rate        = dynamixel_workbench_->getBaudrate();
+  res.dynamixel_info.load_info.protocol_version = dynamixel_workbench_->getProtocolVersion();
 
   res.dynamixel_info.model_id         = dxl_id_;
-  res.dynamixel_info.model_name       = dynamixel_driver_->getModelName(dxl_id_);
-  res.dynamixel_info.model_number     = dynamixel_driver_->getModelNum(dxl_id_);
+  res.dynamixel_info.model_name       = dynamixel_workbench_->getModelName(dxl_id_);
+  res.dynamixel_info.model_number     = dynamixel_workbench_->getModelNumber(dxl_id_);
 
   return true;
 }
@@ -429,6 +403,9 @@ bool SingleDynamixelMonitor::dynamixelInfoMsgCallback(dynamixel_workbench_msgs::
 bool SingleDynamixelMonitor::dynamixelCommandMsgCallback(dynamixel_workbench_msgs::DynamixelCommand::Request &req,
                                                          dynamixel_workbench_msgs::DynamixelCommand::Response &res)
 {
+  const char* log = NULL;
+  bool result = false;
+
   if (req.command == "table")
   {
     if (showDynamixelControlTable())
@@ -438,39 +415,109 @@ bool SingleDynamixelMonitor::dynamixelCommandMsgCallback(dynamixel_workbench_msg
   }
   else if (req.command == "reboot")
   {
-    if (dynamixel_driver_->reboot(dxl_id_))
+    result = dynamixel_workbench_->reboot(dxl_id_, &log);
+    if (result == false)
     {
-      printf("Succeed to reboot\n");
-      res.comm_result = true;
+      printf("%s\n", log);
+      printf("Failed to reboot\n");
+      res.comm_result = false;
     }
     else
     {
-      printf("Failed to reboot\n");
-      res.comm_result = false;
+      printf("%s\n", log);
+      printf("Succeed to reboot\n");
+      res.comm_result = true;
     }
   }
   else if (req.command == "factory_reset")
   {
-    if (dynamixel_driver_->reset(dxl_id_))
+    result = dynamixel_workbench_->reset(dxl_id_, &log);
+    if (result == false)
     {
-      dxl_id_ = 1;
-      printf("Succeed to reset\n");
-      res.comm_result = true;
+      printf("%s\n", log);
+      printf("Failed to reset\n");
+      res.comm_result = false;
     }
     else
     {
-      printf("Failed to reboot\n");
-      res.comm_result = false;
+      dxl_id_ = 1;
+
+      printf("%s\n", log);
+      printf("Succeed to reset\n");
+      res.comm_result = true;
     }
   }
   else if (req.command == "torque")
   {
+    uint8_t value = req.value;
+
+    result = dynamixel_workbench_->torque(dxl_id_, (bool)value, &log);
+    if (result == false)
+    {
+      res.comm_result = false;
+      printf("%s\n", log);
+    }
+    else
+    {
+      res.comm_result = true;
+      printf("%s\n", log);
+    }
+  }
+  else if (req.command == "Joint")
+  {
     int32_t value = req.value;
 
-    if (dynamixel_driver_->writeRegister(dxl_id_, "Torque_Enable", value))
-      res.comm_result = true;
-    else
+    result = dynamixel_workbench_->jointMode(dxl_id_, 0, 0, &log);
+    if (result == false)
+    {
+      printf("%s\n", log);
       res.comm_result = false;
+    }
+    else
+    {
+      printf("%s\n", log);
+    }
+
+    result = dynamixel_workbench_->goalPosition(dxl_id_, value, &log);
+    if (result == false)
+    {
+      printf("%s\n", log);
+      res.comm_result = false;
+    }
+    else
+    {
+      printf("%s\n", log);
+    }
+
+    res.comm_result = true;
+  }
+  else if (req.command == "Wheel")
+  {
+    int32_t value = req.value;
+
+    result = dynamixel_workbench_->wheelMode(dxl_id_, 0, &log);
+    if (result == false)
+    {
+      printf("%s\n", log);
+      res.comm_result = false;
+    }
+    else
+    {
+      printf("%s\n", log);
+    }
+
+    result = dynamixel_workbench_->goalVelocity(dxl_id_, value, &log);
+    if (result == false)
+    {
+      printf("%s\n", log);
+      res.comm_result = false;
+    }
+    else
+    {
+      printf("%s\n", log);
+    }
+
+    res.comm_result = true;
   }
   else if (req.command == "exit")
   {
@@ -479,7 +526,7 @@ bool SingleDynamixelMonitor::dynamixelCommandMsgCallback(dynamixel_workbench_msg
   else if (req.command == "addr")
   {
     std::string addr = req.addr_name;
-    int64_t value    = req.value;
+    int32_t value    = req.value;
 
     if (checkValidationCommand(addr))
     {
@@ -514,10 +561,17 @@ bool SingleDynamixelMonitor::dynamixelCommandMsgCallback(dynamixel_workbench_msg
     }
     else
     {
-      if (dynamixel_driver_->writeRegister(dxl_id_, addr.c_str(), value))
-        res.comm_result = true;
-      else
+      result = dynamixel_workbench_->itemWrite(dxl_id_, addr.c_str(), value, &log);
+      if (result == false)
+      {
+        printf("%s\n", log);
         res.comm_result = false;
+      }
+      else
+      {
+        printf("%s\n", log);
+        res.comm_result = true;
+      }
     }
   }
   else
@@ -550,7 +604,7 @@ int main(int argc, char **argv)
 
 void SingleDynamixelMonitor::dynamixelStatePublish(void)
 {
-  char* model_name = dynamixel_driver_->getModelName(dxl_id_);
+  const char* model_name = dynamixel_workbench_->getModelName(dxl_id_);
 
   if (!strncmp(model_name, "AX", strlen("AX")))
   {
@@ -617,16 +671,16 @@ void SingleDynamixelMonitor::dynamixelStatePublish(void)
 
 void SingleDynamixelMonitor::AX(void)
 {
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlItem* item_ptr = dynamixel_workbench_->getControlTable(dxl_id_);
   dynamixel_workbench_msgs::AX ax_state;
 
-  uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
-  uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
-  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+  uint16_t last_register_addr = item_ptr[dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_)-1].address;
+  uint16_t last_register_addr_length = item_ptr[dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_)-1].data_length;
+  uint32_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
 
-  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+  dynamixel_workbench_->readRegister(dxl_id_, (uint16_t)0, last_register_addr+last_register_addr_length, getAllRegisteredData);
 
-  for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
+  for (int index = 0; index < dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_); index++)
   {
     int32_t read_value = 0;
     read_value = getAllRegisteredData[item_ptr[index].address];
@@ -722,16 +776,16 @@ void SingleDynamixelMonitor::AX(void)
 
 void SingleDynamixelMonitor::RX(void)
 {
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlItem* item_ptr = dynamixel_workbench_->getControlTable(dxl_id_);
   dynamixel_workbench_msgs::RX rx_state;
 
-  uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
-  uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
-  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+  uint16_t last_register_addr = item_ptr[dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_)-1].address;
+  uint16_t last_register_addr_length = item_ptr[dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_)-1].data_length;
+  uint32_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
 
-  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+  dynamixel_workbench_->readRegister(dxl_id_, (uint16_t)0, last_register_addr+last_register_addr_length, getAllRegisteredData);
 
-  for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
+  for (int index = 0; index < dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_); index++)
   {
     int32_t read_value = 0;
     read_value = getAllRegisteredData[item_ptr[index].address];
@@ -827,16 +881,16 @@ void SingleDynamixelMonitor::RX(void)
 
 void SingleDynamixelMonitor::MX(void)
 {
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlItem* item_ptr = dynamixel_workbench_->getControlTable(dxl_id_);
   dynamixel_workbench_msgs::MX mx_state;
 
-  uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
-  uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
-  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+  uint16_t last_register_addr = item_ptr[dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_)-1].address;
+  uint16_t last_register_addr_length = item_ptr[dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_)-1].data_length;
+  uint32_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
 
-  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+  dynamixel_workbench_->readRegister(dxl_id_, (uint16_t)0, last_register_addr+last_register_addr_length, getAllRegisteredData);
 
-  for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
+  for (int index = 0; index < dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_); index++)
   {
     int32_t read_value = 0;
     read_value = getAllRegisteredData[item_ptr[index].address];
@@ -936,16 +990,16 @@ void SingleDynamixelMonitor::MX(void)
 
 void SingleDynamixelMonitor::MXExt(void)
 {
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlItem* item_ptr = dynamixel_workbench_->getControlTable(dxl_id_);
   dynamixel_workbench_msgs::MXExt mxext_state;
 
-  uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
-  uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
-  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+  uint16_t last_register_addr = item_ptr[dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_)-1].address;
+  uint16_t last_register_addr_length = item_ptr[dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_)-1].data_length;
+  uint32_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
 
-  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+  dynamixel_workbench_->readRegister(dxl_id_, (uint16_t)0, last_register_addr+last_register_addr_length, getAllRegisteredData);
 
-  for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
+  for (int index = 0; index < dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_); index++)
   {
     int32_t read_value = 0;
     read_value = getAllRegisteredData[item_ptr[index].address];
@@ -1051,16 +1105,16 @@ void SingleDynamixelMonitor::MXExt(void)
 
 void SingleDynamixelMonitor::MX2(void)
 {
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlItem* item_ptr = dynamixel_workbench_->getControlTable(dxl_id_);
   dynamixel_workbench_msgs::MX2 mx2_state;
 
-  uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
-  uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
-  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+  uint16_t last_register_addr = item_ptr[dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_)-1].address;
+  uint16_t last_register_addr_length = item_ptr[dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_)-1].data_length;
+  uint32_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
 
-  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+  dynamixel_workbench_->readRegister(dxl_id_, (uint16_t)0, last_register_addr+last_register_addr_length, getAllRegisteredData);
 
-  for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
+  for (int index = 0; index < dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_); index++)
   {
     int32_t read_value = 0;
     read_value = getAllRegisteredData[item_ptr[index].address];
@@ -1190,16 +1244,16 @@ void SingleDynamixelMonitor::MX2(void)
 
 void SingleDynamixelMonitor::MX2Ext(void)
 {
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlItem* item_ptr = dynamixel_workbench_->getControlTable(dxl_id_);
   dynamixel_workbench_msgs::MX2Ext mx2ext_state;
 
-  uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
-  uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
-  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+  uint16_t last_register_addr = item_ptr[dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_)-1].address;
+  uint16_t last_register_addr_length = item_ptr[dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_)-1].data_length;
+  uint32_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
 
-  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+  dynamixel_workbench_->readRegister(dxl_id_, (uint16_t)0, last_register_addr+last_register_addr_length, getAllRegisteredData);
 
-  for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
+  for (int index = 0; index < dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_); index++)
   {
     int32_t read_value = 0;
     read_value = getAllRegisteredData[item_ptr[index].address];
@@ -1333,16 +1387,16 @@ void SingleDynamixelMonitor::MX2Ext(void)
 
 void SingleDynamixelMonitor::EX(void)
 {
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlItem* item_ptr = dynamixel_workbench_->getControlTable(dxl_id_);
   dynamixel_workbench_msgs::EX ex_state;
 
-  uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
-  uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
-  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+  uint16_t last_register_addr = item_ptr[dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_)-1].address;
+  uint16_t last_register_addr_length = item_ptr[dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_)-1].data_length;
+  uint32_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
 
-  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+  dynamixel_workbench_->readRegister(dxl_id_, (uint16_t)0, last_register_addr+last_register_addr_length, getAllRegisteredData);
 
-  for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
+  for (int index = 0; index < dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_); index++)
   {
     int32_t read_value = 0;
     read_value = getAllRegisteredData[item_ptr[index].address];
@@ -1442,16 +1496,16 @@ void SingleDynamixelMonitor::EX(void)
 
 void SingleDynamixelMonitor::XL320(void)
 {
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlItem* item_ptr = dynamixel_workbench_->getControlTable(dxl_id_);
   dynamixel_workbench_msgs::XL320 xl320_state;
 
-  uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
-  uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
-  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+  uint16_t last_register_addr = item_ptr[dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_)-1].address;
+  uint16_t last_register_addr_length = item_ptr[dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_)-1].data_length;
+  uint32_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
 
-  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+  dynamixel_workbench_->readRegister(dxl_id_, (uint16_t)0, last_register_addr+last_register_addr_length, getAllRegisteredData);
 
-  for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
+  for (int index = 0; index < dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_); index++)
   {
     int32_t read_value = 0;
     read_value = getAllRegisteredData[item_ptr[index].address];
@@ -1543,16 +1597,16 @@ void SingleDynamixelMonitor::XL320(void)
 
 void SingleDynamixelMonitor::XL(void)
 {
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlItem* item_ptr = dynamixel_workbench_->getControlTable(dxl_id_);
   dynamixel_workbench_msgs::XL xl_state;
 
-  uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
-  uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
-  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+  uint16_t last_register_addr = item_ptr[dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_)-1].address;
+  uint16_t last_register_addr_length = item_ptr[dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_)-1].data_length;
+  uint32_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
 
-  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+  dynamixel_workbench_->readRegister(dxl_id_, (uint16_t)0, last_register_addr+last_register_addr_length, getAllRegisteredData);
 
-  for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
+  for (int index = 0; index < dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_); index++)
   {
     int32_t read_value = 0;
     read_value = getAllRegisteredData[item_ptr[index].address];
@@ -1682,16 +1736,16 @@ void SingleDynamixelMonitor::XL(void)
 
 void SingleDynamixelMonitor::XM(void)
 {
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlItem* item_ptr = dynamixel_workbench_->getControlTable(dxl_id_);
   dynamixel_workbench_msgs::XM xm_state;
 
-  uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
-  uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
-  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+  uint16_t last_register_addr = item_ptr[dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_)-1].address;
+  uint16_t last_register_addr_length = item_ptr[dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_)-1].data_length;
+  uint32_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
 
-  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+  dynamixel_workbench_->readRegister(dxl_id_, (uint16_t)0, last_register_addr+last_register_addr_length, getAllRegisteredData);
 
-  for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
+  for (int index = 0; index < dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_); index++)
   {
     int32_t read_value = 0;
     read_value = getAllRegisteredData[item_ptr[index].address];
@@ -1825,16 +1879,16 @@ void SingleDynamixelMonitor::XM(void)
 
 void SingleDynamixelMonitor::XMExt(void)
 {
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlItem* item_ptr = dynamixel_workbench_->getControlTable(dxl_id_);
   dynamixel_workbench_msgs::XMExt xmext_state;
 
-  uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
-  uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
-  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+  uint16_t last_register_addr = item_ptr[dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_)-1].address;
+  uint16_t last_register_addr_length = item_ptr[dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_)-1].data_length;
+  uint32_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
 
-  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+  dynamixel_workbench_->readRegister(dxl_id_, (uint16_t)0, last_register_addr+last_register_addr_length, getAllRegisteredData);
 
-  for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
+  for (int index = 0; index < dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_); index++)
   {
     int32_t read_value = 0;
     read_value = getAllRegisteredData[item_ptr[index].address];
@@ -1974,16 +2028,16 @@ void SingleDynamixelMonitor::XMExt(void)
 
 void SingleDynamixelMonitor::XH(void)
 {
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlItem* item_ptr = dynamixel_workbench_->getControlTable(dxl_id_);
   dynamixel_workbench_msgs::XH xh_state;
 
-  uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
-  uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
-  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+  uint16_t last_register_addr = item_ptr[dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_)-1].address;
+  uint16_t last_register_addr_length = item_ptr[dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_)-1].data_length;
+  uint32_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
 
-  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+  dynamixel_workbench_->readRegister(dxl_id_, (uint16_t)0, last_register_addr+last_register_addr_length, getAllRegisteredData);
 
-  for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
+  for (int index = 0; index < dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_); index++)
   {
     int32_t read_value = 0;
     read_value = getAllRegisteredData[item_ptr[index].address];
@@ -2117,16 +2171,16 @@ void SingleDynamixelMonitor::XH(void)
 
 void SingleDynamixelMonitor::PRO(void)
 {
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlItem* item_ptr = dynamixel_workbench_->getControlTable(dxl_id_);
   dynamixel_workbench_msgs::PRO pro_state;
 
-  uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
-  uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
-  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+  uint16_t last_register_addr = item_ptr[dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_)-1].address;
+  uint16_t last_register_addr_length = item_ptr[dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_)-1].data_length;
+  uint32_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
 
-  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+  dynamixel_workbench_->readRegister(dxl_id_, (uint16_t)0, last_register_addr+last_register_addr_length, getAllRegisteredData);
 
-  for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
+  for (int index = 0; index < dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_); index++)
   {
     int32_t read_value = 0;
     read_value = getAllRegisteredData[item_ptr[index].address];
@@ -2238,16 +2292,16 @@ void SingleDynamixelMonitor::PRO(void)
 
 void SingleDynamixelMonitor::PROExt(void)
 {
-  ControlTableItem* item_ptr = dynamixel_driver_->getControlItemPtr(dxl_id_);
+  const ControlItem* item_ptr = dynamixel_workbench_->getControlTable(dxl_id_);
   dynamixel_workbench_msgs::PROExt proext_state;
 
-  uint16_t last_register_addr = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].address;
-  uint16_t last_register_addr_length = item_ptr[dynamixel_driver_->getTheNumberOfItem(dxl_id_)-1].data_length;
-  uint8_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
+  uint16_t last_register_addr = item_ptr[dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_)-1].address;
+  uint16_t last_register_addr_length = item_ptr[dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_)-1].data_length;
+  uint32_t getAllRegisteredData[last_register_addr+last_register_addr_length] = {0, };
 
-  dynamixel_driver_->readRegister(dxl_id_, last_register_addr+last_register_addr_length, getAllRegisteredData);
+  dynamixel_workbench_->readRegister(dxl_id_, (uint16_t)0, last_register_addr+last_register_addr_length, getAllRegisteredData);
 
-  for (int index = 0; index < dynamixel_driver_->getTheNumberOfItem(dxl_id_); index++)
+  for (int index = 0; index < dynamixel_workbench_->getTheNumberOfControlItem(dxl_id_); index++)
   {
     int32_t read_value = 0;
     read_value = getAllRegisteredData[item_ptr[index].address];

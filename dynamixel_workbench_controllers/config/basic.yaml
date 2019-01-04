@@ -1,0 +1,11 @@
+# You can find control table of Dynamixel on emanual (http://emanual.robotis.com/#control-table)
+# Control table item has to be set Camel_Case and not included whitespace
+# You are supposed to set at least Dynamixel ID
+pan:
+  ID: 1
+  Return_Delay_Time: 0
+tilt:
+  ID: 2
+  Return_Delay_Time: 0
+
+
