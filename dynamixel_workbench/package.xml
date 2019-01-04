@@ -18,7 +18,6 @@
   <url type="bugtracker">https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues</url>
   <buildtool_depend>catkin</buildtool_depend>
   <exec_depend>dynamixel_workbench_controllers</exec_depend>
-  <exec_depend>dynamixel_workbench_moveit_bridge</exec_depend>
   <exec_depend>dynamixel_workbench_operators</exec_depend>
   <exec_depend>dynamixel_workbench_single_manager</exec_depend>
   <exec_depend>dynamixel_workbench_single_manager_gui</exec_depend>

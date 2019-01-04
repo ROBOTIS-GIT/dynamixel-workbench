@@ -4,12 +4,9 @@ Changelog for package dynamixel_workbench_controllers
 
 2.0.0 (2019-01-04)
 ------------------
-* added dynamixel_workbench_moveit_bridge package
-* added ROS package application 
 * added YAML configuration for Dynamixel 
 * supported position control mode, current based position control mode through Joint Trajectory Message
 * supported velocity control mode through Twist Message
-* added MoveIt! bridge
 * reduced memory usage(Contribute by @KurtE)
 * updated API for sync, bulk instruction
 * updated control period (default is 10ms)
@@ -17,7 +14,6 @@ Changelog for package dynamixel_workbench_controllers
 * supported Pro+ 
 * supported DynamixelSDK(after v.3.6.2)
 * supported OpenManipulator
-* updated e-manual
 * Contributors: Darby Lim, KurtE, Pyo
 
 1.0.0 (2018-07-20)
