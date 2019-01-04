@@ -22,4 +22,5 @@
   <depend>dynamixel_workbench_toolbox</depend>
   <depend>cmake_modules</depend>
   <depend>yaml-cpp</depend>
+  <depend>eigen</depend>
 </package>
