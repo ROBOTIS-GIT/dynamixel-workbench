@@ -1,24 +1,27 @@
-ISSUE TEMPLATE ver. 0.1.0
+ISSUE TEMPLATE ver. 1.0.0
 
-Before you open issue, please refer to [ROBOTIS e-Manual](http://emanual.robotis.com/)
+Before you open issue, please refer to [ROBOTIS e-Manual](http://emanual.robotis.com/docs/en/software/dynamixel/dynamixel_workbench/)
 
-1. Which distro of ROS have you installed? (ex, indigo, kinetic, melodic)
+1. How to setup? (ex, U2D2, OpenCR,...)
 
+2. Which Dynamixel have you used? and how many? **(Please describe below format to all connected Dynamixels)**
 
-2. Which OS have you installed? (ex, Ubuntu 16.04 LTS (Xenial Xerus), Linux Mint 18.x, ...)
+   - Model Name
 
+   - ID
 
-3. Which Dynamixel have you used? (ex, MX-28, XM430-W350, ...)
+   - Baud Rate of Dynamixels
 
+   - Protocol Version
  
-4. Write down the commands you used in order
+3. Write down the commands you used in order
 
   ```
   $ roscore    
   $ roslaunch dynamixel_workbench_single_manager single_manager.launch
   ```
  
-5. Copy and Paste your error message on terminal
+4. Copy and Paste your error message on terminal
 
   ```
   SUMMARY
@@ -61,6 +64,6 @@ Before you open issue, please refer to [ROBOTIS e-Manual](http://emanual.robotis
   ... shutting down processing monitor complete
   ```
   
-6. Please, describe detailedly what difficulty you are in 
+5. Please, describe detailedly what difficulty you are in 
 
     - HERE

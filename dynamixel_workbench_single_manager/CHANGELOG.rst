@@ -2,6 +2,20 @@
 Changelog for package dynamixel_workbench_single_manager
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.0.0 (2019-01-04)
+------------------
+* added YAML configuration for Dynamixel 
+* supported position control mode, current based position control mode through Joint Trajectory Message
+* supported velocity control mode through Twist Message
+* reduced memory usage(Contribute by @KurtE)
+* updated API for sync, bulk instruction
+* updated control period (default is 10ms)
+* supported Linux, macos 
+* supported Pro+ 
+* supported DynamixelSDK(after v.3.6.2)
+* supported OpenManipulator
+* Contributors: Darby Lim, KurtE, Pyo
+
 1.0.0 (2018-07-20)
 ------------------
 * upgraded read time #162

@@ -20,7 +20,7 @@
 #include <termios.h>        // Terminal IO
 
 #include <ros/ros.h>
-#include <dynamixel_workbench_msgs/WheelCommand.h>
+#include <geometry_msgs/Twist.h>
 
 #define ESC_ASCII_VALUE             0x1b
 #define FORWARD                     0x77
@@ -76,21 +76,42 @@ int main(int argc, char **argv)
 {
   // Init ROS node
   ros::init(argc, argv, "wheel_operator");
+  ros::NodeHandle node_handle("");
 
-  ROS_INFO("Set angular velocity(+-0.2 rad/sec) to your Dynamixel!! by using keyboard");
-  ROS_INFO("w : Forward");
-  ROS_INFO("x : Backward");
-  ROS_INFO("a : Left");
-  ROS_INFO("d : Right");
-  ROS_INFO("s : STOPS\n");
-  ROS_INFO("ESC : exit");
+  double lin_vel_step = 0.01;
+  double ang_vel_step = 0.1;
 
-  dynamixel_workbench_msgs::WheelCommand wheel_command;
-  ros::NodeHandle node_handle;
+  ROS_INFO("You can set '-lin_vel_step' and  '-ang_vel_step' arguments (default is 0.01 and 0.1)");
 
-  ros::ServiceClient wheel_command_client =
-                node_handle.serviceClient<dynamixel_workbench_msgs::WheelCommand>("/wheel_command");
-  ros::Rate loop_rate(250);
+  if (argc > 1)
+  {
+    lin_vel_step = atof(argv[1]);
+    ang_vel_step = atof(argv[2]);
+  }
+
+  ros::Publisher cmd_vel_pub = node_handle.advertise<geometry_msgs::Twist>("cmd_vel", 10);
+  geometry_msgs::Twist twist_msg;
+
+  std::string msg =
+  "\n\
+  Control Your Mobile Robot! \n\
+  --------------------------- \n\
+  Moving around:\n\
+          w\n\
+     a    s    d\n\
+          x\n\
+  \n\
+  w/x : increase/decrease linear velocity\n\
+  a/d : increase/decrease angular velocity\n\
+  \n\
+  s : force stop\n\
+  \n\
+  CTRL-C to quit\n\
+  ";
+
+  ROS_INFO("%s", msg.c_str());
+
+  ros::Rate loop_rate(100);
 
   while(ros::ok())
   {
@@ -98,57 +119,39 @@ int main(int argc, char **argv)
     {
       char c = getch();
 
-      if (c == ESC_ASCII_VALUE)
-      {
-        break;
-      }
-
       if (c == FORWARD)
       {
-        wheel_command.request.right_vel += 0.2;
-        wheel_command.request.left_vel  += 0.2;
+        twist_msg.linear.x += lin_vel_step;
       }
       else if (c == BACKWARD)
       {
-        wheel_command.request.right_vel += -0.2;
-        wheel_command.request.left_vel  += -0.2;
+        twist_msg.linear.x -= lin_vel_step;
       }
       else if (c == LEFT)
       {
-        wheel_command.request.right_vel += 0.2;
-        wheel_command.request.left_vel  += -0.2;
+        twist_msg.angular.z += ang_vel_step;
       }
       else if (c == RIGHT)
       {
-        wheel_command.request.right_vel += -0.2;
-        wheel_command.request.left_vel  += 0.2;
+        twist_msg.angular.z -= ang_vel_step;
       }
       else if (c == STOPS)
       {
-        wheel_command.request.right_vel = 0.0;
-        wheel_command.request.left_vel  = 0.0;
+        twist_msg.linear.x  = 0.0f;
+        twist_msg.angular.z = 0.0f;
       }
       else
       {
-        wheel_command.request.right_vel += 0.2;
-        wheel_command.request.left_vel  += 0.2;
-      }
-
-      if (wheel_command_client.call(wheel_command))
-      {
-        if (wheel_command.response.result)
-          ROS_INFO("Succeed to write goal_velocity");
-        else
-          ROS_WARN("Failed to write goal_velocity");
-      }
-      else
-      {
-        ROS_ERROR("Failed to call service /wheel_command");
+        twist_msg.linear.x  = twist_msg.linear.x;
+        twist_msg.angular.z = twist_msg.angular.z;
       }
     }
+
+    cmd_vel_pub.publish(twist_msg);
 
     ros::spinOnce();
     loop_rate.sleep();
   }
+
   return 0;
 }

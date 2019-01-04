@@ -16,59 +16,48 @@
 
 /* Authors: Taehun Lim (Darby) */
 
-#ifndef DYNAMIXEL_WORKBENCH_MULTI_PORT_H
-#define DYNAMIXEL_WORKBENCH_MULTI_PORT_H
+#ifndef DYNAMIXEL_WORKBENCH_OPERATORS_H
+#define DYNAMIXEL_WORKBENCH_OPERATORS_H
 
 #include <ros/ros.h>
+#include <yaml-cpp/yaml.h>
 
-#include "message_header.h"
+#include <trajectory_msgs/JointTrajectory.h>
+#include <trajectory_msgs/JointTrajectoryPoint.h>
 
-#include <dynamixel_workbench_toolbox/dynamixel_workbench.h>
-#include <dynamixel_workbench_msgs/DynamixelStateList.h>
-#include <dynamixel_workbench_msgs/JointCommand.h>
+#include <std_srvs/Trigger.h>
 
-#define FIRST  0
-#define SECOND 1
-
-#define PORT_NUM 2
-
-class MultiPort
+class JointOperator
 {
  private:
   // ROS NodeHandle
   ros::NodeHandle node_handle_;
+  ros::NodeHandle priv_node_handle_;
 
   // ROS Parameters
 
   // ROS Topic Publisher
-  ros::Publisher dynamixel_state_list_pub_;
+  ros::Publisher joint_trajectory_pub_;
 
   // ROS Topic Subscriber
 
   // ROS Service Server
-  ros::ServiceServer joint_command_server_;
+  ros::ServiceServer move_command_server_;
 
   // ROS Service Client
 
-  // Dynamixel Workbench Parameters
-  DynamixelWorkbench *dxl_wb_[2];
-  uint8_t dxl_id_[2][16];
-  uint8_t dxl_cnt_[2];
+  trajectory_msgs::JointTrajectory *jnt_tra_msg_;
+  bool is_loop_;
 
  public:
-  MultiPort();
-  ~MultiPort();
-  void controlLoop(void);
+  JointOperator();
+  ~JointOperator();
 
- private:
-  void initMsg();
+  bool isLoop(void){ return is_loop_;}
 
-  void initPublisher();
-  void dynamixelStatePublish();
-
-  void initServer();
-  bool jointCommandMsgCallback(dynamixel_workbench_msgs::JointCommand::Request &req,
-                               dynamixel_workbench_msgs::JointCommand::Response &res);
+  bool getTrajectoryInfo(const std::string yaml_file, trajectory_msgs::JointTrajectory *jnt_tra_msg);
+  bool moveCommandMsgCallback(std_srvs::Trigger::Request &req,
+                             std_srvs::Trigger::Response &res);
 };
 
-#endif //DYNAMIXEL_WORKBENCH_MULTI_PORT_H
+#endif // DYNAMIXEL_WORKBENCH_OPERATORS_H
