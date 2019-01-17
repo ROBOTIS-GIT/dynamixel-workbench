@@ -186,6 +186,42 @@ bool DynamixelController::initSDKHandlers(void)
         return result;
       }
     }
+    else if (strncmp(dxl_wb_->getModelName(it->second), "PRO", strlen("PRO")) == 0)
+    {
+      result = dxl_wb_->addSyncWriteHandler(it->second, "Goal_Velocity", &log);
+      if (result == false)
+      {
+        ROS_ERROR("%s", log);
+        return result;
+      }
+
+      result = dxl_wb_->addSyncReadHandler(ADDR_PRESENT_POSITION_PRO,
+                                          (LENGTH_PRESENT_POSITION_PRO + LENGTH_PRESENT_VELOCITY_PRO),
+                                          &log);
+      if (result == false)
+      {
+        ROS_ERROR("%s", log);
+        return result;
+      }
+    }
+    else if (strncmp(dxl_wb_->getModelName(it->second), "PRO-PLUS", strlen("PRO-PLUS")) == 0)
+    {
+      result = dxl_wb_->addSyncWriteHandler(it->second, "Goal_Velocity", &log);
+      if (result == false)
+      {
+        ROS_ERROR("%s", log);
+        return result;
+      }
+
+      result = dxl_wb_->addSyncReadHandler(ADDR_PRESENT_CURRENT_PRO_PLUS,
+                                          (LENGTH_PRESENT_CURRENT_PRO_PLUS + LENGTH_PRESENT_VELOCITY_PRO_PLUS + LENGTH_PRESENT_POSITION_PRO_PLUS),
+                                          &log);
+      if (result == false)
+      {
+        ROS_ERROR("%s", log);
+        return result;
+      }
+    }
     else
     {
       result = dxl_wb_->addSyncWriteHandler(it->second, "Goal_Velocity", &log);
