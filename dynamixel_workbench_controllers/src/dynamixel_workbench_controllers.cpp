@@ -195,8 +195,9 @@ bool DynamixelController::initSDKHandlers(void)
         return result;
       }
 
+      const uint8_t EMPTY_SPACE = 6;
       result = dxl_wb_->addSyncReadHandler(ADDR_PRESENT_POSITION_PRO,
-                                          (LENGTH_PRESENT_POSITION_PRO + LENGTH_PRESENT_VELOCITY_PRO),
+                                          (LENGTH_PRESENT_POSITION_PRO + LENGTH_PRESENT_VELOCITY_PRO + EMPTY_SPACE + LENGTH_PRESENT_CURRENT_PRO),
                                           &log);
       if (result == false)
       {
@@ -426,6 +427,53 @@ void DynamixelController::readCallback(const ros::TimerEvent&)
                                                       id_cnt,
                                                       ADDR_PRESENT_POSITION_XL_320,
                                                       LENGTH_PRESENT_POSITION_XL_320,
+                                                      get_position,
+                                                      &log);
+        if (result == false)
+        {
+          ROS_ERROR("%s", log);
+        }
+      }
+      if (strncmp(dxl_wb_->getModelName(id_array[0]), "PRO", strlen("PRO")) == 0)
+      {
+        result = dxl_wb_->syncRead(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
+                                   id_array,
+                                   dynamixel_.size(),
+                                   &log);
+        if (result == false)
+        {
+          ROS_ERROR("%s", log);
+        }
+
+        result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
+                                                      id_array,
+                                                      id_cnt,
+                                                      ADDR_PRESENT_CURRENT_PRO,
+                                                      LENGTH_PRESENT_CURRENT_PRO,
+                                                      get_current,
+                                                      &log);
+        if (result == false)
+        {
+          ROS_ERROR("%s", log);
+        }
+
+        result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
+                                                      id_array,
+                                                      id_cnt,
+                                                      ADDR_PRESENT_VELOCITY_PRO,
+                                                      LENGTH_PRESENT_VELOCITY_PRO,
+                                                      get_velocity,
+                                                      &log);
+        if (result == false)
+        {
+          ROS_ERROR("%s", log);
+        }
+
+        result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
+                                                      id_array,
+                                                      id_cnt,
+                                                      ADDR_PRESENT_POSITION_PRO,
+                                                      LENGTH_PRESENT_POSITION_PRO,
                                                       get_position,
                                                       &log);
         if (result == false)
