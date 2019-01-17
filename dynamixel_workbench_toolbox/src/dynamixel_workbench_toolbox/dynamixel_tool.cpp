@@ -74,9 +74,9 @@ static const DynamixelModel dynamixel_model_table[] = {
     {PRO_H54_100_S500_R, "PRO-H54-100-S500-R"},
     {PRO_H54_200_S500_R, "PRO-H54-200-S500-R"},
 
-    {PRO_H42P_020_S300_R, "PRO-H42P-020-S300-R"},
-    {PRO_H54P_100_S500_R, "PRO-H54P-100-S500-R"},
-    {PRO_H54P_200_S500_R, "PRO-H54P-200-S500-R"}
+    {PRO_PLUS_H42P_020_S300_R, "PRO-PLUS-H42P-020-S300-R"},
+    {PRO_PLUS_H54P_100_S500_R, "PRO-PLUS-H54P-100-S500-R"},
+    {PRO_PLUS_H54P_200_S500_R, "PRO-PLUS-H54P-200-S500-R"}
 };
 #define COUNT_DYNAMIXEL_MODEL  (sizeof(dynamixel_model_table)/sizeof(dynamixel_model_table[0]))
 
