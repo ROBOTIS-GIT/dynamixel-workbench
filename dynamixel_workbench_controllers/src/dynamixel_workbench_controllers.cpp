@@ -153,104 +153,164 @@ bool DynamixelController::initDynamixels(void)
   return true;
 }
 
+bool DynamixelController::initControlItems(void)
+{
+  bool result = false;
+  const char* log = NULL;
+
+  auto it = dynamixel_.begin();
+
+  const ControlItem *goal_position = dxl_wb_->getItemInfo(it->second, "Goal_Position");
+  if (goal_position == NULL) return false;
+
+  const ControlItem *goal_velocity = dxl_wb_->getItemInfo(it->second, "Goal_Velocity");
+  if (goal_velocity == NULL)  goal_velocity = dxl_wb_->getItemInfo(it->second, "Moving_Speed");
+  if (goal_velocity == NULL)  return false;
+
+  const ControlItem *present_position = dxl_wb_->getItemInfo(it->second, "Present_Position");
+  if (present_position == NULL) return false;
+
+  const ControlItem *present_velocity = dxl_wb_->getItemInfo(it->second, "Present_Velocity");
+  if (present_velocity == NULL)  present_velocity = dxl_wb_->getItemInfo(it->second, "Present_Speed");
+  if (present_velocity == NULL) return false;
+
+  const ControlItem *present_current = dxl_wb_->getItemInfo(it->second, "Present_Current");
+  if (present_current == NULL)  present_current = dxl_wb_->getItemInfo(it->second, "Present_Load");
+  if (present_current == NULL) return false;
+
+  control_items_["Goal_Position"] = goal_position;
+  control_items_["Goal_Velocity"] = goal_velocity;
+
+  control_items_["Present_Position"] = present_position;
+  control_items_["Present_Velocity"] = present_velocity;
+  control_items_["Present_Current"] = present_current;
+
+  return true;
+}
+
 bool DynamixelController::initSDKHandlers(void)
 {
   bool result = false;
   const char* log = NULL;
 
   auto it = dynamixel_.begin();
-  result = dxl_wb_->addSyncWriteHandler(it->second, "Goal_Position", &log);
+
+  result = dxl_wb_->addSyncWriteHandler(it->second, control_items_["Goal_Position"]->address, &log);
+  if (result == false)
+  {
+    ROS_ERROR("%s", log);
+    return result;
+  }
+  else
+  {
+    ROS_INFO("%s", log);
+  }
+
+  result = dxl_wb_->addSyncWriteHandler(it->second, control_items_["Goal_Velocity"]->address, &log);
+  if (result == false)
+  {
+    ROS_ERROR("%s", log);
+    return result;
+  }
+  else
+  {
+    ROS_INFO("%s", log);
+  }
+
+  result = dxl_wb_->addSyncReadHandler(control_items_[],
+                                      (LENGTH_PRESENT_CURRENT_PRO_PLUS + LENGTH_PRESENT_VELOCITY_PRO_PLUS + LENGTH_PRESENT_POSITION_PRO_PLUS),
+                                      &log);
   if (result == false)
   {
     ROS_ERROR("%s", log);
     return result;
   }
 
-  if (dxl_wb_->getProtocolVersion() == 2.0f)
-  {    
-    if (strcmp(dxl_wb_->getModelName(it->second), "XL-320") == 0)
-    {
-      result = dxl_wb_->addSyncWriteHandler(it->second, "Moving_Speed", &log);
-      if (result == false)
-      {
-        ROS_ERROR("%s", log);
-        return result;
-      }
+  // if (dxl_wb_->getProtocolVersion() == 2.0f)
+  // {    
+  //   if (strcmp(dxl_wb_->getModelName(it->second), "XL-320") == 0)
+  //   {
+  //     result = dxl_wb_->addSyncWriteHandler(it->second, "Moving_Speed", &log);
+  //     if (result == false)
+  //     {
+  //       ROS_ERROR("%s", log);
+  //       return result;
+  //     }
 
-      result = dxl_wb_->addSyncReadHandler(ADDR_PRESENT_POSITION_XL_320,
-                                          (LENGTH_PRESENT_POSITION_XL_320 + LENGTH_PRESENT_VELOCITY_XL_320 + LENGTH_PRESENT_LOAD_XL_320),
-                                          &log);
-      if (result == false)
-      {
-        ROS_ERROR("%s", log);
-        return result;
-      }
-    }
-    else if (strncmp(dxl_wb_->getModelName(it->second), "PRO", strlen("PRO")) == 0)
-    {
-      result = dxl_wb_->addSyncWriteHandler(it->second, "Goal_Velocity", &log);
-      if (result == false)
-      {
-        ROS_ERROR("%s", log);
-        return result;
-      }
+  //     result = dxl_wb_->addSyncReadHandler(ADDR_PRESENT_POSITION_PRO,
+  //                                         (LENGTH_PRESENT_POSITION_XL_320 + LENGTH_PRESENT_VELOCITY_XL_320 + LENGTH_PRESENT_LOAD_XL_320),
+  //                                         &log);
+  //     if (result == false)
+  //     {
+  //       ROS_ERROR("%s", log);
+  //       return result;
+  //     }
+  //   }
+  //   else if (strncmp(dxl_wb_->getModelName(it->second), "PRO", strlen("PRO")) == 0)
+  //   {
+  //     result = dxl_wb_->addSyncWriteHandler(it->second, "Goal_Velocity", &log);
+  //     if (result == false)
+  //     {
+  //       ROS_ERROR("%s", log);
+  //       return result;
+  //     }
 
-      const uint8_t EMPTY_SPACE = 6;
-      result = dxl_wb_->addSyncReadHandler(ADDR_PRESENT_POSITION_PRO,
-                                          (LENGTH_PRESENT_POSITION_PRO + LENGTH_PRESENT_VELOCITY_PRO + EMPTY_SPACE + LENGTH_PRESENT_CURRENT_PRO),
-                                          &log);
-      if (result == false)
-      {
-        ROS_ERROR("%s", log);
-        return result;
-      }
-    }
-    else if (strncmp(dxl_wb_->getModelName(it->second), "PRO-PLUS", strlen("PRO-PLUS")) == 0)
-    {
-      result = dxl_wb_->addSyncWriteHandler(it->second, "Goal_Velocity", &log);
-      if (result == false)
-      {
-        ROS_ERROR("%s", log);
-        return result;
-      }
+  //     const uint8_t EMPTY_SPACE = 6;
+  //     result = dxl_wb_->addSyncReadHandler(ADDR_PRESENT_POSITION_PRO,
+  //                                         (LENGTH_PRESENT_POSITION_PRO + LENGTH_PRESENT_VELOCITY_PRO + EMPTY_SPACE + LENGTH_PRESENT_CURRENT_PRO),
+  //                                         &log);
+  //     if (result == false)
+  //     {
+  //       ROS_ERROR("%s", log);
+  //       return result;
+  //     }
+  //   }
+  //   else if (strncmp(dxl_wb_->getModelName(it->second), "PRO-PLUS", strlen("PRO-PLUS")) == 0)
+  //   {
+  //     result = dxl_wb_->addSyncWriteHandler(it->second, "Goal_Velocity", &log);
+  //     if (result == false)
+  //     {
+  //       ROS_ERROR("%s", log);
+  //       return result;
+  //     }
 
-      result = dxl_wb_->addSyncReadHandler(ADDR_PRESENT_CURRENT_PRO_PLUS,
-                                          (LENGTH_PRESENT_CURRENT_PRO_PLUS + LENGTH_PRESENT_VELOCITY_PRO_PLUS + LENGTH_PRESENT_POSITION_PRO_PLUS),
-                                          &log);
-      if (result == false)
-      {
-        ROS_ERROR("%s", log);
-        return result;
-      }
-    }
-    else
-    {
-      result = dxl_wb_->addSyncWriteHandler(it->second, "Goal_Velocity", &log);
-      if (result == false)
-      {
-        ROS_ERROR("%s", log);
-        return result;
-      }
+  //     result = dxl_wb_->addSyncReadHandler(ADDR_PRESENT_CURRENT_PRO_PLUS,
+  //                                         (LENGTH_PRESENT_CURRENT_PRO_PLUS + LENGTH_PRESENT_VELOCITY_PRO_PLUS + LENGTH_PRESENT_POSITION_PRO_PLUS),
+  //                                         &log);
+  //     if (result == false)
+  //     {
+  //       ROS_ERROR("%s", log);
+  //       return result;
+  //     }
+  //   }
+  //   else
+  //   {
+  //     result = dxl_wb_->addSyncWriteHandler(it->second, "Goal_Velocity", &log);
+  //     if (result == false)
+  //     {
+  //       ROS_ERROR("%s", log);
+  //       return result;
+  //     }
 
-      result = dxl_wb_->addSyncReadHandler(ADDR_PRESENT_CURRENT_2,
-                                          (LENGTH_PRESENT_CURRENT_2 + LENGTH_PRESENT_VELOCITY_2 + LENGTH_PRESENT_POSITION_2),
-                                          &log);
-      if (result == false)
-      {
-        ROS_ERROR("%s", log);
-        return result;
-      }
-    }
-  }
-  else if (dxl_wb_->getProtocolVersion() == 1.0f)
-  {
-    result = dxl_wb_->addSyncWriteHandler(it->second, "Moving_Speed", &log);
-    if (result == false)
-    {
-      ROS_ERROR("%s", log);
-      return result;
-    }
-  }
+  //     result = dxl_wb_->addSyncReadHandler(ADDR_PRESENT_CURRENT_2,
+  //                                         (LENGTH_PRESENT_CURRENT_2 + LENGTH_PRESENT_VELOCITY_2 + LENGTH_PRESENT_POSITION_2),
+  //                                         &log);
+  //     if (result == false)
+  //     {
+  //       ROS_ERROR("%s", log);
+  //       return result;
+  //     }
+  //   }
+  // }
+  // else if (dxl_wb_->getProtocolVersion() == 1.0f)
+  // {
+  //   result = dxl_wb_->addSyncWriteHandler(it->second, "Moving_Speed", &log);
+  //   if (result == false)
+  //   {
+  //     ROS_ERROR("%s", log);
+  //     return result;
+  //   }
+  // }
 
   return result;
 }
@@ -434,7 +494,7 @@ void DynamixelController::readCallback(const ros::TimerEvent&)
           ROS_ERROR("%s", log);
         }
       }
-      if (strncmp(dxl_wb_->getModelName(id_array[0]), "PRO", strlen("PRO")) == 0)
+      else if (strncmp(dxl_wb_->getModelName(id_array[0]), "PRO", strlen("PRO")) == 0)
       {
         result = dxl_wb_->syncRead(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
                                    id_array,
@@ -928,6 +988,13 @@ int main(int argc, char **argv)
   if (result == false)
   {
     ROS_ERROR("Please check control table (http://emanual.robotis.com/#control-table)");
+    return 0;
+  }
+
+  result = dynamixel_controller.initControlItems();
+  if (result == false)
+  {
+    ROS_ERROR("Please check control items");
     return 0;
   }
 

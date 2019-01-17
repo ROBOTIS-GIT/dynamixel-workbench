@@ -119,6 +119,7 @@ class DynamixelController
   // Dynamixel Workbench Parameters
   DynamixelWorkbench *dxl_wb_;
   std::map<std::string, uint32_t> dynamixel_;
+  std::map<std::string, const ControlItem*> control_items_;
   std::vector<std::pair<std::string, ItemValue>> dynamixel_info_;
   dynamixel_workbench_msgs::DynamixelStateList dynamixel_state_list_;
   sensor_msgs::JointState joint_state_msg_;
@@ -148,6 +149,7 @@ class DynamixelController
   bool getDynamixelsInfo(const std::string yaml_file);
   bool loadDynamixels(void);
   bool initDynamixels(void);
+  bool initControlItems(void);
   bool initSDKHandlers(void);
   bool getPresentPosition(std::vector<std::string> dxl_name);
 
