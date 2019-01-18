@@ -217,13 +217,31 @@ bool DynamixelController::initSDKHandlers(void)
     ROS_INFO("%s", log);
   }
 
-  result = dxl_wb_->addSyncReadHandler(control_items_[],
-                                      (LENGTH_PRESENT_CURRENT_PRO_PLUS + LENGTH_PRESENT_VELOCITY_PRO_PLUS + LENGTH_PRESENT_POSITION_PRO_PLUS),
-                                      &log);
-  if (result == false)
-  {
-    ROS_ERROR("%s", log);
-    return result;
+  if (dxl_wb_->getProtocolVersion() == 2.0f)
+  {  
+    uint16_t diff_address = control_items_["Present_Position"]->address - control_items_["Present_Current"]->address;
+    uint16_t start_address = 0;
+    uint16_t read_length = 0;
+
+    if (diff_address > 0)
+    {
+      start_address = control_items_["Present_Position"]->address;
+      read_length = abs(diff_address) + control_items_["Present_Current"]->address;
+    }
+    else
+    {
+      start_address = control_items_["Present_Current"]->address;
+      read_length = abs(diff_address) + control_items_["Present_Position"]->address;
+    }
+
+    result = dxl_wb_->addSyncReadHandler(start_address,
+                                          read_length,
+                                        &log);
+    if (result == false)
+    {
+      ROS_ERROR("%s", log);
+      return result;
+    }
   }
 
   // if (dxl_wb_->getProtocolVersion() == 2.0f)
