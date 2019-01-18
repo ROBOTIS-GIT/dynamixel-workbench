@@ -41,52 +41,7 @@
 // SYNC_READ_HANDLER(Only for Protocol 2.0)
 #define SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT 0
 
-// Protocol 2.0
-#define ADDR_PRESENT_CURRENT_2 126
-#define ADDR_PRESENT_VELOCITY_2 128
-#define ADDR_PRESENT_POSITION_2 132
-
-#define LENGTH_PRESENT_CURRENT_2 2
-#define LENGTH_PRESENT_VELOCITY_2 4
-#define LENGTH_PRESENT_POSITION_2 4
-
-// Protocol 2.0 (PRO)
-#define ADDR_PRESENT_CURRENT_PRO 621
-#define ADDR_PRESENT_VELOCITY_PRO 615
-#define ADDR_PRESENT_POSITION_PRO 611
-
-#define LENGTH_PRESENT_CURRENT_PRO 2
-#define LENGTH_PRESENT_VELOCITY_PRO 4
-#define LENGTH_PRESENT_POSITION_PRO 4
-
-// Protocol 2.0 (PRO+)
-#define ADDR_PRESENT_CURRENT_PRO_PLUS 574
-#define ADDR_PRESENT_VELOCITY_PRO_PLUS 576
-#define ADDR_PRESENT_POSITION_PRO_PLUS 580
-
-#define LENGTH_PRESENT_CURRENT_PRO_PLUS 2
-#define LENGTH_PRESENT_VELOCITY_PRO_PLUS 4
-#define LENGTH_PRESENT_POSITION_PRO_PLUS 4
-
-// Protocol 2.0 (XL-320)
-#define ADDR_PRESENT_LOAD_XL_320  41
-#define ADDR_PRESENT_VELOCITY_XL_320 39
-#define ADDR_PRESENT_POSITION_XL_320 37
-
-#define LENGTH_PRESENT_LOAD_XL_320 2
-#define LENGTH_PRESENT_VELOCITY_XL_320 2
-#define LENGTH_PRESENT_POSITION_XL_320 2
-
-// Protocol 1.0
-#define ADDR_PRESENT_LOAD_1  40
-#define ADDR_PRESENT_VELOCITY_1 38
-#define ADDR_PRESENT_POSITION_1 36
-
-#define LENGTH_PRESENT_LOAD_1 2
-#define LENGTH_PRESENT_VELOCITY_1 2
-#define LENGTH_PRESENT_POSITION_1 2
-
-//#define DEBUG
+// #define DEBUG
 
 typedef struct
 {
@@ -118,6 +73,7 @@ class DynamixelController
 
   // Dynamixel Workbench Parameters
   DynamixelWorkbench *dxl_wb_;
+
   std::map<std::string, uint32_t> dynamixel_;
   std::map<std::string, const ControlItem*> control_items_;
   std::vector<std::pair<std::string, ItemValue>> dynamixel_info_;
