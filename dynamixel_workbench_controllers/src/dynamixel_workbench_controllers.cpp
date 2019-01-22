@@ -195,7 +195,7 @@ bool DynamixelController::initSDKHandlers(void)
 
   auto it = dynamixel_.begin();
 
-  result = dxl_wb_->addSyncWriteHandler(it->second, control_items_["Goal_Position"]->address, &log);
+  result = dxl_wb_->addSyncWriteHandler(control_items_["Goal_Position"]->address, control_items_["Goal_Position"]->data_length, &log);
   if (result == false)
   {
     ROS_ERROR("%s", log);
@@ -206,7 +206,7 @@ bool DynamixelController::initSDKHandlers(void)
     ROS_INFO("%s", log);
   }
 
-  result = dxl_wb_->addSyncWriteHandler(it->second, control_items_["Goal_Velocity"]->address, &log);
+  result = dxl_wb_->addSyncWriteHandler(control_items_["Goal_Velocity"]->address, control_items_["Goal_Velocity"]->data_length, &log);
   if (result == false)
   {
     ROS_ERROR("%s", log);
