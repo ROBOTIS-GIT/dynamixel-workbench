@@ -220,7 +220,7 @@ bool DynamixelController::initSDKHandlers(void)
   if (dxl_wb_->getProtocolVersion() == 2.0f)
   {  
     uint16_t start_address = std::min(control_items_["Present_Position"]->address, control_items_["Present_Current"]->address);
-    uint16_t read_length = abs(control_items_["Present_Position"]->address - control_items_["Present_Current"]->address) + control_items_["Present_Current"]->data_length;
+    uint16_t read_length = control_items_["Present_Position"]->data_length + control_items_["Present_Velocity"]->data_length + control_items_["Present_Current"]->data_length;
 
     result = dxl_wb_->addSyncReadHandler(start_address,
                                           read_length,
