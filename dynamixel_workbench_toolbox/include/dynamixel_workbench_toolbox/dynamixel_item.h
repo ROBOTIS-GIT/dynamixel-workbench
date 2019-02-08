@@ -33,7 +33,7 @@
 
 #define EX_106     107
 
-#define MX_12W     104
+#define MX_12W     360
 #define MX_28      29
 #define MX_28_2    30
 #define MX_64      310
