@@ -25,9 +25,9 @@ int main(int argc, char *argv[])
   int dxl_id = 1;
   int mode = 0;
 
-  if (argc < 5)
+  if (argc < 4)
   {
-    printf("Please set '-port_name', '-baud_rate', '-dynamixel id' '-select control mode' arguments for connected Dynamixels\n");
+    printf("Please set '-port_name', '-baud_rate', '-dynamixel id' arguments for connected Dynamixels\n");
     return 0;
   }
   else
@@ -35,18 +35,7 @@ int main(int argc, char *argv[])
     port_name = argv[1];
     baud_rate = atoi(argv[2]);
     dxl_id = atoi(argv[3]);
-    mode = atoi(argv[4]);
   }
-
-  printf("---> \n");
-  printf("Please insert the right number from 0 to 6 to set constrol mode \n");
-  printf("0 - current control mode\n");
-  printf("1 - velocity control mode\n");
-  printf("2 - position control mode\n");
-  printf("3 - extended position control mode\n");
-  printf("4 - current based position control mode\n");
-  printf("5 - pwm control mode\n");
-  printf("<--- \n\n");
 
   DynamixelWorkbench dxl_wb;
 
@@ -77,6 +66,18 @@ int main(int argc, char *argv[])
     printf("Succeeded to ping\n");
     printf("id : %d, model_number : %d\n", dxl_id, model_number);
   }
+
+  printf("---> \n");
+  printf("Please insert the right number from 0 to 5 to set control mode \n");
+  printf("0 - current control mode\n");
+  printf("1 - velocity control mode\n");
+  printf("2 - position control mode\n");
+  printf("3 - extended position control mode\n");
+  printf("4 - current based position control mode\n");
+  printf("5 - pwm control mode\n");
+  printf("<--- \n\n");
+
+  scanf("%d", &mode);
 
   switch (mode)
   {
