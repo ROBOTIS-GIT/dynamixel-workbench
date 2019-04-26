@@ -1277,7 +1277,7 @@ float DynamixelWorkbench::convertValue2Velocity(uint8_t id, int32_t value)
 int16_t DynamixelWorkbench::convertCurrent2Value(float current)
 {
   int16_t value = 0;
-  const float CURRENT_UNIT = 16.11328f;//2.69f; //Unit : mA, Ref : http://emanual.robotis.com/docs/en/dxl/x/xm430-w350/#goal-current102
+  const float CURRENT_UNIT = 2.69f; //Unit : mA, Ref : http://emanual.robotis.com/docs/en/dxl/x/xm430-w350/#goal-current102
 
   value = current / CURRENT_UNIT;
 
@@ -1287,7 +1287,8 @@ int16_t DynamixelWorkbench::convertCurrent2Value(float current)
 float DynamixelWorkbench::convertValue2Current(int16_t value)
 {
   float current = 0;
-  const float CURRENT_UNIT = 16.11328f; //Unit : mA, Ref : http://emanual.robotis.com/docs/en/dxl/x/xm430-w350/#goal-current102
+  const float CURRENT_UNIT = 2.69f; //Unit : mA, Ref : http://emanual.robotis.com/docs/en/dxl/x/xm430-w350/#goal-current102
+  /// fix --> read dxl model num & change the current unit i.e.)pro = 16.xxxxxf
 
   current = (int16_t)value * CURRENT_UNIT;
 
