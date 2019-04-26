@@ -790,7 +790,9 @@ bool DynamixelWorkbench::jointMode(uint8_t id, int32_t velocity, int32_t acceler
     {
       result = writeRegister(id, "Moving_Speed", velocity, log);
     }
-    else if (!strncmp(model_name, "PRO", strlen("PRO")))
+    else if (!strncmp(model_name, "PRO_L", strlen("PRO_L")) ||
+             !strncmp(model_name, "PRO_M", strlen("PRO_M")) ||
+             !strncmp(model_name, "PRO_H", strlen("PRO_H")))
     {
       result = writeRegister(id, "Goal_Velocity", velocity, log);
       result = writeRegister(id, "Goal_Acceleration", acceleration, log);
@@ -1092,17 +1094,17 @@ bool DynamixelWorkbench::getPresentVelocityData(uint8_t id, int32_t* data, const
     }
     else
     {
+      *data = get_data;
       if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to get goal velocity!";
       return true;
     }
   }
   else
   {
+    *data = get_data;
     if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to get goal velocity!";
     return true;
   }
-
-  *data = get_data;
 
   if (log != NULL) *log = "[DynamixelWorkbench] Failed to get goal velocity!";
   return false;
@@ -1275,7 +1277,7 @@ float DynamixelWorkbench::convertValue2Velocity(uint8_t id, int32_t value)
 int16_t DynamixelWorkbench::convertCurrent2Value(float current)
 {
   int16_t value = 0;
-  const float CURRENT_UNIT = 2.69f; //Unit : mA, Ref : http://emanual.robotis.com/docs/en/dxl/x/xm430-w350/#goal-current102
+  const float CURRENT_UNIT = 16.11328f;//2.69f; //Unit : mA, Ref : http://emanual.robotis.com/docs/en/dxl/x/xm430-w350/#goal-current102
 
   value = current / CURRENT_UNIT;
 
@@ -1285,7 +1287,7 @@ int16_t DynamixelWorkbench::convertCurrent2Value(float current)
 float DynamixelWorkbench::convertValue2Current(int16_t value)
 {
   float current = 0;
-  const float CURRENT_UNIT = 2.69f; //Unit : mA, Ref : http://emanual.robotis.com/docs/en/dxl/x/xm430-w350/#goal-current102
+  const float CURRENT_UNIT = 16.11328f; //Unit : mA, Ref : http://emanual.robotis.com/docs/en/dxl/x/xm430-w350/#goal-current102
 
   current = (int16_t)value * CURRENT_UNIT;
 
