@@ -581,7 +581,6 @@ void DynamixelController::writeCallback(const ros::TimerEvent&)
   int32_t dynamixel_position[dynamixel_.size()];
 
   static uint32_t point_cnt = 0;
-  static uint32_t position_cnt = 0;
 
   for (auto const& joint:jnt_tra_msg_->joint_names)
   {
@@ -600,19 +599,13 @@ void DynamixelController::writeCallback(const ros::TimerEvent&)
       ROS_ERROR("%s", log);
     }
 
-    position_cnt++;
-    if (position_cnt >= jnt_tra_msg_->points[point_cnt].positions.size())
+    point_cnt++;
+    if (point_cnt >= jnt_tra_msg_->points.size())
     {
-      point_cnt++;
-      position_cnt = 0;
-      if (point_cnt >= jnt_tra_msg_->points.size())
-      {
-        is_moving_ = false;
-        point_cnt = 0;
-        position_cnt = 0;
+      is_moving_ = false;
+      point_cnt = 0;
 
-        ROS_INFO("Complete Execution");
-      }
+      ROS_INFO("Complete Execution");
     }
   }
 
