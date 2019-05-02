@@ -288,9 +288,9 @@ bool DynamixelController::getPresentPosition(std::vector<std::string> dxl_name)
   {
     WayPoint wp;
     uint32_t read_position;
-    for (auto const& dxl:dynamixel_)
+    for (auto const id:id_array)
     {
-      result = dxl_wb_->readRegister((uint8_t)dxl.second,
+      result = dxl_wb_->readRegister(id,
                                      control_items_["Present_Position"]->address,
                                      control_items_["Present_Position"]->data_length,
                                      &read_position,
@@ -300,7 +300,7 @@ bool DynamixelController::getPresentPosition(std::vector<std::string> dxl_name)
         ROS_ERROR("%s", log);
       }
 
-      wp.position = dxl_wb_->convertValue2Radian((uint8_t)dxl.second, read_position);
+      wp.position = dxl_wb_->convertValue2Radian(id, read_position);
       pre_goal_.push_back(wp);
     }
   }
