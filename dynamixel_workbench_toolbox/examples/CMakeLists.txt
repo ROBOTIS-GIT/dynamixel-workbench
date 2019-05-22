@@ -14,8 +14,15 @@ add_library(dynamixel_workbench
   ../src/dynamixel_workbench_toolbox/dynamixel_workbench.cpp
 )
 
+execute_process (
+  COMMAND bash -c "uname -m"
+  OUTPUT_VARIABLE SYS_ARCH
+  )
+
 if(APPLE)
   target_link_libraries(dynamixel_workbench LINK_PUBLIC "/usr/local/lib/libdxl_mac_cpp.dylib")
+elseif (${SYS_ARCH} MATCHES  "armv7l")
+  target_link_libraries(dynamixel_workbench LINK_PUBLIC "/usr/local/lib/libdxl_sbc_cpp.so")
 else()
   target_link_libraries(dynamixel_workbench LINK_PUBLIC "/usr/local/lib/libdxl_x64_cpp.so")
 endif()
