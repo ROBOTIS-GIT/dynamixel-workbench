@@ -784,6 +784,16 @@ bool DynamixelWorkbench::jointMode(uint8_t id, int32_t velocity, int32_t acceler
     {
       result = writeRegister(id, "Moving_Speed", velocity, log);
     }
+    else if (!strncmp(model_name, "PRO-M42-10-S260-R-A",  strlen("PRO-M42-10-S260-R-A"))  ||
+             !strncmp(model_name, "PRO-M54-40-S250-R-A",  strlen("PRO-M54-40-S250-R-A"))  ||
+             !strncmp(model_name, "PRO-M54-60-S250-R-A",  strlen("PRO-M54-60-S250-R-A"))  ||
+             !strncmp(model_name, "PRO-H42-20-S300-R-A",  strlen("PRO-H42-20-S300-R-A"))  ||
+             !strncmp(model_name, "PRO-H54-100-S500-R-A", strlen("PRO-H54-100-S500-R-A")) ||
+             !strncmp(model_name, "PRO-H54-200-S500-R-A", strlen("PRO-H54-200-S500-R-A")))
+    {
+      result = writeRegister(id, "Profile_Acceleration", acceleration, log);
+      result = writeRegister(id, "Profile_Velocity", velocity, log);
+    }
     else if (!strncmp(model_name, "PRO-L", strlen("PRO-L")) ||
              !strncmp(model_name, "PRO-M", strlen("PRO-M")) ||
              !strncmp(model_name, "PRO-H", strlen("PRO-H")))
