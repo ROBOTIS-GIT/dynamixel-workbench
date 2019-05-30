@@ -147,7 +147,7 @@ bool DynamixelController::initDynamixels(void)
       }
     }
 
-    dxl_wb_->torqueOn((uint8_t)dxl.second);
+    // dxl_wb_->torqueOn((uint8_t)dxl.second);
   }
 
   return true;
