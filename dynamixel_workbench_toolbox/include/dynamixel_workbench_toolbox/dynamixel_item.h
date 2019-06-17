@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 
-/* Authors: Taehun Lim (Darby) */
+/* Authors: Taehun Lim (Darby), Ryan Shim */
 
 #ifndef DYNAMIXEL_ITEM_H
 #define DYNAMIXEL_ITEM_H
@@ -84,6 +84,9 @@
 #define PRO_PLUS_H42P_020_S300_R  2000
 #define PRO_PLUS_H54P_100_S500_R  2010
 #define PRO_PLUS_H54P_200_S500_R  2020
+
+#define RH_P12_RN   35073
+#define RH_P12_RN_A 35074
 
 #define BYTE  1
 #define WORD  2
