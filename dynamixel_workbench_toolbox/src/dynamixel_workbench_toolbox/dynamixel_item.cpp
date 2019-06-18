@@ -1112,9 +1112,12 @@ static const ControlItem items_PRO_PLUS[]{
 #define COUNT_EXTPRO_PLUS_ITEMS (sizeof(items_PRO_PLUS) / sizeof(items_PRO_PLUS[0]))
 
 static const ModelInfo info_PRO_PLUS[] = {
-      {0.01, -303454, 0, 303454, -3.14159265, 3.14159265},  // PRO_H42P_020_S300_R
-      {0.01, -501433, 0, 501433, -3.14159265, 3.14159265},  // PRO_H54P_100_S500_R
-      {0.01, -501433, 0, 501433, -3.14159265, 3.14159265}}; // PRO_H54P_200_S500_R
+      {0.01, -251173, 0, 251173, -3.14159265, 3.14159265},  // PRO_PLUS_M42P_010_S260_R
+      {0.01, -251173, 0, 251173, -3.14159265, 3.14159265},  // PRO_PLUS_M54P_040_S250_R
+      {0.01, -262931, 0, 262931, -3.14159265, 3.14159265},  // PRO_PLUS_M54P_060_S250_R
+      {0.01, -303454, 0, 303454, -3.14159265, 3.14159265},  // PRO_PLUS_H42P_020_S300_R
+      {0.01, -501433, 0, 501433, -3.14159265, 3.14159265},  // PRO_PLUS_H54P_100_S500_R
+      {0.01, -501433, 0, 501433, -3.14159265, 3.14159265}}; // PRO_PLUS_H54P_200_S500_R
 
 //---------------------------------------------------------
 // Gripper - (num == RH_P12_RN)
@@ -1303,7 +1306,8 @@ const ControlItem *DynamixelItem::getControlTable(uint16_t model_number)
     control_table = items_EXTPRO_A;
     the_number_of_item = COUNT_EXTPRO_A_ITEMS;
   }
-  else if (num == PRO_PLUS_H42P_020_S300_R || num == PRO_PLUS_H54P_100_S500_R || num == PRO_PLUS_H54P_200_S500_R)
+  else if (num == PRO_PLUS_H42P_020_S300_R || num == PRO_PLUS_H54P_100_S500_R || num == PRO_PLUS_H54P_200_S500_R ||
+           num == PRO_PLUS_M42P_010_S260_R || num == PRO_PLUS_M54P_040_S250_R || num == PRO_PLUS_M54P_060_S250_R)
   {
     control_table = items_PRO_PLUS;
     the_number_of_item = COUNT_EXTPRO_PLUS_ITEMS;
@@ -1444,6 +1448,18 @@ const ModelInfo *DynamixelItem::getModelInfo(uint16_t model_number)
   else if (num == PRO_PLUS_H54P_200_S500_R)
   { 
     info = &info_PRO_PLUS[2];
+  }
+  else if (num == PRO_PLUS_M42P_010_S260_R)
+  { 
+    info = &info_PRO_PLUS[3];
+  }
+  else if (num == PRO_PLUS_M54P_040_S250_R)
+  { 
+    info = &info_PRO_PLUS[4];
+  }
+  else if (num == PRO_PLUS_M54P_060_S250_R)
+  { 
+    info = &info_PRO_PLUS[5];
   }
   else if (num == RH_P12_RN)
   {
