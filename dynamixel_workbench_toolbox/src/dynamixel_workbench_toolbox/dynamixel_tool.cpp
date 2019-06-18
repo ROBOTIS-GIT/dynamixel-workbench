@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 
-/* Authors: Taehun Lim (Darby) */
+/* Authors: Taehun Lim (Darby), Ryan Shim */
 
 #include "../../include/dynamixel_workbench_toolbox/dynamixel_tool.h"
 
@@ -88,7 +88,11 @@ static const DynamixelModel dynamixel_model_table[] = {
 
     {PRO_PLUS_H42P_020_S300_R, "PRO-PLUS-H42P-020-S300-R"},
     {PRO_PLUS_H54P_100_S500_R, "PRO-PLUS-H54P-100-S500-R"},
-    {PRO_PLUS_H54P_200_S500_R, "PRO-PLUS-H54P-200-S500-R"}
+    {PRO_PLUS_H54P_200_S500_R, "PRO-PLUS-H54P-200-S500-R"},
+
+    {RH_P12_RN, "RH-P12-RN"},
+
+    {RH_P12_RN_A, "RH-P12-RN-A"}
 };
 #define COUNT_DYNAMIXEL_MODEL  (sizeof(dynamixel_model_table)/sizeof(dynamixel_model_table[0]))
 

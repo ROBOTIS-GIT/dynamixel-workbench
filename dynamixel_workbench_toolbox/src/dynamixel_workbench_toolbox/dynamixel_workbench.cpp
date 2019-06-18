@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 
-/* Authors: Taehun Lim (Darby) */
+/* Authors: Taehun Lim (Darby), Ryan Shim */
 
 #include "../../include/dynamixel_workbench_toolbox/dynamixel_workbench.h"
 
@@ -581,7 +581,8 @@ bool DynamixelWorkbench::setOperatingMode(uint8_t id, uint8_t index, const char 
           !strncmp(model_name, "XL430", strlen("XL430"))       ||
           !strncmp(model_name, "XM", strlen("XM"))             ||
           !strncmp(model_name, "XH", strlen("XH"))             ||
-          !strncmp(model_name, "PRO", strlen("PRO")))
+          !strncmp(model_name, "PRO", strlen("PRO"))           ||
+          !strncmp(model_name, "RH", strlen("RH")))
       {
         result = writeRegister(id, "Operating_Mode", POSITION_CONTROL_MODE, log);
       }
@@ -619,7 +620,8 @@ bool DynamixelWorkbench::setOperatingMode(uint8_t id, uint8_t index, const char 
       if (!strncmp(model_name, "XM", strlen("XM"))             ||
           !strncmp(model_name, "XH", strlen("XH"))             ||
           !strncmp(model_name, "MX-64-2", strlen("MX-64-2"))   ||
-          !strncmp(model_name, "MX-106-2", strlen("MX-106-2")) )
+          !strncmp(model_name, "MX-106-2", strlen("MX-106-2")) ||
+          !strncmp(model_name, "RH", strlen("RH")))
       {
         result = writeRegister(id, "Operating_Mode", CURRENT_CONTROL_MODE, log);
       }  
@@ -646,7 +648,8 @@ bool DynamixelWorkbench::setOperatingMode(uint8_t id, uint8_t index, const char 
       if (!strncmp(model_name, "MX-64-2", strlen("MX-64-2"))   ||
           !strncmp(model_name, "MX-106-2", strlen("MX-106-2")) ||
           !strncmp(model_name, "XM", strlen("XM"))             ||
-          !strncmp(model_name, "XH", strlen("XH")))
+          !strncmp(model_name, "XH", strlen("XH"))             ||
+          !strncmp(model_name, "RH", strlen("RH")))
       {
         result = writeRegister(id, "Operating_Mode", CURRENT_BASED_POSITION_CONTROL_MODE, log);
       }
@@ -684,7 +687,8 @@ bool DynamixelWorkbench::setOperatingMode(uint8_t id, uint8_t index, const char 
       if (!strncmp(model_name, "XM", strlen("XM"))             ||
           !strncmp(model_name, "XH", strlen("XH"))             ||
           !strncmp(model_name, "MX-64-2", strlen("MX-64-2"))   ||
-          !strncmp(model_name, "MX-106-2", strlen("MX-106-2")) )
+          !strncmp(model_name, "MX-106-2", strlen("MX-106-2")) ||
+          !strncmp(model_name, "RH", strlen("RH")))
       {
         result = writeRegister(id, "Operating_Mode", CURRENT_CONTROL_MODE, log);
       }  
@@ -710,7 +714,8 @@ bool DynamixelWorkbench::setOperatingMode(uint8_t id, uint8_t index, const char 
       if (!strncmp(model_name, "MX-64-2", strlen("MX-64-2"))   ||
           !strncmp(model_name, "MX-106-2", strlen("MX-106-2")) ||
           !strncmp(model_name, "XM", strlen("XM"))             ||
-          !strncmp(model_name, "XH", strlen("XH")))
+          !strncmp(model_name, "XH", strlen("XH"))             ||
+          !strncmp(model_name, "RH", strlen("RH")))
       {
         result = writeRegister(id, "Operating_Mode", CURRENT_BASED_POSITION_CONTROL_MODE, log);
       }
