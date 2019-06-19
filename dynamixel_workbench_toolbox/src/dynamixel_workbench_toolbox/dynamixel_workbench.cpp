@@ -423,7 +423,8 @@ bool DynamixelWorkbench::setSecondaryID(uint8_t id, uint8_t secondary_id, const 
       !strncmp(model_name, "XM", strlen("XM"))             ||
       !strncmp(model_name, "XL430", strlen("XL430"))       ||
       !strncmp(model_name, "XC430", strlen("XC430"))       ||
-      !strncmp(model_name, "XH", strlen("XH")))
+      !strncmp(model_name, "XH", strlen("XH"))             ||
+      !strncmp(model_name, "RH", strlen("RH")))
   {
     result = torqueOff(id, log);
     if (result == false) return false;
@@ -909,7 +910,8 @@ bool DynamixelWorkbench::currentBasedPositionMode(uint8_t id, int32_t current, c
   if (!strncmp(model_name, "MX-64-2", strlen("MX-64-2"))   ||
       !strncmp(model_name, "MX-106-2", strlen("MX-106-2")) ||
       !strncmp(model_name, "XM", strlen("XM"))             ||
-      !strncmp(model_name, "XH", strlen("XH")))
+      !strncmp(model_name, "XH", strlen("XH"))             ||
+      !strncmp(model_name, "RH", strlen("RH")))
   {   
     result = writeRegister(id, "Goal_Current", current, log);
   }
