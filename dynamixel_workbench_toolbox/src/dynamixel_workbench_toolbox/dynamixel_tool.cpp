@@ -57,6 +57,7 @@ static const DynamixelModel dynamixel_model_table[] = {
 
     {XM430_W210, "XM430-W210"},
     {XM430_W350, "XM430-W350"},
+    
     {XM540_W150, "XM540-W150"},
     {XM540_W270, "XM540-W270"},
 
@@ -64,6 +65,7 @@ static const DynamixelModel dynamixel_model_table[] = {
     {XH430_V350, "XH430-V350"},
     {XH430_W210, "XH430-W210"},
     {XH430_W350, "XH430-W350"},
+
     {XH540_W150, "XH540_W150"},
     {XH540_W270, "XH540_W270"},
     {XH540_V150, "XH540_V150"},

@@ -51,13 +51,14 @@
 
 #define XM430_W210 1030
 #define XM430_W350 1020
+
 #define XM540_W150 1130
 #define XM540_W270 1120
 
-#define XH430_V210 1050
-#define XH430_V350 1040
 #define XH430_W210 1010
 #define XH430_W350 1000
+#define XH430_V210 1050
+#define XH430_V350 1040
 
 #define XH540_W150 1110
 #define XH540_W270 1100
