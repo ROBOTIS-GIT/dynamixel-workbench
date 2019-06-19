@@ -1231,6 +1231,7 @@ static const ControlItem items_EXTGripper[]{
     {s_External_Port_Mode_2, 602, sizeof(s_External_Port_Mode_2) - 1, 2},
     {s_External_Port_Mode_3, 604, sizeof(s_External_Port_Mode_3) - 1, 2},
     {s_External_Port_Mode_4, 606, sizeof(s_External_Port_Mode_4) - 1, 2}};
+#define COUNT_EXTGripper_ITEMS (sizeof(items_EXTGripper) / sizeof(items_EXTGripper[0]))
 
 static const ModelInfo info_EXTGripper = {0.01,
                                           0,
