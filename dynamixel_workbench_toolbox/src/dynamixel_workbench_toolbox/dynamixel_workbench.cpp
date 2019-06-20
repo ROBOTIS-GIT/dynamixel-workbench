@@ -936,11 +936,11 @@ bool DynamixelWorkbench::currentBasedPositionMode(uint8_t id, int32_t current, c
 //keep compatibility with older codes
 bool DynamixelWorkbench::goalPosition(uint8_t id, int value, const char **log)
 {
-  goalPosition(id, (int32_t)value, log);
-}
+//   goalPosition(id, (int32_t)value, log);
+// }
 
-bool DynamixelWorkbench::goalPosition(uint8_t id, int32_t value, const char **log)
-{
+// bool DynamixelWorkbench::goalPosition(uint8_t id, int32_t value, const char **log)
+// {
   bool result = false;
   
   result = itemWrite(id, "Goal_Position", value, log);
@@ -966,11 +966,11 @@ bool DynamixelWorkbench::goalSpeed(uint8_t id, int value, const char **log)
 //keep compatibility with older codes
 bool DynamixelWorkbench::goalVelocity(uint8_t id, int value, const char **log)
 {
-  goalVelocity(id, (int32_t)value, log);
-}
+//   goalVelocity(id, (int32_t)value, log);
+// }
 
-bool DynamixelWorkbench::goalVelocity(uint8_t id, int32_t value, const char **log)
-{
+// bool DynamixelWorkbench::goalVelocity(uint8_t id, int32_t value, const char **log)
+// {
   bool result[2] = {false, false};
 
   if (getProtocolVersion() == 2.0f)
