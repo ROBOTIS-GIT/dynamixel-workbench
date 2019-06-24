@@ -1174,9 +1174,9 @@ static const ControlItem items_Gripper[]{
 static const ModelInfo info_Gripper = {0.01,
                                        0,
                                        0,
-                                       740,
+                                       1150,
                                        0, 
-                                       1.1345703125};
+                                       1.7631835937};
 
 //---------------------------------------------------------
 // Gripper A Firmware - (num == RH_P12_RN_A)
@@ -1248,9 +1248,9 @@ static const ControlItem items_EXTGripper[]{
 static const ModelInfo info_EXTGripper = {0.01,
                                           0,
                                           0,
-                                          740,
+                                          1150,
                                           0, 
-                                          1.1345703125};
+                                          1.7631835937};
 
 //=========================================================
 // Get Servo control table for the specified servo type
