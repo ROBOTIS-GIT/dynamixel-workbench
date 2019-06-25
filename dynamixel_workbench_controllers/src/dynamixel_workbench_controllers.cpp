@@ -220,7 +220,12 @@ bool DynamixelController::initSDKHandlers(void)
   if (dxl_wb_->getProtocolVersion() == 2.0f)
   {  
     uint16_t start_address = std::min(control_items_["Present_Position"]->address, control_items_["Present_Current"]->address);
-    uint16_t read_length = control_items_["Present_Position"]->data_length + control_items_["Present_Velocity"]->data_length + control_items_["Present_Current"]->data_length;
+
+    /* 
+      As some models have an empty space between Present_Velocity and Present Current, read_length is modified as below.
+    */    
+    // uint16_t read_length = control_items_["Present_Position"]->data_length + control_items_["Present_Velocity"]->data_length + control_items_["Present_Current"]->data_length;
+    uint16_t read_length = control_items_["Present_Position"]->data_length + control_items_["Present_Velocity"]->data_length + control_items_["Present_Current"]->data_length+2;
 
     result = dxl_wb_->addSyncReadHandler(start_address,
                                           read_length,
@@ -264,12 +269,12 @@ bool DynamixelController::getPresentPosition(std::vector<std::string> dxl_name)
     WayPoint wp;
 
     result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
-                                                  id_array,
-                                                  id_cnt,
-                                                  control_items_["Present_Position"]->address,
-                                                  control_items_["Present_Position"]->data_length,
-                                                  get_position,
-                                                  &log);
+                                      id_array,
+                                      id_cnt,
+                                      control_items_["Present_Position"]->address,
+                                      control_items_["Present_Position"]->data_length,
+                                      get_position,
+                                      &log);
 
     if (result == false)
     {
