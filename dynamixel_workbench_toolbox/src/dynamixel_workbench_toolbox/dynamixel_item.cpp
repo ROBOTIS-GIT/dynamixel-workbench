@@ -1344,8 +1344,8 @@ const ControlItem *DynamixelItem::getControlTable(uint16_t model_number)
     control_table = items_EXTPRO_A;
     the_number_of_item = COUNT_EXTPRO_A_ITEMS;
   }
-  else if (num == PRO_PLUS_H42P_020_S300_R || num == PRO_PLUS_H54P_100_S500_R || num == PRO_PLUS_H54P_200_S500_R ||
-           num == PRO_PLUS_M42P_010_S260_R || num == PRO_PLUS_M54P_040_S250_R || num == PRO_PLUS_M54P_060_S250_R)
+  else if (num == PRO_PLUS_M42P_010_S260_R || num == PRO_PLUS_M54P_040_S250_R || num == PRO_PLUS_M54P_060_S250_R ||
+           num == PRO_PLUS_H42P_020_S300_R || num == PRO_PLUS_H54P_100_S500_R || num == PRO_PLUS_H54P_200_S500_R)
   {
     control_table = items_PRO_PLUS;
     the_number_of_item = COUNT_EXTPRO_PLUS_ITEMS;
@@ -1475,27 +1475,27 @@ const ModelInfo *DynamixelItem::getModelInfo(uint16_t model_number)
   { 
     info = &info_EXTPRO_A[3];
   }
-  else if (num == PRO_PLUS_H42P_020_S300_R)
+  else if (num == PRO_PLUS_M42P_010_S260_R)
   { 
     info = &info_PRO_PLUS[0];
   }
-  else if (num == PRO_PLUS_H54P_100_S500_R)
+  else if (num == PRO_PLUS_M54P_040_S250_R)
   { 
     info = &info_PRO_PLUS[1];
   }
-  else if (num == PRO_PLUS_H54P_200_S500_R)
+  else if (num == PRO_PLUS_M54P_060_S250_R)
   { 
     info = &info_PRO_PLUS[2];
   }
-  else if (num == PRO_PLUS_M42P_010_S260_R)
+  else if (num == PRO_PLUS_H42P_020_S300_R)
   { 
     info = &info_PRO_PLUS[3];
   }
-  else if (num == PRO_PLUS_M54P_040_S250_R)
+  else if (num == PRO_PLUS_H54P_100_S500_R)
   { 
     info = &info_PRO_PLUS[4];
   }
-  else if (num == PRO_PLUS_M54P_060_S250_R)
+  else if (num == PRO_PLUS_H54P_200_S500_R)
   { 
     info = &info_PRO_PLUS[5];
   }
