@@ -129,12 +129,17 @@ bool DynamixelController::initDynamixels(void)
   for (auto const& dxl:dynamixel_)
   {
     dxl_wb_->torqueOff((uint8_t)dxl.second);
+  }
+
+  for (auto const& dxl:dynamixel_)
+  {
+    // dxl_wb_->torqueOff((uint8_t)dxl.second);
 
     for (auto const& info:dynamixel_info_)
     {
       if (dxl.first == info.first)
       {
-        if (info.second.item_name != "ID" && info.second.item_name != "Baud_Rate")
+        if (info.second.item_name != "ID" && info.second.item_name != "Baud_Rate" && info.second.item_name != "Torque_Enable")
         {
           bool result = dxl_wb_->itemWrite((uint8_t)dxl.second, info.second.item_name.c_str(), info.second.value, &log);
           if (result == false)
@@ -146,7 +151,11 @@ bool DynamixelController::initDynamixels(void)
         }
       }
     }
+    // dxl_wb_->torqueOn((uint8_t)dxl.second);
+  }
 
+  for (auto const& dxl:dynamixel_)
+  {
     dxl_wb_->torqueOn((uint8_t)dxl.second);
   }
 
