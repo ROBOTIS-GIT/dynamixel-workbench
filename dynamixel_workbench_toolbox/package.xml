@@ -11,13 +11,16 @@
   </description>
   <license>Apache 2.0</license>
   <author email="thlim@robotis.com">Darby Lim</author>
+  <author email="jhshim@robotis.com">Ryan Shim</author>
   <maintainer email="pyo@robotis.com">Pyo</maintainer>
   <maintainer email="thlim@robotis.com">Darby Lim</maintainer>
+  <maintainer email="jhshim@robotis.com">Ryan Shim</maintainer>
   <url type="website">http://wiki.ros.org/dynamixel_workbench_toolbox</url>
   <url type="emanual">http://emanual.robotis.com/docs/en/software/dynamixel/dynamixel_workbench/</url>
   <url type="repository">https://github.com/ROBOTIS-GIT/dynamixel-workbench</url>
   <url type="bugtracker">https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues</url>
-  <buildtool_depend>catkin</buildtool_depend>
-  <depend>roscpp</depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>rclcpp</depend>
   <depend>dynamixel_sdk</depend>
+  <export><build_type>ament_cmake</build_type></export>
 </package>

@@ -1,19 +1,24 @@
 ################################################################################
 # Set minimum required version of cmake, project name and compile options
 ################################################################################
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(dynamixel_workbench_toolbox)
 
-## Compile as C++11, supported in ROS Kinetic and newer
-add_compile_options(-std=c++11)
+# Default to C++14
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 14)
+endif()
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
 
 ################################################################################
-# Find catkin packages and libraries for catkin and system dependencies
+# Find ament packages and libraries for ament and system dependencies
 ################################################################################
-find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  dynamixel_sdk
-)
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(dynamixel_sdk REQUIRED)
 
 ################################################################################
 # Setup for python modules and scripts
@@ -28,20 +33,16 @@ find_package(catkin REQUIRED COMPONENTS
 ################################################################################
 
 ################################################################################
-# Declare catkin specific configuration to be passed to dependent projects
+# Declare ament specific configuration to be passed to dependent projects
 ################################################################################
-catkin_package(
- INCLUDE_DIRS include
- LIBRARIES dynamixel_workbench_toolbox
- CATKIN_DEPENDS roscpp dynamixel_sdk
-)
+ament_export_dependencies(rclcpp)
+ament_export_dependencies(dynamixel_sdk)
 
 ################################################################################
 # Build
 ################################################################################
 include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
+  include/${PROJECT_NAME}
 )
 
 add_library(dynamixel_workbench_toolbox
@@ -50,22 +51,31 @@ add_library(dynamixel_workbench_toolbox
   src/${PROJECT_NAME}/dynamixel_tool.cpp
   src/${PROJECT_NAME}/dynamixel_workbench.cpp
 )
-add_dependencies(dynamixel_workbench_toolbox ${catkin_EXPORTED_TARGETS})
-target_link_libraries(dynamixel_workbench_toolbox ${catkin_LIBRARIES})
+ament_target_dependencies(dynamixel_workbench_toolbox rclcpp dynamixel_sdk)
+target_link_libraries(dynamixel_workbench_toolbox ${rclcpp_LIBRARIES} ${dynamixel_sdk_LIBRARIES})
 
 ################################################################################
 # Install
 ################################################################################
-install(TARGETS dynamixel_workbench_toolbox
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+install(
+  TARGETS dynamixel_workbench_toolbox
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
 )
 
-install(DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+install(
+  DIRECTORY include/${PROJECT_NAME}
+  DESTINATION include/${PROJECT_NAME}
 )
 
 ################################################################################
 # Test
 ################################################################################
+
+################################################################################
+# Macro for ament package
+################################################################################
+ament_export_include_directories(include/${PROJECT_NAME})
+ament_export_libraries(${PROJECT_NAME})
+ament_package()
