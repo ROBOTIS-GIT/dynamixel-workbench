@@ -22,5 +22,7 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
   <depend>rclcpp</depend>
   <depend>dynamixel_sdk</depend>
-  <export><build_type>ament_cmake</build_type></export>
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 </package>
