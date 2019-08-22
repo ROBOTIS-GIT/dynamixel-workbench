@@ -16,8 +16,8 @@ endif()
 # Find and load build settings from external packages
 ################################################################################
 find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
 find_package(dynamixel_sdk REQUIRED)
+find_package(rclcpp REQUIRED)
 
 ################################################################################
 # Declare ROS messages, services and actions
