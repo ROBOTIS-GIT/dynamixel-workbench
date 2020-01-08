@@ -1174,9 +1174,9 @@ static const ControlItem items_Gripper[]{
 static const ModelInfo info_Gripper = {0.01,
                                        0,
                                        0,
-                                       740,
+                                       1150,
                                        0, 
-                                       1.1345703125};
+                                       1.7631835937};
 
 //---------------------------------------------------------
 // Gripper A Firmware - (num == RH_P12_RN_A)
@@ -1248,9 +1248,9 @@ static const ControlItem items_EXTGripper[]{
 static const ModelInfo info_EXTGripper = {0.01,
                                           0,
                                           0,
-                                          740,
+                                          1150,
                                           0, 
-                                          1.1345703125};
+                                          1.7631835937};
 
 //=========================================================
 // Get Servo control table for the specified servo type
@@ -1301,7 +1301,7 @@ const ControlItem *DynamixelItem::getControlTable(uint16_t model_number)
     control_table = items_XL320;
     the_number_of_item = COUNT_XL320_ITEMS;
   }
-  else if (num == XL430_W250 || XL430_W250_2 || XC430_W150 || XC430_W240)
+  else if (num == XL430_W250 || num == XL430_W250_2 || num == XC430_W150 || num == XC430_W240)
   {
     control_table = items_XL;
     the_number_of_item = COUNT_XL_ITEMS;
@@ -1344,8 +1344,8 @@ const ControlItem *DynamixelItem::getControlTable(uint16_t model_number)
     control_table = items_EXTPRO_A;
     the_number_of_item = COUNT_EXTPRO_A_ITEMS;
   }
-  else if (num == PRO_PLUS_H42P_020_S300_R || num == PRO_PLUS_H54P_100_S500_R || num == PRO_PLUS_H54P_200_S500_R ||
-           num == PRO_PLUS_M42P_010_S260_R || num == PRO_PLUS_M54P_040_S250_R || num == PRO_PLUS_M54P_060_S250_R)
+  else if (num == PRO_PLUS_M42P_010_S260_R || num == PRO_PLUS_M54P_040_S250_R || num == PRO_PLUS_M54P_060_S250_R ||
+           num == PRO_PLUS_H42P_020_S300_R || num == PRO_PLUS_H54P_100_S500_R || num == PRO_PLUS_H54P_200_S500_R)
   {
     control_table = items_PRO_PLUS;
     the_number_of_item = COUNT_EXTPRO_PLUS_ITEMS;
@@ -1407,7 +1407,7 @@ const ModelInfo *DynamixelItem::getModelInfo(uint16_t model_number)
   {
     info = &info_XL320;
   }
-  else if (num == XL430_W250 || XL430_W250_2 || XC430_W150 || XC430_W240)
+  else if (num == XL430_W250 || num == XL430_W250_2 || num == XC430_W150 || num == XC430_W240)
   {
     info = &info_XL;
   }
@@ -1475,27 +1475,27 @@ const ModelInfo *DynamixelItem::getModelInfo(uint16_t model_number)
   { 
     info = &info_EXTPRO_A[3];
   }
-  else if (num == PRO_PLUS_H42P_020_S300_R)
+  else if (num == PRO_PLUS_M42P_010_S260_R)
   { 
     info = &info_PRO_PLUS[0];
   }
-  else if (num == PRO_PLUS_H54P_100_S500_R)
+  else if (num == PRO_PLUS_M54P_040_S250_R)
   { 
     info = &info_PRO_PLUS[1];
   }
-  else if (num == PRO_PLUS_H54P_200_S500_R)
+  else if (num == PRO_PLUS_M54P_060_S250_R)
   { 
     info = &info_PRO_PLUS[2];
   }
-  else if (num == PRO_PLUS_M42P_010_S260_R)
+  else if (num == PRO_PLUS_H42P_020_S300_R)
   { 
     info = &info_PRO_PLUS[3];
   }
-  else if (num == PRO_PLUS_M54P_040_S250_R)
+  else if (num == PRO_PLUS_H54P_100_S500_R)
   { 
     info = &info_PRO_PLUS[4];
   }
-  else if (num == PRO_PLUS_M54P_060_S250_R)
+  else if (num == PRO_PLUS_H54P_200_S500_R)
   { 
     info = &info_PRO_PLUS[5];
   }
