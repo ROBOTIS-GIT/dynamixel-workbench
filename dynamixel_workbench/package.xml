@@ -19,8 +19,6 @@
   <buildtool_depend>catkin</buildtool_depend>
   <exec_depend>dynamixel_workbench_controllers</exec_depend>
   <exec_depend>dynamixel_workbench_operators</exec_depend>
-  <exec_depend>dynamixel_workbench_single_manager</exec_depend>
-  <exec_depend>dynamixel_workbench_single_manager_gui</exec_depend>
   <exec_depend>dynamixel_workbench_toolbox</exec_depend>
   <export><metapackage/></export>
 </package>
