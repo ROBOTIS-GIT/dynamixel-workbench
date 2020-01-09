@@ -1126,34 +1126,19 @@ bool DynamixelWorkbench::getVelocity(uint8_t id, float* velocity, const char **l
 
 bool DynamixelWorkbench::getPresentVelocityData(uint8_t id, int32_t* data, const char **log)
 {
-  bool result[2] = {false, false};
+  bool result = 0;
   int32_t get_data = 0;
 
-  result[0] = readRegister(id, "Goal_Velocity", &get_data, log);
-  if (result[0] == false)
+  result = readRegister(id, "Present_Speed", &get_data, log);
+  if (result == false)
   {
-    result[1] = readRegister(id, "Moving_Speed", &get_data, log);
-    if (result[1] == false)
-    {
-      if (log != NULL) *log = "[DynamixelWorkbench] Failed to get goal velocity!";
-      return false;
-    }
-    else
-    {
-      *data = get_data;
-      if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to get goal velocity!";
-      return true;
-    }
-  }
-  else
-  {
-    *data = get_data;
-    if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to get goal velocity!";
-    return true;
+    if (log != NULL) *log = "[DynamixelWorkbench] Failed to get present speed data!";
+    return result;
   }
 
-  if (log != NULL) *log = "[DynamixelWorkbench] Failed to get goal velocity!";
-  return false;
+  *data = get_data;
+  if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to get present speed data!";
+  return result;
 }
 
 int32_t DynamixelWorkbench::convertRadian2Value(uint8_t id, float radian)
