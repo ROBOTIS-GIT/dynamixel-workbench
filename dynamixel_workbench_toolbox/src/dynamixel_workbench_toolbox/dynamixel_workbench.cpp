@@ -697,7 +697,8 @@ bool DynamixelWorkbench::setOperatingMode(uint8_t id, uint8_t index, const char 
           !strncmp(model_name, "XH", strlen("XH"))             ||
           !strncmp(model_name, "MX-64-2", strlen("MX-64-2"))   ||
           !strncmp(model_name, "MX-106-2", strlen("MX-106-2")) ||
-          !strncmp(model_name, "RH", strlen("RH")))
+          !strncmp(model_name, "RH", strlen("RH"))             ||
+          !strncmp(model_name, "PRO-PLUS", strlen("PRO-PLUS")))
       {
         result = writeRegister(id, "Operating_Mode", CURRENT_CONTROL_MODE, log);
       }  
@@ -805,7 +806,8 @@ bool DynamixelWorkbench::jointMode(uint8_t id, int32_t velocity, int32_t acceler
              !strncmp(model_name, "PRO-M54-60-S250-R-A",  strlen("PRO-M54-60-S250-R-A"))  ||
              !strncmp(model_name, "PRO-H42-20-S300-R-A",  strlen("PRO-H42-20-S300-R-A"))  ||
              !strncmp(model_name, "PRO-H54-100-S500-R-A", strlen("PRO-H54-100-S500-R-A")) ||
-             !strncmp(model_name, "PRO-H54-200-S500-R-A", strlen("PRO-H54-200-S500-R-A")))
+             !strncmp(model_name, "PRO-H54-200-S500-R-A", strlen("PRO-H54-200-S500-R-A")) ||
+             !strncmp(model_name, "PRO-PLUS", strlen("PRO-PLUS")))
     {
       result = writeRegister(id, "Profile_Acceleration", acceleration, log);
       result = writeRegister(id, "Profile_Velocity", velocity, log);
