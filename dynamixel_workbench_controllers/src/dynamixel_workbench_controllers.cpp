@@ -732,7 +732,7 @@ void DynamixelController::trajectoryMsgCallback(const trajectory_msgs::JointTraj
   }
   else
   {
-    ROS_WARN("Dynamixel is moving");
+    ROS_INFO_THROTTLE(1, "Dynamixel is moving");
   }
 }
 
