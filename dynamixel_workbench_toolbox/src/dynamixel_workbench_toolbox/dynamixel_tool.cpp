@@ -71,6 +71,9 @@ static const DynamixelModel dynamixel_model_table[] = {
     {XH540_V150, "XH540_V150"},
     {XH540_V270, "XH540_V270"},
 
+    {XW540_T260, "XW540_T260"},
+    {XW540_T140, "XW540_T140"},
+
     {PRO_L42_10_S300_R, "PRO-L42-10-S300-R"},
     {PRO_L54_30_S400_R, "PRO-L54-30-S400-R"},
     {PRO_L54_30_S500_R, "PRO-L54-30-S500-R"},

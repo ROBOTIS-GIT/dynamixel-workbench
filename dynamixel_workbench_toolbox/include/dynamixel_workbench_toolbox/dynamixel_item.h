@@ -65,6 +65,9 @@
 #define XH540_V150 1150
 #define XH540_V270 1140
 
+#define XW540_T260 1170
+#define XW540_T140 1180
+
 #define PRO_L42_10_S300_R  35072
 #define PRO_L54_30_S400_R  37928
 #define PRO_L54_30_S500_R  37896
