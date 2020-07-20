@@ -43,6 +43,10 @@ static const char s_External_Port_Mode_1[] = "External_Port_Mode_1";
 static const char s_External_Port_Mode_2[] = "External_Port_Mode_2";
 static const char s_External_Port_Mode_3[] = "External_Port_Mode_3";
 static const char s_External_Port_Mode_4[] = "External_Port_Mode_4";
+static const char s_External_Port_Data_1[] = "External_Port_Data_1";
+static const char s_External_Port_Data_2[] = "External_Port_Data_2";
+static const char s_External_Port_Data_3[] = "External_Port_Data_3";
+static const char s_External_Port_Data_4[] = "External_Port_Data_4";
 static const char s_Feedforward_1st_Gain[] = "Feedforward_1st_Gain";
 static const char s_Feedforward_2nd_Gain[] = "Feedforward_2nd_Gain";
 static const char s_Firmware_Version[] = "Firmware_Version";
@@ -720,7 +724,10 @@ static const ControlItem items_EXTXM[]{
     {s_Velocity_Trajectory, 136, sizeof(s_Velocity_Trajectory) - 1, 4},
     {s_Position_Trajectory, 140, sizeof(s_Position_Trajectory) - 1, 4},
     {s_Present_Input_Voltage, 144, sizeof(s_Present_Input_Voltage) - 1, 2},
-    {s_Present_Temperature, 146, sizeof(s_Present_Temperature) - 1, 1}};
+    {s_Present_Temperature, 146, sizeof(s_Present_Temperature) - 1, 1},
+    {s_External_Port_Data_1, 152, sizeof(s_External_Port_Data_1) - 1, 2},
+    {s_External_Port_Data_2, 154, sizeof(s_External_Port_Data_2) - 1, 2},
+    {s_External_Port_Data_3, 156, sizeof(s_External_Port_Data_3) - 1, 2}};
 
 #define COUNT_EXTXM_ITEMS (sizeof(items_EXTXM) / sizeof(items_EXTXM[0]))
 
@@ -970,10 +977,10 @@ static const ControlItem items_PRO[]{
     {s_Present_Current, 621, sizeof(s_Present_Current) - 1, 2},
     {s_Present_Input_Voltage, 623, sizeof(s_Present_Input_Voltage) - 1, 2},
     {s_Present_Temperature, 625, sizeof(s_Present_Temperature) - 1, 1},
-    {s_External_Port_Mode_1, 626, sizeof(s_External_Port_Mode_1) - 1, 2},
-    {s_External_Port_Mode_2, 628, sizeof(s_External_Port_Mode_2) - 1, 2},
-    {s_External_Port_Mode_3, 630, sizeof(s_External_Port_Mode_3) - 1, 2},
-    {s_External_Port_Mode_4, 632, sizeof(s_External_Port_Mode_4) - 1, 2},
+    {s_External_Port_Data_1, 626, sizeof(s_External_Port_Data_1) - 1, 2},
+    {s_External_Port_Data_2, 628, sizeof(s_External_Port_Data_2) - 1, 2},
+    {s_External_Port_Data_3, 630, sizeof(s_External_Port_Data_3) - 1, 2},
+    {s_External_Port_Data_4, 632, sizeof(s_External_Port_Data_4) - 1, 2},
     {s_Registered_Instruction, 890, sizeof(s_Registered_Instruction) - 1, 1},
     {s_Status_Return_Level, 891, sizeof(s_Status_Return_Level) - 1, 1},
     {s_Hardware_Error_Status, 892, sizeof(s_Hardware_Error_Status) - 1, 1}};
@@ -1030,10 +1037,10 @@ static const ControlItem items_EXTPRO[]{
     {s_Present_Current, 621, sizeof(s_Present_Current) - 1, 2},
     {s_Present_Input_Voltage, 623, sizeof(s_Present_Input_Voltage) - 1, 2},
     {s_Present_Temperature, 625, sizeof(s_Present_Temperature) - 1, 1},
-    {s_External_Port_Mode_1, 626, sizeof(s_External_Port_Mode_1) - 1, 2},
-    {s_External_Port_Mode_2, 628, sizeof(s_External_Port_Mode_2) - 1, 2},
-    {s_External_Port_Mode_3, 630, sizeof(s_External_Port_Mode_3) - 1, 2},
-    {s_External_Port_Mode_4, 632, sizeof(s_External_Port_Mode_4) - 1, 2},
+    {s_External_Port_Data_1, 626, sizeof(s_External_Port_Data_1) - 1, 2},
+    {s_External_Port_Data_2, 628, sizeof(s_External_Port_Data_2) - 1, 2},
+    {s_External_Port_Data_3, 630, sizeof(s_External_Port_Data_3) - 1, 2},
+    {s_External_Port_Data_4, 632, sizeof(s_External_Port_Data_4) - 1, 2},
     {s_Registered_Instruction, 890, sizeof(s_Registered_Instruction) - 1, 1},
     {s_Status_Return_Level, 891, sizeof(s_Status_Return_Level) - 1, 1},
     {s_Hardware_Error_Status, 892, sizeof(s_Hardware_Error_Status) - 1, 1}};
@@ -1095,10 +1102,10 @@ static const ControlItem items_EXTPRO_A[]{
     {s_Present_Current,        574, sizeof(s_Present_Current) - 1,        2},
     {s_Present_Input_Voltage,  592, sizeof(s_Present_Input_Voltage) - 1,  2},
     {s_Present_Temperature,    594, sizeof(s_Present_Temperature) - 1,    1},
-    {s_External_Port_Mode_1,   600, sizeof(s_External_Port_Mode_1) - 1,   2},
-    {s_External_Port_Mode_2,   602, sizeof(s_External_Port_Mode_2) - 1,   2},
-    {s_External_Port_Mode_3,   604, sizeof(s_External_Port_Mode_3) - 1,   2},
-    {s_External_Port_Mode_4,   606, sizeof(s_External_Port_Mode_4) - 1,   2}};
+    {s_External_Port_Data_1,   600, sizeof(s_External_Port_Data_1) - 1,   2},
+    {s_External_Port_Data_2,   602, sizeof(s_External_Port_Data_2) - 1,   2},
+    {s_External_Port_Data_3,   604, sizeof(s_External_Port_Data_3) - 1,   2},
+    {s_External_Port_Data_4,   606, sizeof(s_External_Port_Data_4) - 1,   2}};
 
 #define COUNT_EXTPRO_A_ITEMS (sizeof(items_EXTPRO_A) / sizeof(items_EXTPRO_A[0]))
 
@@ -1169,10 +1176,10 @@ static const ControlItem items_PRO_PLUS[]{
     {s_Position_Trajectory, 588, sizeof(s_Position_Trajectory) - 1, 4},    
     {s_Present_Input_Voltage, 592, sizeof(s_Present_Input_Voltage) - 1, 2},
     {s_Present_Temperature, 594, sizeof(s_Present_Temperature) - 1, 1},
-    {s_External_Port_Mode_1, 600, sizeof(s_External_Port_Mode_1) - 1, 2},
-    {s_External_Port_Mode_2, 602, sizeof(s_External_Port_Mode_2) - 1, 2},
-    {s_External_Port_Mode_3, 604, sizeof(s_External_Port_Mode_3) - 1, 2},
-    {s_External_Port_Mode_4, 606, sizeof(s_External_Port_Mode_4) - 1, 2}};
+    {s_External_Port_Data_1, 600, sizeof(s_External_Port_Data_1) - 1, 2},
+    {s_External_Port_Data_2, 602, sizeof(s_External_Port_Data_2) - 1, 2},
+    {s_External_Port_Data_3, 604, sizeof(s_External_Port_Data_3) - 1, 2},
+    {s_External_Port_Data_4, 606, sizeof(s_External_Port_Data_4) - 1, 2}};
 
 #define COUNT_EXTPRO_PLUS_ITEMS (sizeof(items_PRO_PLUS) / sizeof(items_PRO_PLUS[0]))
 
@@ -1227,10 +1234,10 @@ static const ControlItem items_Gripper[]{
     {s_Present_Current, 621, sizeof(s_Present_Current) - 1, 2},
     {s_Present_Input_Voltage, 623, sizeof(s_Present_Input_Voltage) - 1, 2},
     {s_Present_Temperature, 625, sizeof(s_Present_Temperature) - 1, 1},
-    {s_External_Port_Mode_1, 626, sizeof(s_External_Port_Mode_1) - 1, 2},
-    {s_External_Port_Mode_2, 628, sizeof(s_External_Port_Mode_2) - 1, 2},
-    {s_External_Port_Mode_3, 630, sizeof(s_External_Port_Mode_3) - 1, 2},
-    {s_External_Port_Mode_4, 632, sizeof(s_External_Port_Mode_4) - 1, 2},
+    {s_External_Port_Data_1, 626, sizeof(s_External_Port_Data_1) - 1, 2},
+    {s_External_Port_Data_2, 628, sizeof(s_External_Port_Data_2) - 1, 2},
+    {s_External_Port_Data_3, 630, sizeof(s_External_Port_Data_3) - 1, 2},
+    {s_External_Port_Data_4, 632, sizeof(s_External_Port_Data_4) - 1, 2},
     {s_Registered_Instruction, 890, sizeof(s_Registered_Instruction) - 1, 1},
     {s_Status_Return_Level, 891, sizeof(s_Status_Return_Level) - 1, 1},
     {s_Hardware_Error_Status, 892, sizeof(s_Hardware_Error_Status) - 1, 1}};
@@ -1304,10 +1311,10 @@ static const ControlItem items_EXTGripper[]{
     {s_Position_Trajectory, 588, sizeof(s_Position_Trajectory) - 1, 4},    
     {s_Present_Input_Voltage, 592, sizeof(s_Present_Input_Voltage) - 1, 2},
     {s_Present_Temperature, 594, sizeof(s_Present_Temperature) - 1, 1},
-    {s_External_Port_Mode_1, 600, sizeof(s_External_Port_Mode_1) - 1, 2},
-    {s_External_Port_Mode_2, 602, sizeof(s_External_Port_Mode_2) - 1, 2},
-    {s_External_Port_Mode_3, 604, sizeof(s_External_Port_Mode_3) - 1, 2},
-    {s_External_Port_Mode_4, 606, sizeof(s_External_Port_Mode_4) - 1, 2}};
+    {s_External_Port_Data_1, 600, sizeof(s_External_Port_Data_1) - 1, 2},
+    {s_External_Port_Data_2, 602, sizeof(s_External_Port_Data_2) - 1, 2},
+    {s_External_Port_Data_3, 604, sizeof(s_External_Port_Data_3) - 1, 2},
+    {s_External_Port_Data_4, 606, sizeof(s_External_Port_Data_4) - 1, 2}};
 #define COUNT_EXTGripper_ITEMS (sizeof(items_EXTGripper) / sizeof(items_EXTGripper[0]))
 
 static const ModelInfo info_EXTGripper = {0.01,
