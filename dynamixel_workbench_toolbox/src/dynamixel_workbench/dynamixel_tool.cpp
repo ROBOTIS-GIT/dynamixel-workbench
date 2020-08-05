@@ -118,6 +118,8 @@ void DynamixelTool::setControlTable(const char *model_name)
     setControlTable(XH430_W210);
   else if (!strncmp(name, "XH430-W350", strlen(name)))
     setControlTable(XH430_W350);
+  else if (!strncmp(name, "XH540_W270", strlen(name)))
+    setControlTable(XH540_W270);
 
   else if (!strncmp(name, "PRO-L42-10-S300-R", strlen(name)))
     setControlTable(PRO_L42_10_S300_R);

@@ -183,7 +183,6 @@ bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_id_num, uint8_t range)
     if (packetHandler_1->ping(portHandler_, id, &model_number) == COMM_SUCCESS)
     {
       get_id[id_cnt] = id;
-      setTools(model_number, id);
       id_cnt++;
       protocol_version = 1.0;
     }
@@ -194,7 +193,6 @@ bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_id_num, uint8_t range)
     if (packetHandler_2->ping(portHandler_, id, &model_number) == COMM_SUCCESS)
     {
       get_id[id_cnt] = id;
-      setTools(model_number, id);
       id_cnt++;
       protocol_version = 2.0;
     }
@@ -217,28 +215,18 @@ bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_id_num, uint8_t range)
 bool DynamixelDriver::ping(uint8_t id, uint16_t *get_model_number)
 {
   uint16_t model_number = 0;
-  float protocol_version = 2.0;
 
-  if (packetHandler_1->ping(portHandler_, id, &model_number) == COMM_SUCCESS)
+  if (packetHandler_2->ping(portHandler_, id, &model_number) == COMM_SUCCESS)
   {
-    setTools(model_number, id);
-    protocol_version = 1.0;
-  }
-  else if (packetHandler_2->ping(portHandler_, id, &model_number) == COMM_SUCCESS)
-  {
-    setTools(model_number, id);
-    protocol_version = 2.0;
+    *get_model_number = model_number;
+    return true;
   }
   else
   {
     return false;
-  } 
+  }
 
-  *get_model_number = model_number;
-  if (setPacketHandler(protocol_version) == false)
-    return false;
 
-  return true;
 }
 
 bool DynamixelDriver::reboot(uint8_t id)
@@ -347,7 +335,7 @@ bool DynamixelDriver::reset(uint8_t id)
     if (comm_result == COMM_SUCCESS)
     {
       if (error != 0)
-      {   
+      {
         return false;
       }
 
@@ -663,7 +651,7 @@ void DynamixelDriver::addSyncRead(const char *item_name)
   cti = tools_[0].getControlItem(item_name);
 
   syncReadHandler_[sync_read_handler_cnt_].cti = cti;
-  
+
   syncReadHandler_[sync_read_handler_cnt_++].groupSyncRead = new dynamixel::GroupSyncRead(portHandler_,
                                                                                           packetHandler_,
                                                                                           cti->address,
@@ -696,7 +684,7 @@ bool DynamixelDriver::syncRead(const char *item_name, int32_t *data)
   int index = 0;
 
   SyncReadHandler srh;
-  
+
   for (int index = 0; index < sync_read_handler_cnt_; index++)
   {
     if (!strncmp(syncReadHandler_[index].cti->item_name, item_name, strlen(item_name)))
@@ -816,7 +804,7 @@ bool DynamixelDriver::syncWriteMultipleRegisters(uint8_t start_address, uint8_t 
     }
   }
 
-  return groupSyncWrite->txPacket(); 
+  return groupSyncWrite->txPacket();
 }
 
 

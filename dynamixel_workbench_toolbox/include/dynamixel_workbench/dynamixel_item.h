@@ -52,6 +52,7 @@
 #define XH430_V350 1040
 #define XH430_W210 1010
 #define XH430_W350 1000
+#define XH540_W270 1100
 
 #define PRO_L42_10_S300_R  35072
 #define PRO_L54_30_S400_R  37928

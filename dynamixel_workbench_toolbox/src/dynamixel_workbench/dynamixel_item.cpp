@@ -1141,7 +1141,7 @@ ControlTableItem* getConrolTableItem(uint16_t model_number)
   {
     setExtXMItem();
   }
-  else if (num == XH430_V210 || num == XH430_V350 || num == XH430_W210 || num == XH430_W350)
+  else if (num == XH430_V210 || num == XH430_V350 || num == XH430_W210 || num == XH430_W350 || num == XH540_W270)
   {
     setXHItem();
   }
