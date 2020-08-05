@@ -594,6 +594,8 @@ const char *DynamixelDriver::findModelName(uint16_t model_num)
     model_name = "PRO-H54-100-S500-R";
   else if (num == PRO_H54_200_S500_R)
     model_name = "PRO-H54-200-S500-R";
+  else if (num == BITFOOT)
+    model_name = "BITFOOT";
 
   return model_name;
 }
