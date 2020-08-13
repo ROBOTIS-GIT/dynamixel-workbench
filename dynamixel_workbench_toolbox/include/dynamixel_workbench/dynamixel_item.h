@@ -68,6 +68,10 @@
 #define PRO_H54_100_S500_R 53768
 #define PRO_H54_200_S500_R 54024
 
+#define BITFOOT 0xaffe
+#define BITBOTS_CORE 0xabba
+#define BITBOTS_IMU_MODULE 0xbaff
+
 typedef struct
 {
   float velocity_to_value_ratio;
