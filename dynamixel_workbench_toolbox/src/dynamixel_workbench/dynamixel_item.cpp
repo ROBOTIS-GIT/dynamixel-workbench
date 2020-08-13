@@ -1120,12 +1120,31 @@ static void setBitbotsImuModuleItem()
   item[21] = {103 , "Accel_Range"                  , 1};
   item[22] = {104 , "Calibrate_Gyro"               , 1};
   item[23] = {105 , "Reset_Gyro_Calibration"       , 1};
-  item[24] = {108 , "Do_Adaptive_Gain"             , 1};
-  item[25] = {109 , "Do_Bias_Estimation"           , 1};
-  item[26] = {110 , "Accel_Gain"                   , 4};
-  item[27] = {114 , "Bias_Alpha"                   , 4};
-  the_number_of_item = 28;
+  item[24] = {106 , "Calibrate_Accel"              , 1};
+  item[25] = {107 , "Reset_Accel_Calibration"      , 1};
+  item[26] = {108 , "Do_Adaptive_Gain"             , 1};
+  item[27] = {109 , "Do_Bias_Estimation"           , 1};
+  item[28] = {110 , "Accel_Gain"                   , 4};
+  item[29] = {114 , "Bias_Alpha"                   , 4};
+  item[30] = {118 , "Accel_Calibration_Threshold"  , 4};
+  item[31] = {122 , "Accel_Bias_X"                 , 4};
+  item[32] = {126 , "Accel_Bias_Y"                 , 4};
+  item[33] = {130 , "Accel_Bias_Z"                 , 4};
+  item[34] = {134 , "Accel_Scale_X"                , 4};
+  item[35] = {138 , "Accel_Scale_Y"                , 4};
+  item[36] = {142 , "Accel_Scale_Z"                , 4};
+  the_number_of_item = 37;
 }
+
+
+
+#define ADDR_CONTROL_ITEM_ACCEL_CALIBRATION_THRESHOLD 118
+#define ADDR_CONTROL_ITEM_ACCEL_BIAS_X 122
+#define ADDR_CONTROL_ITEM_ACCEL_BIAS_Y 126
+#define ADDR_CONTROL_ITEM_ACCEL_BIAS_Z 130
+#define ADDR_CONTROL_ITEM_ACCEL_SCALE_X 134
+#define ADDR_CONTROL_ITEM_ACCEL_SCALE_Y 138
+#define ADDR_CONTROL_ITEM_ACCEL_SCALE_Z 142
 
 ControlTableItem* getConrolTableItem(uint16_t model_number)
 {
