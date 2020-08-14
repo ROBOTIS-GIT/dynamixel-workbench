@@ -17,6 +17,7 @@
 /* Authors: Taehun Lim (Darby) */
 
 #include "../../include/dynamixel_workbench/dynamixel_driver.h"
+#include <ros/ros.h>
 
 DynamixelDriver::DynamixelDriver() : tools_cnt_(0), sync_write_handler_cnt_(0), sync_read_handler_cnt_(0) {}
 
@@ -623,18 +624,21 @@ bool DynamixelDriver::syncWrite(const char *item_name, int32_t *data)
   {
     for (int j = 0; j < tools_[i].dxl_info_cnt_; j++)
     {
-      data_byte[0] = DXL_LOBYTE(DXL_LOWORD(data[cnt]));
-      data_byte[1] = DXL_HIBYTE(DXL_LOWORD(data[cnt]));
-      data_byte[2] = DXL_LOBYTE(DXL_HIWORD(data[cnt]));
-      data_byte[3] = DXL_HIBYTE(DXL_HIWORD(data[cnt]));
+      // dont add IMU modules to sync read
+      if(tools_[i].dxl_info_[j].model_num != 0xBAFF){
+        data_byte[0] = DXL_LOBYTE(DXL_LOWORD(data[cnt]));
+        data_byte[1] = DXL_HIBYTE(DXL_LOWORD(data[cnt]));
+        data_byte[2] = DXL_LOBYTE(DXL_HIWORD(data[cnt]));
+        data_byte[3] = DXL_HIBYTE(DXL_HIWORD(data[cnt]));
 
-      dxl_addparam_result = swh.groupSyncWrite->addParam(tools_[i].dxl_info_[j].id, (uint8_t *)&data_byte);
-      if (dxl_addparam_result != true)
-      {
-        return false;
+        dxl_addparam_result = swh.groupSyncWrite->addParam(tools_[i].dxl_info_[j].id, (uint8_t *)&data_byte);
+        if (dxl_addparam_result != true)
+        {
+          return false;
+        }
+
+        cnt++;
       }
-
-      cnt++;
     }
   }
 
@@ -699,10 +703,14 @@ bool DynamixelDriver::syncRead(const char *item_name, int32_t *data)
   {
     for (int j = 0; j < tools_[i].dxl_info_cnt_; j++)
     {
-      dxl_addparam_result = srh.groupSyncRead->addParam(tools_[i].dxl_info_[j].id);
-      if (dxl_addparam_result != true){
-        ROS_ERROR_THROTTLE(1, "Sync Read add param error");
-        return false;
+      // dont add IMU modules to sync read
+      if(tools_[i].dxl_info_[j].model_num != 0xBAFF)
+      {
+        dxl_addparam_result = srh.groupSyncRead->addParam(tools_[i].dxl_info_[j].id);
+        if (dxl_addparam_result != true){
+          ROS_ERROR_THROTTLE(1, "Sync Read add param error");
+          return false;
+        }
       }
     }
   }
@@ -718,17 +726,20 @@ bool DynamixelDriver::syncRead(const char *item_name, int32_t *data)
   {
     for (int j = 0; j < tools_[i].dxl_info_cnt_; j++)
     {
-      uint8_t id = tools_[i].dxl_info_[j].id;
+      // dont add IMU modules to sync read
+      if(tools_[i].dxl_info_[j].model_num != 0xBAFF){
+        uint8_t id = tools_[i].dxl_info_[j].id;
 
-      dxl_getdata_result = srh.groupSyncRead->isAvailable(id, srh.cti->address, srh.cti->data_length);
-      if (dxl_getdata_result)
-      {
-        data[index++] = srh.groupSyncRead->getData(id, srh.cti->address, srh.cti->data_length);
-      }
-      else
-      {
-        ROS_ERROR("Could not read ID %d", id);
-        return false;
+        dxl_getdata_result = srh.groupSyncRead->isAvailable(id, srh.cti->address, srh.cti->data_length);
+        if (dxl_getdata_result)
+        {
+          data[index++] = srh.groupSyncRead->getData(id, srh.cti->address, srh.cti->data_length);
+        }
+        else
+        {
+          ROS_ERROR("Could not read ID %d", id);
+          return false;
+        }
       }
     }
   }
@@ -745,16 +756,19 @@ bool DynamixelDriver::syncReadMultipleRegisters(uint8_t start_address, uint8_t d
   bool dxl_getdata_result = false;
 
   data->clear();
-
   dynamixel::GroupSyncRead *groupSyncRead = new dynamixel::GroupSyncRead(portHandler_, packetHandler_, start_address, data_length);
 
   for (int i = 0; i < tools_cnt_; i++)
   {
     for (int j = 0; j < tools_[i].dxl_info_cnt_; j++)
     {
-      dxl_addparam_result = groupSyncRead->addParam(tools_[i].dxl_info_[j].id);
-      if (dxl_addparam_result != true)
-        return false;
+      // dont add IMU modules to sync read
+      if(tools_[i].dxl_info_[j].model_num != 0xBAFF)
+      {
+        dxl_addparam_result = groupSyncRead->addParam(tools_[i].dxl_info_[j].id);
+        if (dxl_addparam_result != true)
+          return false;
+      }
     }
   }
 
@@ -768,23 +782,27 @@ bool DynamixelDriver::syncReadMultipleRegisters(uint8_t start_address, uint8_t d
   {
     for (int j = 0; j < tools_[i].dxl_info_cnt_; j++)
     {
-      uint8_t id = tools_[i].dxl_info_[j].id;
+      // dont add IMU modules to sync read
+      if(tools_[i].dxl_info_[j].model_num != 0xBAFF){
+        uint8_t id = tools_[i].dxl_info_[j].id;
 
-      dxl_getdata_result = groupSyncRead->isAvailable(id, start_address, data_length);
-      if (dxl_getdata_result)
-      {
-        std::vector<uint8_t> d;
-        groupSyncRead->getMultipleWordsData(id, start_address, data_length, &d);
-        for(int k =0; k < d.size(); k++){
-            data->push_back(d[k]);
+        dxl_getdata_result = groupSyncRead->isAvailable(id, start_address, data_length);
+        if (dxl_getdata_result)
+        {
+          std::vector<uint8_t> d;
+          groupSyncRead->getMultipleWordsData(id, start_address, data_length, &d);
+          for(int k =0; k < d.size(); k++){
+              data->push_back(d[k]);
+          }
         }
-      }
-      else
-      {
-        return false;
+        else
+        {
+          return false;
+        }
       }
     }
   }
+
   return true;
 }
 
@@ -799,10 +817,13 @@ bool DynamixelDriver::syncWriteMultipleRegisters(uint8_t start_address, uint8_t 
   for (int i = 0; i < tools_cnt_; i++)
   {
     for (int j = 0; j < tools_[i].dxl_info_cnt_; j++)
-    {
-      dxl_addparam_result = groupSyncWrite->addParam(tools_[i].dxl_info_[j].id, data[i]);
-      if (dxl_addparam_result != true)
-        return false;
+    {      // dont add IMU modules to sync read
+      if(tools_[i].dxl_info_[j].model_num != 0xBAFF)
+      {
+        dxl_addparam_result = groupSyncWrite->addParam(tools_[i].dxl_info_[j].id, data[i]);
+        if (dxl_addparam_result != true)
+          return false;
+      }
     }
   }
 
