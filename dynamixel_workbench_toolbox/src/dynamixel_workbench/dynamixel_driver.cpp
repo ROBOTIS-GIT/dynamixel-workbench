@@ -585,6 +585,10 @@ const char *DynamixelDriver::findModelName(uint16_t model_num)
     model_name = "PRO-H54-200-S500-R";
   else if (num == BITFOOT)
     model_name = "BITFOOT";
+  else if (num == BITBOTS_IMU_MODULE)
+    model_name = "IMU";
+  else if (num == BITBOTS_CORE)
+    model_name = "CORE";
 
   return model_name;
 }
