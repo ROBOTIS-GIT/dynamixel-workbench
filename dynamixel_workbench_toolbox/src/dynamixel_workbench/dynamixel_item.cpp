@@ -1135,6 +1135,25 @@ static void setBitbotsImuModuleItem()
   item[36] = {142 , "Accel_Scale_Z"                , 4};
   the_number_of_item = 37;
 }
+static void setBitbotsCoreItem()
+{
+  item[0]  = {0  , "Model_Number"                  , 2};
+  item[1]  = {2  , "Firmware_Version"              , 1};
+  item[2]  = {3  , "ID"                            , 1};
+  item[3]  = {4  , "Baud_Rate"                     , 1};
+  item[4]  = {10 , "LED_0"                         , 4};
+  item[5]  = {14 , "LED_1"                         , 4};
+  item[6]  = {18 , "LED_2"                         , 4};
+  item[7]  = {22 , "LED"                           , 1};
+  item[8]  = {23 , "Power"                         , 1};
+  item[9]  = {26 , "VBAT"                          , 2};
+  item[10] = {28 , "VEXT"                          , 2};
+  item[11] = {30 , "VCC"                           , 2};
+  item[12] = {32 , "VDXL"                          , 2};
+  item[13] = {34 , "Current"                       , 2};
+  item[14] = {36 , "Poweron"                       , 2};
+  the_number_of_item = 15;
+}
 
 
 
@@ -1207,6 +1226,10 @@ ControlTableItem* getConrolTableItem(uint16_t model_number)
   else if (num == BITBOTS_IMU_MODULE)
   {
     setBitbotsImuModuleItem();
+  }
+  else if (num == BITBOTS_CORE)
+  {
+    setBitbotsCoreItem();
   }
   else
   {

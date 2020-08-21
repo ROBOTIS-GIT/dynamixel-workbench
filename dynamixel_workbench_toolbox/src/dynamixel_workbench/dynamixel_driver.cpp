@@ -629,7 +629,7 @@ bool DynamixelDriver::syncWrite(const char *item_name, int32_t *data)
     for (int j = 0; j < tools_[i].dxl_info_cnt_; j++)
     {
       // dont add IMU modules to sync read
-      if(tools_[i].dxl_info_[j].model_num != 0xBAFF){
+      if(tools_[i].dxl_info_[j].model_num != BITBOTS_IMU_MODULE && tools_[i].dxl_info_[j].model_num != BITBOTS_CORE ){
         data_byte[0] = DXL_LOBYTE(DXL_LOWORD(data[cnt]));
         data_byte[1] = DXL_HIBYTE(DXL_LOWORD(data[cnt]));
         data_byte[2] = DXL_LOBYTE(DXL_HIWORD(data[cnt]));
@@ -708,7 +708,7 @@ bool DynamixelDriver::syncRead(const char *item_name, int32_t *data)
     for (int j = 0; j < tools_[i].dxl_info_cnt_; j++)
     {
       // dont add IMU modules to sync read
-      if(tools_[i].dxl_info_[j].model_num != 0xBAFF)
+      if(tools_[i].dxl_info_[j].model_num != BITBOTS_IMU_MODULE && tools_[i].dxl_info_[j].model_num != BITBOTS_CORE )
       {
         dxl_addparam_result = srh.groupSyncRead->addParam(tools_[i].dxl_info_[j].id);
         if (dxl_addparam_result != true){
@@ -731,7 +731,7 @@ bool DynamixelDriver::syncRead(const char *item_name, int32_t *data)
     for (int j = 0; j < tools_[i].dxl_info_cnt_; j++)
     {
       // dont add IMU modules to sync read
-      if(tools_[i].dxl_info_[j].model_num != 0xBAFF){
+      if(tools_[i].dxl_info_[j].model_num != BITBOTS_IMU_MODULE && tools_[i].dxl_info_[j].model_num != BITBOTS_CORE ){
         uint8_t id = tools_[i].dxl_info_[j].id;
 
         dxl_getdata_result = srh.groupSyncRead->isAvailable(id, srh.cti->address, srh.cti->data_length);
@@ -767,7 +767,7 @@ bool DynamixelDriver::syncReadMultipleRegisters(uint8_t start_address, uint8_t d
     for (int j = 0; j < tools_[i].dxl_info_cnt_; j++)
     {
       // dont add IMU modules to sync read
-      if(tools_[i].dxl_info_[j].model_num != 0xBAFF)
+      if(tools_[i].dxl_info_[j].model_num != BITBOTS_IMU_MODULE && tools_[i].dxl_info_[j].model_num != BITBOTS_CORE )
       {
         dxl_addparam_result = groupSyncRead->addParam(tools_[i].dxl_info_[j].id);
         if (dxl_addparam_result != true)
@@ -787,7 +787,7 @@ bool DynamixelDriver::syncReadMultipleRegisters(uint8_t start_address, uint8_t d
     for (int j = 0; j < tools_[i].dxl_info_cnt_; j++)
     {
       // dont add IMU modules to sync read
-      if(tools_[i].dxl_info_[j].model_num != 0xBAFF){
+      if(tools_[i].dxl_info_[j].model_num != BITBOTS_IMU_MODULE && tools_[i].dxl_info_[j].model_num != BITBOTS_CORE ){
         uint8_t id = tools_[i].dxl_info_[j].id;
 
         dxl_getdata_result = groupSyncRead->isAvailable(id, start_address, data_length);
@@ -822,7 +822,7 @@ bool DynamixelDriver::syncWriteMultipleRegisters(uint8_t start_address, uint8_t 
   {
     for (int j = 0; j < tools_[i].dxl_info_cnt_; j++)
     {      // dont add IMU modules to sync read
-      if(tools_[i].dxl_info_[j].model_num != 0xBAFF)
+      if(tools_[i].dxl_info_[j].model_num != BITBOTS_IMU_MODULE && tools_[i].dxl_info_[j].model_num != BITBOTS_CORE )
       {
         dxl_addparam_result = groupSyncWrite->addParam(tools_[i].dxl_info_[j].id, data[i]);
         if (dxl_addparam_result != true)
