@@ -1497,7 +1497,7 @@ const ModelInfo *DynamixelItem::getModelInfo(uint16_t model_number)
   {
     info = &info_EXTXH;
   }
-  else if (num == XW540_T260 || XW540_T140)
+  else if (num == XW540_T260 || num == XW540_T140)
   {
     info = &info_XW;
   }
