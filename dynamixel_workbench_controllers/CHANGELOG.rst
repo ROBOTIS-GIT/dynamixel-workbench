@@ -2,6 +2,18 @@
 Changelog for package dynamixel_workbench_controllers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.2.0 (2020-09-25)
+------------------
+* Added XW540
+* Bugs fixed, typos revised
+* Contributors: Ryan Shim, Yutaka Kondo, T-Kitajima, Nico Zevallos, Madhur Deep Jain, Will Son, YongHo Na
+
+2.1.0 (2019-06-04)
+------------------
+* Removed single_manager and single_manager_gui
+* Added XH540, PRO (A Firmware), RH_P12_RN, RH_P12_RN (A Firmware) 
+* Contributors: Ryan Shim
+
 2.0.0 (2019-01-04)
 ------------------
 * added YAML configuration for Dynamixel 

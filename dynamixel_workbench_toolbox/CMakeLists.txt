@@ -45,10 +45,10 @@ include_directories(
 )
 
 add_library(dynamixel_workbench_toolbox
-  src/dynamixel_workbench_toolbox/dynamixel_item.cpp
-  src/dynamixel_workbench_toolbox/dynamixel_driver.cpp
-  src/dynamixel_workbench_toolbox/dynamixel_tool.cpp
-  src/dynamixel_workbench_toolbox/dynamixel_workbench.cpp
+  src/${PROJECT_NAME}/dynamixel_item.cpp
+  src/${PROJECT_NAME}/dynamixel_driver.cpp
+  src/${PROJECT_NAME}/dynamixel_tool.cpp
+  src/${PROJECT_NAME}/dynamixel_workbench.cpp
 )
 add_dependencies(dynamixel_workbench_toolbox ${catkin_EXPORTED_TARGETS})
 target_link_libraries(dynamixel_workbench_toolbox ${catkin_LIBRARIES})
