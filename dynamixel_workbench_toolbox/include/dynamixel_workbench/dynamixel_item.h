@@ -52,6 +52,7 @@
 #define XH430_V350 1040
 #define XH430_W210 1010
 #define XH430_W350 1000
+#define XH540_W270 1100
 
 #define PRO_L42_10_S300_R  35072
 #define PRO_L54_30_S400_R  37928
@@ -66,6 +67,10 @@
 #define PRO_H42_20_S300_R  51200
 #define PRO_H54_100_S500_R 53768
 #define PRO_H54_200_S500_R 54024
+
+#define BITFOOT 0xaffe
+#define BITBOTS_CORE 0xabba
+#define BITBOTS_IMU_MODULE 0xbaff
 
 typedef struct
 {

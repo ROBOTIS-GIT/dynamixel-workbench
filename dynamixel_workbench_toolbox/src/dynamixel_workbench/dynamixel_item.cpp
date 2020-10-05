@@ -814,6 +814,7 @@ static void setXMItem()
 #endif  
 }
 
+
 static void setXMInfo()
 {
   model_info.velocity_to_value_ratio       = 41.70;
@@ -1093,6 +1094,77 @@ static void setPROInfo()
   model_info.max_radian                      =  3.14159265;
 }
 
+static void setBitbotsImuModuleItem()
+{
+  item[0]  = {0  , "Model_Number"                  , 2};
+  item[1]  = {2  , "Firmware_Version"              , 1};
+  item[2]  = {3  , "ID"                            , 1};
+  item[3]  = {4  , "Baud_Rate"                     , 1};
+  item[4]  = {10 , "LED_0"                         , 4};
+  item[5]  = {14 , "LED_1"                         , 4};
+  item[6]  = {18 , "LED_2"                         , 4};
+  item[7]  = {36 , "Gyro_X"                        , 4};
+  item[8]  = {40 , "Gyro_Y"                        , 4};
+  item[9]  = {44 , "Gyro_Z"                        , 4};
+  item[10] = {48 , "Accel_X"                       , 4};
+  item[11] = {52 , "Accel_Y"                       , 4};
+  item[12] = {56 , "Accel_Z"                       , 4};
+  item[13] = {60 , "Quat_X"                        , 4};
+  item[14] = {64 , "Quat_Y"                        , 4};
+  item[15] = {68 , "Quat_Z"                        , 4};
+  item[16] = {72 , "Quat_W"                        , 4};
+  item[17] = {76 , "Button_0"                      , 1};
+  item[18] = {77 , "Button_1"                      , 1};
+  item[19] = {78 , "Button_2"                      , 1};
+  item[20] = {102 , "Gyro_Range"                   , 1};
+  item[21] = {103 , "Accel_Range"                  , 1};
+  item[22] = {104 , "Calibrate_Gyro"               , 1};
+  item[23] = {105 , "Reset_Gyro_Calibration"       , 1};
+  item[24] = {106 , "Calibrate_Accel"              , 1};
+  item[25] = {107 , "Reset_Accel_Calibration"      , 1};
+  item[26] = {108 , "Do_Adaptive_Gain"             , 1};
+  item[27] = {109 , "Do_Bias_Estimation"           , 1};
+  item[28] = {110 , "Accel_Gain"                   , 4};
+  item[29] = {114 , "Bias_Alpha"                   , 4};
+  item[30] = {118 , "Accel_Calibration_Threshold"  , 4};
+  item[31] = {122 , "Accel_Bias_X"                 , 4};
+  item[32] = {126 , "Accel_Bias_Y"                 , 4};
+  item[33] = {130 , "Accel_Bias_Z"                 , 4};
+  item[34] = {134 , "Accel_Scale_X"                , 4};
+  item[35] = {138 , "Accel_Scale_Y"                , 4};
+  item[36] = {142 , "Accel_Scale_Z"                , 4};
+  the_number_of_item = 37;
+}
+static void setBitbotsCoreItem()
+{
+  item[0]  = {0  , "Model_Number"                  , 2};
+  item[1]  = {2  , "Firmware_Version"              , 1};
+  item[2]  = {3  , "ID"                            , 1};
+  item[3]  = {4  , "Baud_Rate"                     , 1};
+  item[4]  = {10 , "LED_0"                         , 4};
+  item[5]  = {14 , "LED_1"                         , 4};
+  item[6]  = {18 , "LED_2"                         , 4};
+  item[7]  = {22 , "LED"                           , 1};
+  item[8]  = {23 , "Power"                         , 1};
+  item[9]  = {26 , "VBAT"                          , 2};
+  item[10] = {28 , "VEXT"                          , 2};
+  item[11] = {30 , "VCC"                           , 2};
+  item[12] = {32 , "VDXL"                          , 2};
+  item[13] = {34 , "Current"                       , 2};
+  item[14] = {36 , "Poweron"                       , 2};
+  the_number_of_item = 15;
+}
+
+
+
+#define ADDR_CONTROL_ITEM_ACCEL_CALIBRATION_THRESHOLD 118
+#define ADDR_CONTROL_ITEM_ACCEL_BIAS_X 122
+#define ADDR_CONTROL_ITEM_ACCEL_BIAS_Y 126
+#define ADDR_CONTROL_ITEM_ACCEL_BIAS_Z 130
+#define ADDR_CONTROL_ITEM_ACCEL_SCALE_X 134
+#define ADDR_CONTROL_ITEM_ACCEL_SCALE_Y 138
+#define ADDR_CONTROL_ITEM_ACCEL_SCALE_Z 142
+
 ControlTableItem* getConrolTableItem(uint16_t model_number)
 {
   uint16_t num = model_number;
@@ -1141,7 +1213,7 @@ ControlTableItem* getConrolTableItem(uint16_t model_number)
   {
     setExtXMItem();
   }
-  else if (num == XH430_V210 || num == XH430_V350 || num == XH430_W210 || num == XH430_W350)
+  else if (num == XH430_V210 || num == XH430_V350 || num == XH430_W210 || num == XH430_W350 || num == XH540_W270)
   {
     setXHItem();
   }
@@ -1150,6 +1222,14 @@ ControlTableItem* getConrolTableItem(uint16_t model_number)
            num == PRO_H54_200_S500_R)
   {
     setPROItem();
+  }
+  else if (num == BITBOTS_IMU_MODULE)
+  {
+    setBitbotsImuModuleItem();
+  }
+  else if (num == BITBOTS_CORE)
+  {
+    setBitbotsCoreItem();
   }
   else
   {
