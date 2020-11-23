@@ -1146,13 +1146,18 @@ static void setBitbotsCoreItem()
   item[6]  = {18 , "LED_2"                         , 4};
   item[7]  = {22 , "LED"                           , 1};
   item[8]  = {23 , "Power"                         , 1};
-  item[9]  = {26 , "VBAT"                          , 2};
-  item[10] = {28 , "VEXT"                          , 2};
-  item[11] = {30 , "VCC"                           , 2};
-  item[12] = {32 , "VDXL"                          , 2};
-  item[13] = {34 , "Current"                       , 2};
-  item[14] = {36 , "Poweron"                       , 2};
-  the_number_of_item = 15;
+  item[9] =  {28 , "VEXT"                          , 2};
+  item[10] = {30 , "VCC"                           , 2};
+  item[11] = {32 , "VDXL"                          , 2};
+  item[12] = {34 , "Current"                       , 2};
+  item[13] = {36 , "Poweron"                       , 2};
+  item[14] = {38 , "VBat_0"                        , 2};
+  item[15] = {40 , "VBat_1"                       , 2};
+  item[16] = {42 , "VBat_2"                       , 2};
+  item[17] = {44 , "VBat_3"                       , 2};
+  item[18] = {46 , "VBat_4"                       , 2};
+  item[19] = {48 , "VBat_5"                       , 2};
+  the_number_of_item = 20;
 }
 
 
