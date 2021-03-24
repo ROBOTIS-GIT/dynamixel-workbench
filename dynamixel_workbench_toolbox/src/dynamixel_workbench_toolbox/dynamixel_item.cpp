@@ -557,7 +557,6 @@ static const ControlItem items_XL330[]{
     {s_Min_Voltage_Limit, 34, sizeof(s_Min_Voltage_Limit) - 1, 2},
     {s_PWM_Limit, 36, sizeof(s_PWM_Limit) - 1, 2},
     {s_Current_Limit, 38, sizeof(s_Current_Limit) - 1, 2},
-    {s_Acceleration_Limit, 40, sizeof(s_Acceleration_Limit) - 1, 4},
     {s_Velocity_Limit, 44, sizeof(s_Velocity_Limit) - 1, 4},
     {s_Max_Position_Limit, 48, sizeof(s_Max_Position_Limit) - 1, 4},
     {s_Min_Position_Limit, 52, sizeof(s_Min_Position_Limit) - 1, 4},
