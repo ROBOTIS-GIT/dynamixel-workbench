@@ -2,4 +2,4 @@ repositories:
   util/dynamixel_workbench_msgs:
     type: git
     url: https://github.com/ROBOTIS-GIT/dynamixel_workbench_msgs.git
-    version: master
+    version: develop
