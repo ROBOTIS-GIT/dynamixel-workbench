@@ -42,9 +42,14 @@
 #define MX_106_2   321
 
 #define XL_320     350
+
+#define XL330_M077 1190
+#define XL330_M288 1200
+
 #define XL430_W250 1060
 
 #define XL430_W250_2 1090 // 2XL
+#define XC430_W250_2 1160 // 2XC
 
 #define XC430_W150 1070
 #define XC430_W240 1080

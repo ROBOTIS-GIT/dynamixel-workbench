@@ -97,6 +97,7 @@ static const char s_Profile_Velocity[] = "Profile_Velocity";
 static const char s_Protocol_Version[] = "Protocol_Version";
 static const char s_Punch[] = "Punch";
 static const char s_PWM_Limit[] = "PWM_Limit";
+static const char s_PWM_Slope[] = "PWM_Slope";
 static const char s_Realtime_Tick[] = "Realtime_Tick";
 static const char s_Registered[] = "Registered";
 static const char s_Registered_Instruction[] = "Registered_Instruction";
@@ -537,7 +538,72 @@ static const ModelInfo info_XL320 = {0.11,
                                   2.61799};
 
 //---------------------------------------------------------
-// XL - (num == XL430_W250, XL430_W250_2, XC430_W150, XC430_W240)
+// XL330 - (num == XL330_M077, XL330_M288)
+//---------------------------------------------------------
+static const ControlItem items_XL330[]{
+    {s_Model_Number, 0, sizeof(s_Model_Number) - 1, 2},
+    {s_Firmware_Version, 6, sizeof(s_Firmware_Version) - 1, 1},
+    {s_ID, 7, sizeof(s_ID) - 1, 1},
+    {s_Baud_Rate, 8, sizeof(s_Baud_Rate) - 1, 1},
+    {s_Return_Delay_Time, 9, sizeof(s_Return_Delay_Time) - 1, 1},
+    {s_Drive_Mode, 10, sizeof(s_Drive_Mode) - 1, 1},
+    {s_Operating_Mode, 11, sizeof(s_Operating_Mode) - 1, 1},
+    {s_Secondary_ID, 12, sizeof(s_Secondary_ID) - 1, 1},
+    {s_Protocol_Version, 13, sizeof(s_Protocol_Version) - 1, 1},
+    {s_Homing_Offset, 20, sizeof(s_Homing_Offset) - 1, 4},
+    {s_Moving_Threshold, 24, sizeof(s_Moving_Threshold) - 1, 4},
+    {s_Temperature_Limit, 31, sizeof(s_Temperature_Limit) - 1, 1},
+    {s_Max_Voltage_Limit, 32, sizeof(s_Max_Voltage_Limit) - 1, 2},
+    {s_Min_Voltage_Limit, 34, sizeof(s_Min_Voltage_Limit) - 1, 2},
+    {s_PWM_Limit, 36, sizeof(s_PWM_Limit) - 1, 2},
+    {s_Current_Limit, 38, sizeof(s_Current_Limit) - 1, 2},
+    {s_Velocity_Limit, 44, sizeof(s_Velocity_Limit) - 1, 4},
+    {s_Max_Position_Limit, 48, sizeof(s_Max_Position_Limit) - 1, 4},
+    {s_Min_Position_Limit, 52, sizeof(s_Min_Position_Limit) - 1, 4},
+    {s_PWM_Slope, 62, sizeof(s_PWM_Slope) - 1, 1},
+    {s_Shutdown, 63, sizeof(s_Shutdown) - 1, 1},
+    {s_Torque_Enable, 64, sizeof(s_Torque_Enable) - 1, 1},
+    {s_LED, 65, sizeof(s_LED) - 1, 1},
+    {s_Status_Return_Level, 68, sizeof(s_Status_Return_Level) - 1, 1},
+    {s_Registered_Instruction, 69, sizeof(s_Registered_Instruction) - 1, 1},
+    {s_Hardware_Error_Status, 70, sizeof(s_Hardware_Error_Status) - 1, 1},
+    {s_Velocity_I_Gain, 76, sizeof(s_Velocity_I_Gain) - 1, 2},
+    {s_Velocity_P_Gain, 78, sizeof(s_Velocity_P_Gain) - 1, 2},
+    {s_Position_D_Gain, 80, sizeof(s_Position_D_Gain) - 1, 2},
+    {s_Position_I_Gain, 82, sizeof(s_Position_I_Gain) - 1, 2},
+    {s_Position_P_Gain, 84, sizeof(s_Position_P_Gain) - 1, 2},
+    {s_Feedforward_2nd_Gain, 88, sizeof(s_Feedforward_2nd_Gain) - 1, 2},
+    {s_Feedforward_1st_Gain, 90, sizeof(s_Feedforward_1st_Gain) - 1, 2},
+    {s_Bus_Watchdog, 98, sizeof(s_Bus_Watchdog) - 1, 1},
+    {s_Goal_PWM, 100, sizeof(s_Goal_PWM) - 1, 2},
+    {s_Goal_Current, 102, sizeof(s_Goal_Current) - 1, 2},
+    {s_Goal_Velocity, 104, sizeof(s_Goal_Velocity) - 1, 4},
+    {s_Profile_Acceleration, 108, sizeof(s_Profile_Acceleration) - 1, 4},
+    {s_Profile_Velocity, 112, sizeof(s_Profile_Velocity) - 1, 4},
+    {s_Goal_Position, 116, sizeof(s_Goal_Position) - 1, 4},
+    {s_Realtime_Tick, 120, sizeof(s_Realtime_Tick) - 1, 2},
+    {s_Moving, 122, sizeof(s_Moving) - 1, 1},
+    {s_Moving_Status, 123, sizeof(s_Moving_Status) - 1, 1},
+    {s_Present_PWM, 124, sizeof(s_Present_PWM) - 1, 2},
+    {s_Present_Current, 126, sizeof(s_Present_Current) - 1, 2},
+    {s_Present_Velocity, 128, sizeof(s_Present_Velocity) - 1, 4},
+    {s_Present_Position, 132, sizeof(s_Present_Position) - 1, 4},
+    {s_Velocity_Trajectory, 136, sizeof(s_Velocity_Trajectory) - 1, 4},
+    {s_Position_Trajectory, 140, sizeof(s_Position_Trajectory) - 1, 4},
+    {s_Present_Input_Voltage, 144, sizeof(s_Present_Input_Voltage) - 1, 2},
+    {s_Present_Temperature, 146, sizeof(s_Present_Temperature) - 1, 1}};
+
+#define COUNT_XL330_ITEMS (sizeof(items_XL330) / sizeof(items_XL330[0]))
+
+static const ModelInfo info_XL330 = {0.229,
+                                  0,
+                                  2048,
+                                  4096,
+                                  -3.14159265, 
+                                  3.14159265};
+
+//---------------------------------------------------------
+// XL - (num == XL430_W250, XL430_W250_2, XC430_W150, XC430_W240, XC430_W250_2)
 //---------------------------------------------------------
 static const ControlItem items_XL[]{
     {s_Model_Number, 0, sizeof(s_Model_Number) - 1, 2},
@@ -1373,7 +1439,12 @@ const ControlItem *DynamixelItem::getControlTable(uint16_t model_number)
     control_table = items_XL320;
     the_number_of_item = COUNT_XL320_ITEMS;
   }
-  else if (num == XL430_W250 || num == XL430_W250_2 || num == XC430_W150 || num == XC430_W240)
+  else if (num == XL330_M077 || num == XL330_M288)
+  {
+    control_table = items_XL330;
+    the_number_of_item = COUNT_XL330_ITEMS;
+  }
+  else if (num == XL430_W250 || num == XL430_W250_2 || num == XC430_W150 || num == XC430_W240 || num == XC430_W250_2)
   {
     control_table = items_XL;
     the_number_of_item = COUNT_XL_ITEMS;
@@ -1484,7 +1555,11 @@ const ModelInfo *DynamixelItem::getModelInfo(uint16_t model_number)
   {
     info = &info_XL320;
   }
-  else if (num == XL430_W250 || num == XL430_W250_2 || num == XC430_W150 || num == XC430_W240)
+  else if (num == XL330_M077 || num == XL330_M288)
+  {
+    info = &info_XL330;
+  }
+  else if (num == XL430_W250 || num == XL430_W250_2 || num == XC430_W150 || num == XC430_W240 || num == XC430_W250_2)
   {
     info = &info_XL;
   }
