@@ -49,4 +49,4 @@ jobs:
         with:
           package-name: dynamixel_workbench
           target-ros1-distro: ${{ matrix.ros_distribution }}
-          vcs-repo-file-url: ""
+          vcs-repo-file-url: "https://raw.githubusercontent.com/ROBOTIS-GIT/dynamixel-workbench/master/workbench_ci.repos"
