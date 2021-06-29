@@ -293,9 +293,9 @@ bool DynamixelController::getPresentPosition(std::vector<std::string> dxl_name)
   {
     WayPoint wp;
     uint32_t read_position;
-    for (auto const& dxl:dynamixel_)
+    for (auto const id:id_array)
     {
-      result = dxl_wb_->readRegister((uint8_t)dxl.second,
+      result = dxl_wb_->readRegister(id,
                                      control_items_["Present_Position"]->address,
                                      control_items_["Present_Position"]->data_length,
                                      &read_position,
@@ -305,7 +305,7 @@ bool DynamixelController::getPresentPosition(std::vector<std::string> dxl_name)
         ROS_ERROR("%s", log);
       }
 
-      wp.position = dxl_wb_->convertValue2Radian((uint8_t)dxl.second, read_position);
+      wp.position = dxl_wb_->convertValue2Radian(id, read_position);
       pre_goal_.push_back(wp);
     }
   }
@@ -586,7 +586,6 @@ void DynamixelController::writeCallback(const ros::TimerEvent&)
   int32_t dynamixel_position[dynamixel_.size()];
 
   static uint32_t point_cnt = 0;
-  static uint32_t position_cnt = 0;
 
   for (auto const& joint:jnt_tra_msg_->joint_names)
   {
@@ -605,19 +604,13 @@ void DynamixelController::writeCallback(const ros::TimerEvent&)
       ROS_ERROR("%s", log);
     }
 
-    position_cnt++;
-    if (position_cnt >= jnt_tra_msg_->points[point_cnt].positions.size())
+    point_cnt++;
+    if (point_cnt >= jnt_tra_msg_->points.size())
     {
-      point_cnt++;
-      position_cnt = 0;
-      if (point_cnt >= jnt_tra_msg_->points.size())
-      {
-        is_moving_ = false;
-        point_cnt = 0;
-        position_cnt = 0;
+      is_moving_ = false;
+      point_cnt = 0;
 
-        ROS_INFO("Complete Execution");
-      }
+      ROS_INFO("Complete Execution");
     }
   }
 
