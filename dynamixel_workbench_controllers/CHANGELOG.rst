@@ -2,6 +2,11 @@
 Changelog for package dynamixel_workbench_controllers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.2.1 (2021-06-29)
+------------------
+* Added 2XC430-W250, XL330 series
+* Contributors: Will Son, t-kitajima, Hye-jong KIM
+
 2.2.0 (2020-09-25)
 ------------------
 * Added XW540
