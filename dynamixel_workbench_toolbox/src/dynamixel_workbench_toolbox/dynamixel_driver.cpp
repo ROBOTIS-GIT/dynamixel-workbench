@@ -733,11 +733,13 @@ bool DynamixelDriver::writeOnlyRegister(uint8_t id, const char *item_name, int32
   control_item = tools_[factor].getControlItem(item_name, log);
   if (control_item == NULL) return false;
 
-#if defined(__OPENCR__) || defined(__OPENCM904__)
-    delay(10);
-#else
-    usleep(1000*10);
-#endif
+  #if defined(__OPENCR__) || defined(__OPENCM904__)
+      delay(10);
+  #elif defined(_WIN32)
+      std::this_thread::sleep_for(std::chrono::microseconds(1000*10));
+  #else
+      usleep(1000*10);
+  #endif
 
   switch (control_item->data_length)
   {
