@@ -790,7 +790,7 @@ bool DynamixelDriver::readRegister(uint8_t id, uint16_t address, uint16_t length
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
   
-  uint8_t data_read[length];
+  std::vector<uint8_t> data_read(length);
 
   sdk_error.dxl_comm_result = packetHandler_->readTxRx(portHandler_, 
                                                       id, 
@@ -1026,7 +1026,7 @@ bool DynamixelDriver::syncWrite(uint8_t index, uint8_t *id, uint8_t id_num, int3
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
   uint8_t parameter[4] = {0, 0, 0, 0};
-  uint8_t multi_parameter[4*data_num_for_each_id];
+  std::vector<uint8_t> multi_parameter(4*data_num_for_each_id);
   uint8_t cnt = 0;
 
   for (int i = 0; i < id_num; i++)
