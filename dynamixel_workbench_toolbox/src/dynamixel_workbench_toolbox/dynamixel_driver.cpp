@@ -420,11 +420,14 @@ bool DynamixelDriver::reboot(uint8_t id, const char **log)
   else
   {
     sdk_error.dxl_comm_result = packetHandler_->reboot(portHandler_, id, &sdk_error.dxl_error);
-#if defined(__OPENCR__) || defined(__OPENCM904__)
-    delay(1000);
-#else
-    usleep(1000*1000);
-#endif
+    
+    #if defined(__OPENCR__) || defined(__OPENCM904__)
+      delay(1000);
+    #elif defined(_WIN32)
+      std::this_thread::sleep_for(std::chrono::microseconds(1000*1000));
+    #else
+      usleep(1000*1000);
+    #endif
 
     if (sdk_error.dxl_comm_result != COMM_SUCCESS)
     {
@@ -463,11 +466,14 @@ bool DynamixelDriver::reset(uint8_t id, const char **log)
   if (getProtocolVersion() == 1.0)
   {
     sdk_error.dxl_comm_result = packetHandler_->factoryReset(portHandler_, id, 0x00, &sdk_error.dxl_error);
-#if defined(__OPENCR__) || defined(__OPENCM904__)
-    delay(2000);
-#else
-    usleep(1000*2000);
-#endif
+
+    #if defined(__OPENCR__) || defined(__OPENCM904__)
+        delay(2000);
+    #elif defined(_WIN32)
+      std::this_thread::sleep_for(std::chrono::microseconds(1000*2000));
+    #else
+        usleep(1000*2000);
+    #endif
 
     if (sdk_error.dxl_comm_result != COMM_SUCCESS)
     {
@@ -522,11 +528,14 @@ bool DynamixelDriver::reset(uint8_t id, const char **log)
   else if (getProtocolVersion() == 2.0)
   {
     sdk_error.dxl_comm_result = packetHandler_->factoryReset(portHandler_, id, 0xff, &sdk_error.dxl_error);
-#if defined(__OPENCR__) || defined(__OPENCM904__)
-    delay(2000);
-#else
-    usleep(1000*2000);
-#endif
+
+    #if defined(__OPENCR__) || defined(__OPENCM904__)
+        delay(2000);
+    #elif defined(_WIN32)
+      std::this_thread::sleep_for(std::chrono::microseconds(1000*2000));
+    #else
+        usleep(1000*2000);
+    #endif
 
     if (sdk_error.dxl_comm_result != COMM_SUCCESS)
     {
@@ -570,11 +579,13 @@ bool DynamixelDriver::writeRegister(uint8_t id, uint16_t address, uint16_t lengt
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
-#if defined(__OPENCR__) || defined(__OPENCM904__)
-    delay(10);
-#else
-    usleep(1000*10);
-#endif
+  #if defined(__OPENCR__) || defined(__OPENCM904__)
+      delay(10);
+  #elif defined(_WIN32)
+        std::this_thread::sleep_for(std::chrono::microseconds(1000*10));
+  #else
+      usleep(1000*10);
+  #endif
 
   sdk_error.dxl_comm_result = packetHandler_->writeTxRx(portHandler_, 
                                                         id, 
@@ -617,11 +628,13 @@ bool DynamixelDriver::writeRegister(uint8_t id, const char *item_name, int32_t d
   uint16_t data_2_byte = (uint16_t)data;
   uint32_t data_4_byte = (uint32_t)data;
 
-#if defined(__OPENCR__) || defined(__OPENCM904__)
-    delay(10);
-#else
-    usleep(1000*10);
-#endif
+  #if defined(__OPENCR__) || defined(__OPENCM904__)
+      delay(10);
+  #elif defined(_WIN32)
+          std::this_thread::sleep_for(std::chrono::microseconds(1000*10));
+  #else
+      usleep(1000*10);
+  #endif
 
   switch (control_item->data_length)
   {
@@ -681,11 +694,13 @@ bool DynamixelDriver::writeOnlyRegister(uint8_t id, uint16_t address, uint16_t l
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
-#if defined(__OPENCR__) || defined(__OPENCM904__)
-    delay(10);
-#else
-    usleep(1000*10);
-#endif
+  #if defined(__OPENCR__) || defined(__OPENCM904__)
+      delay(10);
+  #elif defined(_WIN32)
+          std::this_thread::sleep_for(std::chrono::microseconds(1000*10));
+  #else
+      usleep(1000*10);
+  #endif
 
   sdk_error.dxl_comm_result = packetHandler_->writeTxOnly(portHandler_, 
                                                           id, 

@@ -198,11 +198,14 @@ bool DynamixelWorkbench::changeBaudrate(uint8_t id, uint32_t new_baudrate, const
        break;
     }
   }
-#if defined(__OPENCR__) || defined(__OPENCM904__)
-    delay(2000);
-#else
-    usleep(1000*2000);
-#endif
+
+  #if defined(__OPENCR__) || defined(__OPENCM904__)
+      delay(2000);
+  #elif defined(_WIN32)
+    std::this_thread::sleep_for(std::chrono::microseconds(1000*2000));
+  #else
+      usleep(1000*2000);
+  #endif
 
   if (result == false)
   {
