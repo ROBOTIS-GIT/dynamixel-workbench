@@ -27,6 +27,14 @@
 #elif defined(__linux__) || defined(__APPLE__)
   #include "unistd.h"
   #include "dynamixel_sdk/dynamixel_sdk.h"
+#elif defined(_WIN32)
+
+  #include <chrono>
+  #include <thread>
+  #include <vector>
+
+  #include "dynamixel_sdk/dynamixel_sdk.h"
+
 #endif
 
 #define MAX_DXL_SERIES_NUM  5
