@@ -278,12 +278,11 @@ bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_the_number_of_id, uint8
     {
       if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     }
-    else if (sdk_error.dxl_error != 0)
-    {
-      if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
-    }
     else
     {
+      if (sdk_error.dxl_error != 0)
+        if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+
       get_id[id_cnt++] = id;
       setTool(model_number, id);
     }    
@@ -306,12 +305,11 @@ bool DynamixelDriver::scan(uint8_t *get_id, uint8_t *get_the_number_of_id, uint8
     {
       if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     }
-    else if (sdk_error.dxl_error != 0)
-    {
-      if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
-    }
     else
     {
+      if (sdk_error.dxl_error != 0)
+        if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+
       get_id[id_cnt++] = id;
       setTool(model_number, id);
     }   
@@ -346,12 +344,11 @@ bool DynamixelDriver::ping(uint8_t id, uint16_t *get_model_number, const char **
   {
     if (log != NULL)  *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
   }
-  else if (sdk_error.dxl_error != 0)
-  {
-    if (log != NULL)  *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
-  }
   else
   {
+    if (sdk_error.dxl_error != 0)
+      if (log != NULL)  *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+    
     setTool(model_number, id);
     if (get_model_number != NULL) *get_model_number = model_number;
     return true;
@@ -365,12 +362,11 @@ bool DynamixelDriver::ping(uint8_t id, uint16_t *get_model_number, const char **
   {
     if (log != NULL)  *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
   }
-  else if (sdk_error.dxl_error != 0)
-  {
-    if (log != NULL)  *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
-  }
   else
   {
+    if (sdk_error.dxl_error != 0)
+      if (log != NULL)  *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+    
     setTool(model_number, id);
     if (get_model_number != NULL) *get_model_number = model_number;
     return true;
@@ -394,14 +390,14 @@ bool DynamixelDriver::clearMultiTurn(uint8_t id, const char **log)
     if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
-  else if (sdk_error.dxl_error != 0)
-  {
-    if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
-    return false;
-  }
   else
   {
-    if (log != NULL) *log = "[DynamixelDriver] Succeeded to clear!";
+    if (sdk_error.dxl_error != 0) {
+      if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+    }
+    else {
+      if (log != NULL) *log = "[DynamixelDriver] Succeeded to clear!";
+    }
     return true;
   }
 
@@ -434,14 +430,14 @@ bool DynamixelDriver::reboot(uint8_t id, const char **log)
       if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
       return false;
     }
-    else if (sdk_error.dxl_error != 0)
-    {
-      if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
-      return false;
-    }
     else
     {
-      if (log != NULL) *log = "[DynamixelDriver] Succeeded to reboot!";
+      if (sdk_error.dxl_error != 0) {
+        if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+      }
+      else {
+        if (log != NULL) *log = "[DynamixelDriver] Succeeded to reboot!";
+      }
       return true;
     }
   }
@@ -478,11 +474,6 @@ bool DynamixelDriver::reset(uint8_t id, const char **log)
     if (sdk_error.dxl_comm_result != COMM_SUCCESS)
     {
       if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
-      return false;
-    }
-    else if (sdk_error.dxl_error != 0)
-    {
-      if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
       return false;
     }
     else
@@ -522,7 +513,12 @@ bool DynamixelDriver::reset(uint8_t id, const char **log)
     result = setTool(model_number, new_id, log);
     if (result == false) return false; 
     
-    if (log != NULL) *log = "[DynamixelDriver] Succeeded to reset!";
+    if (sdk_error.dxl_error != 0) {
+      if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+    } else {
+      if (log != NULL) *log = "[DynamixelDriver] Succeeded to reset!";
+    }
+    
     return true;
   }
   else if (getProtocolVersion() == 2.0)
@@ -540,11 +536,6 @@ bool DynamixelDriver::reset(uint8_t id, const char **log)
     if (sdk_error.dxl_comm_result != COMM_SUCCESS)
     {
       if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
-      return false;
-    }
-    else if (sdk_error.dxl_error != 0)
-    {
-      if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
       return false;
     }
     else
@@ -568,7 +559,12 @@ bool DynamixelDriver::reset(uint8_t id, const char **log)
     result = setTool(model_number, new_id, log);
     if (result == false) return false; 
     
-    if (log != NULL) *log = "[DynamixelDriver] Succeeded to reset!";
+    if (sdk_error.dxl_error != 0) {
+      if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+    } else {
+      if (log != NULL) *log = "[DynamixelDriver] Succeeded to reset!";
+    }
+
     return true;
   }
 
@@ -803,11 +799,6 @@ bool DynamixelDriver::readRegister(uint8_t id, uint16_t address, uint16_t length
     if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
-  else if (sdk_error.dxl_error != 0)
-  {
-    if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
-    return false;
-  }
   else
   {
     switch (length)
@@ -831,7 +822,13 @@ bool DynamixelDriver::readRegister(uint8_t id, uint16_t address, uint16_t length
         }
        break;
     }
-    if (log != NULL) *log = "[DynamixelDriver] Succeeded to read!";
+
+    if (sdk_error.dxl_error != 0) {
+      if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+    } else {
+      if (log != NULL) *log = "[DynamixelDriver] Succeeded to read!";
+    }
+    
     return true;
   }
 
@@ -894,11 +891,6 @@ bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, int32_t *d
     if (log != NULL) *log = packetHandler_->getTxRxResult(sdk_error.dxl_comm_result);
     return false;
   }
-  else if (sdk_error.dxl_error != 0)
-  {
-    if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
-    return false;
-  }
   else
   {
     switch (control_item->data_length)
@@ -920,7 +912,12 @@ bool DynamixelDriver::readRegister(uint8_t id, const char *item_name, int32_t *d
       break;
     }
 
-    if (log != NULL) *log = "[DynamixelDriver] Succeeded to read!";
+    if (sdk_error.dxl_error != 0) {
+      if (log != NULL) *log = packetHandler_->getRxPacketError(sdk_error.dxl_error);
+    } else {
+      if (log != NULL) *log = "[DynamixelDriver] Succeeded to read!";
+    }
+
     return true;
   }
 
