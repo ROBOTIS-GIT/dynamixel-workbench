@@ -259,7 +259,7 @@ bool DynamixelController::getPresentPosition(std::vector<std::string> dxl_name)
   {
     result = dxl_wb_->syncRead(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
                                id_array.data(),
-                               dxl_name.size(),
+                               (uint8_t)dxl_name.size(),
                                &log);
     if (result == false)
     {
@@ -365,7 +365,7 @@ void DynamixelController::readCallback(const ros::TimerEvent&)
     {
       result = dxl_wb_->syncRead(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
                                   id_array.data(),
-                                  dynamixel_.size(),
+                                  (uint8_t)dynamixel_.size(),
                                   &log);
       if (result == false)
       {
@@ -567,7 +567,7 @@ void DynamixelController::commandVelocityCallback(const geometry_msgs::Twist::Co
     else if (wheel_velocity[RIGHT] > 0.0f)  dynamixel_velocity[RIGHT] = (wheel_velocity[RIGHT] * velocity_constant_value);
   }
 
-  result = dxl_wb_->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_VELOCITY, id_array.data(), dynamixel_.size(), dynamixel_velocity.data(), 1, &log);
+  result = dxl_wb_->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_VELOCITY, id_array.data(), (uint8_t)dynamixel_.size(), dynamixel_velocity.data(), 1, &log);
   if (result == false)
   {
     ROS_ERROR("%s", log);

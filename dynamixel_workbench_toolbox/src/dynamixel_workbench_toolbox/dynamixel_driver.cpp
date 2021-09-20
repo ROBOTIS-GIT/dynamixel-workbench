@@ -1040,7 +1040,13 @@ bool DynamixelDriver::syncWrite(uint8_t index, uint8_t *id, uint8_t id_num, int3
       }
     }
 
-    sdk_error.dxl_addparam_result = syncWriteHandler_[index].groupSyncWrite->addParam(id[i], (uint8_t *)&multi_parameter);
+    #ifdef DEBUG
+      
+      printf("'%u' '%u' ", id[i], data[cnt-1]); 
+      printf("'%#02x' '%#02x' '%#02x' '%#02x' \n", parameter[0], parameter[1],parameter[2],parameter[3]); 
+    #endif
+
+    sdk_error.dxl_addparam_result = syncWriteHandler_[index].groupSyncWrite->addParam(id[i], multi_parameter.data());
     if (sdk_error.dxl_addparam_result != true)
     {
       if (log != NULL) *log = "groupSyncWrite addparam failed";
