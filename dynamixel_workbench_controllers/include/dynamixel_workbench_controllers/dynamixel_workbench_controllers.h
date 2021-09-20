@@ -43,7 +43,9 @@
 // SYNC_READ_HANDLER(Only for Protocol 2.0)
 #define SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT 0
 
-// #define DEBUG
+//#define DEBUG
+
+#define MY_DEBUG
 
 typedef struct
 {

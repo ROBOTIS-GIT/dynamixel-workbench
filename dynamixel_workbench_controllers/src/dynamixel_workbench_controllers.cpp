@@ -596,16 +596,34 @@ void DynamixelController::writeCallback(const ros::TimerEvent&)
     id_cnt++;
   }
 
+
+
+
   if (is_moving_ == true)
   {
-    for (uint8_t index = 0; index < id_cnt; index++)
+    for (uint8_t index = 0; index < id_cnt; index++){
       dynamixel_position[index] = dxl_wb_->convertRadian2Value(id_array[index], jnt_tra_msg_->points[point_cnt].positions.at(index));
+      
+      #ifdef MY_DEBUG
+        printf("new join pos. %d %d %f\n", id_array[index], dynamixel_position[index], jnt_tra_msg_->points[point_cnt].positions.at(index));
+      #endif
+    }
+
+    #ifdef MY_DEBUG
+        printf("end \n");
+    #endif
 
     result = dxl_wb_->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_POSITION, id_array.data(), id_cnt, dynamixel_position.data(), 1, &log);
     if (result == false)
     {
       ROS_ERROR("%s", log);
     }
+    else
+      #ifdef DEBUG
+        ROS_DEBUG("[syncWrite] result %s", log);
+      #endif
+
+    
 
     position_cnt++;
     if (position_cnt >= jnt_tra_msg_->points[point_cnt].positions.size())
@@ -670,6 +688,9 @@ void DynamixelController::trajectoryMsgCallback(const trajectory_msgs::JointTraj
           else wp.acceleration = 0.0f;
 
           goal.push_back(wp);
+
+          ROS_INFO("New Goal Pos.: %s %f", jnt_tra_msg_->joint_names[id_num],  wp.position);
+
         }
 
         if (use_moveit_ == true)
