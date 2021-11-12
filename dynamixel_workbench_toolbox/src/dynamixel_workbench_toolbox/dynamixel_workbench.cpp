@@ -1277,9 +1277,9 @@ int32_t DynamixelWorkbench::convertVelocity2Value(uint8_t id, float velocity)
     if (strcmp(getModelName(id), "XL-320") == 0)
     {
       if (velocity == 0.0f) value = 0;
-      // CW rotation to [0, 1023]
+      // CCW rotation to [0, 1023]
       else if (velocity < 0.0f) value = (-velocity / (model_info->rpm * RPM2RADPERSEC));
-      // CCW rotation to [1024, 2047]
+      // CW rotation to [1024, 2047]
       else if (velocity > 0.0f) value = (velocity / (model_info->rpm * RPM2RADPERSEC)) + 1024;
 
       return value;
