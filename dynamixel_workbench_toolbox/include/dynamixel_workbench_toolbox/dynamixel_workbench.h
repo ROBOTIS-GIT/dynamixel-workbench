@@ -90,8 +90,11 @@ class DynamixelWorkbench : public DynamixelDriver
   float convertValue2Velocity(uint8_t id, int32_t value);
 
   int16_t convertCurrent2Value(uint8_t id, float current);
-  int16_t convertCurrent2Value(float current);
   float convertValue2Current(uint8_t id, int16_t value);
+  
+  // This function will return incorrect value for some DYNAMIXEL like P or X330 series
+  int16_t convertCurrent2Value(float current);
+  // This function will return incorrect value for some DYNAMIXEL like P or X330 series
   float convertValue2Current(int16_t value);
 
   float convertValue2Load(int16_t value);
