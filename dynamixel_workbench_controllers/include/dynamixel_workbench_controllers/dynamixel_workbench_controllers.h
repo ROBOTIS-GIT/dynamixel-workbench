@@ -19,8 +19,6 @@
 #ifndef DYNAMIXEL_WORKBENCH_CONTROLLERS_H
 #define DYNAMIXEL_WORKBENCH_CONTROLLERS_H
 
-#include <vector>
-
 #include <ros/ros.h>
 
 #include <yaml-cpp/yaml.h>
