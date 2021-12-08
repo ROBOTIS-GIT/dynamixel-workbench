@@ -54,31 +54,33 @@ int main(int argc, char *argv[])
     if (result == false)
     {
       ROS_WARN("%s", log);
-      ROS_WARN("Failed to init");
+      ROS_WARN("Failed to init(%d)", baudrate[index]);
     }
     else
     {
-      ROS_INFO("Succeed to init(%d)", baudrate[index]);
+        ROS_INFO("Succeed to init(%d)", baudrate[index]);
+    
+
+      dxl_cnt = 0;
+      for (uint8_t num = 0; num < 100; num++) scanned_id[num] = 0;
+
+      ROS_INFO("Wait for scanning...");
+      result = dxl_wb.scan(scanned_id, &dxl_cnt, range, &log);
+      if (result == false)
+      {
+        ROS_WARN("%s", log);
+        ROS_WARN("Failed to scan");
+      }
+      else
+      {
+        ROS_INFO("Find %d Dynamixels", dxl_cnt);
+
+        for (int cnt = 0; cnt < dxl_cnt; cnt++)
+          ROS_INFO("id : %d, model name : %s", scanned_id[cnt], dxl_wb.getModelName(scanned_id[cnt]));
+      }
     }
-
-    dxl_cnt = 0;
-    for (uint8_t num = 0; num < 100; num++) scanned_id[num] = 0;
-
-    ROS_INFO("Wait for scanning...");
-    result = dxl_wb.scan(scanned_id, &dxl_cnt, range, &log);
-    if (result == false)
-    {
-      ROS_WARN("%s", log);
-      ROS_WARN("Failed to scan");
-    }
-    else
-    {
-      ROS_INFO("Find %d Dynamixels", dxl_cnt);
-
-      for (int cnt = 0; cnt < dxl_cnt; cnt++)
-        ROS_INFO("id : %d, model name : %s", scanned_id[cnt], dxl_wb.getModelName(scanned_id[cnt]));
-    }
-
+    
+    dxl_wb.~DynamixelWorkbench();
     index++;
   }
 

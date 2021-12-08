@@ -3,9 +3,9 @@ name: ros-ci
 # Controls when the action will run. Triggers the workflow on push or pull request
 on:
   push:
-    branches: [ master, develop, kinetic-devel, melodic-devel, noetic-devel ]
+    branches: [ master, develop, melodic-devel, noetic-devel ]
   pull_request:
-    branches: [ master, develop, kinetic-devel, melodic-devel, noetic-devel ]
+    branches: [ master, develop, melodic-devel, noetic-devel ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -15,14 +15,9 @@ jobs:
       fail-fast: false
       matrix:
         ros_distribution:
-          - kinetic
           - melodic
           - noetic
         include:
-            # Kinetic Kame (May 2016 - May 2021)
-          - docker_image: ubuntu:xenial
-            ros_distribution: kinetic
-            ros_version: 1
             # Melodic Morenia (May 2018 - May 2023)
           - docker_image: ubuntu:bionic
             ros_distribution: melodic
