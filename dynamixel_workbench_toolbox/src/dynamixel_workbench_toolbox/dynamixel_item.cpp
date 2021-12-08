@@ -594,7 +594,7 @@ static const ControlItem items_X330[]{
     {s_Present_Input_Voltage, 144, sizeof(s_Present_Input_Voltage) - 1, 2},
     {s_Present_Temperature, 146, sizeof(s_Present_Temperature) - 1, 1}};
 
-#define COUNT_XL330_ITEMS (sizeof(items_X330) / sizeof(items_X330[0]))
+#define COUNT_X330_ITEMS (sizeof(items_X330) / sizeof(items_X330[0]))
 
 static const ModelInfo info_X330 = {0.229,
                                   0,
@@ -1440,10 +1440,10 @@ const ControlItem *DynamixelItem::getControlTable(uint16_t model_number)
     control_table = items_XL320;
     the_number_of_item = COUNT_XL320_ITEMS;
   }
-  else if (num == XL330_M077 || num == XL330_M288)
+  else if (num == XL330_M077 || num == XL330_M288 || num == XC330_M181 || num == XC330_M288 || num == XC330_T181 || num == XC330_T288)
   {
     control_table = items_X330;
-    the_number_of_item = COUNT_XL330_ITEMS;
+    the_number_of_item = COUNT_X330_ITEMS;
   }
   else if (num == XL430_W250 || num == XL430_W250_2 || num == XC430_W150 || num == XC430_W240 || num == XC430_W250_2)
   {
