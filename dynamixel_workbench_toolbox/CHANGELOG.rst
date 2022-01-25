@@ -2,6 +2,22 @@
 Changelog for package dynamixel_workbench_toolbox
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.2.2 (2022-01-25)
+------------------
+* ROS2 package update only
+* Support 2XC430 on ROS2 (#342)
+* Support X330 series, XW series on ROS2 (#350)
+* New features(Startup Config, Backup Ready) updated in the Control Table Item list
+  Start Config : https://emanual.robotis.com/docs/en/dxl/x/xm430-w210/#startup-configuration
+  Backup Ready : https://emanual.robotis.com/docs/en/dxl/x/xm430-w210/#backup-ready
+* Contributors: Richard Osterloh, Yoshito Okada, Will Son
+
+2.1.0 (2019-06-04)
+------------------
+* Removed single_manager and single_manager_gui
+* Added XH540, PRO (A Firmware), RH_P12_RN, RH_P12_RN (A Firmware) 
+* Contributors: Ryan Shim
+
 2.0.0 (2019-01-04)
 ------------------
 * added YAML configuration for Dynamixel 
