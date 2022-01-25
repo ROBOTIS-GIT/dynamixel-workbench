@@ -2,24 +2,23 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>dynamixel_workbench_toolbox</name>
-  <version>2.0.0</version>
+  <version>2.2.2</version>
   <description>
     This package is composed of 'dynamixel_item', 'dynamixel_tool', 'dynamixel_driver' and 'dynamixel_workbench' class.
-    The 'dynamixel_item' is saved as control table item and information of Dynamixels.
-    The 'dynamixel_tool' class loads its by model number of Dynamixels.
+    The 'dynamixel_item' is saved as control table item and information of DYNAMIXEL.
+    The 'dynamixel_tool' class loads its by model number of DYNAMIXEL.
     The 'dynamixel_driver' class includes wraped function used in DYNAMIXEL SDK.
-    The 'dynamixel_workbench' class make simple to use Dynamixels
+    The 'dynamixel_workbench' class make simple to use DYNAMIXEL.
   </description>
+  <maintainer email="willson@robotis.com">Will Son</maintainer>
   <license>Apache 2.0</license>
-  <author email="thlim@robotis.com">Darby Lim</author>
-  <author email="jhshim@robotis.com">Ryan Shim</author>
-  <maintainer email="pyo@robotis.com">Pyo</maintainer>
-  <maintainer email="thlim@robotis.com">Darby Lim</maintainer>
-  <maintainer email="jhshim@robotis.com">Ryan Shim</maintainer>
   <url type="website">http://wiki.ros.org/dynamixel_workbench_toolbox</url>
   <url type="emanual">http://emanual.robotis.com/docs/en/software/dynamixel/dynamixel_workbench/</url>
   <url type="repository">https://github.com/ROBOTIS-GIT/dynamixel-workbench</url>
   <url type="bugtracker">https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues</url>
+  <author email="thlim@robotis.com">Darby Lim</author>
+  <author email="jhshim@robotis.com">Ryan Shim</author>
+  <author email="willson@robotis.com">Will Son</author>
   <buildtool_depend>ament_cmake</buildtool_depend>
   <depend>rclcpp</depend>
   <depend>dynamixel_sdk</depend>
