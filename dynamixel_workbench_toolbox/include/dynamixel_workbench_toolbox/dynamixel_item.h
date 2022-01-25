@@ -75,6 +75,8 @@
 #define XH540_V150 1150
 #define XH540_V270 1140
 
+#define XW430_T200 1280
+#define XW430_T333 1270
 #define XW540_T260 1170
 #define XW540_T140 1180
 

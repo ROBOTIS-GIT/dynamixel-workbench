@@ -69,6 +69,7 @@ static const char s_Max_Position_Limit[] = "Max_Position_Limit";
 static const char s_Max_Torque[] = "Max_Torque";
 static const char s_Max_Voltage_Limit[] = "Max_Voltage_Limit";
 static const char s_Min_Position_Limit[] = "Min_Position_Limit";
+static const char s_Startup_Configuration[] = "Startup_Configuration";
 static const char s_Min_Voltage_Limit[] = "Min_Voltage_Limit";
 static const char s_Model_Number[] = "Model_Number";
 static const char s_Moving[] = "Moving";
@@ -115,6 +116,7 @@ static const char s_Velocity_I_Gain[] = "Velocity_I_Gain";
 static const char s_Velocity_Limit[] = "Velocity_Limit";
 static const char s_Velocity_P_Gain[] = "Velocity_P_Gain";
 static const char s_Velocity_Trajectory[] = "Velocity_Trajectory";
+static const char s_Backup_Ready[] = "Backup_Ready";
 
 //_________________________________________________________
 
@@ -561,6 +563,7 @@ static const ControlItem items_X330[]{
     {s_Velocity_Limit, 44, sizeof(s_Velocity_Limit) - 1, 4},
     {s_Max_Position_Limit, 48, sizeof(s_Max_Position_Limit) - 1, 4},
     {s_Min_Position_Limit, 52, sizeof(s_Min_Position_Limit) - 1, 4},
+    {s_Startup_Configuration, 60, sizeof(s_Startup_Configuration) - 1, 1},
     {s_PWM_Slope, 62, sizeof(s_PWM_Slope) - 1, 1},
     {s_Shutdown, 63, sizeof(s_Shutdown) - 1, 1},
     {s_Torque_Enable, 64, sizeof(s_Torque_Enable) - 1, 1},
@@ -592,7 +595,8 @@ static const ControlItem items_X330[]{
     {s_Velocity_Trajectory, 136, sizeof(s_Velocity_Trajectory) - 1, 4},
     {s_Position_Trajectory, 140, sizeof(s_Position_Trajectory) - 1, 4},
     {s_Present_Input_Voltage, 144, sizeof(s_Present_Input_Voltage) - 1, 2},
-    {s_Present_Temperature, 146, sizeof(s_Present_Temperature) - 1, 1}};
+    {s_Present_Temperature, 146, sizeof(s_Present_Temperature) - 1, 1},
+    {s_Backup_Ready, 147, sizeof(s_Backup_Ready) - 1, 1}};
 
 #define COUNT_XL330_ITEMS (sizeof(items_X330) / sizeof(items_X330[0]))
 
@@ -626,6 +630,7 @@ static const ControlItem items_XL[]{
     {s_Velocity_Limit, 44, sizeof(s_Velocity_Limit) - 1, 4},
     {s_Max_Position_Limit, 48, sizeof(s_Max_Position_Limit) - 1, 4},
     {s_Min_Position_Limit, 52, sizeof(s_Min_Position_Limit) - 1, 4},
+    {s_Startup_Configuration, 60, sizeof(s_Startup_Configuration) - 1, 1},
     {s_Shutdown, 63, sizeof(s_Shutdown) - 1, 1},
 
     {s_Torque_Enable, 64, sizeof(s_Torque_Enable) - 1, 1},
@@ -656,7 +661,8 @@ static const ControlItem items_XL[]{
     {s_Velocity_Trajectory, 136, sizeof(s_Velocity_Trajectory) - 1, 4},
     {s_Position_Trajectory, 140, sizeof(s_Position_Trajectory) - 1, 4},
     {s_Present_Input_Voltage, 144, sizeof(s_Present_Input_Voltage) - 1, 2},
-    {s_Present_Temperature, 146, sizeof(s_Present_Temperature) - 1, 1}};
+    {s_Present_Temperature, 146, sizeof(s_Present_Temperature) - 1, 1},
+    {s_Backup_Ready, 147, sizeof(s_Backup_Ready) - 1, 1}};
 
 #define COUNT_XL_ITEMS (sizeof(items_XL) / sizeof(items_XL[0]))
 
@@ -691,6 +697,7 @@ static const ControlItem items_XM[]{
     {s_Velocity_Limit, 44, sizeof(s_Velocity_Limit) - 1, 4},
     {s_Max_Position_Limit, 48, sizeof(s_Max_Position_Limit) - 1, 4},
     {s_Min_Position_Limit, 52, sizeof(s_Min_Position_Limit) - 1, 4},
+    {s_Startup_Configuration, 60, sizeof(s_Startup_Configuration) - 1, 1},
     {s_Shutdown, 63, sizeof(s_Shutdown) - 1, 1},
 
     {s_Torque_Enable, 64, sizeof(s_Torque_Enable) - 1, 1},
@@ -722,7 +729,8 @@ static const ControlItem items_XM[]{
     {s_Velocity_Trajectory, 136, sizeof(s_Velocity_Trajectory) - 1, 4},
     {s_Position_Trajectory, 140, sizeof(s_Position_Trajectory) - 1, 4},
     {s_Present_Input_Voltage, 144, sizeof(s_Present_Input_Voltage) - 1, 2},
-    {s_Present_Temperature, 146, sizeof(s_Present_Temperature) - 1, 1}};
+    {s_Present_Temperature, 146, sizeof(s_Present_Temperature) - 1, 1},
+    {s_Backup_Ready, 147, sizeof(s_Backup_Ready) - 1, 1}};
 
 #define COUNT_XM_ITEMS (sizeof(items_XM) / sizeof(items_XM[0]))
 
@@ -760,6 +768,7 @@ static const ControlItem items_EXTXM[]{
     {s_External_Port_Mode_1, 56, sizeof(s_External_Port_Mode_1) - 1, 1},
     {s_External_Port_Mode_2, 57, sizeof(s_External_Port_Mode_2) - 1, 1},
     {s_External_Port_Mode_3, 58, sizeof(s_External_Port_Mode_3) - 1, 1},
+    {s_Startup_Configuration, 60, sizeof(s_Startup_Configuration) - 1, 1},
     {s_Shutdown, 63, sizeof(s_Shutdown) - 1, 1},
 
     {s_Torque_Enable, 64, sizeof(s_Torque_Enable) - 1, 1},
@@ -792,6 +801,7 @@ static const ControlItem items_EXTXM[]{
     {s_Position_Trajectory, 140, sizeof(s_Position_Trajectory) - 1, 4},
     {s_Present_Input_Voltage, 144, sizeof(s_Present_Input_Voltage) - 1, 2},
     {s_Present_Temperature, 146, sizeof(s_Present_Temperature) - 1, 1},
+    {s_Backup_Ready, 147, sizeof(s_Backup_Ready) - 1, 1},
     {s_External_Port_Data_1, 152, sizeof(s_External_Port_Data_1) - 1, 2},
     {s_External_Port_Data_2, 154, sizeof(s_External_Port_Data_2) - 1, 2},
     {s_External_Port_Data_3, 156, sizeof(s_External_Port_Data_3) - 1, 2}};
@@ -829,6 +839,7 @@ static const ControlItem items_XH[]{
     {s_Velocity_Limit, 44, sizeof(s_Velocity_Limit) - 1, 4},
     {s_Max_Position_Limit, 48, sizeof(s_Max_Position_Limit) - 1, 4},
     {s_Min_Position_Limit, 52, sizeof(s_Min_Position_Limit) - 1, 4},
+    {s_Startup_Configuration, 60, sizeof(s_Startup_Configuration) - 1, 1},
     {s_Shutdown, 63, sizeof(s_Shutdown) - 1, 1},
 
     {s_Torque_Enable, 64, sizeof(s_Torque_Enable) - 1, 1},
@@ -860,7 +871,8 @@ static const ControlItem items_XH[]{
     {s_Velocity_Trajectory, 136, sizeof(s_Velocity_Trajectory) - 1, 4},
     {s_Position_Trajectory, 140, sizeof(s_Position_Trajectory) - 1, 4},
     {s_Present_Input_Voltage, 144, sizeof(s_Present_Input_Voltage) - 1, 2},
-    {s_Present_Temperature, 146, sizeof(s_Present_Temperature) - 1, 1}};
+    {s_Present_Temperature, 146, sizeof(s_Present_Temperature) - 1, 1},
+    {s_Backup_Ready, 147, sizeof(s_Backup_Ready) - 1, 1}};
 
 #define COUNT_XH_ITEMS (sizeof(items_XH) / sizeof(items_XH[0]))
 
@@ -895,6 +907,7 @@ static const ControlItem items_EXTXH[]{
     {s_Velocity_Limit,     44, sizeof(s_Velocity_Limit) - 1,     4},
     {s_Max_Position_Limit, 48, sizeof(s_Max_Position_Limit) - 1, 4},
     {s_Min_Position_Limit, 52, sizeof(s_Min_Position_Limit) - 1, 4},
+    {s_Startup_Configuration, 60, sizeof(s_Startup_Configuration) - 1, 1},
     {s_Shutdown,           63, sizeof(s_Shutdown) - 1, 1},
 
     {s_Torque_Enable,          64,  sizeof(s_Torque_Enable) - 1,          1},
@@ -926,7 +939,8 @@ static const ControlItem items_EXTXH[]{
     {s_Velocity_Trajectory,    136, sizeof(s_Velocity_Trajectory) - 1,    4},
     {s_Position_Trajectory,    140, sizeof(s_Position_Trajectory) - 1,    4},
     {s_Present_Input_Voltage,  144, sizeof(s_Present_Input_Voltage) - 1,  2},
-    {s_Present_Temperature,    146, sizeof(s_Present_Temperature) - 1,    1}};
+    {s_Present_Temperature,    146, sizeof(s_Present_Temperature) - 1,    1},
+    {s_Backup_Ready,           147, sizeof(s_Backup_Ready) - 1,           1}};
 
 #define COUNT_EXTXH_ITEMS (sizeof(items_EXTXH) / sizeof(items_EXTXH[0]))
 
@@ -938,7 +952,7 @@ static const ModelInfo info_EXTXH = {0.229,
                                   3.14159265};
 
 //---------------------------------------------------------
-// XW - (num == XW540_T260 || XW540_T140)
+// XW - (num == XW540_T260 || XW540_T140 || XW430_T200 || XW430_T333)
 //---------------------------------------------------------
 static const ControlItem items_XW[]{
     {s_Model_Number,       0,  sizeof(s_Model_Number) - 1,       2},
@@ -961,6 +975,7 @@ static const ControlItem items_XW[]{
     {s_Velocity_Limit,     44, sizeof(s_Velocity_Limit) - 1,     4},
     {s_Max_Position_Limit, 48, sizeof(s_Max_Position_Limit) - 1, 4},
     {s_Min_Position_Limit, 52, sizeof(s_Min_Position_Limit) - 1, 4},
+    {s_Startup_Configuration, 60, sizeof(s_Startup_Configuration) - 1, 1},
     {s_Shutdown,           63, sizeof(s_Shutdown) - 1, 1},
 
     {s_Torque_Enable,          64,  sizeof(s_Torque_Enable) - 1,          1},
@@ -991,7 +1006,8 @@ static const ControlItem items_XW[]{
     {s_Velocity_Trajectory,    136, sizeof(s_Velocity_Trajectory) - 1,    4},
     {s_Position_Trajectory,    140, sizeof(s_Position_Trajectory) - 1,    4},
     {s_Present_Input_Voltage,  144, sizeof(s_Present_Input_Voltage) - 1,  2},
-    {s_Present_Temperature,    146, sizeof(s_Present_Temperature) - 1,    1}};
+    {s_Present_Temperature,    146, sizeof(s_Present_Temperature) - 1,    1},
+    {s_Backup_Ready,           147, sizeof(s_Backup_Ready) - 1,           1}};
 
 #define COUNT_XW_ITEMS (sizeof(items_XW) / sizeof(items_XW[0]))
 
@@ -1209,6 +1225,7 @@ static const ControlItem items_PRO_PLUS[]{
     {s_External_Port_Mode_2, 57, sizeof(s_External_Port_Mode_2) - 1, 1},
     {s_External_Port_Mode_3, 58, sizeof(s_External_Port_Mode_3) - 1, 1},
     {s_External_Port_Mode_4, 59, sizeof(s_External_Port_Mode_4) - 1, 1},
+    {s_Startup_Configuration, 60, sizeof(s_Startup_Configuration) - 1, 1},
     {s_Shutdown, 63, sizeof(s_Shutdown) - 1, 1},
 
     {s_Torque_Enable, 512, sizeof(s_Torque_Enable) - 1, 1},
@@ -1246,7 +1263,8 @@ static const ControlItem items_PRO_PLUS[]{
     {s_External_Port_Data_1, 600, sizeof(s_External_Port_Data_1) - 1, 2},
     {s_External_Port_Data_2, 602, sizeof(s_External_Port_Data_2) - 1, 2},
     {s_External_Port_Data_3, 604, sizeof(s_External_Port_Data_3) - 1, 2},
-    {s_External_Port_Data_4, 606, sizeof(s_External_Port_Data_4) - 1, 2}};
+    {s_External_Port_Data_4, 606, sizeof(s_External_Port_Data_4) - 1, 2},
+    {s_Backup_Ready, 878, sizeof(s_Backup_Ready) - 1, 1}};
 
 #define COUNT_EXTPRO_PLUS_ITEMS (sizeof(items_PRO_PLUS) / sizeof(items_PRO_PLUS[0]))
 
@@ -1440,7 +1458,7 @@ const ControlItem *DynamixelItem::getControlTable(uint16_t model_number)
     control_table = items_XL320;
     the_number_of_item = COUNT_XL320_ITEMS;
   }
-  else if (num == XL330_M077 || num == XL330_M288)
+  else if (num == XL330_M077 || num == XL330_M288 || num == XC330_M181 || num == XC330_M288 || num == XC330_T181 || num == XC330_T288)
   {
     control_table = items_X330;
     the_number_of_item = COUNT_XL330_ITEMS;
@@ -1470,7 +1488,7 @@ const ControlItem *DynamixelItem::getControlTable(uint16_t model_number)
     control_table = items_EXTXH;
     the_number_of_item = COUNT_EXTXH_ITEMS;
   }
-  else if (num == XW540_T260 || num == XW540_T140)
+  else if (num == XW540_T260 || num == XW540_T140 || num == XW430_T200 || num == XW430_T333)
   {
     control_table = items_XW;
     the_number_of_item = COUNT_XW_ITEMS;
@@ -1580,7 +1598,7 @@ const ModelInfo *DynamixelItem::getModelInfo(uint16_t model_number)
   {
     info = &info_EXTXH;
   }
-  else if (num == XW540_T260 || num == XW540_T140)
+  else if (num == XW540_T260 || num == XW540_T140 || num == XW430_T200 || num == XW430_T333)
   {
     info = &info_XW;
   }
