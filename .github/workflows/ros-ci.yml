@@ -17,7 +17,7 @@ jobs:
         ros_distribution:
           # - foxy
           # - galactic
-          # - rolling
+          - rolling
         include:
           # - docker_image: ubuntu:focal
           #   ros_distribution: foxy
