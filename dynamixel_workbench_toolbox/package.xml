@@ -1,5 +1,5 @@
-<?xml version="1.0"?>
-<package>
+<?xml version='1.0' encoding='utf-8'?>
+<package format="2">
   <name>dynamixel_workbench_toolbox</name>
   <version>0.1.8</version>
   <description>
@@ -15,15 +15,16 @@
   <url type="bugtracker">https://github.com/ROBOTIS-GIT/dynamixel-workbench/issues</url>
   <url type="repository">https://github.com/ROBOTIS-GIT/dynamixel-workbench</url>
   <url type="website">http://wiki.ros.org/dynamixel_workbench</url>
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>dynamixel_sdk</build_depend>
-  <run_depend>roscpp</run_depend>
-  <run_depend>dynamixel_sdk</run_depend>
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>dynamixel_sdk</exec_depend>
   <export>
     <bitbots_documentation>
       <status>stable</status>
       <language>c++</language>
     </bitbots_documentation>
+    <build_type>ament_cmake</build_type>
   </export>
 </package>
