@@ -1,8 +1,6 @@
-################################################################################
-# CMake
-################################################################################
 cmake_minimum_required(VERSION 3.5)
 project(dynamixel_workbench_toolbox)
+
 find_package(rclcpp REQUIRED)
 find_package(dynamixel_sdk REQUIRED)
 find_package(ament_cmake REQUIRED)
@@ -20,26 +18,6 @@ set(LIBS dynamixel_sdk ${rclcpp_LIBRARIES} ${dynamixel_sdk_LIBRARIES} ${ament_cm
 
 set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 
-################################################################################
-# Packages
-################################################################################
-
-################################################################################
-# Declare ROS messages, services and actions
-################################################################################
-
-################################################################################
-# Declare ROS dynamic reconfigure parameters
-################################################################################
-
-################################################################################
-# Catkin specific configuration
-################################################################################
-
-################################################################################
-# Build
-################################################################################
-
 add_library(dynamixel_workbench_toolbox
   src/dynamixel_workbench/dynamixel_item.cpp
   src/dynamixel_workbench/dynamixel_driver.cpp
@@ -48,23 +26,11 @@ add_library(dynamixel_workbench_toolbox
 
 target_link_libraries(dynamixel_workbench_toolbox ${LIBS})
 
-################################################################################
-# Install
-################################################################################
 install(TARGETS dynamixel_workbench_toolbox
-  ARCHIVE
-  DESTINATION lib
-  LIBRARY
-  DESTINATION lib
-  RUNTIME
-  DESTINATION lib/${PROJECT_NAME})
+        LIBRARY DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY include/dynamixel_workbench/
   DESTINATION include/${PROJECT_NAME})
-
-################################################################################
-# Test
-################################################################################
 
 ament_export_dependencies(rclcpp)
 ament_export_dependencies(dynamixel_sdk)
