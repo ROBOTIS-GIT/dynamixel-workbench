@@ -17,7 +17,6 @@
 /* Authors: Taehun Lim (Darby) */
 
 #include "../../include/dynamixel_workbench/dynamixel_driver.h"
-#include <ros/ros.h>
 
 DynamixelDriver::DynamixelDriver() : tools_cnt_(0), sync_write_handler_cnt_(0), sync_read_handler_cnt_(0) {}
 
@@ -712,7 +711,7 @@ bool DynamixelDriver::syncRead(const char *item_name, int32_t *data)
       {
         dxl_addparam_result = srh.groupSyncRead->addParam(tools_[i].dxl_info_[j].id);
         if (dxl_addparam_result != true){
-          ROS_ERROR_THROTTLE(1, "Sync Read add param error");
+          std::printf("Sync Read add param error");
           return false;
         }
       }
@@ -722,7 +721,7 @@ bool DynamixelDriver::syncRead(const char *item_name, int32_t *data)
   dxl_comm_result = srh.groupSyncRead->txRxPacket();
   if (dxl_comm_result != COMM_SUCCESS)
   {
-    ROS_ERROR_THROTTLE(1, "Sync Read error %d", dxl_comm_result);
+    std::printf("Sync Read error %d", dxl_comm_result);
     return false;
   }
 
@@ -741,7 +740,7 @@ bool DynamixelDriver::syncRead(const char *item_name, int32_t *data)
         }
         else
         {
-          ROS_ERROR("Could not read ID %d", id);
+          std::printf("Could not read ID %d", id);
           return false;
         }
       }
