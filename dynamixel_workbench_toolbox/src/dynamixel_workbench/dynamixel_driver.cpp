@@ -16,6 +16,8 @@
 
 /* Authors: Taehun Lim (Darby) */
 
+#include <cstdio>
+
 #include "../../include/dynamixel_workbench/dynamixel_driver.h"
 
 DynamixelDriver::DynamixelDriver() : tools_cnt_(0), sync_write_handler_cnt_(0), sync_read_handler_cnt_(0) {}
