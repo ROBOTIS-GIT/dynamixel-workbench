@@ -16,6 +16,7 @@
 
 /* Authors: Taehun Lim (Darby) */
 
+#include <memory>
 #include "../../include/dynamixel_workbench_toolbox/dynamixel_driver.h"
 
 DynamixelDriver::DynamixelDriver() : tools_cnt_(0), 
@@ -772,14 +773,14 @@ bool DynamixelDriver::writeOnlyRegister(uint8_t id, const char *item_name, int32
 bool DynamixelDriver::readRegister(uint8_t id, uint16_t address, uint16_t length, uint32_t *data, const char **log)
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
-  
-  uint8_t data_read[length];
 
-  sdk_error.dxl_comm_result = packetHandler_->readTxRx(portHandler_, 
-                                                      id, 
+  auto data_read = std::make_unique<uint8_t[]>(length);
+
+  sdk_error.dxl_comm_result = packetHandler_->readTxRx(portHandler_,
+                                                      id,
                                                       address,
-                                                      length, 
-                                                      (uint8_t *)&data_read, 
+                                                      length,
+                                                      (uint8_t *)data_read.get(),
                                                       &sdk_error.dxl_error);
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
@@ -1009,7 +1010,7 @@ bool DynamixelDriver::syncWrite(uint8_t index, uint8_t *id, uint8_t id_num, int3
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
   uint8_t parameter[4] = {0, 0, 0, 0};
-  uint8_t multi_parameter[4*data_num_for_each_id];
+  auto multi_parameter = std::make_unique<uint8_t[]>(4*data_num_for_each_id);
   uint8_t cnt = 0;
 
   for (int i = 0; i < id_num; i++)
@@ -1023,7 +1024,7 @@ bool DynamixelDriver::syncWrite(uint8_t index, uint8_t *id, uint8_t id_num, int3
       }
     }
 
-    sdk_error.dxl_addparam_result = syncWriteHandler_[index].groupSyncWrite->addParam(id[i], (uint8_t *)&multi_parameter);
+    sdk_error.dxl_addparam_result = syncWriteHandler_[index].groupSyncWrite->addParam(id[i], (uint8_t *)multi_parameter.get());
     if (sdk_error.dxl_addparam_result != true)
     {
       if (log != NULL) *log = "groupSyncWrite addparam failed";
