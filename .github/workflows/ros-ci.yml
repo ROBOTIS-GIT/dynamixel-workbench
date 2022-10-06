@@ -1,4 +1,4 @@
-name: ros2
+name: foxy-devel
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 on:
@@ -9,7 +9,7 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  foxy-devel:
+  ros2-ci:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
