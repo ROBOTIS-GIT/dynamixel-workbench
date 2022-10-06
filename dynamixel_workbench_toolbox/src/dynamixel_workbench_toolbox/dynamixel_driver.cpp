@@ -16,6 +16,7 @@
 
 /* Authors: Taehun Lim (Darby) */
 
+#include <memory>
 #include "../../include/dynamixel_workbench_toolbox/dynamixel_driver.h"
 
 DynamixelDriver::DynamixelDriver() : tools_cnt_(0), 
@@ -773,13 +774,13 @@ bool DynamixelDriver::readRegister(uint8_t id, uint16_t address, uint16_t length
 {
   ErrorFromSDK sdk_error = {0, false, false, 0};
   
-  uint8_t data_read[length];
+  std::vector<uint8_t> data_read(length);
 
   sdk_error.dxl_comm_result = packetHandler_->readTxRx(portHandler_, 
                                                       id, 
                                                       address,
                                                       length, 
-                                                      (uint8_t *)&data_read, 
+                                                      data_read.data(), 
                                                       &sdk_error.dxl_error);
   if (sdk_error.dxl_comm_result != COMM_SUCCESS)
   {
@@ -1009,7 +1010,7 @@ bool DynamixelDriver::syncWrite(uint8_t index, uint8_t *id, uint8_t id_num, int3
   ErrorFromSDK sdk_error = {0, false, false, 0};
 
   uint8_t parameter[4] = {0, 0, 0, 0};
-  uint8_t multi_parameter[4*data_num_for_each_id];
+  std::vector<uint8_t> multi_parameter(4*data_num_for_each_id);
   uint8_t cnt = 0;
 
   for (int i = 0; i < id_num; i++)
@@ -1023,7 +1024,7 @@ bool DynamixelDriver::syncWrite(uint8_t index, uint8_t *id, uint8_t id_num, int3
       }
     }
 
-    sdk_error.dxl_addparam_result = syncWriteHandler_[index].groupSyncWrite->addParam(id[i], (uint8_t *)&multi_parameter);
+    sdk_error.dxl_addparam_result = syncWriteHandler_[index].groupSyncWrite->addParam(id[i], multi_parameter.data());
     if (sdk_error.dxl_addparam_result != true)
     {
       if (log != NULL) *log = "groupSyncWrite addparam failed";
