@@ -5,6 +5,8 @@ Changelog for package dynamixel_workbench_toolbox
 2.2.3 (2022-10-06)
 ------------------
 * ROS2 release (Foxy, Galactic, Humble)
+* fix variable length warning (#364)
+* Contributoers: Kenji Brameld, Will Son
 
 2.2.2 (2022-01-25)
 ------------------
