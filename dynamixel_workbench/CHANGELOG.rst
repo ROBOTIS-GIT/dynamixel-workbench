@@ -2,6 +2,10 @@
 Changelog for package dynamixel_workbench
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.2.3 (2022-10-06)
+------------------
+* ROS2 release (Foxy, Galactic, Humble)
+
 2.2.2 (2022-01-25)
 ------------------
 * ROS2 package update only
