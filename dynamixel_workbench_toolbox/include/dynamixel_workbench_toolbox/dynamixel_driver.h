@@ -62,7 +62,7 @@ typedef struct
 
 class DynamixelDriver
 {
- private:
+ protected:
   dynamixel::PortHandler   *portHandler_;
   dynamixel::PacketHandler *packetHandler_;
 
@@ -92,9 +92,9 @@ class DynamixelDriver
             uint32_t baud_rate = 57600, 
             const char **log = NULL);
 
-  bool setPortHandler(const char *device_name, const char **log = NULL);
-  bool setBaudrate(uint32_t baud_rate, const char **log = NULL);
-  bool setPacketHandler(float protocol_version, const char **log = NULL);
+  virtual bool setPortHandler(const char *device_name, const char **log = NULL);
+  virtual bool setBaudrate(uint32_t baud_rate, const char **log = NULL);
+  virtual bool setPacketHandler(float protocol_version, const char **log = NULL);
 
   float getProtocolVersion(void);
   uint32_t getBaudrate(void);
