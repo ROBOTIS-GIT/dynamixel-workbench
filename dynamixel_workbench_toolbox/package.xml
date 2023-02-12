@@ -16,9 +16,9 @@
   <url type="repository">https://github.com/ROBOTIS-GIT/dynamixel-workbench</url>
   <url type="website">http://wiki.ros.org/dynamixel_workbench</url>
   <buildtool_depend>ament_cmake</buildtool_depend>
-  <build_depend>roscpp</build_depend>
+  <build_depend>rclcpp</build_depend>
   <build_depend>dynamixel_sdk</build_depend>
-  <exec_depend>roscpp</exec_depend>
+  <exec_depend>rclcpp</exec_depend>
   <exec_depend>dynamixel_sdk</exec_depend>
   <export>
     <bitbots_documentation>
