@@ -61,10 +61,10 @@ void DynamixelTool::addDXL(uint16_t model_number, uint8_t id)
 }
 
 void DynamixelTool::setControlTable(const char *model_name)
-{  
+{
   const char* name = model_name;
 
-  if (!strncmp(name, "AX-12A", strlen(name))) 
+  if (!strncmp(name, "AX-12A", strlen(name)))
     setControlTable(AX_12A);
   else if (!strncmp(name, "AX-12W", strlen(name)))
     setControlTable(AX_12W);
@@ -384,7 +384,7 @@ uint8_t DynamixelTool::getTheNumberOfItem(void)
 
 ControlTableItem* DynamixelTool::getControlItem(const char* item_name)
 {
-  static ControlTableItem* cti;    
+  static ControlTableItem* cti;
 
   for (int num = 0; num < the_number_of_item_; num++)
   {
@@ -396,13 +396,14 @@ ControlTableItem* DynamixelTool::getControlItem(const char* item_name)
   }
 
   if (!strncmp(item_name, "Moving_Speed", strlen("Moving_Speed")))
-    getControlItem("Goal_Velocity");
+    return getControlItem("Goal_Velocity");
   else if (!strncmp(item_name, "Goal_Velocity", strlen("Goal_Velocity")))
-    getControlItem("Moving_Speed");
+    return getControlItem("Moving_Speed");
   else if (!strncmp(item_name, "Present_Velocity", strlen("Present_Velocity")))
-    getControlItem("Present_Speed");
+    return getControlItem("Present_Speed");
   else if (!strncmp(item_name, "Present_Speed", strlen("Present_Speed")))
-    getControlItem("Present_Velocity");
+    return getControlItem("Present_Velocity");
+  return NULL;
 }
 
 ControlTableItem* DynamixelTool::getControlItemPtr(void)

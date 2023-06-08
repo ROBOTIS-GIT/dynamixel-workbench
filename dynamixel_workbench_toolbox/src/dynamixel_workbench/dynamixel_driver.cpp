@@ -144,6 +144,7 @@ char *DynamixelDriver::getModelName(uint8_t id)
     if (tools_[factor].dxl_info_[i].id == id)
       return tools_[factor].dxl_info_[i].model_name;
   }
+  return NULL;
 }
 
 uint16_t DynamixelDriver::getModelNum(uint8_t id)
@@ -155,6 +156,8 @@ uint16_t DynamixelDriver::getModelNum(uint8_t id)
     if (tools_[factor].dxl_info_[i].id == id)
       return tools_[factor].dxl_info_[i].model_num;
   }
+
+  return 0;
 }
 
 ControlTableItem* DynamixelDriver::getControlItemPtr(uint8_t id)
@@ -379,6 +382,7 @@ bool DynamixelDriver::reset(uint8_t id)
       return false;
     }
   }
+  return false;
 }
 
 bool DynamixelDriver::writeRegister(uint8_t id, const char *item_name, int32_t data)
@@ -498,6 +502,7 @@ uint8_t DynamixelDriver::getToolsFactor(uint8_t id)
       }
     }
   }
+  return 0;
 }
 
 const char *DynamixelDriver::findModelName(uint16_t model_num)
