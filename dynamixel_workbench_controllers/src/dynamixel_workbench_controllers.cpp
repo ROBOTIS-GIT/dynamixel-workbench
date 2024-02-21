@@ -643,7 +643,7 @@ void DynamixelController::writeCallback(const ros::TimerEvent&)
         point_cnt = 0;
         position_cnt = 0;
 
-        ROS_INFO("Complete Execution");
+        // ROS_INFO("Complete Execution");
       }
     }
   }
@@ -697,7 +697,7 @@ void DynamixelController::trajectoryMsgCallback(const trajectory_msgs::JointTraj
 
     for (auto const& joint:msg->joint_names)
     {
-      ROS_INFO("'%s' is ready to move", joint.c_str());
+      // ROS_INFO("'%s' is ready to move", joint.c_str());
 
       jnt_tra_msg_->joint_names.push_back(joint);
       id_cnt++;
@@ -774,7 +774,7 @@ void DynamixelController::trajectoryMsgCallback(const trajectory_msgs::JointTraj
           cnt++;
         }
       }
-      ROS_INFO("Succeeded to get joint trajectory!");
+      // ROS_INFO("Succeeded to get joint trajectory!");
       is_moving_ = true;
     }
     else
