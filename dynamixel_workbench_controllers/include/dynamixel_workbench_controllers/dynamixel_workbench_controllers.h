@@ -37,6 +37,7 @@
 // SYNC_WRITE_HANDLER
 #define SYNC_WRITE_HANDLER_FOR_GOAL_POSITION 0
 #define SYNC_WRITE_HANDLER_FOR_GOAL_VELOCITY 1
+#define SYNC_WRITE_HANDLER_FOR_GOAL_CURRENT 2
 
 // SYNC_READ_HANDLER(Only for Protocol 2.0)
 #define SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT 0
@@ -64,6 +65,7 @@ class DynamixelController
 
   // ROS Topic Subscriber
   ros::Subscriber cmd_vel_sub_;
+  ros::Subscriber cmd_current_sub_;
   ros::Subscriber trajectory_sub_;
 
   // ROS Service Server
@@ -90,6 +92,7 @@ class DynamixelController
 
   JointTrajectory *jnt_tra_;
   trajectory_msgs::JointTrajectory *jnt_tra_msg_;
+  sensor_msgs::JointState goal_current_msg_;
 
   double read_period_;
   double write_period_;
@@ -122,6 +125,7 @@ class DynamixelController
   void writeCallback(const ros::TimerEvent&);
   void publishCallback(const ros::TimerEvent&);
 
+  void commandCurrentCallback(const sensor_msgs::JointState::ConstPtr &msg);
   void commandVelocityCallback(const geometry_msgs::Twist::ConstPtr &msg);
   void trajectoryMsgCallback(const trajectory_msgs::JointTrajectory::ConstPtr &msg);
   bool dynamixelCommandMsgCallback(dynamixel_workbench_msgs::DynamixelCommand::Request &req,

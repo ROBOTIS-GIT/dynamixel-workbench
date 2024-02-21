@@ -45,6 +45,7 @@ DynamixelController::DynamixelController()
   dxl_wb_ = new DynamixelWorkbench;
   jnt_tra_ = new JointTrajectory;
   jnt_tra_msg_ = new trajectory_msgs::JointTrajectory;
+  goal_current_msg_ = sensor_msgs::JointState();
 }
 
 DynamixelController::~DynamixelController(){}
@@ -114,7 +115,7 @@ bool DynamixelController::loadDynamixels(void)
       return result;
     }
     else
-    {      
+    {
       ROS_INFO("Name : %s, ID : %d, Model Number : %d", dxl.first.c_str(), dxl.second, model_number);
     }
   }
@@ -167,6 +168,9 @@ bool DynamixelController::initControlItems(void)
   if (goal_velocity == NULL)  goal_velocity = dxl_wb_->getItemInfo(it->second, "Moving_Speed");
   if (goal_velocity == NULL)  return false;
 
+  const ControlItem *goal_current = dxl_wb_->getItemInfo(it->second, "Goal_Current");
+  if (goal_current == NULL)  return false;
+
   const ControlItem *present_position = dxl_wb_->getItemInfo(it->second, "Present_Position");
   if (present_position == NULL) return false;
 
@@ -180,6 +184,7 @@ bool DynamixelController::initControlItems(void)
 
   control_items_["Goal_Position"] = goal_position;
   control_items_["Goal_Velocity"] = goal_velocity;
+  control_items_["Goal_Current"] = goal_current;
 
   control_items_["Present_Position"] = present_position;
   control_items_["Present_Velocity"] = present_velocity;
@@ -207,6 +212,17 @@ bool DynamixelController::initSDKHandlers(void)
   }
 
   result = dxl_wb_->addSyncWriteHandler(control_items_["Goal_Velocity"]->address, control_items_["Goal_Velocity"]->data_length, &log);
+  if (result == false)
+  {
+    ROS_ERROR("%s", log);
+    return result;
+  }
+  else
+  {
+    ROS_INFO("%s", log);
+  }
+
+  result = dxl_wb_->addSyncWriteHandler(control_items_["Goal_Current"]->address, control_items_["Goal_Current"]->data_length, &log);
   if (result == false)
   {
     ROS_ERROR("%s", log);
@@ -327,6 +343,7 @@ void DynamixelController::initSubscriber()
 {
   trajectory_sub_ = priv_node_handle_.subscribe("joint_trajectory", 100, &DynamixelController::trajectoryMsgCallback, this);
   if (is_cmd_vel_topic_) cmd_vel_sub_ = priv_node_handle_.subscribe("cmd_vel", 10, &DynamixelController::commandVelocityCallback, this);
+  cmd_current_sub_ = priv_node_handle_.subscribe("cmd_current", 10, &DynamixelController::commandCurrentCallback, this);
 }
 
 void DynamixelController::initServer()
@@ -576,6 +593,11 @@ void DynamixelController::commandVelocityCallback(const geometry_msgs::Twist::Co
   }
 }
 
+void DynamixelController::commandCurrentCallback(const sensor_msgs::JointState::ConstPtr &msg)
+{
+  goal_current_msg_ = *msg;
+}
+
 void DynamixelController::writeCallback(const ros::TimerEvent&)
 {
 #ifdef DEBUG
@@ -588,6 +610,7 @@ void DynamixelController::writeCallback(const ros::TimerEvent&)
   uint8_t id_cnt = 0;
 
   int32_t dynamixel_position[dynamixel_.size()];
+  int32_t dynamixel_current[dynamixel_.size()];
 
   static uint32_t point_cnt = 0;
   static uint32_t position_cnt = 0;
@@ -620,10 +643,35 @@ void DynamixelController::writeCallback(const ros::TimerEvent&)
         point_cnt = 0;
         position_cnt = 0;
 
-        ROS_INFO("Complete Execution");
+        // ROS_INFO("Complete Execution");
       }
     }
   }
+
+  if (goal_current_msg_.effort.size() > 0)
+    {
+      if (id_cnt == 0)
+        {
+          for (auto const& joint:goal_current_msg_.name)
+            {
+              id_array[id_cnt] = (uint8_t)dynamixel_[joint];
+              id_cnt++;
+            }
+        }
+
+      if (id_cnt > 0)
+        {
+          for (uint8_t index = 0; index < id_cnt; index++)
+            dynamixel_current[index] = goal_current_msg_.effort.at(index);
+
+          result = dxl_wb_->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_CURRENT, id_array, id_cnt, dynamixel_current, 1, &log);
+          if (result == false)
+            {
+              ROS_ERROR("%s", log);
+            }
+        }
+    }
+
 
 #ifdef DEBUG
   ROS_WARN("[writeCallback] diff_secs : %f", ros::Time::now().toSec() - priv_pub_secs);
@@ -649,7 +697,7 @@ void DynamixelController::trajectoryMsgCallback(const trajectory_msgs::JointTraj
 
     for (auto const& joint:msg->joint_names)
     {
-      ROS_INFO("'%s' is ready to move", joint.c_str());
+      // ROS_INFO("'%s' is ready to move", joint.c_str());
 
       jnt_tra_msg_->joint_names.push_back(joint);
       id_cnt++;
@@ -726,7 +774,7 @@ void DynamixelController::trajectoryMsgCallback(const trajectory_msgs::JointTraj
           cnt++;
         }
       }
-      ROS_INFO("Succeeded to get joint trajectory!");
+      // ROS_INFO("Succeeded to get joint trajectory!");
       is_moving_ = true;
     }
     else
