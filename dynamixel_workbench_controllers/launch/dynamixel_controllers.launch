@@ -2,6 +2,8 @@
   <arg name="usb_port"                default="/dev/ttyUSB0"/>
   <arg name="dxl_baud_rate"           default="57600"/>
   <arg name="namespace"               default="dynamixel_workbench"/>
+  <arg name="required"                default="true"/>
+  <arg name="respawn"                 default="false"/>
 
   <arg name="use_moveit"              default="false"/>
   <arg name="use_joint_state"         default="true"/>
@@ -10,7 +12,7 @@
   <param name="dynamixel_info"          value="$(find dynamixel_workbench_controllers)/config/basic.yaml"/>
 
   <node name="$(arg namespace)" pkg="dynamixel_workbench_controllers" type="dynamixel_workbench_controllers"
-        required="true" output="screen" args="$(arg usb_port) $(arg dxl_baud_rate)">
+        required="$(arg required)" respawn="$(arg respawn)" output="screen" args="$(arg usb_port) $(arg dxl_baud_rate)">
     <param name="use_moveit"              value="$(arg use_moveit)"/>
     <param name="use_joint_states_topic"  value="$(arg use_joint_state)"/>
     <param name="use_cmd_vel_topic"       value="$(arg use_cmd_vel)"/>
