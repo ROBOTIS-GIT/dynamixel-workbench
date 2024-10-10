@@ -6,6 +6,7 @@
   <arg name="use_moveit"              default="false"/>
   <arg name="use_joint_state"         default="true"/>
   <arg name="use_cmd_vel"             default="false"/>
+  <arg name="torque_off_on_shutdown"  default="false"/>
 
   <param name="dynamixel_info"          value="$(find dynamixel_workbench_controllers)/config/basic.yaml"/>
 
@@ -14,6 +15,7 @@
     <param name="use_moveit"              value="$(arg use_moveit)"/>
     <param name="use_joint_states_topic"  value="$(arg use_joint_state)"/>
     <param name="use_cmd_vel_topic"       value="$(arg use_cmd_vel)"/>
+    <param name="torque_off_on_shutdown"  value="$(arg torque_off_on_shutdown)"/>
     <rosparam>
       publish_period: 0.010
       dxl_read_period: 0.010
