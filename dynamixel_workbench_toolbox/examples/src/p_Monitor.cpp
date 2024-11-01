@@ -17,6 +17,7 @@
 /* Authors: Taehun Lim (Darby) */
 
 #include <DynamixelWorkbench.h>
+#include <cstdlib>
 #include <fcntl.h>          // FILE control
 #include <termios.h>        // Terminal IO
 #include <iostream>
@@ -39,7 +40,7 @@ bool monitoring(const char* port_name);
 
 DynamixelWorkbench dxl_wb;
 
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
   const char* port_name = "/dev/ttyUSB0";
 
@@ -109,7 +110,7 @@ bool monitoring(const char* port_name)
       else if (strcmp(cmd, "begin") == 0)
       {
         uint32_t baud = 57600;
-        
+
         baud = atoi(param[0]);
         wb_result = dxl_wb.init(port_name, baud, &log);
         if (wb_result == false)
@@ -118,16 +119,16 @@ bool monitoring(const char* port_name)
           printf("Failed to init\n");
         }
         else
-          printf("Succeed to init(%d)\n", baud);          
+          printf("Succeed to init(%d)\n", baud);
       }
       else if (strcmp(cmd, "end") == 0)
-      {        
+      {
         exit(0);
       }
       else if (strcmp(cmd, "scan") == 0)
       {
         uint8_t range = 253;  // default
-        
+
         range = atoi(param[0]);
         wb_result = dxl_wb.scan(get_id, &scan_cnt, range, &log);
         if (wb_result == false)
@@ -146,7 +147,7 @@ bool monitoring(const char* port_name)
       else if (strcmp(cmd, "ping") == 0)
       {
         get_id[ping_cnt] = 1; // default to 1
-        
+
         get_id[ping_cnt] = atoi(param[0]);
 
         uint16_t model_number = 0;
@@ -219,7 +220,7 @@ bool monitoring(const char* port_name)
                     default:
                       data = getAllRegisteredData[control_item[index].address];
                     break;
-                  } 
+                  }
                 }
               }
             }
@@ -353,7 +354,7 @@ bool monitoring(const char* port_name)
             uint8_t id_1 = atoi(param[0]);
             uint8_t id_2 = atoi(param[1]);
             uint8_t id[2] = {id_1, id_2};
-            uint8_t id_num = 2;    
+            uint8_t id_num = 2;
 
             int32_t data[2] = {0, 0};
             data[0] = atoi(param[3]);
@@ -543,7 +544,7 @@ bool monitoring(const char* port_name)
           uint8_t id = atoi(param[0]);
 
           int32_t data = 0;
-          
+
           wb_result = dxl_wb.readRegister(id, param[1], &data, &log);
           if (wb_result == false)
           {

@@ -17,10 +17,11 @@
 /* Authors: Taehun Lim (Darby) */
 
 #include <DynamixelWorkbench.h>
+#include <cstdlib>
 
 #define BAUDRATE_NUM 7
 
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
   const char* port_name = "/dev/ttyUSB0";
 
@@ -56,7 +57,7 @@ int main(int argc, char *argv[])
       printf("Failed to init\n");
     }
     else
-      printf("Succeed to init(%d)\n", baudrate[index]);  
+      printf("Succeed to init(%d)\n", baudrate[index]);
 
     dxl_cnt = 0;
     for (uint8_t num = 0; num < 100; num++) scanned_id[num] = 0;
