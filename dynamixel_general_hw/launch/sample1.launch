@@ -1,0 +1,17 @@
+<launch>
+
+  <arg name="port_name" default="/dev/ttyUSB0" />
+  <arg name="baud_rate" default="57600" />
+
+  <include file="$(find dynamixel_general_hw)/launch/dynamixel_general_control.launch">
+    <arg name="port_name" value="$(arg port_name)" />
+    <arg name="baud_rate" value="$(arg baud_rate)" />
+    <arg name="robot_description_file" value="$(find dynamixel_general_hw)/urdf/sample1.urdf" />
+    <arg name="dynamixel_info_file" value="$(find dynamixel_general_hw)/config/sample1/dynamixel_info.yaml" />
+    <arg name="controllers_file" value="$(find dynamixel_general_hw)/config/sample1/default_controllers.yaml" />
+    <arg name="controllers_to_start" value="joint_state_controller position_joint_trajectory_controller" />
+    <arg name="launch_rviz" value="true" />
+    <arg name="rvizconfig" value="$(find dynamixel_general_hw)/config/sample_robot.rviz" />
+  </include>
+
+</launch>

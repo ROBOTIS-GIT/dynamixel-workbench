@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<robot name="sample_robot">
+
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="0.2 0.2 0.2"/>
+      </geometry>
+      <material name="red">
+        <color rgba="1 0 0 1"/>
+      </material>
+    </visual>
+  </link>
+
+  <link name="sample_link">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0.3"/>
+      <geometry>
+        <box size="0.2 0.2 0.6"/>
+      </geometry>
+      <material name="green">
+        <color rgba="0 1 0 1"/>
+      </material>
+    </visual>
+  </link>
+
+  <joint name="sample_joint" type="revolute">
+    <origin rpy="0 0 0" xyz="0 0 0.1"/>
+    <parent link="base_link"/>
+    <child link="sample_link"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-3.1415" upper="3.1415" effort="0" velocity="6.8"/>
+  </joint>
+
+  <transmission name="sample_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="sample_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="sample_motor">
+      <mechanicalReduction>1.0</mechanicalReduction>
+      <offset>0.0</offset>
+    </actuator>
+  </transmission>
+
+</robot>
