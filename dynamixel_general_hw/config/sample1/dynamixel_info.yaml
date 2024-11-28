@@ -1,3 +1,4 @@
 sample_motor:
   ID: 1
+  torque_constant: 1.15  # Example value for XC330-T288-T with Protocol 2.0: (stall torque [Nm]) / (current at stall torque [A]) = 0.92 / 0.80
   Return_Delay_Time: 0

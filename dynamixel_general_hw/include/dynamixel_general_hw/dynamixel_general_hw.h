@@ -66,6 +66,9 @@ protected:
   std::vector<double> actr_curr_eff_;
   std::vector<double> actr_cmd_pos_;
 
+  // Actuator parameters
+  std::map<std::string, double> torque_consts_;
+
   // E-stop interface
   ros::Subscriber enable_sub_;
   bool is_enabled_;
@@ -79,6 +82,8 @@ protected:
   std::shared_ptr<ros::AsyncSpinner> subscriber_spinner_;
   ros::CallbackQueue subscriber_queue_;
   std::mutex mtx_;
+
+  bool is_effort_;
 
 public:
   DynamixelGeneralHw();

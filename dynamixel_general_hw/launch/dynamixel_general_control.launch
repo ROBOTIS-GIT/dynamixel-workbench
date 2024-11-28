@@ -14,6 +14,7 @@
   <arg name="required" default="true" />
   <arg name="joint_states_topic" default="joint_states" />
   <arg name="control_rate" default="20" />
+  <arg name="calculate_effort" default="true" />
   <arg name="launch_rviz" default="false" />
   <arg name="rvizconfig" default="$(find dynamixel_general_hw)/config/sample_robot.rviz" />
 
@@ -37,6 +38,7 @@
         port_name: $(arg port_name)
         baud_rate: $(arg baud_rate)
         control_rate: $(arg control_rate)
+        calculate_effort: $(arg calculate_effort)
       </rosparam>
       <rosparam param="dynamixel_info" file="$(arg dynamixel_info_file)" command="load" />
     </node>

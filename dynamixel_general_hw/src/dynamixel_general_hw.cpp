@@ -8,6 +8,8 @@ DynamixelGeneralHw::DynamixelGeneralHw()
   , is_enabled_(true)
   , prev_is_enabled_(is_enabled_)
 {
+  is_effort_ = pnh_.param<bool>("calculate_effort", true);
+
   dxl_wb_.reset(new DynamixelWorkbench);
 }
 
@@ -46,17 +48,25 @@ bool DynamixelGeneralHw::getDynamixelsInfo(XmlRpc::XmlRpcValue& dxl_info)
          it_item != item.end(); it_item++)
     {
       std::string item_name = it_item->first;
-      int32_t value = it_item->second;
 
-      if (item_name == "ID")
+      if (item_name == "torque_constant")
       {
-        dynamixel_[name] = value;
+        torque_consts_[name] = it_item->second;
       }
+      else
+      {
+        int32_t value = it_item->second;
 
-      ItemValue item_value = {item_name, value};
-      std::pair<std::string, ItemValue> info(name, item_value);
+        if (item_name == "ID")
+        {
+          dynamixel_[name] = value;
+        }
 
-      dynamixel_info_.push_back(info);
+        ItemValue item_value = {item_name, value};
+        std::pair<std::string, ItemValue> info(name, item_value);
+
+        dynamixel_info_.push_back(info);
+      }
     }
   }
 
@@ -432,25 +442,32 @@ void DynamixelGeneralHw::read(void)
 
   // Convert dynamixel state to ros_control actuator state
   uint8_t id_cnt = 0;
-  for (auto const& dxl:dynamixel_)
+  for (const std::pair<std::string, uint32_t>& dxl : dynamixel_)
   {
-    /*
-    if (dxl_wb_->getProtocolVersion() == 2.0f)
+    double torque_const = torque_consts_[dxl.first];
+    if (is_effort_ && torque_const > 0)
     {
-      if (strcmp(dxl_wb_->getModelName((uint8_t)dxl.second), "XL-320") == 0)
+      double current = 0;
+      if (dxl_wb_->getProtocolVersion() == 2.0f)
       {
-        actr_curr_eff_[id_cnt] = dxl_wb_->convertValue2Load((int16_t)dynamixel_state_list_.dynamixel_state[id_cnt].present_current);
+        if (strcmp(dxl_wb_->getModelName((uint8_t)dxl.second), "XL-320") == 0)
+        {
+          current = dxl_wb_->convertValue2Load((int16_t)dynamixel_state_list_.dynamixel_state[id_cnt].present_current);
+          current /= 100.0;  // % -> dimensionless
+        }
+        else
+        {
+          current = dxl_wb_->convertValue2Current((int16_t)dynamixel_state_list_.dynamixel_state[id_cnt].present_current);
+          current /= 1000.0;  // mA -> A
+        }
       }
-      else
+      else if (dxl_wb_->getProtocolVersion() == 1.0f)
       {
-        actr_curr_eff_[id_cnt] = dxl_wb_->convertValue2Current((int16_t)dynamixel_state_list_.dynamixel_state[id_cnt].present_current);
+        current = dxl_wb_->convertValue2Load((int16_t)dynamixel_state_list_.dynamixel_state[id_cnt].present_current);
+        current /= 100.0;  // % -> dimensionless
       }
+      actr_curr_eff_[id_cnt] = torque_const * current;
     }
-    else if (dxl_wb_->getProtocolVersion() == 1.0f)
-    {
-      actr_curr_eff_[id_cnt] = dxl_wb_->convertValue2Load((int16_t)dynamixel_state_list_.dynamixel_state[id_cnt].present_current);
-    }
-    */
 
     actr_curr_vel_[id_cnt] = dxl_wb_->convertValue2Velocity((uint8_t)dxl.second, (int32_t)dynamixel_state_list_.dynamixel_state[id_cnt].present_velocity);
     actr_curr_pos_[id_cnt] = dxl_wb_->convertValue2Radian((uint8_t)dxl.second, (int32_t)dynamixel_state_list_.dynamixel_state[id_cnt].present_position);
