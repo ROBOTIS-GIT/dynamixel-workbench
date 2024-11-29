@@ -206,33 +206,26 @@ bool DynamixelGeneralHw::initSDKHandlers(void)
 
   if (dxl_wb_->getProtocolVersion() == 2.0f)
   {
-    uint16_t start_address = std::min(control_items_["Present_Position"]->address, control_items_["Present_Current"]->address);
-
-    /* 
-      As some models have an empty space between Present_Velocity and Present Current, read_length is modified as below.
-    */    
-    // uint16_t read_length = control_items_["Present_Position"]->data_length + control_items_["Present_Velocity"]->data_length + control_items_["Present_Current"]->data_length;
-    uint16_t read_length = control_items_["Present_Position"]->data_length + control_items_["Present_Velocity"]->data_length + control_items_["Present_Current"]->data_length+2;
-
-    result = dxl_wb_->addSyncReadHandler(start_address,
-                                          read_length,
-                                          &log);
-    if (result == false)
+    std::vector<std::string> target_items = {"Present_Position", "Present_Velocity", "Present_Current"};
+    if (is_pub_temp_)
     {
-      ROS_ERROR("%s", log);
-      return result;
+      target_items.push_back("Present_Temperature");
     }
-
-    result = dxl_wb_->addSyncReadHandler(control_items_["Present_Temperature"]->address,
-                                         control_items_["Present_Temperature"]->data_length, &log);
-    if (result == false)
+    if (is_pub_volt_)
     {
-      ROS_ERROR("%s", log);
-      return result;
+      target_items.push_back("Present_Input_Voltage");
     }
+    std::vector<uint16_t> target_addrs(target_items.size());
+    std::transform(target_items.begin(), target_items.end(), target_addrs.begin(),
+                   [this](std::string x) { return control_items_[x]->address; } );
 
-    result = dxl_wb_->addSyncReadHandler(control_items_["Present_Input_Voltage"]->address,
-                                         control_items_["Present_Input_Voltage"]->data_length, &log);
+    std::vector<uint16_t>::iterator min_addr = std::min_element(target_addrs.begin(), target_addrs.end());
+    std::vector<uint16_t>::iterator max_addr = std::max_element(target_addrs.begin(), target_addrs.end());
+    int max_addr_idx = std::distance(target_addrs.begin(), max_addr);
+    uint16_t start_address = *min_addr;
+    uint16_t read_length = (*max_addr - *min_addr) + control_items_[target_items[max_addr_idx]]->data_length;
+
+    result = dxl_wb_->addSyncReadHandler(start_address, read_length, &log);
     if (result == false)
     {
       ROS_ERROR("%s", log);
@@ -380,7 +373,7 @@ void DynamixelGeneralHw::readDynamixelState(void)
 
   if (dxl_wb_->getProtocolVersion() == 2.0f)
   {
-    result = dxl_wb_->syncRead(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
+    result = dxl_wb_->syncRead(SYNC_READ_HANDLER_FOR_PRESENT_INFO,
                                id_array,
                                dynamixel_.size(),
                                &log);
@@ -389,7 +382,7 @@ void DynamixelGeneralHw::readDynamixelState(void)
       ROS_ERROR("%s", log);
     }
 
-    result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
+    result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_INFO,
                                       id_array,
                                       id_cnt,
                                       control_items_["Present_Current"]->address,
@@ -401,7 +394,7 @@ void DynamixelGeneralHw::readDynamixelState(void)
       ROS_ERROR("%s", log);
     }
 
-    result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
+    result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_INFO,
                                       id_array,
                                       id_cnt,
                                       control_items_["Present_Velocity"]->address,
@@ -413,7 +406,7 @@ void DynamixelGeneralHw::readDynamixelState(void)
       ROS_ERROR("%s", log);
     }
 
-    result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
+    result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_INFO,
                                       id_array,
                                       id_cnt,
                                       control_items_["Present_Position"]->address,
@@ -427,16 +420,7 @@ void DynamixelGeneralHw::readDynamixelState(void)
 
     if (is_pub_temp_)
     {
-      result = dxl_wb_->syncRead(SYNC_READ_HANDLER_FOR_PRESENT_TEMPERATURE,
-                                 id_array,
-                                 dynamixel_.size(),
-                                 &log);
-      if (result == false)
-      {
-        ROS_ERROR("%s", log);
-      }
-
-      result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_TEMPERATURE,
+      result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_INFO,
                                         id_array,
                                         id_cnt,
                                         control_items_["Present_Temperature"]->address,
@@ -451,16 +435,7 @@ void DynamixelGeneralHw::readDynamixelState(void)
 
     if (is_pub_volt_)
     {
-      result = dxl_wb_->syncRead(SYNC_READ_HANDLER_FOR_PRESENT_INPUT_VOLTAGE,
-                                 id_array,
-                                 dynamixel_.size(),
-                                 &log);
-      if (result == false)
-      {
-        ROS_ERROR("%s", log);
-      }
-
-      result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_INPUT_VOLTAGE,
+      result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_INFO,
                                         id_array,
                                         id_cnt,
                                         control_items_["Present_Input_Voltage"]->address,
