@@ -36,10 +36,10 @@
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="sample_joint">
       <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
-      <offset>0.0</offset>
+      <offset>0.7853</offset>
     </joint>
     <actuator name="sample_motor">
-      <mechanicalReduction>1.0</mechanicalReduction>
+      <mechanicalReduction>2.0</mechanicalReduction>
     </actuator>
   </transmission>
 

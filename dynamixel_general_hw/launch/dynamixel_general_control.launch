@@ -4,8 +4,8 @@
   <arg name="baud_rate" default="57600" />
   <arg name="namespace" default="sample_robot" />
   <arg name="robot_description_file" default="$(find dynamixel_general_hw)/urdf/sample1.urdf" />
-  <arg name="dynamixel_info_file" default="$(find dynamixel_general_hw)/config/sample1/dynamixel_info.yaml" />
-  <arg name="controllers_file" default="$(find dynamixel_general_hw)/config/sample1/default_controllers.yaml" />
+  <arg name="dynamixel_info_file" default="$(find dynamixel_general_hw)/config/sample1_2/dynamixel_info.yaml" />
+  <arg name="controllers_file" default="$(find dynamixel_general_hw)/config/sample1_2/default_controllers.yaml" />
   <arg name="controllers_to_start" default="joint_state_controller position_joint_trajectory_controller" />
 
   <arg name="set_robot_description" default="true" />
