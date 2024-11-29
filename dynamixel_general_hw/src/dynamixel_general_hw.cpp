@@ -5,8 +5,9 @@ namespace dynamixel_general_hw
 
 DynamixelGeneralHw::DynamixelGeneralHw()
   : pnh_("~")
-  , is_enabled_(true)
-  , prev_is_enabled_(is_enabled_)
+  , is_servo_(true)
+  , prev_is_servo_(is_servo_)
+  , is_hold_pos_(false)
 {
   is_effort_ = pnh_.param<bool>("calculate_effort", true);
 
@@ -305,7 +306,8 @@ bool DynamixelGeneralHw::initRosInterface(void)
   }
 
   // Initialize E-stop interface
-  enable_sub_ = pnh_.subscribe("enable", 1, &DynamixelGeneralHw::enableCallback, this);
+  servo_sub_ = pnh_.subscribe("servo", 1, &DynamixelGeneralHw::servoCallback, this);
+  hold_pos_sub_ = pnh_.subscribe("hold_position", 1, &DynamixelGeneralHw::holdPosCallback, this);
 
   // Initialize dynamixel-specific interfaces
   dynamixel_state_pub_ = pnh_.advertise<dynamixel_workbench_msgs::DynamixelStateList>("dynamixel_state", 100);
@@ -486,10 +488,10 @@ void DynamixelGeneralHw::write(void)
 {
   std::lock_guard<std::mutex> lock(mtx_);
 
-  if (is_enabled_)
+  if (is_servo_)
   {
     // Servo off -> on
-    if (!prev_is_enabled_)
+    if (!prev_is_servo_)
     {
       for (const std::pair<std::string, uint32_t>& dxl : dynamixel_)
       {
@@ -497,44 +499,47 @@ void DynamixelGeneralHw::write(void)
       }
     }
 
-    // Propagate joint commands to actuators
-    if (robot_transmissions_.get<transmission_interface::JointToActuatorPositionInterface>())
+    if (!is_hold_pos_)
     {
-      robot_transmissions_.get<transmission_interface::JointToActuatorPositionInterface>()->propagate();
-    }
-
-    // Convert ros_control actuator command to dynamixel command
-    std::vector<uint8_t> pos_id_vec;
-    uint8_t id_cnt = 0;
-    std::vector<int32_t> dxl_pos_vec;
-    for (const std::pair<std::string, uint32_t>& dxl : dynamixel_)
-    {
-      if (std::isnan(actr_cmd_pos_[id_cnt]))
+      // Propagate joint commands to actuators
+      if (robot_transmissions_.get<transmission_interface::JointToActuatorPositionInterface>())
       {
-        ROS_DEBUG_STREAM_DELAYED_THROTTLE(10, "Skipping position command to "
-                                                  << dxl.first << " because it is NaN. Its controller may not work");
+        robot_transmissions_.get<transmission_interface::JointToActuatorPositionInterface>()->propagate();
       }
-      else
-      {
-        pos_id_vec.push_back((uint8_t)dxl.second);
-        dxl_pos_vec.push_back(dxl_wb_->convertRadian2Value((uint8_t)dxl.second, actr_cmd_pos_[id_cnt]));
-      }
-      id_cnt++;
-    }
 
-    // Write command to dynamixel
-    if (pos_id_vec.size() > 0)
-    {
-      bool result = false;
-      const char* log = NULL;
-      uint8_t pos_id[pos_id_vec.size()];
-      int32_t dxl_pos[dxl_pos_vec.size()];
-      std::copy(pos_id_vec.begin(), pos_id_vec.end(), pos_id);
-      std::copy(dxl_pos_vec.begin(), dxl_pos_vec.end(), dxl_pos);
-      result = dxl_wb_->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_POSITION, pos_id, pos_id_vec.size(), dxl_pos, 1, &log);
-      if (result == false)
+      // Convert ros_control actuator command to dynamixel command
+      std::vector<uint8_t> pos_id_vec;
+      uint8_t id_cnt = 0;
+      std::vector<int32_t> dxl_pos_vec;
+      for (const std::pair<std::string, uint32_t>& dxl : dynamixel_)
       {
-        ROS_ERROR("%s", log);
+        if (std::isnan(actr_cmd_pos_[id_cnt]))
+        {
+          ROS_DEBUG_STREAM_DELAYED_THROTTLE(10, "Skipping position command to "
+                                                    << dxl.first << " because it is NaN. Its controller may not work");
+        }
+        else
+        {
+          pos_id_vec.push_back((uint8_t)dxl.second);
+          dxl_pos_vec.push_back(dxl_wb_->convertRadian2Value((uint8_t)dxl.second, actr_cmd_pos_[id_cnt]));
+        }
+        id_cnt++;
+      }
+
+      // Write command to dynamixel
+      if (pos_id_vec.size() > 0)
+      {
+        bool result = false;
+        const char* log = NULL;
+        uint8_t pos_id[pos_id_vec.size()];
+        int32_t dxl_pos[dxl_pos_vec.size()];
+        std::copy(pos_id_vec.begin(), pos_id_vec.end(), pos_id);
+        std::copy(dxl_pos_vec.begin(), dxl_pos_vec.end(), dxl_pos);
+        result = dxl_wb_->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_POSITION, pos_id, pos_id_vec.size(), dxl_pos, 1, &log);
+        if (result == false)
+        {
+          ROS_ERROR("%s", log);
+        }
       }
     }
   }
@@ -546,19 +551,26 @@ void DynamixelGeneralHw::write(void)
       dxl_wb_->torqueOff((uint8_t)dxl.second);
     }
   }
-  prev_is_enabled_ = is_enabled_;
+  prev_is_servo_ = is_servo_;
 }
 
-bool DynamixelGeneralHw::isEnabled(void)
+bool DynamixelGeneralHw::isJntCmdIgnored(void)
 {
-  return is_enabled_;
+  return (!is_servo_ || is_hold_pos_);
 }
 
-void DynamixelGeneralHw::enableCallback(const std_msgs::BoolConstPtr& msg)
+void DynamixelGeneralHw::servoCallback(const std_msgs::BoolConstPtr& msg)
 {
   std::lock_guard<std::mutex> lock(mtx_);
 
-  is_enabled_ = msg->data;
+  is_servo_ = msg->data;
+}
+
+void DynamixelGeneralHw::holdPosCallback(const std_msgs::BoolConstPtr& msg)
+{
+  std::lock_guard<std::mutex> lock(mtx_);
+
+  is_hold_pos_ = msg->data;
 }
 
 bool DynamixelGeneralHw::dynamixelCmdCallback(dynamixel_workbench_msgs::DynamixelCommand::Request& req,

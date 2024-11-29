@@ -80,19 +80,20 @@ int main(int argc, char** argv)
   // Control loop
   ros::Rate rate(rate_hz);
   ros::Time prev_time = ros::Time::now();
-  bool prev_hw_enabled = true;
+  bool prev_controller_ignored = false;
 
   while (ros::ok())
   {
     const ros::Time now = ros::Time::now();
     const ros::Duration elapsed_time = now - prev_time;
-    const bool hw_enabled = dxl_hw.isEnabled();
 
     dxl_hw.read();
-    cm.update(now, elapsed_time, !prev_hw_enabled && hw_enabled);
+    const bool controller_ignored = dxl_hw.isJntCmdIgnored();
+    const bool reset_controllers = (prev_controller_ignored && !controller_ignored);
+    cm.update(now, elapsed_time, reset_controllers);
     dxl_hw.write();
     prev_time = now;
-    prev_hw_enabled = hw_enabled;
+    prev_controller_ignored = controller_ignored;
 
     rate.sleep();
   }

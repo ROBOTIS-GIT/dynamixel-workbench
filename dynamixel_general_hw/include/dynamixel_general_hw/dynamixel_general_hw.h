@@ -70,9 +70,11 @@ protected:
   std::map<std::string, double> torque_consts_;
 
   // E-stop interface
-  ros::Subscriber enable_sub_;
-  bool is_enabled_;
-  bool prev_is_enabled_;
+  ros::Subscriber servo_sub_;
+  bool is_servo_;
+  bool prev_is_servo_;
+  ros::Subscriber hold_pos_sub_;
+  bool is_hold_pos_;
 
   // Dynamixel-specific interfaces
   ros::Publisher dynamixel_state_pub_;
@@ -102,9 +104,10 @@ public:
   void read(void);
   void write(void);
 
-  bool isEnabled(void);
+  bool isJntCmdIgnored(void);
 
-  void enableCallback(const std_msgs::BoolConstPtr& msg);
+  void servoCallback(const std_msgs::BoolConstPtr& msg);
+  void holdPosCallback(const std_msgs::BoolConstPtr& msg);
   bool dynamixelCmdCallback(dynamixel_workbench_msgs::DynamixelCommand::Request& req,
                             dynamixel_workbench_msgs::DynamixelCommand::Response& res);
 };  // end class DynamixelGeneralHw
