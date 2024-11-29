@@ -71,9 +71,11 @@ protected:
 
   // E-stop interface
   ros::Subscriber servo_sub_;
+  bool is_servo_raw_;
   bool is_servo_;
   bool prev_is_servo_;
   ros::Subscriber hold_pos_sub_;
+  bool is_hold_pos_raw_;
   bool is_hold_pos_;
 
   // Dynamixel-specific interfaces

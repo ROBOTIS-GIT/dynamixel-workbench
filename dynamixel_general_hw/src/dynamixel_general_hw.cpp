@@ -5,9 +5,11 @@ namespace dynamixel_general_hw
 
 DynamixelGeneralHw::DynamixelGeneralHw()
   : pnh_("~")
-  , is_servo_(true)
+  , is_servo_raw_(true)
+  , is_servo_(is_servo_raw_)
   , prev_is_servo_(is_servo_)
-  , is_hold_pos_(false)
+  , is_hold_pos_raw_(false)
+  , is_hold_pos_(is_hold_pos_raw_)
 {
   is_calc_effort_ = pnh_.param<bool>("calculate_effort", true);
   is_pub_temp_ = pnh_.param<bool>("publish_temperature", true);
@@ -588,6 +590,10 @@ void DynamixelGeneralHw::read(void)
   {
     robot_transmissions_.get<transmission_interface::ActuatorToJointStateInterface>()->propagate();
   }
+
+  // Update E-stop status
+  is_servo_ = is_servo_raw_;
+  is_hold_pos_ = is_hold_pos_raw_;
 }
 
 void DynamixelGeneralHw::write(void)
@@ -669,14 +675,14 @@ void DynamixelGeneralHw::servoCallback(const std_msgs::BoolConstPtr& msg)
 {
   std::lock_guard<std::mutex> lock(mtx_);
 
-  is_servo_ = msg->data;
+  is_servo_raw_ = msg->data;
 }
 
 void DynamixelGeneralHw::holdPosCallback(const std_msgs::BoolConstPtr& msg)
 {
   std::lock_guard<std::mutex> lock(mtx_);
 
-  is_hold_pos_ = msg->data;
+  is_hold_pos_raw_ = msg->data;
 }
 
 bool DynamixelGeneralHw::dynamixelCmdCallback(dynamixel_workbench_msgs::DynamixelCommand::Request& req,
