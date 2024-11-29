@@ -24,6 +24,9 @@
     </visual>
   </link>
 
+  <!--
+    velocity limit is an example value for XC330-T288-T: converting No Load Speed (65 [rev/min]) into [rad/s]
+  -->
   <joint name="sample_joint" type="revolute">
     <origin rpy="0 0 0" xyz="0 0 0.1"/>
     <parent link="base_link"/>
@@ -32,6 +35,10 @@
     <limit lower="-3.1415" upper="3.1415" effort="0" velocity="6.8"/>
   </joint>
 
+  <!--
+    joint name must be the same as the joint written above
+    actuator name must be the same as dynamixel_info.yaml
+  -->
   <transmission name="sample_trans">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="sample_joint">

@@ -32,6 +32,10 @@
     <limit lower="-3.1415" upper="3.1415" effort="0" velocity="6.8"/>
   </joint>
 
+  <!--
+    To understand offset and mechanicalReduction,
+    check http://docs.ros.org/en/jade/api/transmission_interface/html/c++/classtransmission__interface_1_1SimpleTransmission.html#details
+  -->
   <transmission name="sample_trans">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="sample_joint">
