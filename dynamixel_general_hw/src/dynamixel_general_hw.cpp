@@ -9,7 +9,9 @@ DynamixelGeneralHw::DynamixelGeneralHw()
   , prev_is_servo_(is_servo_)
   , is_hold_pos_(false)
 {
-  is_effort_ = pnh_.param<bool>("calculate_effort", true);
+  is_calc_effort_ = pnh_.param<bool>("calculate_effort", true);
+  is_pub_temp_ = pnh_.param<bool>("publish_temperature", true);
+  is_pub_volt_ = pnh_.param<bool>("publish_input_voltage", true);
 
   dxl_wb_.reset(new DynamixelWorkbench);
 }
@@ -154,12 +156,21 @@ bool DynamixelGeneralHw::initControlItems(void)
   if (present_current == NULL)  present_current = dxl_wb_->getItemInfo(it->second, "Present_Load");
   if (present_current == NULL) return false;
 
+  const ControlItem *present_temperature = dxl_wb_->getItemInfo(it->second, "Present_Temperature");
+  if (present_temperature == NULL) return false;
+
+  const ControlItem *present_input_voltage = dxl_wb_->getItemInfo(it->second, "Present_Input_Voltage");
+  if (present_input_voltage == NULL)  present_input_voltage = dxl_wb_->getItemInfo(it->second, "Present_Voltage");
+  if (present_input_voltage == NULL) return false;
+
   control_items_["Goal_Position"] = goal_position;
   control_items_["Goal_Velocity"] = goal_velocity;
 
   control_items_["Present_Position"] = present_position;
   control_items_["Present_Velocity"] = present_velocity;
   control_items_["Present_Current"] = present_current;
+  control_items_["Present_Temperature"] = present_temperature;
+  control_items_["Present_Input_Voltage"] = present_input_voltage;
 
   return true;
 }
@@ -206,6 +217,22 @@ bool DynamixelGeneralHw::initSDKHandlers(void)
     result = dxl_wb_->addSyncReadHandler(start_address,
                                           read_length,
                                           &log);
+    if (result == false)
+    {
+      ROS_ERROR("%s", log);
+      return result;
+    }
+
+    result = dxl_wb_->addSyncReadHandler(control_items_["Present_Temperature"]->address,
+                                         control_items_["Present_Temperature"]->data_length, &log);
+    if (result == false)
+    {
+      ROS_ERROR("%s", log);
+      return result;
+    }
+
+    result = dxl_wb_->addSyncReadHandler(control_items_["Present_Input_Voltage"]->address,
+                                         control_items_["Present_Input_Voltage"]->data_length, &log);
     if (result == false)
     {
       ROS_ERROR("%s", log);
@@ -310,7 +337,7 @@ bool DynamixelGeneralHw::initRosInterface(void)
   hold_pos_sub_ = pnh_.subscribe("hold_position", 1, &DynamixelGeneralHw::holdPosCallback, this);
 
   // Initialize dynamixel-specific interfaces
-  dynamixel_state_pub_ = pnh_.advertise<dynamixel_workbench_msgs::DynamixelStateList>("dynamixel_state", 100);
+  dynamixel_state_pub_ = pnh_.advertise<dynamixel_general_hw::DynamixelStateList>("dynamixel_state", 100);
   dynamixel_cmd_srv_ = pnh_.advertiseService("dynamixel_command", &DynamixelGeneralHw::dynamixelCmdCallback, this);
 
   // Start spinning
@@ -331,12 +358,14 @@ void DynamixelGeneralHw::readDynamixelState(void)
   bool result = false;
   const char* log = NULL;
 
-  dynamixel_workbench_msgs::DynamixelState dynamixel_state[dynamixel_.size()];
+  dynamixel_general_hw::DynamixelState dynamixel_state[dynamixel_.size()];
   dynamixel_state_list_.dynamixel_state.clear();
 
   int32_t get_current[dynamixel_.size()];
   int32_t get_velocity[dynamixel_.size()];
   int32_t get_position[dynamixel_.size()];
+  int32_t get_temperature[dynamixel_.size()];
+  int32_t get_voltage[dynamixel_.size()];
 
   uint8_t id_array[dynamixel_.size()];
   uint8_t id_cnt = 0;
@@ -352,48 +381,96 @@ void DynamixelGeneralHw::readDynamixelState(void)
   if (dxl_wb_->getProtocolVersion() == 2.0f)
   {
     result = dxl_wb_->syncRead(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
-                                id_array,
-                                dynamixel_.size(),
-                                &log);
+                               id_array,
+                               dynamixel_.size(),
+                               &log);
     if (result == false)
     {
       ROS_ERROR("%s", log);
     }
 
     result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
-                                                  id_array,
-                                                  id_cnt,
-                                                  control_items_["Present_Current"]->address,
-                                                  control_items_["Present_Current"]->data_length,
-                                                  get_current,
-                                                  &log);
+                                      id_array,
+                                      id_cnt,
+                                      control_items_["Present_Current"]->address,
+                                      control_items_["Present_Current"]->data_length,
+                                      get_current,
+                                      &log);
     if (result == false)
     {
       ROS_ERROR("%s", log);
     }
 
     result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
-                                                  id_array,
-                                                  id_cnt,
-                                                  control_items_["Present_Velocity"]->address,
-                                                  control_items_["Present_Velocity"]->data_length,
-                                                  get_velocity,
-                                                  &log);
+                                      id_array,
+                                      id_cnt,
+                                      control_items_["Present_Velocity"]->address,
+                                      control_items_["Present_Velocity"]->data_length,
+                                      get_velocity,
+                                      &log);
     if (result == false)
     {
       ROS_ERROR("%s", log);
     }
 
     result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT,
-                                                  id_array,
-                                                  id_cnt,
-                                                  control_items_["Present_Position"]->address,
-                                                  control_items_["Present_Position"]->data_length,
-                                                  get_position,
-                                                  &log);
+                                      id_array,
+                                      id_cnt,
+                                      control_items_["Present_Position"]->address,
+                                      control_items_["Present_Position"]->data_length,
+                                      get_position,
+                                      &log);
     if (result == false)
     {
       ROS_ERROR("%s", log);
+    }
+
+    if (is_pub_temp_)
+    {
+      result = dxl_wb_->syncRead(SYNC_READ_HANDLER_FOR_PRESENT_TEMPERATURE,
+                                 id_array,
+                                 dynamixel_.size(),
+                                 &log);
+      if (result == false)
+      {
+        ROS_ERROR("%s", log);
+      }
+
+      result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_TEMPERATURE,
+                                        id_array,
+                                        id_cnt,
+                                        control_items_["Present_Temperature"]->address,
+                                        control_items_["Present_Temperature"]->data_length,
+                                        get_temperature,
+                                        &log);
+      if (result == false)
+      {
+        ROS_ERROR("%s", log);
+      }
+    }
+
+    if (is_pub_volt_)
+    {
+      result = dxl_wb_->syncRead(SYNC_READ_HANDLER_FOR_PRESENT_INPUT_VOLTAGE,
+                                 id_array,
+                                 dynamixel_.size(),
+                                 &log);
+      if (result == false)
+      {
+        ROS_ERROR("%s", log);
+      }
+
+      result = dxl_wb_->getSyncReadData(SYNC_READ_HANDLER_FOR_PRESENT_INPUT_VOLTAGE,
+                                        id_array,
+                                        id_cnt,
+                                        control_items_["Present_Input_Voltage"]->address,
+                                        control_items_["Present_Input_Voltage"]->data_length,
+                                        get_voltage,
+                                        &log);
+      if (result == false)
+      {
+        ROS_ERROR("%s", log);
+      }
     }
 
     for(uint8_t index = 0; index < id_cnt; index++)
@@ -401,6 +478,14 @@ void DynamixelGeneralHw::readDynamixelState(void)
       dynamixel_state[index].present_current = get_current[index];
       dynamixel_state[index].present_velocity = get_velocity[index];
       dynamixel_state[index].present_position = get_position[index];
+      if (is_pub_temp_)
+      {
+        dynamixel_state[index].present_temperature = get_temperature[index];
+      }
+      if (is_pub_volt_)
+      {
+        dynamixel_state[index].present_input_voltage = get_voltage[index];
+      }
 
       dynamixel_state_list_.dynamixel_state.push_back(dynamixel_state[index]);
     }
@@ -411,6 +496,7 @@ void DynamixelGeneralHw::readDynamixelState(void)
                               control_items_["Present_Velocity"]->data_length +
                               control_items_["Present_Current"]->data_length;
     uint32_t get_all_data[length_of_data];
+    uint32_t get_optional_data[2];
     uint8_t dxl_cnt = 0;
     for (auto const& dxl:dynamixel_)
     {
@@ -428,10 +514,55 @@ void DynamixelGeneralHw::readDynamixelState(void)
       dynamixel_state[dxl_cnt].present_velocity = DXL_MAKEWORD(get_all_data[2], get_all_data[3]);
       dynamixel_state[dxl_cnt].present_position = DXL_MAKEWORD(get_all_data[0], get_all_data[1]);
 
+      if (is_pub_temp_)
+      {
+        result = dxl_wb_->readRegister((uint8_t)dxl.second,
+                                       control_items_["Present_Temperature"]->address,
+                                       control_items_["Present_Temperature"]->data_length,
+                                       get_optional_data,
+                                       &log);
+        if (result == false)
+        {
+          ROS_ERROR("%s", log);
+        }
+
+        if (control_items_["Present_Temperature"]->data_length == 1)
+        {
+          dynamixel_state[dxl_cnt].present_temperature = get_optional_data[0];
+        }
+        else if (control_items_["Present_Temperature"]->data_length == 2)
+        {
+          dynamixel_state[dxl_cnt].present_temperature = DXL_MAKEWORD(get_optional_data[0], get_optional_data[1]);
+        }
+      }
+
+      if (is_pub_volt_)
+      {
+        result = dxl_wb_->readRegister((uint8_t)dxl.second,
+                                       control_items_["Present_Input_Voltage"]->address,
+                                       control_items_["Present_Input_Voltage"]->data_length,
+                                       get_optional_data,
+                                       &log);
+        if (result == false)
+        {
+          ROS_ERROR("%s", log);
+        }
+
+        if (control_items_["Present_Input_Voltage"]->data_length == 1)
+        {
+          dynamixel_state[dxl_cnt].present_input_voltage = get_optional_data[0];
+        }
+        else if (control_items_["Present_Input_Voltage"]->data_length == 2)
+        {
+          dynamixel_state[dxl_cnt].present_input_voltage = DXL_MAKEWORD(get_optional_data[0], get_optional_data[1]);
+        }
+      }
+
       dynamixel_state_list_.dynamixel_state.push_back(dynamixel_state[dxl_cnt]);
       dxl_cnt++;
     }
   }
+  dynamixel_state_list_.header.stamp = ros::Time::now();
 }
 
 void DynamixelGeneralHw::read(void)
@@ -447,7 +578,7 @@ void DynamixelGeneralHw::read(void)
   for (const std::pair<std::string, uint32_t>& dxl : dynamixel_)
   {
     double torque_const = torque_consts_[dxl.first];
-    if (is_effort_ && torque_const > 0)
+    if (is_calc_effort_ && torque_const > 0)
     {
       double current = 0;
       if (dxl_wb_->getProtocolVersion() == 2.0f)

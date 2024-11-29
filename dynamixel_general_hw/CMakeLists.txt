@@ -6,9 +6,21 @@ find_package(catkin REQUIRED COMPONENTS
   dynamixel_workbench_msgs
   dynamixel_workbench_toolbox
   hardware_interface
+  message_generation
   roscpp
   std_msgs
   transmission_interface
+)
+
+add_message_files(
+  FILES
+  DynamixelState.msg
+  DynamixelStateList.msg
+)
+
+generate_messages(
+  DEPENDENCIES
+  std_msgs
 )
 
 catkin_package(
@@ -19,6 +31,7 @@ catkin_package(
   dynamixel_workbench_msgs
   dynamixel_workbench_toolbox
   hardware_interface
+  message_runtime
   roscpp
   std_msgs
   transmission_interface

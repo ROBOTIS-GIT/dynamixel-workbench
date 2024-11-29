@@ -17,7 +17,9 @@
   <depend>roscpp</depend>
   <depend>std_msgs</depend>
   <depend>transmission_interface</depend>
+  <build_depend>message_generation</build_depend>
   <exec_depend>joint_trajectory_controller</exec_depend>
+  <exec_depend>message_runtime</exec_depend>
   <exec_depend>robot_state_publisher</exec_depend>
   <exec_depend>xacro</exec_depend>
 

@@ -19,7 +19,7 @@
 
 // ROS msg and srv
 #include <dynamixel_workbench_msgs/DynamixelCommand.h>
-#include <dynamixel_workbench_msgs/DynamixelStateList.h>
+#include <dynamixel_general_hw/DynamixelStateList.h>
 #include <std_msgs/Bool.h>
 
 // SYNC_WRITE_HANDLER
@@ -28,6 +28,8 @@
 
 // SYNC_READ_HANDLER(Only for Protocol 2.0)
 #define SYNC_READ_HANDLER_FOR_PRESENT_POSITION_VELOCITY_CURRENT 0
+#define SYNC_READ_HANDLER_FOR_PRESENT_TEMPERATURE 1
+#define SYNC_READ_HANDLER_FOR_PRESENT_INPUT_VOLTAGE 2
 
 namespace dynamixel_general_hw
 {
@@ -49,7 +51,7 @@ protected:
   std::map<std::string, uint32_t> dynamixel_;
   std::map<std::string, const ControlItem*> control_items_;
   std::vector<std::pair<std::string, ItemValue>> dynamixel_info_;
-  dynamixel_workbench_msgs::DynamixelStateList dynamixel_state_list_;
+  dynamixel_general_hw::DynamixelStateList dynamixel_state_list_;
 
   // Transmission loader
   transmission_interface::RobotTransmissions robot_transmissions_;
@@ -85,7 +87,9 @@ protected:
   ros::CallbackQueue subscriber_queue_;
   std::mutex mtx_;
 
-  bool is_effort_;
+  bool is_calc_effort_;
+  bool is_pub_temp_;
+  bool is_pub_volt_;
 
 public:
   DynamixelGeneralHw();
