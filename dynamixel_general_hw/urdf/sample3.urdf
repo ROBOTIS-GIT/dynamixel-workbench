@@ -36,6 +36,14 @@
     </visual>
   </link>
 
+  <!--
+    Joint limits are example values for XC330-T288-T with sample_pan_trans (it is written later).
+    lower: ((Min Position Limit [rad]) - (center position [rad])) / (mechanicalReduction in sample_pan_trans) = (0 - pi) / 1.0
+    upper: ((Max Position Limit [rad]) - (center position [rad])) / (mechanicalReduction in sample_pan_trans) = (2 * pi - pi) / 1.0
+    velocity: (No Load Speed [rad/s]) / (mechanicalReduction in sample_pan_trans) = (65 [rev/min] * 2 * pi / 60) / 1.0
+    You do not have to change those values when you just try this sample because those values have little influence on main topics of this sample.
+    But when you apply dynamixel_general_hw to your robot, you may have to change those values in your urdf depending on your situation (e.g., you use a different actuator, link collision occurs in your real robot when the actuator moves to Min/Max Position Limit, you want to keep a motion slow for safety)
+  -->
   <joint name="sample_pan_joint" type="revolute">
     <origin rpy="0 0 0" xyz="0 0 0.1"/>
     <parent link="base_link"/>
@@ -44,6 +52,15 @@
     <limit lower="-3.1415" upper="3.1415" effort="0" velocity="6.8"/>
   </joint>
 
+  <!--
+    Joint limits are example values for XC330-T288-T with sample_tilt_trans (it is written later).
+    lower, upper: (Rotation limit [rad]) / (mechanicalReduction in sample_tilt_trans) = pi / 1.0
+    lower: ((Min Position Limit [rad]) - (center position [rad])) / (mechanicalReduction in sample_tilt_trans) = (0 - pi) / 1.0
+    upper: ((Max Position Limit [rad]) - (center position [rad])) / (mechanicalReduction in sample_tilt_trans) = (2 * pi - pi) / 1.0
+    velocity: (No Load Speed [rad/s]) / (mechanicalReduction in sample_tilt_trans) = (65 [rev/min] * 2 * pi / 60) / 1.0
+    You do not have to change those values when you just try this sample because those values have little influence on main topics of this sample.
+    But when you apply dynamixel_general_hw to your robot, you may have to change those values in your urdf depending on your situation (e.g., you use a different actuator, link collision occurs in your real robot when the actuator moves to Min/Max Position Limit, you want to keep a motion slow for safety)
+  -->
   <joint name="sample_tilt_joint" type="revolute">
     <origin rpy="0 0 0" xyz="0 0 0.6"/>
     <parent link="sample_pan_link"/>
