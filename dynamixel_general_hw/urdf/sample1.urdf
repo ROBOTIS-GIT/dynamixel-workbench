@@ -41,8 +41,13 @@
   </joint>
 
   <!--
-    joint name must be the same as the joint written above
-    actuator name must be the same as dynamixel_info.yaml
+    transmission tag describes the relationship between a joint in your robot and its actuator.
+    dynamixel_general_hw loads this in order to:
+    - convert Dynamixel actuator state into joint-level state
+    - convert joint-level command into Dynamixel actuator command
+    dynamixel_general_hw only loads transmissions whose actuator names are included in dynamixel_info.yaml.
+    Joints of those transmissions will be managed by dynamixel_general_hw.
+    Therefore, you can use a whole-body URDF/Xacro including non-Dynamixel actuators by specifying target Dynamixel actuators in dynamixel_info.yaml
   -->
   <transmission name="sample_trans">
     <type>transmission_interface/SimpleTransmission</type>
