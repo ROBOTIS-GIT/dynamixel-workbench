@@ -1,6 +1,6 @@
 # dynamixel_general_hw
 
-General ros_control layer for Dynamixel actuators. With this layer, you can load ros_control controllers (e.g., [joint_trajectory_controller](http://wiki.ros.org/joint_trajectory_controller)) and make the actuators follow commands from those controllers.
+General ros_control layer for Dynamixel actuators. With this layer, you can load [ros_control](http://wiki.ros.org/ros_control) controllers (e.g., [joint_trajectory_controller](http://wiki.ros.org/joint_trajectory_controller)) and make the actuators follow commands from those controllers.
 
 ## Samples
 
@@ -71,6 +71,28 @@ You get the following final state:
 
 Note that this commanding method is only for checking on command line.
 Please use [actionlib](http://wiki.ros.org/actionlib) when you write a code.
+
+#### Configuration files
+
+When you read the contents of `sample1.launch`, you will notice that there are three configuration files:
+
+- `$(find dynamixel_general_hw)/urdf/sample1.urdf`
+
+  URDF of the virtual robot.
+  This describes the structure of that robot and the relationship between the joint of that robot and the real actuator.
+  Because [ros_control](http://wiki.ros.org/ros_control) controllers are joint-level, that relationship is required to control that actuator via those controllers.
+
+- `$(find dynamixel_general_hw)/config/sample1_2/dynamixel_info.yaml`
+
+  Configuration file for the target Dynamixel actuator.
+  This describes the name of the target actuator and its initial configuration.
+
+- `$(find dynamixel_general_hw)/config/sample1_2/default_controllers.yaml`
+
+  Configuration file for [ros_control](http://wiki.ros.org/ros_control) controllers.
+
+Please check those files to learn how you can configure dynamixel_general_hw.
+Following samples also provide different examples of the configuration files.
 
 ### Sample 2: with mechanical reduction and joint offset
 
