@@ -90,6 +90,7 @@ protected:
   bool is_calc_effort_;
   bool is_pub_temp_;
   bool is_pub_volt_;
+  bool is_current_eq_load_;
 
 public:
   DynamixelGeneralHw();

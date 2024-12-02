@@ -10,6 +10,7 @@ DynamixelGeneralHw::DynamixelGeneralHw()
   , prev_is_servo_(is_servo_)
   , is_hold_pos_raw_(false)
   , is_hold_pos_(is_hold_pos_raw_)
+  , is_current_eq_load_(false)
 {
   is_calc_effort_ = pnh_.param<bool>("calculate_effort", true);
   is_pub_temp_ = pnh_.param<bool>("publish_temperature", true);
@@ -141,29 +142,64 @@ bool DynamixelGeneralHw::initControlItems(void)
   auto it = dynamixel_.begin();
 
   const ControlItem *goal_position = dxl_wb_->getItemInfo(it->second, "Goal_Position");
-  if (goal_position == NULL) return false;
+  if (goal_position == NULL)
+  {
+    return false;
+  }
 
   const ControlItem *goal_velocity = dxl_wb_->getItemInfo(it->second, "Goal_Velocity");
-  if (goal_velocity == NULL)  goal_velocity = dxl_wb_->getItemInfo(it->second, "Moving_Speed");
-  if (goal_velocity == NULL)  return false;
+  if (goal_velocity == NULL)
+  {
+    goal_velocity = dxl_wb_->getItemInfo(it->second, "Moving_Speed");
+  }
+  if (goal_velocity == NULL)
+  {
+    return false;
+  }
 
   const ControlItem *present_position = dxl_wb_->getItemInfo(it->second, "Present_Position");
-  if (present_position == NULL) return false;
+  if (present_position == NULL)
+  {
+    return false;
+  }
 
   const ControlItem *present_velocity = dxl_wb_->getItemInfo(it->second, "Present_Velocity");
-  if (present_velocity == NULL)  present_velocity = dxl_wb_->getItemInfo(it->second, "Present_Speed");
-  if (present_velocity == NULL) return false;
+  if (present_velocity == NULL)
+  {
+    present_velocity = dxl_wb_->getItemInfo(it->second, "Present_Speed");
+  }
+  if (present_velocity == NULL)
+  {
+    return false;
+  }
 
   const ControlItem *present_current = dxl_wb_->getItemInfo(it->second, "Present_Current");
-  if (present_current == NULL)  present_current = dxl_wb_->getItemInfo(it->second, "Present_Load");
-  if (present_current == NULL) return false;
+  if (present_current == NULL)
+  {
+    present_current = dxl_wb_->getItemInfo(it->second, "Present_Load");
+    is_current_eq_load_ = true;
+  }
+  if (present_current == NULL)
+  {
+    is_current_eq_load_ = false;
+    return false;
+  }
 
   const ControlItem *present_temperature = dxl_wb_->getItemInfo(it->second, "Present_Temperature");
-  if (present_temperature == NULL) return false;
+  if (present_temperature == NULL)
+  {
+    return false;
+  }
 
   const ControlItem *present_input_voltage = dxl_wb_->getItemInfo(it->second, "Present_Input_Voltage");
-  if (present_input_voltage == NULL)  present_input_voltage = dxl_wb_->getItemInfo(it->second, "Present_Voltage");
-  if (present_input_voltage == NULL) return false;
+  if (present_input_voltage == NULL)
+  {
+    present_input_voltage = dxl_wb_->getItemInfo(it->second, "Present_Voltage");
+  }
+  if (present_input_voltage == NULL)
+  {
+    return false;
+  }
 
   control_items_["Goal_Position"] = goal_position;
   control_items_["Goal_Velocity"] = goal_velocity;
@@ -558,23 +594,15 @@ void DynamixelGeneralHw::read(void)
     if (is_calc_effort_ && torque_const > 0)
     {
       double current = 0;
-      if (dxl_wb_->getProtocolVersion() == 2.0f)
-      {
-        if (strcmp(dxl_wb_->getModelName((uint8_t)dxl.second), "XL-320") == 0)
-        {
-          current = dxl_wb_->convertValue2Load((int16_t)dynamixel_state_list_.dynamixel_state[id_cnt].present_current);
-          current /= 100.0;  // % -> dimensionless
-        }
-        else
-        {
-          current = dxl_wb_->convertValue2Current((int16_t)dynamixel_state_list_.dynamixel_state[id_cnt].present_current);
-          current /= 1000.0;  // mA -> A
-        }
-      }
-      else if (dxl_wb_->getProtocolVersion() == 1.0f)
+      if (is_current_eq_load_)
       {
         current = dxl_wb_->convertValue2Load((int16_t)dynamixel_state_list_.dynamixel_state[id_cnt].present_current);
         current /= 100.0;  // % -> dimensionless
+      }
+      else
+      {
+        current = dxl_wb_->convertValue2Current((int16_t)dynamixel_state_list_.dynamixel_state[id_cnt].present_current);
+        current /= 1000.0;  // mA -> A
       }
       actr_curr_eff_[id_cnt] = torque_const * current;
     }
