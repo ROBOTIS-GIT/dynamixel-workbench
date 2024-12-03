@@ -60,6 +60,7 @@ protected:
   // Actuator interface to transmission loader
   hardware_interface::ActuatorStateInterface actr_state_interface_;
   hardware_interface::PositionActuatorInterface pos_actr_interface_;
+  hardware_interface::VelocityActuatorInterface vel_actr_interface_;
 
   // Actuator raw data
   std::vector<std::string> actr_names_;
@@ -67,6 +68,7 @@ protected:
   std::vector<double> actr_curr_vel_;
   std::vector<double> actr_curr_eff_;
   std::vector<double> actr_cmd_pos_;
+  std::vector<double> actr_cmd_vel_;
 
   // Actuator parameters
   std::map<std::string, double> torque_consts_;

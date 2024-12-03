@@ -6,11 +6,13 @@ General ros_control layer for Dynamixel actuators. With this layer, you can load
 
 ### Sample 1: simplest situation
 
-This sample assumes that one bare Dynamixel actuator whose ID and baud rate are `1` and `57600` is connected via a port `/dev/ttyUSB0`.
+This sample assumes that one bare Dynamixel actuator whose ID and baud rate are `1` and `57600` is connected via the port `/dev/ttyUSB0`.
 You can change the baud rate and the port via roslaunch arguments.
 
 ```bash
 roslaunch dynamixel_general_hw sample1.launch port_name:=/dev/ttyUSB0 baud_rate:=57600
+# If you face an error about Operating_Mode, please change the actuator mode to "Joint Mode" by yourself and execute the following:
+# roslaunch dynamixel_general_hw sample1.launch port_name:=/dev/ttyUSB0 baud_rate:=57600 protocol_1_0:=true
 ```
 
 You will see the following RViz window showing a virtual robot synchronized with the real actuator:
@@ -63,8 +65,7 @@ goal:
   - {name: '', position: 0.0, velocity: 0.0, acceleration: 0.0}
   goal_time_tolerance: {secs: 0, nsecs: 0}"
 ```
-
-You get the following final state:
+you will get the following final state:
 <div align="left">
 <img width="50%" src=".media/sample1_rviz_move.png">
 </div>
@@ -96,11 +97,13 @@ Following samples also provide different examples of the configuration files.
 
 ### Sample 2: with mechanical reduction and joint offset
 
-This sample assumes that one bare Dynamixel actuator whose ID and baud rate are `1` and `57600` is connected via a port `/dev/ttyUSB0`.
+This sample assumes that one bare Dynamixel actuator whose ID and baud rate are `1` and `57600` is connected via the port `/dev/ttyUSB0`.
 You can change the baud rate and the port via roslaunch arguments.
 
 ```bash
 roslaunch dynamixel_general_hw sample2.launch port_name:=/dev/ttyUSB0 baud_rate:=57600
+# If you face an error about Operating_Mode, please change the actuator mode to "Joint Mode" by yourself and execute the following:
+# roslaunch dynamixel_general_hw sample2.launch port_name:=/dev/ttyUSB0 baud_rate:=57600 protocol_1_0:=true
 ```
 
 You will see the following RViz window showing a virtual robot synchronized with the real actuator:
@@ -113,11 +116,13 @@ In addition, by sending some commands, you will notice there is a reduction betw
 
 ### Sample 3: multiple actuators
 
-This sample assumes that two bare Dynamixel actuators whose IDs and baud rate are `1`, `2`, and `57600` are connected via a port `/dev/ttyUSB0`.
+This sample assumes that two bare Dynamixel actuators whose IDs and baud rate are `1`, `2`, and `57600` are connected via the port `/dev/ttyUSB0`.
 You can change the baud rate and the port via roslaunch arguments.
 
 ```bash
 roslaunch dynamixel_general_hw sample3.launch port_name:=/dev/ttyUSB0 baud_rate:=57600
+# If you face an error about Operating_Mode, please change the actuator mode to "Joint Mode" by yourself and execute the following:
+# roslaunch dynamixel_general_hw sample3.launch port_name:=/dev/ttyUSB0 baud_rate:=57600 protocol_1_0:=true
 ```
 
 You will see the following RViz window showing a virtual robot synchronized with the real actuators:
@@ -159,10 +164,37 @@ goal:
   - {name: '', position: 0.0, velocity: 0.0, acceleration: 0.0}
   goal_time_tolerance: {secs: 0, nsecs: 0}"
 ```
-You get the following final state:
+you will get the following final state:
 <div align="left">
 <img width="50%" src=".media/sample3_rviz_move.png">
 </div>
+
+### Sample 4: velocity control
+
+This sample assumes that one bare Dynamixel actuator whose ID and baud rate are `1` and `57600` is connected via the port `/dev/ttyUSB0`.
+You can change the baud rate and the port via roslaunch arguments.
+
+```bash
+roslaunch dynamixel_general_hw sample4.launch port_name:=/dev/ttyUSB0 baud_rate:=57600
+# If you face an error about Operating_Mode, please change the actuator mode to "Wheel Mode" by yourself and execute the following:
+# roslaunch dynamixel_general_hw sample4.launch port_name:=/dev/ttyUSB0 baud_rate:=57600 protocol_1_0:=true
+```
+
+You can move the actuator by sending a command via `/sample_robot/joint_group_velocity_controller/command` topic.
+For example, if you send a command like:
+```bash
+rostopic pub /sample_robot/joint_group_velocity_controller/command std_msgs/Float64MultiArray "layout:
+  dim:
+  - label: ''
+    size: 0
+    stride: 0
+  data_offset: 0
+data:
+- 1"
+```
+you will see the actuator rotates in 1 rad/s.
+You can check the real velocity by `rostopic echo /sample_robot/joint_states`.
+(Although those interfaces are joint-level, the joint equals the actuator in this sample.)
 
 ## Launch files
 

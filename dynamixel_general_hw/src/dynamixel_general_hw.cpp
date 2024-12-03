@@ -286,6 +286,7 @@ bool DynamixelGeneralHw::initRosInterface(void)
   actr_curr_vel_.resize(actr_names_.size(), 0);
   actr_curr_eff_.resize(actr_names_.size(), 0);
   actr_cmd_pos_.resize(actr_names_.size(), 0);
+  actr_cmd_vel_.resize(actr_names_.size(), 0);
   for (int i = 0; i < dynamixel_.size(); i++)
   {
     hardware_interface::ActuatorStateHandle state_handle(actr_names_[i], &actr_curr_pos_[i], &actr_curr_vel_[i], &actr_curr_eff_[i]);
@@ -293,9 +294,12 @@ bool DynamixelGeneralHw::initRosInterface(void)
 
     hardware_interface::ActuatorHandle position_handle(state_handle, &actr_cmd_pos_[i]);
     pos_actr_interface_.registerHandle(position_handle);
+    hardware_interface::ActuatorHandle velocity_handle(state_handle, &actr_cmd_vel_[i]);
+    vel_actr_interface_.registerHandle(velocity_handle);
   }
   registerInterface(&actr_state_interface_);
   registerInterface(&pos_actr_interface_);
+  registerInterface(&vel_actr_interface_);
 
   // Initialize transmission loader
   try
@@ -688,44 +692,124 @@ void DynamixelGeneralHw::write(void)
 
     if (!is_hold_pos_)
     {
-      // Propagate joint commands to actuators
       if (robot_transmissions_.get<transmission_interface::JointToActuatorPositionInterface>())
       {
+        // Propagate joint position commands to actuators
         robot_transmissions_.get<transmission_interface::JointToActuatorPositionInterface>()->propagate();
-      }
 
-      // Convert ros_control actuator command to dynamixel command
-      std::vector<uint8_t> pos_id_vec;
-      uint8_t id_cnt = 0;
-      std::vector<int32_t> dxl_pos_vec;
-      for (const std::pair<std::string, uint32_t>& dxl : dynamixel_)
-      {
-        if (std::isnan(actr_cmd_pos_[id_cnt]))
+        // Convert ros_control actuator position command to dynamixel command
+        std::vector<uint8_t> pos_id_vec;
+        std::vector<int32_t> dxl_pos_vec;
+        uint8_t id_cnt = 0;
+        for (const std::pair<std::string, uint32_t>& dxl : dynamixel_)
         {
-          ROS_DEBUG_STREAM_DELAYED_THROTTLE(10, "Skipping position command to "
-                                                    << dxl.first << " because it is NaN. Its controller may not work");
+          if (std::isnan(actr_cmd_pos_[id_cnt]))
+          {
+            ROS_DEBUG_STREAM_DELAYED_THROTTLE(10, "Skipping position command to " << dxl.first
+                                                                                  << " because it is NaN. Its "
+                                                                                     "controller may not work");
+          }
+          else
+          {
+            pos_id_vec.push_back((uint8_t)dxl.second);
+            dxl_pos_vec.push_back(dxl_wb_->convertRadian2Value((uint8_t)dxl.second, actr_cmd_pos_[id_cnt]));
+          }
+          id_cnt++;
         }
-        else
-        {
-          pos_id_vec.push_back((uint8_t)dxl.second);
-          dxl_pos_vec.push_back(dxl_wb_->convertRadian2Value((uint8_t)dxl.second, actr_cmd_pos_[id_cnt]));
-        }
-        id_cnt++;
-      }
 
-      // Write command to dynamixel
-      if (pos_id_vec.size() > 0)
-      {
-        bool result = false;
-        const char* log = NULL;
-        uint8_t pos_id[pos_id_vec.size()];
-        int32_t dxl_pos[dxl_pos_vec.size()];
-        std::copy(pos_id_vec.begin(), pos_id_vec.end(), pos_id);
-        std::copy(dxl_pos_vec.begin(), dxl_pos_vec.end(), dxl_pos);
-        result = dxl_wb_->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_POSITION, pos_id, pos_id_vec.size(), dxl_pos, 1, &log);
-        if (result == false)
+        // Write position command to dynamixel
+        if (pos_id_vec.size() > 0)
         {
-          ROS_ERROR("%s", log);
+          bool result = false;
+          const char* log = NULL;
+          uint8_t pos_id[pos_id_vec.size()];
+          int32_t dxl_pos[dxl_pos_vec.size()];
+          std::copy(pos_id_vec.begin(), pos_id_vec.end(), pos_id);
+          std::copy(dxl_pos_vec.begin(), dxl_pos_vec.end(), dxl_pos);
+          result =
+              dxl_wb_->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_POSITION, pos_id, pos_id_vec.size(), dxl_pos, 1, &log);
+          if (result == false)
+          {
+            ROS_ERROR("%s", log);
+          }
+        }
+      }
+      if (robot_transmissions_.get<transmission_interface::JointToActuatorVelocityInterface>())
+      {
+        // Propagate joint velocity commands to actuators
+        robot_transmissions_.get<transmission_interface::JointToActuatorVelocityInterface>()->propagate();
+
+        // Convert ros_control actuator velocity command to dynamixel command
+        std::vector<uint8_t> vel_id_vec;
+        std::vector<int32_t> dxl_vel_vec;
+        uint8_t id_cnt = 0;
+        for (const std::pair<std::string, uint32_t>& dxl : dynamixel_)
+        {
+          if (std::isnan(actr_cmd_vel_[id_cnt]))
+          {
+            ROS_DEBUG_STREAM_DELAYED_THROTTLE(10, "Skipping velocity command to " << dxl.first
+                                                                                  << " because it is NaN. Its "
+                                                                                     "controller may not work");
+          }
+          else
+          {
+            uint8_t id = (uint8_t)dxl.second;
+            vel_id_vec.push_back(id);
+            const char* model_name = NULL;
+            model_name = dxl_wb_->getModelName(id);
+            if (dxl_wb_->getProtocolVersion() == 2.0f && strcmp(model_name, "XL-320") != 0)
+            {
+              dxl_vel_vec.push_back(dxl_wb_->convertVelocity2Value((uint8_t)dxl.second, actr_cmd_vel_[id_cnt]));
+            }
+            else if ((dxl_wb_->getProtocolVersion() == 2.0f && strcmp(model_name, "XL-320") == 0) ||
+                     (dxl_wb_->getProtocolVersion() == 1.0f && (strncmp(model_name, "AX", strlen("AX")) == 0 ||
+                                                                strncmp(model_name, "RX", strlen("RX")) == 0 ||
+                                                                strncmp(model_name, "EX", strlen("EX")) == 0 ||
+                                                                strncmp(model_name, "MX", strlen("MX")) == 0)))
+            {
+              // In this case, convertVelocity2Value returns a value with the wrong sign, so we cannot use this method
+              const ModelInfo* model_info = NULL;
+              model_info = dxl_wb_->getModelInfo(id);
+              int32_t value = 0;
+              double velocity = actr_cmd_vel_[id_cnt];
+              const float RPM2RADPERSEC = 0.104719755f;
+              if (velocity == 0)
+              {
+                value = 0;
+              }
+              else if (velocity < 0)
+              {
+                value = ((velocity * -1) / (model_info->rpm * RPM2RADPERSEC)) + 1023;
+              }
+              else if (velocity > 0)
+              {
+                value = (velocity / (model_info->rpm * RPM2RADPERSEC));
+              }
+              dxl_vel_vec.push_back(value);
+            }
+            else
+            {
+              dxl_vel_vec.push_back(0);
+            }
+          }
+          id_cnt++;
+        }
+
+        // Write velocity command to dynamixel
+        if (vel_id_vec.size() > 0)
+        {
+          bool result = false;
+          const char* log = NULL;
+          uint8_t vel_id[vel_id_vec.size()];
+          int32_t dxl_vel[dxl_vel_vec.size()];
+          std::copy(vel_id_vec.begin(), vel_id_vec.end(), vel_id);
+          std::copy(dxl_vel_vec.begin(), dxl_vel_vec.end(), dxl_vel);
+          result =
+              dxl_wb_->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_VELOCITY, vel_id, vel_id_vec.size(), dxl_vel, 1, &log);
+          if (result == false)
+          {
+            ROS_ERROR("%s", log);
+          }
         }
       }
     }
