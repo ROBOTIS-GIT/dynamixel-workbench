@@ -50,6 +50,8 @@ protected:
   std::map<std::string, const ControlItem*> control_items_;
   std::vector<std::pair<std::string, ItemValue>> dynamixel_info_;
   dynamixel_general_hw::DynamixelStateList dynamixel_state_list_;
+  uint16_t read_start_addr_;
+  uint16_t read_length_;
 
   // Transmission loader
   transmission_interface::RobotTransmissions robot_transmissions_;

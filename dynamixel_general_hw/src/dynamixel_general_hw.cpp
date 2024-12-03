@@ -242,28 +242,28 @@ bool DynamixelGeneralHw::initSDKHandlers(void)
     ROS_INFO("%s", log);
   }
 
+  std::vector<std::string> target_items = {"Present_Position", "Present_Velocity", "Present_Current"};
+  if (is_pub_temp_)
+  {
+    target_items.push_back("Present_Temperature");
+  }
+  if (is_pub_volt_)
+  {
+    target_items.push_back("Present_Input_Voltage");
+  }
+  std::vector<uint16_t> target_addrs(target_items.size());
+  std::transform(target_items.begin(), target_items.end(), target_addrs.begin(),
+                 [this](std::string x) { return control_items_[x]->address; } );
+
+  std::vector<uint16_t>::iterator min_addr = std::min_element(target_addrs.begin(), target_addrs.end());
+  std::vector<uint16_t>::iterator max_addr = std::max_element(target_addrs.begin(), target_addrs.end());
+  int max_addr_idx = std::distance(target_addrs.begin(), max_addr);
+  read_start_addr_ = *min_addr;
+  read_length_ = (*max_addr - *min_addr) + control_items_[target_items[max_addr_idx]]->data_length;
+
   if (dxl_wb_->getProtocolVersion() == 2.0f)
   {
-    std::vector<std::string> target_items = {"Present_Position", "Present_Velocity", "Present_Current"};
-    if (is_pub_temp_)
-    {
-      target_items.push_back("Present_Temperature");
-    }
-    if (is_pub_volt_)
-    {
-      target_items.push_back("Present_Input_Voltage");
-    }
-    std::vector<uint16_t> target_addrs(target_items.size());
-    std::transform(target_items.begin(), target_items.end(), target_addrs.begin(),
-                   [this](std::string x) { return control_items_[x]->address; } );
-
-    std::vector<uint16_t>::iterator min_addr = std::min_element(target_addrs.begin(), target_addrs.end());
-    std::vector<uint16_t>::iterator max_addr = std::max_element(target_addrs.begin(), target_addrs.end());
-    int max_addr_idx = std::distance(target_addrs.begin(), max_addr);
-    uint16_t start_address = *min_addr;
-    uint16_t read_length = (*max_addr - *min_addr) + control_items_[target_items[max_addr_idx]]->data_length;
-
-    result = dxl_wb_->addSyncReadHandler(start_address, read_length, &log);
+    result = dxl_wb_->addSyncReadHandler(read_start_addr_, read_length_, &log);
     if (result == false)
     {
       ROS_ERROR("%s", log);
@@ -513,17 +513,13 @@ void DynamixelGeneralHw::readDynamixelState(void)
   }
   else if(dxl_wb_->getProtocolVersion() == 1.0f)
   {
-    uint16_t length_of_data = control_items_["Present_Position"]->data_length +
-                              control_items_["Present_Velocity"]->data_length +
-                              control_items_["Present_Current"]->data_length;
-    uint32_t get_all_data[length_of_data];
-    uint32_t get_optional_data[2];
+    uint32_t get_all_data[read_length_];
     uint8_t dxl_cnt = 0;
     for (auto const& dxl:dynamixel_)
     {
       result = dxl_wb_->readRegister((uint8_t)dxl.second,
-                                     control_items_["Present_Position"]->address,
-                                     length_of_data,
+                                     read_start_addr_,
+                                     read_length_,
                                      get_all_data,
                                      &log);
       if (result == false)
@@ -531,51 +527,94 @@ void DynamixelGeneralHw::readDynamixelState(void)
         ROS_ERROR("%s", log);
       }
 
-      dynamixel_state[dxl_cnt].present_current = DXL_MAKEWORD(get_all_data[4], get_all_data[5]);
-      dynamixel_state[dxl_cnt].present_velocity = DXL_MAKEWORD(get_all_data[2], get_all_data[3]);
-      dynamixel_state[dxl_cnt].present_position = DXL_MAKEWORD(get_all_data[0], get_all_data[1]);
+      uint16_t idx;
+      uint16_t len;
+      idx = control_items_["Present_Current"]->address - read_start_addr_;
+      len = control_items_["Present_Current"]->data_length;
+      if (len == 1)
+      {
+        dynamixel_state[dxl_cnt].present_current = get_all_data[idx];
+      }
+      else if (len == 2)
+      {
+        dynamixel_state[dxl_cnt].present_current = DXL_MAKEWORD(get_all_data[idx], get_all_data[idx + 1]);
+      }
+      else if (len == 4)
+      {
+        dynamixel_state[dxl_cnt].present_current =
+            DXL_MAKEDWORD(DXL_MAKEWORD(get_all_data[idx], get_all_data[idx + 1]),
+                          DXL_MAKEWORD(get_all_data[idx + 2], get_all_data[idx + 3]));
+      }
+      idx = control_items_["Present_Velocity"]->address - read_start_addr_;
+      len = control_items_["Present_Velocity"]->data_length;
+      if (len == 1)
+      {
+        dynamixel_state[dxl_cnt].present_velocity = get_all_data[idx];
+      }
+      else if (len == 2)
+      {
+        dynamixel_state[dxl_cnt].present_velocity = DXL_MAKEWORD(get_all_data[idx], get_all_data[idx + 1]);
+      }
+      else if (len == 4)
+      {
+        dynamixel_state[dxl_cnt].present_velocity =
+            DXL_MAKEDWORD(DXL_MAKEWORD(get_all_data[idx], get_all_data[idx + 1]),
+                          DXL_MAKEWORD(get_all_data[idx + 2], get_all_data[idx + 3]));
+      }
+      idx = control_items_["Present_Position"]->address - read_start_addr_;
+      len = control_items_["Present_Position"]->data_length;
+      if (len == 1)
+      {
+        dynamixel_state[dxl_cnt].present_position = get_all_data[idx];
+      }
+      else if (len == 2)
+      {
+        dynamixel_state[dxl_cnt].present_position = DXL_MAKEWORD(get_all_data[idx], get_all_data[idx + 1]);
+      }
+      else if (len == 4)
+      {
+        dynamixel_state[dxl_cnt].present_position =
+            DXL_MAKEDWORD(DXL_MAKEWORD(get_all_data[idx], get_all_data[idx + 1]),
+                          DXL_MAKEWORD(get_all_data[idx + 2], get_all_data[idx + 3]));
+      }
 
       if (is_pub_temp_)
       {
-        result = dxl_wb_->readRegister((uint8_t)dxl.second,
-                                       control_items_["Present_Temperature"]->address,
-                                       control_items_["Present_Temperature"]->data_length,
-                                       get_optional_data,
-                                       &log);
-        if (result == false)
+        idx = control_items_["Present_Temperature"]->address - read_start_addr_;
+        len = control_items_["Present_Temperature"]->data_length;
+        if (len == 1)
         {
-          ROS_ERROR("%s", log);
+          dynamixel_state[dxl_cnt].present_temperature = get_all_data[idx];
         }
-
-        if (control_items_["Present_Temperature"]->data_length == 1)
+        else if (len == 2)
         {
-          dynamixel_state[dxl_cnt].present_temperature = get_optional_data[0];
+          dynamixel_state[dxl_cnt].present_temperature = DXL_MAKEWORD(get_all_data[idx], get_all_data[idx + 1]);
         }
-        else if (control_items_["Present_Temperature"]->data_length == 2)
+        else if (len == 4)
         {
-          dynamixel_state[dxl_cnt].present_temperature = DXL_MAKEWORD(get_optional_data[0], get_optional_data[1]);
+          dynamixel_state[dxl_cnt].present_temperature =
+              DXL_MAKEDWORD(DXL_MAKEWORD(get_all_data[idx], get_all_data[idx + 1]),
+                            DXL_MAKEWORD(get_all_data[idx + 2], get_all_data[idx + 3]));
         }
       }
 
       if (is_pub_volt_)
       {
-        result = dxl_wb_->readRegister((uint8_t)dxl.second,
-                                       control_items_["Present_Input_Voltage"]->address,
-                                       control_items_["Present_Input_Voltage"]->data_length,
-                                       get_optional_data,
-                                       &log);
-        if (result == false)
+        idx = control_items_["Present_Input_Voltage"]->address - read_start_addr_;
+        len = control_items_["Present_Input_Voltage"]->data_length;
+        if (len == 1)
         {
-          ROS_ERROR("%s", log);
+          dynamixel_state[dxl_cnt].present_input_voltage = get_all_data[idx];
         }
-
-        if (control_items_["Present_Input_Voltage"]->data_length == 1)
+        else if (len == 2)
         {
-          dynamixel_state[dxl_cnt].present_input_voltage = get_optional_data[0];
+          dynamixel_state[dxl_cnt].present_input_voltage = DXL_MAKEWORD(get_all_data[idx], get_all_data[idx + 1]);
         }
-        else if (control_items_["Present_Input_Voltage"]->data_length == 2)
+        else if (len == 4)
         {
-          dynamixel_state[dxl_cnt].present_input_voltage = DXL_MAKEWORD(get_optional_data[0], get_optional_data[1]);
+          dynamixel_state[dxl_cnt].present_input_voltage =
+              DXL_MAKEDWORD(DXL_MAKEWORD(get_all_data[idx], get_all_data[idx + 1]),
+                            DXL_MAKEWORD(get_all_data[idx + 2], get_all_data[idx + 3]));
         }
       }
 
