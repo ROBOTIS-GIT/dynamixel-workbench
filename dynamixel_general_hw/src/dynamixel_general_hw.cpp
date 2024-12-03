@@ -323,9 +323,17 @@ bool DynamixelGeneralHw::initRosInterface(void)
   nh_.getParam("robot_description", urdf_string);
   while (urdf_string.empty() && ros::ok())
   {
-    ROS_INFO_STREAM_ONCE("Waiting for robot_description");
+    ROS_INFO_STREAM_THROTTLE(10, "Waiting for robot_description...");
     nh_.getParam("robot_description", urdf_string);
     ros::Duration(0.1).sleep();
+  }
+  if (ros::ok())
+  {
+    ROS_INFO_STREAM("Got robot_description");
+  }
+  else
+  {
+    return false;
   }
 
   // Extract transmission infos from URDF
