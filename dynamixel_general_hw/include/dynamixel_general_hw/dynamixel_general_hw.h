@@ -25,6 +25,7 @@
 // SYNC_WRITE_HANDLER
 #define SYNC_WRITE_HANDLER_FOR_GOAL_POSITION 0
 #define SYNC_WRITE_HANDLER_FOR_GOAL_VELOCITY 1
+#define SYNC_WRITE_HANDLER_FOR_GOAL_CURRENT 2
 
 // SYNC_READ_HANDLER(Only for Protocol 2.0)
 #define SYNC_READ_HANDLER_FOR_PRESENT_INFO 0
@@ -61,6 +62,7 @@ protected:
   hardware_interface::ActuatorStateInterface actr_state_interface_;
   hardware_interface::PositionActuatorInterface pos_actr_interface_;
   hardware_interface::VelocityActuatorInterface vel_actr_interface_;
+  hardware_interface::EffortActuatorInterface eff_actr_interface_;
 
   // Actuator raw data
   std::vector<std::string> actr_names_;
@@ -69,6 +71,7 @@ protected:
   std::vector<double> actr_curr_eff_;
   std::vector<double> actr_cmd_pos_;
   std::vector<double> actr_cmd_vel_;
+  std::vector<double> actr_cmd_eff_;
 
   // Actuator parameters
   std::map<std::string, double> torque_consts_;
@@ -94,6 +97,7 @@ protected:
   bool is_calc_effort_;
   bool is_pub_temp_;
   bool is_pub_volt_;
+  bool is_current_ctrl_;
   bool is_current_eq_load_;
 
 public:

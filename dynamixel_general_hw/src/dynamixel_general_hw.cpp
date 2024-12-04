@@ -10,6 +10,7 @@ DynamixelGeneralHw::DynamixelGeneralHw()
   , prev_is_servo_(is_servo_)
   , is_hold_pos_raw_(false)
   , is_hold_pos_(is_hold_pos_raw_)
+  , is_current_ctrl_(true)
   , is_current_eq_load_(false)
 {
   is_calc_effort_ = pnh_.param<bool>("calculate_effort", true);
@@ -157,6 +158,13 @@ bool DynamixelGeneralHw::initControlItems(void)
     return false;
   }
 
+  const ControlItem *goal_current = dxl_wb_->getItemInfo(it->second, "Goal_Current");
+  if (goal_current == NULL)
+  {
+    ROS_WARN("Effort command to %s is currently not supported", dxl_wb_->getModelName(it->second));
+    is_current_ctrl_ = false;
+  }
+
   const ControlItem *present_position = dxl_wb_->getItemInfo(it->second, "Present_Position");
   if (present_position == NULL)
   {
@@ -203,6 +211,7 @@ bool DynamixelGeneralHw::initControlItems(void)
 
   control_items_["Goal_Position"] = goal_position;
   control_items_["Goal_Velocity"] = goal_velocity;
+  control_items_["Goal_Current"] = goal_current;
 
   control_items_["Present_Position"] = present_position;
   control_items_["Present_Velocity"] = present_velocity;
@@ -240,6 +249,20 @@ bool DynamixelGeneralHw::initSDKHandlers(void)
   else
   {
     ROS_INFO("%s", log);
+  }
+
+  if (is_current_ctrl_)
+  {
+    result = dxl_wb_->addSyncWriteHandler(control_items_["Goal_Current"]->address, control_items_["Goal_Current"]->data_length, &log);
+    if (result == false)
+    {
+      ROS_ERROR("%s", log);
+      return result;
+    }
+    else
+    {
+      ROS_INFO("%s", log);
+    }
   }
 
   std::vector<std::string> target_items = {"Present_Position", "Present_Velocity", "Present_Current"};
@@ -287,6 +310,7 @@ bool DynamixelGeneralHw::initRosInterface(void)
   actr_curr_eff_.resize(actr_names_.size(), 0);
   actr_cmd_pos_.resize(actr_names_.size(), 0);
   actr_cmd_vel_.resize(actr_names_.size(), 0);
+  actr_cmd_eff_.resize(actr_names_.size(), 0);
   for (int i = 0; i < dynamixel_.size(); i++)
   {
     hardware_interface::ActuatorStateHandle state_handle(actr_names_[i], &actr_curr_pos_[i], &actr_curr_vel_[i], &actr_curr_eff_[i]);
@@ -296,10 +320,13 @@ bool DynamixelGeneralHw::initRosInterface(void)
     pos_actr_interface_.registerHandle(position_handle);
     hardware_interface::ActuatorHandle velocity_handle(state_handle, &actr_cmd_vel_[i]);
     vel_actr_interface_.registerHandle(velocity_handle);
+    hardware_interface::ActuatorHandle effort_handle(state_handle, &actr_cmd_eff_[i]);
+    eff_actr_interface_.registerHandle(effort_handle);
   }
   registerInterface(&actr_state_interface_);
   registerInterface(&pos_actr_interface_);
   registerInterface(&vel_actr_interface_);
+  registerInterface(&eff_actr_interface_);
 
   // Initialize transmission loader
   try
@@ -806,6 +833,54 @@ void DynamixelGeneralHw::write(void)
           std::copy(dxl_vel_vec.begin(), dxl_vel_vec.end(), dxl_vel);
           result =
               dxl_wb_->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_VELOCITY, vel_id, vel_id_vec.size(), dxl_vel, 1, &log);
+          if (result == false)
+          {
+            ROS_ERROR("%s", log);
+          }
+        }
+      }
+      if (is_calc_effort_ && is_current_ctrl_ &&
+          robot_transmissions_.get<transmission_interface::JointToActuatorEffortInterface>())
+      {
+        // Propagate joint effort commands to actuators
+        robot_transmissions_.get<transmission_interface::JointToActuatorEffortInterface>()->propagate();
+
+        // Convert ros_control actuator effort command to dynamixel command
+        std::vector<uint8_t> eff_id_vec;
+        std::vector<int32_t> dxl_eff_vec;
+        uint8_t id_cnt = 0;
+        for (const std::pair<std::string, uint32_t>& dxl : dynamixel_)
+        {
+          double torque_const = torque_consts_[dxl.first];
+          if (torque_const > 0)
+          {
+            if (std::isnan(actr_cmd_eff_[id_cnt]))
+            {
+              ROS_DEBUG_STREAM_DELAYED_THROTTLE(10, "Skipping effort command to " << dxl.first
+                                                                                  << " because it is NaN. Its "
+                                                                                     "controller may not work");
+            }
+            else
+            {
+              eff_id_vec.push_back((uint8_t)dxl.second);
+              dxl_eff_vec.push_back(
+                  dxl_wb_->convertCurrent2Value((uint8_t)dxl.second, (actr_cmd_eff_[id_cnt] / torque_const) * 1000));
+            }
+          }
+          id_cnt++;
+        }
+
+        // Write effort command to dynamixel
+        if (eff_id_vec.size() > 0)
+        {
+          bool result = false;
+          const char* log = NULL;
+          uint8_t eff_id[eff_id_vec.size()];
+          int32_t dxl_eff[dxl_eff_vec.size()];
+          std::copy(eff_id_vec.begin(), eff_id_vec.end(), eff_id);
+          std::copy(dxl_eff_vec.begin(), dxl_eff_vec.end(), dxl_eff);
+          result =
+              dxl_wb_->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_CURRENT, eff_id, eff_id_vec.size(), dxl_eff, 1, &log);
           if (result == false)
           {
             ROS_ERROR("%s", log);

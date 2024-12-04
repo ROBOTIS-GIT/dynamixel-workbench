@@ -196,6 +196,33 @@ you will see the actuator rotates in 1 rad/s.
 You can check the real velocity by `rostopic echo /sample_robot/joint_states`.
 (Although those interfaces are joint-level, the joint equals the actuator in this sample.)
 
+### Sample 5: effort (torque) control
+
+This sample assumes that one bare Dynamixel actuator whose ID and baud rate are `1` and `57600` is connected via the port `/dev/ttyUSB0`.
+You can change the baud rate and the port via roslaunch arguments.
+
+```bash
+roslaunch dynamixel_general_hw sample5.launch port_name:=/dev/ttyUSB0 baud_rate:=57600
+# If you face an error about Operating_Mode or a warning that effort command to your actuator model is currently not supported, current dynamixel_general_hw does not support effort control of your actuator model.
+# Your contribution is welcome
+```
+
+You can move the actuator by sending a command via `/sample_robot/joint_group_effort_controller/command` topic.
+For example, if you send a command like:
+```bash
+rostopic pub /sample_robot/joint_group_effort_controller/command std_msgs/Float64MultiArray "layout:
+  dim:
+  - label: ''
+    size: 0
+    stride: 0
+  data_offset: 0
+data:
+- 0.1"
+```
+you will see the actuator outputs 0.1 Nm.
+You can check the real effort by `rostopic echo /sample_robot/joint_states`.
+(Although those interfaces are joint-level, the joint equals the actuator in this sample.)
+
 ## Launch files
 
 ### dynamixel_general_control.launch
