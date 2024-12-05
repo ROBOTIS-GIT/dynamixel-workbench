@@ -17,7 +17,7 @@ roslaunch dynamixel_general_hw sample1.launch port_name:=/dev/ttyUSB0 baud_rate:
 
 You will see the following RViz window showing a virtual robot synchronized with the real actuator:
 <div align="left">
-<img width="50%" src=".media/sample1_rviz.png">
+<img width="500px" src=".media/sample1_rviz.png">
 </div>
 
 You can move the actuator by sending a command via `/sample_robot/position_joint_trajectory_controller/follow_joint_trajectory` action.
@@ -67,7 +67,7 @@ goal:
 ```
 you will get the following final state:
 <div align="left">
-<img width="50%" src=".media/sample1_rviz_move.png">
+<img width="500px" src=".media/sample1_rviz_move.png">
 </div>
 
 Note that this commanding method is only for checking on command line.
@@ -108,7 +108,7 @@ roslaunch dynamixel_general_hw sample2.launch port_name:=/dev/ttyUSB0 baud_rate:
 
 You will see the following RViz window showing a virtual robot synchronized with the real actuator:
 <div align="left">
-<img width="50%" src=".media/sample2_rviz.png">
+<img width="500px" src=".media/sample2_rviz.png">
 </div>
 
 By launching after making the actuator position the same as Sample 1, you will notice that the joint position has an offset in comparison with Sample 1.
@@ -127,7 +127,7 @@ roslaunch dynamixel_general_hw sample3.launch port_name:=/dev/ttyUSB0 baud_rate:
 
 You will see the following RViz window showing a virtual robot synchronized with the real actuators:
 <div align="left">
-<img width="50%" src=".media/sample3_rviz.png">
+<img width="500px" src=".media/sample3_rviz.png">
 </div>
 
 For example, if you send a command like:
@@ -166,7 +166,7 @@ goal:
 ```
 you will get the following final state:
 <div align="left">
-<img width="50%" src=".media/sample3_rviz_move.png">
+<img width="500px" src=".media/sample3_rviz_move.png">
 </div>
 
 ### Sample 4: velocity control
