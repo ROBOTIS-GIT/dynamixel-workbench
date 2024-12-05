@@ -31,6 +31,7 @@ DynamixelController::DynamixelController()
   is_joint_state_topic_ = priv_node_handle_.param<bool>("use_joint_states_topic", true);
   is_cmd_vel_topic_ = priv_node_handle_.param<bool>("use_cmd_vel_topic", false);
   use_moveit_ = priv_node_handle_.param<bool>("use_moveit", false);
+  torque_off_on_shutdown_ = priv_node_handle_.param<bool>("torque_off_on_shutdown", false);
 
   read_period_ = priv_node_handle_.param<double>("dxl_read_period", 0.010f);
   write_period_ = priv_node_handle_.param<double>("dxl_write_period", 0.010f);
@@ -762,6 +763,17 @@ bool DynamixelController::dynamixelCommandMsgCallback(dynamixel_workbench_msgs::
   return true;
 }
 
+void DynamixelController::onShutdown()
+{
+  if (torque_off_on_shutdown_ == true)
+  {
+    for (auto const& dxl:dynamixel_)
+    {
+      dxl_wb_->torqueOff((uint8_t)dxl.second);
+    }
+  }
+}
+
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "dynamixel_workbench_controllers");
@@ -838,6 +850,8 @@ int main(int argc, char **argv)
   ros::Timer publish_timer = node_handle.createTimer(ros::Duration(dynamixel_controller.getPublishPeriod()), &DynamixelController::publishCallback, &dynamixel_controller);
 
   ros::spin();
+
+  dynamixel_controller.onShutdown();
 
   return 0;
 }

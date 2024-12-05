@@ -84,6 +84,7 @@ class DynamixelController
   bool is_joint_state_topic_;
   bool is_cmd_vel_topic_;
   bool use_moveit_;
+  bool torque_off_on_shutdown_;
 
   double wheel_separation_;
   double wheel_radius_;
@@ -126,6 +127,8 @@ class DynamixelController
   void trajectoryMsgCallback(const trajectory_msgs::JointTrajectory::ConstPtr &msg);
   bool dynamixelCommandMsgCallback(dynamixel_workbench_msgs::DynamixelCommand::Request &req,
                                    dynamixel_workbench_msgs::DynamixelCommand::Response &res);
+
+  void onShutdown(void);
 };
 
 #endif //DYNAMIXEL_WORKBENCH_CONTROLLERS_H
