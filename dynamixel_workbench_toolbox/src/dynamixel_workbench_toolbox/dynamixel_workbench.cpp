@@ -1191,6 +1191,14 @@ bool DynamixelWorkbench::getPresentVelocityData(uint8_t id, int32_t* data, const
     return result;
   }
 
+  // some protocols has Present_velocity for getSpeed. 
+  result = readRegister(id, "Present_Velocity", &get_data, log);
+  if (result == false)
+  {
+    if (log != NULL) *log = "[DynamixelWorkbench] Failed to get present speed data!";
+    return result;
+  }
+
   *data = get_data;
   if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to get present speed data!";
   return result;
