@@ -17,10 +17,11 @@
 /* Authors: Taehun Lim (Darby) */
 
 #include <DynamixelWorkbench.h>
+#include <cstdlib>
 
 void swap(int32_t *array);
 
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
   const char* port_name = "/dev/ttyUSB0";
   int baud_rate = 57600;
@@ -55,7 +56,7 @@ int main(int argc, char *argv[])
     return 0;
   }
   else
-    printf("Succeed to init(%d)\n", baud_rate);  
+    printf("Succeed to init(%d)\n", baud_rate);
 
   for (int cnt = 0; cnt < 2; cnt++)
   {
@@ -69,6 +70,7 @@ int main(int argc, char *argv[])
     {
       printf("Succeeded to ping\n");
       printf("id : %d, model_number : %d\n", dxl_id[cnt], model_number);
+      printf("model_name : %s\n", dxl_wb.getModelName(dxl_id[cnt]));
     }
 
     result = dxl_wb.jointMode(dxl_id[cnt], 0, 0, &log);
@@ -101,7 +103,10 @@ int main(int argc, char *argv[])
   int32_t present_position[2] = {0, 0};
 
   const uint8_t handler_index = 0;
-  
+
+  const char* modelName1 = dxl_wb.getModelName(dxl_id[0]);
+  const char* modelName2 = dxl_wb.getModelName(dxl_id[1]);
+
   while(1)
   {
     result = dxl_wb.syncWrite(handler_index, &goal_position[0], &log);
@@ -124,6 +129,12 @@ int main(int argc, char *argv[])
       if (result == false)
       {
         printf("%s\n", log);
+        if(!strncmp(modelName1, "AX-12", strlen("AX-12")) ||
+         !strncmp(modelName2, "AX-12", strlen("AX-12")))
+        {
+          printf("AX-12 does NOT support syncRead \n");
+          return -1;
+        }
       }
       else
       {
@@ -131,7 +142,7 @@ int main(int argc, char *argv[])
                 ,dxl_id[0], goal_position[0], present_position[0], dxl_id[1], goal_position[1], present_position[1]);
       }
 
-    }while(abs(goal_position[0] - present_position[0]) > 15 && 
+    }while(abs(goal_position[0] - present_position[0]) > 15 &&
           abs(goal_position[1] - present_position[1]) > 15);
 
     swap(goal_position);

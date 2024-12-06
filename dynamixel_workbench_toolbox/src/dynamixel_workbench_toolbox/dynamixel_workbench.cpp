@@ -78,7 +78,7 @@ bool DynamixelWorkbench::changeID(uint8_t id, uint8_t new_id, const char **log)
   if (result == false) return false;
 
   result = writeRegister(id, "ID", new_id, log);
-  if (result == false) 
+  if (result == false)
   {
     if (log != NULL) *log = "[DynamixelWorkbench] Failed to change ID!";
     return false;
@@ -117,84 +117,84 @@ bool DynamixelWorkbench::changeBaudrate(uint8_t id, uint32_t new_baudrate, const
        break;
 
       case 200000:
-        result = writeRegister(id, "Baud_Rate", 9, log);    
+        result = writeRegister(id, "Baud_Rate", 9, log);
        break;
 
       case 250000:
-        result = writeRegister(id, "Baud_Rate", 7, log);       
+        result = writeRegister(id, "Baud_Rate", 7, log);
        break;
-       
+
       case 400000:
-        result = writeRegister(id, "Baud_Rate", 4, log);       
+        result = writeRegister(id, "Baud_Rate", 4, log);
        break;
 
       case 500000:
-        result = writeRegister(id, "Baud_Rate", 3, log);       
+        result = writeRegister(id, "Baud_Rate", 3, log);
        break;
 
       case 1000000:
-        result = writeRegister(id, "Baud_Rate", 1, log);       
+        result = writeRegister(id, "Baud_Rate", 1, log);
        break;
 
       case 2250000:
-        result = writeRegister(id, "Baud_Rate", 250, log);       
+        result = writeRegister(id, "Baud_Rate", 250, log);
        break;
 
       case 2500000:
-        result = writeRegister(id, "Baud_Rate", 251, log);       
+        result = writeRegister(id, "Baud_Rate", 251, log);
        break;
 
       case 3000000:
-        result = writeRegister(id, "Baud_Rate", 252, log);       
+        result = writeRegister(id, "Baud_Rate", 252, log);
        break;
-       
+
       default:
         result = writeRegister(id, "Baud_Rate", 34, log);
        break;
     }
   }
   else if (getProtocolVersion() == 2.0f)
-  {    
+  {
     switch (new_baudrate)
     {
       case 9600:
-        result = writeRegister(id, "Baud_Rate", 0, log);       
+        result = writeRegister(id, "Baud_Rate", 0, log);
        break;
 
       case 57600:
-        result = writeRegister(id, "Baud_Rate", 1, log);       
+        result = writeRegister(id, "Baud_Rate", 1, log);
        break;
 
       case 115200:
-        result = writeRegister(id, "Baud_Rate", 2, log);       
+        result = writeRegister(id, "Baud_Rate", 2, log);
        break;
 
       case 1000000:
-        result = writeRegister(id, "Baud_Rate", 3, log);       
+        result = writeRegister(id, "Baud_Rate", 3, log);
        break;
 
       case 2000000:
-        result = writeRegister(id, "Baud_Rate", 4, log);       
+        result = writeRegister(id, "Baud_Rate", 4, log);
        break;
 
       case 3000000:
-        result = writeRegister(id, "Baud_Rate", 5, log);       
+        result = writeRegister(id, "Baud_Rate", 5, log);
        break;
-       
+
       case 4000000:
-        result = writeRegister(id, "Baud_Rate", 6, log);       
+        result = writeRegister(id, "Baud_Rate", 6, log);
        break;
 
       case 4500000:
-        result = writeRegister(id, "Baud_Rate", 7, log);       
+        result = writeRegister(id, "Baud_Rate", 7, log);
        break;
 
       case 10500000:
-        result = writeRegister(id, "Baud_Rate", 8, log);       
+        result = writeRegister(id, "Baud_Rate", 8, log);
        break;
-       
+
       default:
-        result = writeRegister(id, "Baud_Rate", 1, log);       
+        result = writeRegister(id, "Baud_Rate", 1, log);
        break;
     }
   }
@@ -210,8 +210,8 @@ bool DynamixelWorkbench::changeBaudrate(uint8_t id, uint32_t new_baudrate, const
   if (result == false)
   {
     if (log != NULL) *log = "[DynamixelWorkbench] Failed to change Baud Rate!";
-    return result; 
-  } 
+    return result;
+  }
 
   if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to change Baud Rate!";
   return result;
@@ -233,7 +233,7 @@ bool DynamixelWorkbench::changeProtocolVersion(uint8_t id, uint8_t version, cons
       !strncmp(model_name, "XC430", strlen("XC430"))       ||
       !strncmp(model_name, "XH", strlen("XH"))             ||
       !strncmp(model_name, "XW", strlen("XW")))
-  {    
+  {
     result = writeRegister(id, "Protocol_Version", version, log);
     if (result == false)
     {
@@ -243,7 +243,7 @@ bool DynamixelWorkbench::changeProtocolVersion(uint8_t id, uint8_t version, cons
   }
 
   result = setPacketHandler((float)version, log);
-  
+
   if (log != NULL) *log = "[DynamixelWorkbench] Succeeded to set protocol version!";
   return result;
 }
@@ -309,9 +309,9 @@ bool DynamixelWorkbench::setNormalDirection(uint8_t id, const char **log)
       !strncmp(model_name, "XC430", strlen("XC430"))       ||
       !strncmp(model_name, "XH", strlen("XH"))             ||
       !strncmp(model_name, "XW", strlen("XW")))
-  {    
+  {
     result = readRegister(id, "Drive_Mode", &data, log);
-    
+
     data = data & 0b00000100;
     result = writeRegister(id, "Drive_Mode", data, log);
     if (result == false)
@@ -345,7 +345,7 @@ bool DynamixelWorkbench::setReverseDirection(uint8_t id, const char **log)
       !strncmp(model_name, "XW", strlen("XW")))
   {
     result = readRegister(id, "Drive_Mode", &data, log);
-    
+
     data = data | 0b00000001;
     result = writeRegister(id, "Drive_Mode", data, log);
     if (result == false)
@@ -379,7 +379,7 @@ bool DynamixelWorkbench::setVelocityBasedProfile(uint8_t id, const char **log)
       !strncmp(model_name, "XW", strlen("XW")))
   {
     result = readRegister(id, "Drive_Mode", &data, log);
-    
+
     data = data & 0b00000001;
     result = writeRegister(id, "Drive_Mode", data, log);
     if (result == false)
@@ -413,7 +413,7 @@ bool DynamixelWorkbench::setTimeBasedProfile(uint8_t id, const char **log)
       !strncmp(model_name, "XW", strlen("XW")))
   {
     result = readRegister(id, "Drive_Mode", &data, log);
-    
+
     data = data | 0b00000100;
     result = writeRegister(id, "Drive_Mode", data, log);
     if (result == false)
@@ -450,7 +450,7 @@ bool DynamixelWorkbench::setSecondaryID(uint8_t id, uint8_t secondary_id, const 
     if (result == false) return false;
 
     result = writeRegister(id, "Secondary_ID", secondary_id, log);
-    if (result == false) 
+    if (result == false)
     {
       if (log != NULL) *log = "[DynamixelWorkbench] Failed to set secondary ID!";
       return false;
@@ -662,7 +662,7 @@ bool DynamixelWorkbench::setOperatingMode(uint8_t id, uint8_t index, const char 
           !strncmp(model_name, "RH", strlen("RH")))
       {
         result = writeRegister(id, "Operating_Mode", CURRENT_CONTROL_MODE, log);
-      }  
+      }
     }
     else if (index == TORQUE_CONTROL_MODE)
     {
@@ -739,7 +739,7 @@ bool DynamixelWorkbench::setOperatingMode(uint8_t id, uint8_t index, const char 
           !strncmp(model_name, "PRO-PLUS", strlen("PRO-PLUS")))
       {
         result = writeRegister(id, "Operating_Mode", CURRENT_CONTROL_MODE, log);
-      }  
+      }
     }
     else if (index == TORQUE_CONTROL_MODE)
     {
@@ -837,6 +837,10 @@ bool DynamixelWorkbench::jointMode(uint8_t id, int32_t velocity, int32_t acceler
       result = writeRegister(id, "Moving_Speed", velocity, log);
       result = writeRegister(id, "Goal_Acceleration", acceleration, log);
     }
+    else if (!strncmp(model_name, "AX-12", strlen("AX-12")))
+    {
+      result = writeRegister(id, "Moving_Speed", velocity, log);
+    }
     else
     {
       result = writeRegister(id, "Moving_Speed", velocity, log);
@@ -927,7 +931,7 @@ bool DynamixelWorkbench::wheelMode(uint8_t id, int32_t acceleration, const char 
     {
       result = writeRegister(id, "Profile_Acceleration", acceleration, log);
     }
-    else if (!strncmp(model_name, "PRO", strlen("PRO")))  
+    else if (!strncmp(model_name, "PRO", strlen("PRO")))
     {
       result = writeRegister(id, "Goal_Acceleration", acceleration, log);
     }
@@ -971,7 +975,7 @@ bool DynamixelWorkbench::currentBasedPositionMode(uint8_t id, int32_t current, c
       !strncmp(model_name, "XH", strlen("XH"))             ||
       !strncmp(model_name, "XW", strlen("XW"))             ||
       !strncmp(model_name, "RH", strlen("RH")))
-  {   
+  {
     result = writeRegister(id, "Goal_Current", current, log);
   }
 
@@ -997,7 +1001,7 @@ bool DynamixelWorkbench::goalPosition(uint8_t id, int value, const char **log)
 // bool DynamixelWorkbench::goalPosition(uint8_t id, int32_t value, const char **log)
 // {
   bool result = false;
-  
+
   result = itemWrite(id, "Goal_Position", value, log);
 
   if (result == false)
