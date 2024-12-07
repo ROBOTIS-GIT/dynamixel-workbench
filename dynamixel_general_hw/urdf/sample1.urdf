@@ -49,6 +49,11 @@
     Joints of those transmissions will be managed by dynamixel_general_hw.
     Therefore, you can use a whole-body URDF/Xacro including non-Dynamixel actuators by specifying target Dynamixel actuators in dynamixel_info.yaml
   -->
+  <!--
+    Specify one or more hardwareInterface.
+    hardware_interface/PositionJointInterface is specified because the ros_control controller used in this sample requires it.
+    But you can specify other interfaces in parallel to prepare for loading other controllers
+  -->
   <transmission name="sample_trans">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="sample_joint">

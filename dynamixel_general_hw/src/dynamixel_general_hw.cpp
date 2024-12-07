@@ -20,6 +20,77 @@ DynamixelGeneralHw::DynamixelGeneralHw()
   dxl_wb_.reset(new DynamixelWorkbench);
 }
 
+// Override resource conflict check (https://github.com/ros-controls/ros_control/blob/0.20.0/hardware_interface/include/hardware_interface/robot_hw.h#L113-L146)
+// to accept position and effort commands simultaneously for Current-based Position Control Mode of Dynamixel without creating new JointInterface.
+// https://robotics.stackexchange.com/questions/65092/using-both-jointtrajectorycontroller-and-jointpositioncontroller-at-same-time-in/65093#65093
+bool DynamixelGeneralHw::checkForConflict(const std::list<hardware_interface::ControllerInfo>& info) const
+{
+  // Map from resource name to all controllers claiming it
+  std::map<std::string, std::list<hardware_interface::ControllerInfo>> resource_map;
+
+  // Populate a map of all controllers claiming individual resources.
+  // We do this by iterating over every claimed resource of every hardware interface used by every controller
+  for (const auto& controller_info : info)
+  {
+    for (const auto& claimed_resource : controller_info.claimed_resources)
+    {
+      for (const auto& iface_resource : claimed_resource.resources)
+      {
+        hardware_interface::ControllerInfo unique_info;
+        unique_info.name = controller_info.name;
+        unique_info.type = controller_info.type;
+        unique_info.claimed_resources.push_back(hardware_interface::InterfaceResources());
+        unique_info.claimed_resources[0].hardware_interface = claimed_resource.hardware_interface;
+        unique_info.claimed_resources[0].resources.insert(iface_resource);
+        resource_map[iface_resource].push_back(unique_info);
+      }
+    }
+  }
+
+  // Enforce resource exclusivity policy: No resource can be claimed by more than one controller
+  bool in_conflict = false;
+  for (const auto& resource_name_and_claiming_controllers : resource_map)
+  {
+    if (resource_name_and_claiming_controllers.second.size() > 1)
+    {
+      bool prev_in_conflict = in_conflict;
+
+      std::string controller_list;
+      for (const auto& controller : resource_name_and_claiming_controllers.second)
+        controller_list += controller.name + ", ";
+      ROS_WARN("Resource conflict on [%s].  Controllers = [%s]", resource_name_and_claiming_controllers.first.c_str(), controller_list.c_str());
+      in_conflict = true;
+
+      // Accept position and effort commands simultaneously for Current-based Position Control Mode of Dynamixel
+      // with common JointInterface (hardware_interface::PositionJointInterface/EffortJointInterface)
+      const auto& rnacc = resource_name_and_claiming_controllers;
+      if (rnacc.second.size() == 2 &&
+          std::find_if(rnacc.second.begin(), rnacc.second.end(),
+                       [](hardware_interface::ControllerInfo ci) {
+                         return (ci.claimed_resources[0].hardware_interface ==
+                                 "hardware_interface::PositionJointInterface");
+                       }) != rnacc.second.end() &&
+          std::find_if(rnacc.second.begin(), rnacc.second.end(),
+                       [](hardware_interface::ControllerInfo ci) {
+                         return (ci.claimed_resources[0].hardware_interface ==
+                                 "hardware_interface::EffortJointInterface");
+                       }) != rnacc.second.end())
+      {
+        ROS_WARN_STREAM("However, this conflict is accepted because "
+                        << rnacc.second.front().name << " uses "
+                        << rnacc.second.front().claimed_resources[0].hardware_interface << " and "
+                        << rnacc.second.back().name << " uses "
+                        << rnacc.second.back().claimed_resources[0].hardware_interface
+                        << ". Commands from both interfaces are used in Current-based Position Control Mode of "
+                           "Dynamixel");
+        in_conflict = prev_in_conflict;
+      }
+    }
+  }
+
+  return in_conflict;
+}
+
 bool DynamixelGeneralHw::initWorkbench(const std::string port_name, const uint32_t baud_rate)
 {
   bool result = false;

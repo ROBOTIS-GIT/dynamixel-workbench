@@ -223,6 +223,70 @@ you will see the actuator outputs 0.1 Nm.
 You can check the real effort by `rostopic echo /sample_robot/joint_states`.
 (Although those interfaces are joint-level, the joint equals the actuator in this sample.)
 
+### Sample 6: using "Current-based Position Control Mode" of Dynamixel
+
+This sample assumes that one bare Dynamixel actuator whose ID and baud rate are `1` and `57600` is connected via the port `/dev/ttyUSB0`.
+You can change the baud rate and the port via roslaunch arguments.
+
+```bash
+roslaunch dynamixel_general_hw sample6.launch port_name:=/dev/ttyUSB0 baud_rate:=57600
+# If you face an error about Operating_Mode or a warning that effort command to your actuator model is currently not supported, current dynamixel_general_hw does not support Current-based Position Control Mode of your actuator model.
+# Your contribution is welcome
+```
+
+You can move the actuator by:
+1. sending an effort command via `/sample_robot/joint_group_effort_controller/command` topic
+2. sending a position command via `/sample_robot/position_joint_trajectory_controller/follow_joint_trajectory` action
+
+For example, if you send commands like:
+```bash
+rostopic pub /sample_robot/joint_group_effort_controller/command std_msgs/Float64MultiArray "layout:
+  dim:
+  - label: ''
+    size: 0
+    stride: 0
+  data_offset: 0
+data:
+- 0.1"
+```
+```bash
+rostopic pub /sample_robot/position_joint_trajectory_controller/follow_joint_trajectory/goal control_msgs/FollowJointTrajectoryActionGoal "header:
+  seq: 0
+  stamp:
+    secs: 0
+    nsecs: 0
+  frame_id: ''
+goal_id:
+  stamp:
+    secs: 0
+    nsecs: 0
+  id: ''
+goal:
+  trajectory:
+    header:
+      seq: 0
+      stamp:
+        secs: 0
+        nsecs: 0
+      frame_id: ''
+    joint_names:
+    - 'sample_joint'
+    points:
+    - positions: [1.0]
+      velocities: [0]
+      accelerations: [0]
+      effort: [0]
+      time_from_start: {secs: 1, nsecs: 0}
+  path_tolerance:
+  - {name: '', position: 0.0, velocity: 0.0, acceleration: 0.0}
+  goal_tolerance:
+  - {name: '', position: 0.0, velocity: 0.0, acceleration: 0.0}
+  goal_time_tolerance: {secs: 0, nsecs: 0}"
+```
+you will see the actuator moves to the commanded position (1.0 rad) with limited effort (<= 0.1 Nm).
+You can check the real effort by `rostopic echo /sample_robot/joint_states`.
+(Although those interfaces are joint-level, the joint equals the actuator in this sample.)
+
 ## Launch files
 
 ### dynamixel_general_control.launch

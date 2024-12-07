@@ -103,6 +103,8 @@ protected:
 public:
   DynamixelGeneralHw();
 
+  virtual bool checkForConflict(const std::list<hardware_interface::ControllerInfo>& info) const override;
+
   bool initWorkbench(const std::string port_name, const uint32_t baud_rate);
   bool getDynamixelsInfo(XmlRpc::XmlRpcValue& dxl_info);
   bool loadDynamixels(void);

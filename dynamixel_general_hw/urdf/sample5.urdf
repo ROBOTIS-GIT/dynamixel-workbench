@@ -39,11 +39,14 @@
     <limit effort="0.92" velocity="6.8"/>
   </joint>
 
+  <!--
+    Specify one or more hardwareInterface.
+    hardware_interface/EffortJointInterface is specified because the ros_control controller used in this sample requires it.
+    But you can specify other interfaces in parallel to prepare for loading other controllers
+  -->
   <transmission name="sample_trans">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="sample_joint">
-      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
-      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
       <offset>0.0</offset>
     </joint>
