@@ -27,8 +27,6 @@
   <!--
     Joint limits are example values for XC330-T288-T with sample_trans (it is written later).
     velocity: (No Load Speed [rad/s]) / (mechanicalReduction in sample_trans) = (65 [rev/min] * 2 * pi / 60) / 1.0
-    Note that the controller used in this sample (velocity_controllers/JointGroupVelocityController) is simple and does not load those limits.
-    If you want to limit the real actuator motion, find/write a controller loading those limits (limit in joint side) or set Min/Max Position Limit in dynamixel_info.yaml (limit in actuator side)
   -->
   <joint name="sample_joint" type="continuous">
     <origin rpy="0 0 0" xyz="0 0 0.1"/>

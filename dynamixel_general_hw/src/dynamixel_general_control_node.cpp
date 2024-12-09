@@ -91,7 +91,7 @@ int main(int argc, char** argv)
     const bool controller_ignored = dxl_hw.isJntCmdIgnored();
     const bool reset_controllers = (prev_controller_ignored && !controller_ignored);
     cm.update(now, elapsed_time, reset_controllers);
-    dxl_hw.write();
+    dxl_hw.write(now, elapsed_time);
     prev_time = now;
     prev_controller_ignored = controller_ignored;
 

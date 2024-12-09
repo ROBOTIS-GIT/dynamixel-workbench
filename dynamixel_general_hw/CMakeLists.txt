@@ -6,6 +6,7 @@ find_package(catkin REQUIRED COMPONENTS
   dynamixel_workbench_msgs
   dynamixel_workbench_toolbox
   hardware_interface
+  joint_limits_interface
   message_generation
   roscpp
   std_msgs
@@ -31,6 +32,7 @@ catkin_package(
   dynamixel_workbench_msgs
   dynamixel_workbench_toolbox
   hardware_interface
+  joint_limits_interface
   message_runtime
   roscpp
   std_msgs

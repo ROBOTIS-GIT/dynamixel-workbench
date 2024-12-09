@@ -12,10 +12,15 @@
 // ROS base
 #include <ros/ros.h>
 #include <ros/callback_queue.h>
+#include <urdf/model.h>
 
 // ros_control
 #include <hardware_interface/robot_hw.h>
 #include <transmission_interface/transmission_interface_loader.h>
+#include <joint_limits_interface/joint_limits.h>
+#include <joint_limits_interface/joint_limits_urdf.h>
+#include <joint_limits_interface/joint_limits_rosparam.h>
+#include <joint_limits_interface/joint_limits_interface.h>
 
 // ROS msg and srv
 #include <dynamixel_workbench_msgs/DynamixelCommand.h>
@@ -57,6 +62,15 @@ protected:
   // Transmission loader
   transmission_interface::RobotTransmissions robot_transmissions_;
   std::unique_ptr<transmission_interface::TransmissionInterfaceLoader> transmission_loader_;
+
+  // Joint limits interface
+  std::vector<std::string> jnt_names_;
+  joint_limits_interface::PositionJointSaturationInterface pos_jnt_sat_interface_;
+  joint_limits_interface::VelocityJointSaturationInterface vel_jnt_sat_interface_;
+  joint_limits_interface::EffortJointSaturationInterface eff_jnt_sat_interface_;
+  joint_limits_interface::PositionJointSoftLimitsInterface pos_jnt_soft_interface_;
+  joint_limits_interface::VelocityJointSoftLimitsInterface vel_jnt_soft_interface_;
+  joint_limits_interface::EffortJointSoftLimitsInterface eff_jnt_soft_interface_;
 
   // Actuator interface to transmission loader
   hardware_interface::ActuatorStateInterface actr_state_interface_;
@@ -117,7 +131,7 @@ public:
 
   void readDynamixelState(void);
   void read(void);
-  void write(void);
+  void write(const ros::Time& time, const ros::Duration& period);
 
   bool isJntCmdIgnored(void);
 
