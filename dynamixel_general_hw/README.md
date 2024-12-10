@@ -220,8 +220,13 @@ data:
 - 0.1"
 ```
 you will see the actuator outputs 0.1 Nm.
-You can check the real effort by `rostopic echo /sample_robot/joint_states`.
-(Although those interfaces are joint-level, the joint equals the actuator in this sample.)
+You can check the output effort by `rostopic echo /sample_robot/joint_states`.
+(Although those interfaces are joint-level, the joint equals the actuator in this sample.)  
+
+Note that this effort value is realistic only when `torque_constant` in `dynamixel_info.yaml` is well-configured.
+If you want the actuator to output the exact effort you command, you may have to prepare your own `dynamixel_info.yaml` and pass it to `dynamixel_general_control.launch`.  
+In addition, if you command a big effort, the actuator vibrates because its velocity sometimes violates the velocity limit defined in URDF and the effort command is overwritten to zero.
+If you want to avoid this vibration, you should prepare your own URDF having a well-configured velocity limit and pass it to `dynamixel_general_control.launch`.
 
 ### Sample 6: using "Current-based Position Control Mode" of Dynamixel
 
