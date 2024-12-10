@@ -3,6 +3,6 @@ joint_state_controller:
   publish_rate: 20
 
 joint_group_velocity_controller:
-  type: "velocity_controllers/JointGroupVelocityController"
+  type: velocity_controllers/JointGroupVelocityController
   joints:
     - sample_joint

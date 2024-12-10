@@ -3,6 +3,6 @@ joint_state_controller:
   publish_rate: 20
 
 joint_group_effort_controller:
-  type: "effort_controllers/JointGroupEffortController"
+  type: effort_controllers/JointGroupEffortController
   joints:
     - sample_joint

@@ -3,6 +3,6 @@ joint_state_controller:
   publish_rate: 20
 
 position_joint_trajectory_controller:
-  type: "position_controllers/JointTrajectoryController"
+  type: position_controllers/JointTrajectoryController
   joints:
     - sample_joint
