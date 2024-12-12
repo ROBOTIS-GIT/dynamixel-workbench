@@ -10,6 +10,7 @@ DynamixelGeneralHw::DynamixelGeneralHw()
   , prev_is_servo_(is_servo_)
   , is_hold_pos_raw_(false)
   , is_hold_pos_(is_hold_pos_raw_)
+  , prev_is_hold_pos_(is_hold_pos_)
   , is_current_ctrl_(true)
   , is_current_eq_load_(false)
 {
@@ -849,9 +850,11 @@ void DynamixelGeneralHw::write(const ros::Time& time, const ros::Duration& perio
       }
     }
 
-    if (!is_hold_pos_)
+    if (robot_transmissions_.get<transmission_interface::JointToActuatorPositionInterface>())
     {
-      if (robot_transmissions_.get<transmission_interface::JointToActuatorPositionInterface>())
+      // Update & send actuator position commands only when is_hold_pos_ is false.
+      // This holds current positions of position-controlled actuators while is_hold_pos_ is true
+      if (!is_hold_pos_)
       {
         // Enforce joint position limits
         pos_jnt_sat_interface_.enforceLimits(period);
@@ -897,7 +900,12 @@ void DynamixelGeneralHw::write(const ros::Time& time, const ros::Duration& perio
           }
         }
       }
-      if (robot_transmissions_.get<transmission_interface::JointToActuatorVelocityInterface>())
+    }
+    if (robot_transmissions_.get<transmission_interface::JointToActuatorVelocityInterface>())
+    {
+      // Update actuator velocity commands only when is_hold_pos_ is false.
+      // This keeps which actuator is valid (having non-NaN command) while is_hold_pos_ is true
+      if (!is_hold_pos_)
       {
         // Enforce joint velocity limits
         vel_jnt_sat_interface_.enforceLimits(period);
@@ -905,130 +913,208 @@ void DynamixelGeneralHw::write(const ros::Time& time, const ros::Duration& perio
 
         // Propagate joint velocity commands to actuators
         robot_transmissions_.get<transmission_interface::JointToActuatorVelocityInterface>()->propagate();
+      }
 
-        // Convert ros_control actuator velocity command to dynamixel command
-        std::vector<uint8_t> vel_id_vec;
-        std::vector<int32_t> dxl_vel_vec;
-        uint8_t id_cnt = 0;
-        for (const std::pair<std::string, uint32_t>& dxl : dynamixel_)
+      // Convert ros_control actuator velocity command to dynamixel command
+      std::vector<uint8_t> vel_id_vec;
+      std::vector<int32_t> dxl_vel_vec;
+      uint8_t id_cnt = 0;
+      for (const std::pair<std::string, uint32_t>& dxl : dynamixel_)
+      {
+        if (std::isnan(actr_cmd_vel_[id_cnt]))
         {
-          if (std::isnan(actr_cmd_vel_[id_cnt]))
+          ROS_DEBUG_STREAM_DELAYED_THROTTLE(10, "Skipping velocity command to " << dxl.first
+                                                                                << " because it is NaN. Its "
+                                                                                   "controller may not work");
+        }
+        else
+        {
+          if (is_hold_pos_)
           {
-            ROS_DEBUG_STREAM_DELAYED_THROTTLE(10, "Skipping velocity command to " << dxl.first
-                                                                                  << " because it is NaN. Its "
-                                                                                     "controller may not work");
+            // Forcibly set velocity commands of valid actuators to 0 when is_hold_pos_ is true.
+            // This holds current positions of velocity-controlled actuators while is_hold_pos_ is true
+            actr_cmd_vel_[id_cnt] = 0;
+          }
+          uint8_t id = (uint8_t)dxl.second;
+          vel_id_vec.push_back(id);
+          const char* model_name = NULL;
+          model_name = dxl_wb_->getModelName(id);
+          if (dxl_wb_->getProtocolVersion() == 2.0f && strcmp(model_name, "XL-320") != 0)
+          {
+            dxl_vel_vec.push_back(dxl_wb_->convertVelocity2Value((uint8_t)dxl.second, actr_cmd_vel_[id_cnt]));
+          }
+          else if ((dxl_wb_->getProtocolVersion() == 2.0f && strcmp(model_name, "XL-320") == 0) ||
+                   (dxl_wb_->getProtocolVersion() == 1.0f && (strncmp(model_name, "AX", strlen("AX")) == 0 ||
+                                                              strncmp(model_name, "RX", strlen("RX")) == 0 ||
+                                                              strncmp(model_name, "EX", strlen("EX")) == 0 ||
+                                                              strncmp(model_name, "MX", strlen("MX")) == 0)))
+          {
+            // In this case, convertVelocity2Value returns a value with the wrong sign, so we cannot use this method
+            const ModelInfo* model_info = NULL;
+            model_info = dxl_wb_->getModelInfo(id);
+            int32_t value = 0;
+            double velocity = actr_cmd_vel_[id_cnt];
+            const float RPM2RADPERSEC = 0.104719755f;
+            if (velocity == 0)
+            {
+              value = 0;
+            }
+            else if (velocity < 0)
+            {
+              value = ((velocity * -1) / (model_info->rpm * RPM2RADPERSEC)) + 1023;
+            }
+            else if (velocity > 0)
+            {
+              value = (velocity / (model_info->rpm * RPM2RADPERSEC));
+            }
+            dxl_vel_vec.push_back(value);
           }
           else
           {
-            uint8_t id = (uint8_t)dxl.second;
-            vel_id_vec.push_back(id);
-            const char* model_name = NULL;
-            model_name = dxl_wb_->getModelName(id);
-            if (dxl_wb_->getProtocolVersion() == 2.0f && strcmp(model_name, "XL-320") != 0)
-            {
-              dxl_vel_vec.push_back(dxl_wb_->convertVelocity2Value((uint8_t)dxl.second, actr_cmd_vel_[id_cnt]));
-            }
-            else if ((dxl_wb_->getProtocolVersion() == 2.0f && strcmp(model_name, "XL-320") == 0) ||
-                     (dxl_wb_->getProtocolVersion() == 1.0f && (strncmp(model_name, "AX", strlen("AX")) == 0 ||
-                                                                strncmp(model_name, "RX", strlen("RX")) == 0 ||
-                                                                strncmp(model_name, "EX", strlen("EX")) == 0 ||
-                                                                strncmp(model_name, "MX", strlen("MX")) == 0)))
-            {
-              // In this case, convertVelocity2Value returns a value with the wrong sign, so we cannot use this method
-              const ModelInfo* model_info = NULL;
-              model_info = dxl_wb_->getModelInfo(id);
-              int32_t value = 0;
-              double velocity = actr_cmd_vel_[id_cnt];
-              const float RPM2RADPERSEC = 0.104719755f;
-              if (velocity == 0)
-              {
-                value = 0;
-              }
-              else if (velocity < 0)
-              {
-                value = ((velocity * -1) / (model_info->rpm * RPM2RADPERSEC)) + 1023;
-              }
-              else if (velocity > 0)
-              {
-                value = (velocity / (model_info->rpm * RPM2RADPERSEC));
-              }
-              dxl_vel_vec.push_back(value);
-            }
-            else
-            {
-              dxl_vel_vec.push_back(0);
-            }
+            dxl_vel_vec.push_back(0);
           }
-          id_cnt++;
         }
+        id_cnt++;
+      }
 
-        // Write velocity command to dynamixel
-        if (vel_id_vec.size() > 0)
+      // Write velocity command to dynamixel
+      if (vel_id_vec.size() > 0)
+      {
+        bool result = false;
+        const char* log = NULL;
+        uint8_t vel_id[vel_id_vec.size()];
+        int32_t dxl_vel[dxl_vel_vec.size()];
+        std::copy(vel_id_vec.begin(), vel_id_vec.end(), vel_id);
+        std::copy(dxl_vel_vec.begin(), dxl_vel_vec.end(), dxl_vel);
+        result =
+            dxl_wb_->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_VELOCITY, vel_id, vel_id_vec.size(), dxl_vel, 1, &log);
+        if (result == false)
         {
-          bool result = false;
-          const char* log = NULL;
-          uint8_t vel_id[vel_id_vec.size()];
-          int32_t dxl_vel[dxl_vel_vec.size()];
-          std::copy(vel_id_vec.begin(), vel_id_vec.end(), vel_id);
-          std::copy(dxl_vel_vec.begin(), dxl_vel_vec.end(), dxl_vel);
-          result =
-              dxl_wb_->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_VELOCITY, vel_id, vel_id_vec.size(), dxl_vel, 1, &log);
-          if (result == false)
-          {
-            ROS_ERROR("%s", log);
-          }
+          ROS_ERROR("%s", log);
         }
       }
-      if (is_calc_effort_ && is_current_ctrl_ &&
-          robot_transmissions_.get<transmission_interface::JointToActuatorEffortInterface>())
+    }
+    if (is_calc_effort_ && is_current_ctrl_ &&
+        robot_transmissions_.get<transmission_interface::JointToActuatorEffortInterface>())
+    {
+      // Update actuator effort commands only when is_hold_pos_ is false.
+      // This keeps which actuator is valid (having non-NaN command) while is_hold_pos_ is true
+      if (!is_hold_pos_)
       {
+        // Just after is_hold_pos_ becomes false, we must restore normal Operating Mode for normal execution
+        if (prev_is_hold_pos_)
+        {
+          for (const std::pair<std::string, std::map<std::string, int32_t>>& mode : normal_modes_)
+          {
+            dxl_wb_->torqueOff(dynamixel_[mode.first]);  // We cannot change Operating Mode while torque on
+            bool result = true;
+            const char* log = NULL;
+            for (const std::pair<std::string, int32_t>& addr_val : mode.second)
+            {
+              if (!dxl_wb_->writeRegister(dynamixel_[mode.first], addr_val.first.c_str(), addr_val.second, &log))
+              {
+                result = false;
+                break;
+              }
+            }
+            if (result == false)
+            {
+              ROS_ERROR("%s", log);
+            }
+            dxl_wb_->torqueOn(dynamixel_[mode.first]);
+          }
+          normal_modes_.clear();
+        }
+
         // Enforce joint effort limits
         eff_jnt_sat_interface_.enforceLimits(period);
         eff_jnt_soft_interface_.enforceLimits(period);
 
         // Propagate joint effort commands to actuators
         robot_transmissions_.get<transmission_interface::JointToActuatorEffortInterface>()->propagate();
+      }
 
-        // Convert ros_control actuator effort command to dynamixel command
-        std::vector<uint8_t> eff_id_vec;
-        std::vector<int32_t> dxl_eff_vec;
-        uint8_t id_cnt = 0;
-        for (const std::pair<std::string, uint32_t>& dxl : dynamixel_)
+      // Convert ros_control actuator effort command to dynamixel command
+      std::vector<uint8_t> eff_id_vec;
+      std::vector<int32_t> dxl_eff_vec;
+      uint8_t id_cnt = 0;
+      for (const std::pair<std::string, uint32_t>& dxl : dynamixel_)
+      {
+        double torque_const = torque_consts_[dxl.first];
+        if (torque_const > 0)
         {
-          double torque_const = torque_consts_[dxl.first];
-          if (torque_const > 0)
+          if (std::isnan(actr_cmd_eff_[id_cnt]))
           {
-            if (std::isnan(actr_cmd_eff_[id_cnt]))
-            {
-              ROS_DEBUG_STREAM_DELAYED_THROTTLE(10, "Skipping effort command to " << dxl.first
-                                                                                  << " because it is NaN. Its "
-                                                                                     "controller may not work");
-            }
-            else
+            ROS_DEBUG_STREAM_DELAYED_THROTTLE(10, "Skipping effort command to " << dxl.first
+                                                                                << " because it is NaN. Its "
+                                                                                   "controller may not work");
+          }
+          else
+          {
+            if (!is_hold_pos_)
             {
               eff_id_vec.push_back((uint8_t)dxl.second);
               dxl_eff_vec.push_back(
                   dxl_wb_->convertCurrent2Value((uint8_t)dxl.second, (actr_cmd_eff_[id_cnt] / torque_const) * 1000));
             }
+            else
+            {
+              // Just after is_hold_pos_ becomes true, save normal Operating Mode of valid actuators and switch to Velocity Control.
+              // While is_hold_pos_ is true, leave their velocity commands initial values (zero).
+              // This holds current positions of actuators while is_hold_pos_ is true.
+              // We avoid keeping Current Control because it requires PID loop to hold current positions.
+              // We do not select Position Control because it resets Present Position within one full rotation.
+              // We do not select Extended Position Control because some actuators do not have this mode
+              if (!prev_is_hold_pos_)
+              {
+                bool result = false;
+                const char* log = NULL;
+                int32_t data[2];
+                if (dxl_wb_->readRegister((uint8_t)dxl.second, "Operating_Mode", &data[0], &log))
+                {
+                  result = true;
+                  normal_modes_[dxl.first]["Operating_Mode"] = data[0];
+                }
+                else if (dxl_wb_->readRegister((uint8_t)dxl.second, "CW_Angle_Limit", &data[0], &log) &&
+                         dxl_wb_->readRegister((uint8_t)dxl.second, "CCW_Angle_Limit", &data[1], &log))
+                {
+                  // On some actuators, Operating Mode is represented by CW/CCW Angle Limit
+                  result = true;
+                  normal_modes_[dxl.first]["CW_Angle_Limit"] = data[0];
+                  normal_modes_[dxl.first]["CCW_Angle_Limit"] = data[1];
+                }
+                if (result == false)
+                {
+                  ROS_ERROR("%s", log);
+                }
+                dxl_wb_->torqueOff((uint8_t)dxl.second);  // We cannot change Operating Mode while torque on
+                result = dxl_wb_->setVelocityControlMode((uint8_t)dxl.second, &log);
+                if (result == false)
+                {
+                  ROS_ERROR("%s", log);
+                }
+                dxl_wb_->torqueOn((uint8_t)dxl.second);
+              }
+            }
           }
-          id_cnt++;
         }
+        id_cnt++;
+      }
 
-        // Write effort command to dynamixel
-        if (eff_id_vec.size() > 0)
+      // Write effort command to dynamixel
+      if (eff_id_vec.size() > 0)
+      {
+        bool result = false;
+        const char* log = NULL;
+        uint8_t eff_id[eff_id_vec.size()];
+        int32_t dxl_eff[dxl_eff_vec.size()];
+        std::copy(eff_id_vec.begin(), eff_id_vec.end(), eff_id);
+        std::copy(dxl_eff_vec.begin(), dxl_eff_vec.end(), dxl_eff);
+        result =
+            dxl_wb_->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_CURRENT, eff_id, eff_id_vec.size(), dxl_eff, 1, &log);
+        if (result == false)
         {
-          bool result = false;
-          const char* log = NULL;
-          uint8_t eff_id[eff_id_vec.size()];
-          int32_t dxl_eff[dxl_eff_vec.size()];
-          std::copy(eff_id_vec.begin(), eff_id_vec.end(), eff_id);
-          std::copy(dxl_eff_vec.begin(), dxl_eff_vec.end(), dxl_eff);
-          result =
-              dxl_wb_->syncWrite(SYNC_WRITE_HANDLER_FOR_GOAL_CURRENT, eff_id, eff_id_vec.size(), dxl_eff, 1, &log);
-          if (result == false)
-          {
-            ROS_ERROR("%s", log);
-          }
+          ROS_ERROR("%s", log);
         }
       }
     }
@@ -1040,8 +1126,35 @@ void DynamixelGeneralHw::write(const ros::Time& time, const ros::Duration& perio
     {
       dxl_wb_->torqueOff((uint8_t)dxl.second);
     }
+
+    // Servo off resets other special states
+    is_hold_pos_raw_ = false;
+    is_hold_pos_ = false;
+    if (normal_modes_.size() > 0)
+    {
+      // Restore normal Operating Mode
+      for (const std::pair<std::string, std::map<std::string, int32_t>>& mode : normal_modes_)
+      {
+        bool result = true;
+        const char* log = NULL;
+        for (const std::pair<std::string, int32_t>& addr_val : mode.second)
+        {
+          if (!dxl_wb_->writeRegister(dynamixel_[mode.first], addr_val.first.c_str(), addr_val.second, &log))
+          {
+            result = false;
+            break;
+          }
+        }
+        if (result == false)
+        {
+          ROS_ERROR("%s", log);
+        }
+      }
+      normal_modes_.clear();
+    }
   }
   prev_is_servo_ = is_servo_;
+  prev_is_hold_pos_ = is_hold_pos_;
 }
 
 bool DynamixelGeneralHw::isJntCmdIgnored(void)

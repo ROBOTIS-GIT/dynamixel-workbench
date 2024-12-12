@@ -98,6 +98,8 @@ protected:
   ros::Subscriber hold_pos_sub_;
   bool is_hold_pos_raw_;
   bool is_hold_pos_;
+  bool prev_is_hold_pos_;
+  std::map<std::string, std::map<std::string, int32_t>> normal_modes_;
 
   // Dynamixel-specific interfaces
   ros::Publisher dynamixel_state_pub_;
