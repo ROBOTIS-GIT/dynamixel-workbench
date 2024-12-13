@@ -13,10 +13,12 @@ DynamixelGeneralHw::DynamixelGeneralHw()
   , prev_is_hold_pos_(false)
   , is_current_ctrl_(true)
   , is_current_eq_load_(false)
+  , last_write_tm_(0)
 {
   is_calc_effort_ = pnh_.param<bool>("calculate_effort", true);
   is_pub_temp_ = pnh_.param<bool>("publish_temperature", true);
   is_pub_volt_ = pnh_.param<bool>("publish_input_voltage", true);
+  write_read_interval_ = pnh_.param<double>("write_read_interval", -1);
 
   dxl_wb_.reset(new DynamixelWorkbench);
 }
@@ -581,6 +583,19 @@ void DynamixelGeneralHw::readDynamixelState(void)
     id_array[id_cnt++] = (uint8_t)dxl.second;
   }
 
+  if (write_read_interval_ > 0 && last_write_tm_ > ros::Time(0))
+  {
+    // Sleep until write_read_interval_ is accomplished
+    const ros::Time now = ros::Time::now();
+    if (now > last_write_tm_)
+    {
+      double sleep_dur = write_read_interval_ - (now - last_write_tm_).toSec();
+      if (sleep_dur > 0)
+      {
+        ros::Duration(sleep_dur).sleep();
+      }
+    }
+  }
   if (dxl_wb_->getProtocolVersion() == 2.0f)
   {
     result = dxl_wb_->syncRead(SYNC_READ_HANDLER_FOR_PRESENT_INFO,
@@ -898,6 +913,7 @@ void DynamixelGeneralHw::write(const ros::Time& time, const ros::Duration& perio
           {
             ROS_ERROR("%s", log);
           }
+          last_write_tm_ = ros::Time::now();
         }
       }
     }
@@ -992,6 +1008,7 @@ void DynamixelGeneralHw::write(const ros::Time& time, const ros::Duration& perio
         {
           ROS_ERROR("%s", log);
         }
+        last_write_tm_ = ros::Time::now();
       }
     }
     if (is_calc_effort_ && is_current_ctrl_ &&
@@ -1094,6 +1111,7 @@ void DynamixelGeneralHw::write(const ros::Time& time, const ros::Duration& perio
                   ROS_ERROR("%s", log);
                 }
                 dxl_wb_->torqueOn((uint8_t)dxl.second);
+                last_write_tm_ = ros::Time::now();
               }
             }
           }
@@ -1116,6 +1134,7 @@ void DynamixelGeneralHw::write(const ros::Time& time, const ros::Duration& perio
         {
           ROS_ERROR("%s", log);
         }
+        last_write_tm_ = ros::Time::now();
       }
     }
   }
@@ -1126,6 +1145,7 @@ void DynamixelGeneralHw::write(const ros::Time& time, const ros::Duration& perio
     {
       dxl_wb_->torqueOff((uint8_t)dxl.second);
     }
+    last_write_tm_ = ros::Time::now();
 
     // Servo off resets other special states
     is_hold_pos_raw_ = false;
@@ -1149,6 +1169,7 @@ void DynamixelGeneralHw::write(const ros::Time& time, const ros::Duration& perio
         {
           ROS_ERROR("%s", log);
         }
+        last_write_tm_ = ros::Time::now();
       }
       normal_modes_.clear();
     }

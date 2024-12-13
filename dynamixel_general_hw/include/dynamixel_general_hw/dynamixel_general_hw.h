@@ -58,6 +58,8 @@ protected:
   dynamixel_general_hw::DynamixelStateList dynamixel_state_list_;
   uint16_t read_start_addr_;
   uint16_t read_length_;
+  double write_read_interval_;
+  ros::Time last_write_tm_;
 
   // Transmission loader
   transmission_interface::RobotTransmissions robot_transmissions_;

@@ -33,6 +33,8 @@
        doc="Whether to publish Dynamixel actuator temperature" />
   <arg name="publish_input_voltage" default="true"
        doc="Whether to publish Dynamixel actuator input voltage" />
+  <arg name="write_read_interval" default="-1"
+       doc="Minimal interval [sec] from writing Dynamixel to reading Dynamixel. -1 means fastest execution. You can increase this if you face reading error even when you decrease latency_timer as much as you can. Cf. https://forum.robotis.com/t/error-reading-position-value-after-write-position/6207" />
   <arg name="launch_rviz" default="false"
        doc="Whether to start RViz" />
   <arg name="rvizconfig" default="$(find dynamixel_general_hw)/config/sample_robot.rviz"
@@ -61,6 +63,7 @@
         calculate_effort: $(arg calculate_effort)
         publish_temperature: $(arg publish_temperature)
         publish_input_voltage: $(arg publish_input_voltage)
+        write_read_interval: $(arg write_read_interval)
       </rosparam>
       <rosparam param="dynamixel_info" file="$(arg dynamixel_info_file)" command="load" />
     </node>
