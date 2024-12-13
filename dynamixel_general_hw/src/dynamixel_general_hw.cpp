@@ -1174,6 +1174,12 @@ void DynamixelGeneralHw::write(const ros::Time& time, const ros::Duration& perio
       normal_modes_.clear();
     }
   }
+  if (isJntCmdIgnored())
+  {
+    // Reset joint limit interfaces to prevent runaway when going back to normal state
+    pos_jnt_sat_interface_.reset();
+    pos_jnt_soft_interface_.reset();
+  }
   prev_is_servo_ = is_servo_;
   prev_is_hold_pos_ = is_hold_pos_;
 }
