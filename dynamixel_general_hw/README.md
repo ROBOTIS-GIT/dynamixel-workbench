@@ -300,7 +300,30 @@ A launch file to run the ros_control layer. Launch it when Dynamixel actuators a
 
 #### Arguments
 
-Check them by `roslaunch dynamixel_general_hw dynamixel_general_control.launch --ros-args`.
+Check them by `roslaunch dynamixel_general_hw dynamixel_general_control.launch --ros-args`:
+```
+Required Arguments:
+  baud_rate: Baud rate of target Dynamixel actuators (e.g., '57600')
+  controllers_file: Configuration file for ros_control controllers (e.g., '/home/pazeshun/catkin_ws/src/dynamixel-workbench/dynamixel_general_hw/config/sample1_2/default_controllers.yaml')
+  controllers_to_start: Controllers started at launching (e.g., 'joint_state_controller position_joint_trajectory_controller')
+  dynamixel_info_file: Configuration file for target Dynamixel actuators (e.g., '/home/pazeshun/catkin_ws/src/dynamixel-workbench/dynamixel_general_hw/config/sample1_2/dynamixel_info.yaml')
+  namespace: Namespace of the nodes started by this launch file. Specifying your robot's name or the name of the part using target actuators is recommended (e.g., 'sample_robot')
+  port_name: Port connecting with target Dynamixel actuators (e.g., '/dev/ttyUSB0')
+  robot_description_file: URDF/Xacro of your robot (e.g., '/home/pazeshun/catkin_ws/src/dynamixel-workbench/dynamixel_general_hw/urdf/sample1.urdf'). If 'set_robot_description' is false, you can set a dummy string to this argument because this argument is not used
+Optional Arguments:
+  calculate_effort (default "true"): Whether to calculate joint effort from Dynamixel actuator current/load
+  control_rate (default "20"): Hz of the control loop
+  joint_states_topic (default "joint_states"): Name of joint_states topic published and subscribed by the nodes started by this launch file. If this is a relative name, its global name becomes (namespace)/(joint_states_topic)
+  launch_robot_state_publisher (default "true"): Whether to start robot_state_publisher at launching
+  launch_rviz (default "false"): Whether to start RViz
+  publish_input_voltage (default "true"): Whether to publish Dynamixel actuator input voltage
+  publish_temperature (default "true"): Whether to publish Dynamixel actuator temperature
+  required (default "true"): Whether to kill entire roslaunch if control node dies
+  robot_description_param (default "robot_description"): Name of robot_description parameter read by the nodes started by this launch file. If this is a relative name, its global name becomes (namespace)/(robot_description_param)
+  rvizconfig (default "/home/pazeshun/catkin_ws/src/dynamixel-workbench/dynamixel_general_hw/config/sample_robot.rviz"): Configuration file for RViz
+  set_robot_description (default "true"): Whether to set robot_description parameter at launching
+  write_read_interval (default "-1"): Minimal interval [sec] from writing Dynamixel to reading Dynamixel. -1 means fastest execution. You can increase this if you face reading error even when you decrease latency_timer as much as you can. Cf. https://forum.robotis.com/t/error-reading-position-value-after-write-position/6207
+```
 
 #### Minimal publishing topics
 
