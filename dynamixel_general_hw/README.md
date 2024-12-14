@@ -335,14 +335,15 @@ Optional Arguments:
 
 - `$(arg namespace)/dynamixel_general_control/servo` (`std_msgs/Bool`)
 
-  Servo ON/OFF signal. You can use this to implement an emergency stop function.
-  Servo OFF resets other special states (i.e., `hold_position`).
+  Servo ON/OFF signal. `true` means servo ON and `false` means servo OFF.
+  You can use this to implement an emergency stop function.
+  Servo OFF resets the other special states (i.e., `hold_position`).
 
 - `$(arg namespace)/dynamixel_general_control/hold_position` (`std_msgs/Bool`)
 
   When this is `true`, the actuators hold their current positions regardless of commanded positions.
   You can also use this to implement an emergency stop function.  
-  Note that if you use effort (torque) control or "Current-based Position Control Mode", the actuators become servo OFF for a moment before holding their positions.
+  Note that if you use effort (torque) control or "Current-based Position Control Mode" on some actuators, they become torque OFF for a moment before holding their positions.
   If this behavior is unacceptable to your application, avoid using this topic.
 
 #### Minimal services
