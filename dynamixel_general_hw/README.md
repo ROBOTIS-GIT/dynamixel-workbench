@@ -309,6 +309,7 @@ Required Arguments:
   dynamixel_info_file: Configuration file for target Dynamixel actuators (e.g., '/home/pazeshun/catkin_ws/src/dynamixel-workbench/dynamixel_general_hw/config/sample1_2/dynamixel_info.yaml')
   namespace: Namespace of the nodes started by this launch file. Specifying your robot's name or the name of the part using target actuators is recommended (e.g., 'sample_robot')
   port_name: Port connecting with target Dynamixel actuators (e.g., '/dev/ttyUSB0')
+  robot_description_args: Xacro args to parse robot_description_file
   robot_description_file: URDF/Xacro of your robot (e.g., '/home/pazeshun/catkin_ws/src/dynamixel-workbench/dynamixel_general_hw/urdf/sample1.urdf'). If 'set_robot_description' is false, you can set a dummy string to this argument because this argument is not used
 Optional Arguments:
   calculate_effort (default "true"): Whether to calculate joint effort from Dynamixel actuator current/load

@@ -19,6 +19,8 @@
        doc="Whether to set robot_description parameter at launching" />
   <arg name="robot_description_param" default="robot_description"
        doc="Name of robot_description parameter read by the nodes started by this launch file. If this is a relative name, its global name becomes (namespace)/(robot_description_param)" />
+  <arg name="robot_description_args" default=""
+       doc="Xacro args to parse robot_description_file" />
   <arg name="launch_robot_state_publisher" default="true"
        doc="Whether to start robot_state_publisher at launching" />
   <arg name="required" default="true"
@@ -44,7 +46,7 @@
 
     <param if="$(arg set_robot_description)"
            name="$(arg robot_description_param)"
-           command="$(find xacro)/xacro $(arg robot_description_file)" />
+           command="$(find xacro)/xacro $(arg robot_description_file) $(arg robot_description_args)" />
 
     <node if="$(arg launch_robot_state_publisher)"
           name="robot_state_publisher"
