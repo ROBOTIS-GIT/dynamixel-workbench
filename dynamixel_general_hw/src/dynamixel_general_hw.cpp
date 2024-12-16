@@ -452,6 +452,7 @@ bool DynamixelGeneralHw::initRosInterface(void)
 
   // Load transmissions composed of target actuators
   jnt_names_.clear();
+  std::vector<std::string> found_actrs;
   for (const transmission_interface::TransmissionInfo& info : infos)
   {
     if (std::find(actr_names_.begin(), actr_names_.end(), info.actuators_[0].name_) != actr_names_.end())
@@ -471,10 +472,22 @@ bool DynamixelGeneralHw::initRosInterface(void)
         return false;
       }
       ROS_INFO_STREAM("Loaded transmission: " << info.name_);
+      for (const transmission_interface::ActuatorInfo& actuator : info.actuators_)
+      {
+        found_actrs.push_back(actuator.name_);
+      }
       for (const transmission_interface::JointInfo& joint : info.joints_)
       {
         jnt_names_.push_back(joint.name_);
       }
+    }
+  }
+  for (const std::string& actr_name : actr_names_)
+  {
+    if (std::find(found_actrs.begin(), found_actrs.end(), actr_name) == found_actrs.end())
+    {
+      ROS_ERROR_STREAM("Cannot find " << actr_name << " in loaded transmissions");
+      return false;
     }
   }
 
