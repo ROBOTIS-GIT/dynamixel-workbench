@@ -67,10 +67,10 @@
         publish_input_voltage: $(arg publish_input_voltage)
         write_read_interval: $(arg write_read_interval)
       </rosparam>
-      <rosparam param="dynamixel_info" file="$(arg dynamixel_info_file)" command="load" />
+      <rosparam param="dynamixel_info" file="$(arg dynamixel_info_file)" command="load" subst_value="true" />
     </node>
 
-    <rosparam file="$(arg controllers_file)" command="load" />
+    <rosparam file="$(arg controllers_file)" command="load" subst_value="true" />
     <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"
           args="$(arg controllers_to_start)" />
 
