@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<robot name="sample_robot">
+
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="0.2 0.2 0.2"/>
+      </geometry>
+      <material name="red">
+        <color rgba="1 0 0 1"/>
+      </material>
+    </visual>
+  </link>
+
+  <link name="sample_link">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0.3"/>
+      <geometry>
+        <box size="0.2 0.2 0.6"/>
+      </geometry>
+      <material name="green">
+        <color rgba="0 1 0 1"/>
+      </material>
+    </visual>
+  </link>
+
+  <!--
+    Joint limits are example values for XC330-T288-T with sample_trans (it is written later).
+    lower: ((Min Position Limit [rad]) - (center position [rad])) / (mechanicalReduction in sample_trans) = (0 - pi) / 1.0
+    upper: ((Max Position Limit [rad]) - (center position [rad])) / (mechanicalReduction in sample_trans) = (2 * pi - pi) / 1.0
+    velocity: (No Load Speed [rad/s]) / (mechanicalReduction in sample_trans) = (65 [rev/min] * 2 * pi / 60) / 1.0
+    You do not have to change those values when you just try this sample because those values have little influence on main topics of this sample.
+    But when you apply dynamixel_general_hw to your robot, you may have to change those values in your urdf depending on your situation (e.g., you use a different actuator, link collision occurs in your real robot when the actuator moves to Min/Max Position Limit, you want to keep a motion slow for safety)
+  -->
+  <joint name="sample_joint" type="revolute">
+    <origin rpy="0 0 0" xyz="0 0 0.1"/>
+    <parent link="base_link"/>
+    <child link="sample_link"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-3.1415" upper="3.1415" effort="0" velocity="6.8"/>
+  </joint>
+
+  <!--
+    transmission tag describes the relationship between a joint in your robot and its actuator.
+    dynamixel_general_hw loads this in order to:
+    - convert Dynamixel actuator state into joint-level state
+    - convert joint-level command into Dynamixel actuator command
+    dynamixel_general_hw only loads transmissions whose actuator names are included in dynamixel_info.yaml.
+    Joints of those transmissions will be managed by dynamixel_general_hw.
+    Therefore, you can use a whole-body URDF/Xacro including non-Dynamixel actuators by specifying target Dynamixel actuators in dynamixel_info.yaml
+  -->
+  <!--
+    Specify one or more hardwareInterface.
+    hardware_interface/PositionJointInterface is specified because the ros_control controller used in this sample requires it.
+    But you can specify other interfaces in parallel to prepare for loading other controllers
+  -->
+  <transmission name="sample_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="sample_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+      <offset>0.0</offset>
+    </joint>
+    <actuator name="sample_motor">
+      <mechanicalReduction>1.0</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+</robot>

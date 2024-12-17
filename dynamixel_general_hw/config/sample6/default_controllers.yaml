@@ -1,0 +1,13 @@
+joint_state_controller:
+  type: joint_state_controller/JointStateController
+  publish_rate: $(arg control_rate)
+
+position_joint_trajectory_controller:
+  type: position_controllers/JointTrajectoryController
+  joints:
+    - sample_joint
+
+joint_group_effort_controller:
+  type: effort_controllers/JointGroupEffortController
+  joints:
+    - sample_joint
