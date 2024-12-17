@@ -38,7 +38,7 @@
   <arg name="publish_input_voltage" default="true"
        doc="Whether to publish Dynamixel actuator input voltage" />
   <arg name="write_read_interval" default="-1"
-       doc="Minimal interval [sec] from writing Dynamixel to reading Dynamixel. -1 means fastest execution. You can increase this if you face reading error even when you decrease latency_timer as much as you can. Cf. https://forum.robotis.com/t/error-reading-position-value-after-write-position/6207" />
+       doc="Minimal interval [sec] from writing Dynamixel to reading Dynamixel. Non-positive value means that interval will be entirely determined by control_rate and how long reading and writing take. You can increase this if you face reading error even when you decrease latency_timer as much as you can. Cf. https://forum.robotis.com/t/error-reading-position-value-after-write-position/6207" />
   <arg name="launch_rviz" default="false"
        doc="Whether to start RViz" />
   <arg name="rvizconfig" default="$(find dynamixel_general_hw)/config/sample_robot.rviz"

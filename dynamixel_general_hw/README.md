@@ -324,7 +324,7 @@ Optional Arguments:
   robot_description_param (default "robot_description"): Name of robot_description parameter read by the nodes started by this launch file. If this is a relative name, its global name becomes (namespace)/(robot_description_param)
   rvizconfig (default "/home/pazeshun/catkin_ws/src/dynamixel-workbench/dynamixel_general_hw/config/sample_robot.rviz"): Configuration file for RViz
   set_robot_description (default "true"): Whether to set robot_description parameter at launching
-  write_read_interval (default "-1"): Minimal interval [sec] from writing Dynamixel to reading Dynamixel. -1 means fastest execution. You can increase this if you face reading error even when you decrease latency_timer as much as you can. Cf. https://forum.robotis.com/t/error-reading-position-value-after-write-position/6207
+  write_read_interval (default "-1"): Minimal interval [sec] from writing Dynamixel to reading Dynamixel. Non-positive value means that interval will be entirely determined by control_rate and how long reading and writing take. You can increase this if you face reading error even when you decrease latency_timer as much as you can. Cf. https://forum.robotis.com/t/error-reading-position-value-after-write-position/6207
 ```
 
 #### Minimal publishing topics
