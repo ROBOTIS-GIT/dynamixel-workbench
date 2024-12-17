@@ -25,6 +25,8 @@
        doc="Whether to start robot_state_publisher at launching" />
   <arg name="required" default="true"
        doc="Whether to kill entire roslaunch if control node dies" />
+  <arg name="respawn" default="false"
+       doc="Whether to restart control node automatically if it quits" />
   <arg name="joint_states_topic" default="joint_states"
        doc="Name of joint_states topic published and subscribed by the nodes started by this launch file. If this is a relative name, its global name becomes (namespace)/(joint_states_topic)" />
   <arg name="control_rate" default="20"
@@ -55,7 +57,8 @@
       <remap from="joint_states" to="$(arg joint_states_topic)"/>
     </node>
 
-    <node name="dynamixel_general_control" pkg="dynamixel_general_hw" type="dynamixel_general_control_node" required="$(arg required)" output="screen">
+    <node name="dynamixel_general_control" pkg="dynamixel_general_hw" type="dynamixel_general_control_node"
+          required="$(arg required)" respawn="$(arg respawn)" output="screen">
       <remap from="robot_description" to="$(arg robot_description_param)" />
       <remap from="joint_states" to="$(arg joint_states_topic)" />
       <rosparam subst_value="true">

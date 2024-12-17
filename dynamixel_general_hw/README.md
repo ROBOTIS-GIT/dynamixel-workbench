@@ -320,6 +320,7 @@ Optional Arguments:
   publish_input_voltage (default "true"): Whether to publish Dynamixel actuator input voltage
   publish_temperature (default "true"): Whether to publish Dynamixel actuator temperature
   required (default "true"): Whether to kill entire roslaunch if control node dies
+  respawn (default "false"): Whether to restart control node automatically if it quits
   robot_description_param (default "robot_description"): Name of robot_description parameter read by the nodes started by this launch file. If this is a relative name, its global name becomes (namespace)/(robot_description_param)
   rvizconfig (default "/home/pazeshun/catkin_ws/src/dynamixel-workbench/dynamixel_general_hw/config/sample_robot.rviz"): Configuration file for RViz
   set_robot_description (default "true"): Whether to set robot_description parameter at launching
