@@ -228,7 +228,7 @@ If you want the actuator to output the exact effort you command, you may have to
 In addition, if you command a big effort, the actuator vibrates because its velocity sometimes violates the velocity limit defined in URDF and the effort command is overwritten to zero.
 If you want to avoid this vibration, you should prepare your own URDF having a well-configured velocity limit and pass it to `dynamixel_general_control.launch`.
 
-### Sample 6: using "Current-based Position Control Mode" of Dynamixel
+### Sample 6: position control with effort limit (called "Current-based Position Control Mode" in Dynamixel manual)
 
 This sample assumes that one bare Dynamixel actuator whose ID and baud rate are `1` and `57600` is connected via the port `/dev/ttyUSB0`.
 You can change the baud rate and the port via roslaunch arguments.
