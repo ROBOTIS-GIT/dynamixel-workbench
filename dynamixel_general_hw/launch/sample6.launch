@@ -15,4 +15,15 @@
     <arg name="rvizconfig" value="$(find dynamixel_general_hw)/config/sample_robot.rviz" />
   </include>
 
+  <!--
+    Change initial effort limit from zero to maximum effort defined in URDF
+    to make actuator drivable from the beginning
+  -->
+  <group ns="sample_robot">
+    <node pkg="rostopic" type="rostopic" name="set_initial_effort_limit"
+          args="pub joint_group_effort_controller/command std_msgs/Float64MultiArray
+                '{layout: {dim: [], data_offset: 0}, data: [0.92]}'"
+          output="screen"/>
+  </group>
+
 </launch>
