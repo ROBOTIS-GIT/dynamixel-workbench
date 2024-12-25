@@ -1,0 +1,8 @@
+joint_state_controller:
+  type: joint_state_controller/JointStateController
+  publish_rate: $(arg control_rate)
+
+joint_group_velocity_controller:
+  type: velocity_controllers/JointGroupVelocityController
+  joints:
+    - sample_joint

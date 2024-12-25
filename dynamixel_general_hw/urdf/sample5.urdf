@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<robot name="sample_robot">
+
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="0.2 0.2 0.2"/>
+      </geometry>
+      <material name="red">
+        <color rgba="1 0 0 1"/>
+      </material>
+    </visual>
+  </link>
+
+  <link name="sample_link">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0.3"/>
+      <geometry>
+        <box size="0.2 0.2 0.6"/>
+      </geometry>
+      <material name="green">
+        <color rgba="0 1 0 1"/>
+      </material>
+    </visual>
+  </link>
+
+  <!--
+    Joint limits are example values for XC330-T288-T with sample_trans (it is written later).
+    effort: (Stall Torque [Nm]) * (mechanicalReduction in sample_trans) = 0.92 * 1.0
+    velocity: (No Load Speed [rad/s]) / (mechanicalReduction in sample_trans) = (65 [rev/min] * 2 * pi / 60) / 1.0
+  -->
+  <joint name="sample_joint" type="continuous">
+    <origin rpy="0 0 0" xyz="0 0 0.1"/>
+    <parent link="base_link"/>
+    <child link="sample_link"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="0.92" velocity="6.8"/>
+  </joint>
+
+  <!--
+    Specify one or more hardwareInterface.
+    hardware_interface/EffortJointInterface is specified because the ros_control controller used in this sample requires it.
+    But you can specify other interfaces in parallel to prepare for loading other controllers
+  -->
+  <transmission name="sample_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="sample_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <offset>0.0</offset>
+    </joint>
+    <actuator name="sample_motor">
+      <mechanicalReduction>1.0</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+</robot>

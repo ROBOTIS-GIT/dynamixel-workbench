@@ -1,0 +1,18 @@
+# You can find control table of Dynamixel on emanual (http://emanual.robotis.com/#control-table).
+# Control table item has to be set Camel_Case and not included whitespace.
+# You are supposed to set at least Dynamixel ID.
+# torque_constant is a special value which is not in the control table.
+# This value is used for converting current ("Present Current" in [A]) or load ("Present Load" in dimensionless ratio) into torque [Nm] by the following equations:
+#   current * torque_constant = torque
+#   load * torque_constant = torque
+# Note that ROBOTIS does not provide this value and you can set a value suitable for your application.
+# Typical example value can be calculated from Stall Torque information.
+# Current case: torque_constant = (Stall Torque [Nm]) / (Current at Stall Torque [A])
+# Load case: torque_constant = (Stall Torque [Nm])
+sample_motor:
+  ID: 1
+  Return_Delay_Time: 0
+  torque_constant: 1.15
+# Above torque_constant is an example value for XC330-T288-T: (Stall Torque [Nm]) / (Current at Stall Torque [A]) = 0.92 / 0.80
+# You do not have to change that value when you just try this sample because that value have little influence on main topics of this sample.
+# But when you apply dynamixel_general_hw to your robot, you may have to change this value in your yaml depending on your situation (e.g., you use a different actuator, a different torque constant value is good for your operation range)
