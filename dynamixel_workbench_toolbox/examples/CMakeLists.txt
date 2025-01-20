@@ -16,6 +16,8 @@ add_library(dynamixel_workbench
 
 if(APPLE)
   target_link_libraries(dynamixel_workbench LINK_PUBLIC "/usr/local/lib/libdxl_mac_cpp.dylib")
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "arm" OR CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
+  target_link_libraries(dynamixel_workbench LINK_PUBLIC "/usr/local/lib/libdxl_sbc_cpp.so")
 else()
   target_link_libraries(dynamixel_workbench LINK_PUBLIC "/usr/local/lib/libdxl_x64_cpp.so")
 endif()
