@@ -67,7 +67,7 @@ class DynamixelTool
   float getMaxRadian(void);
 
   uint8_t getTheNumberOfControlItem(void);
-  
+
   const ControlItem *getControlItem(const char *item_name, const char **log = NULL);
   const ControlItem *getControlTable(void);
   const ModelInfo *getModelInfo(void);

@@ -44,7 +44,7 @@ class DynamixelWorkbench : public DynamixelDriver
 
   bool setNormalDirection(uint8_t id, const char **log = NULL);
   bool setReverseDirection(uint8_t id, const char **log = NULL);
-  
+
   bool setVelocityBasedProfile(uint8_t id, const char **log = NULL);
   bool setTimeBasedProfile(uint8_t id, const char **log = NULL);
 
@@ -52,8 +52,8 @@ class DynamixelWorkbench : public DynamixelDriver
 
   bool setCurrentControlMode(uint8_t id, const char **log = NULL);
   bool setTorqueControlMode(uint8_t id, const char **log = NULL);
-  bool setVelocityControlMode(uint8_t id, const char **log = NULL);  
-  bool setPositionControlMode(uint8_t id, const char **log = NULL);  
+  bool setVelocityControlMode(uint8_t id, const char **log = NULL);
+  bool setPositionControlMode(uint8_t id, const char **log = NULL);
   bool setExtendedPositionControlMode(uint8_t id, const char **log = NULL);
   bool setMultiTurnControlMode(uint8_t id, const char **log = NULL);
   bool setCurrentBasedPositionControlMode(uint8_t id, const char **log = NULL);
@@ -70,7 +70,7 @@ class DynamixelWorkbench : public DynamixelDriver
   bool goalPosition(uint8_t id, float radian, const char **log = NULL);
 
   bool goalSpeed(uint8_t id, int value, const char **log = NULL);       //keep compatibility with older codes
-  bool goalVelocity(uint8_t id, int value, const char **log = NULL);    //keep compatibility with older codes  
+  bool goalVelocity(uint8_t id, int value, const char **log = NULL);    //keep compatibility with older codes
   // bool goalVelocity(uint8_t id, int32_t value, const char **log = NULL);
   bool goalVelocity(uint8_t id, float velocity, const char **log = NULL);
 

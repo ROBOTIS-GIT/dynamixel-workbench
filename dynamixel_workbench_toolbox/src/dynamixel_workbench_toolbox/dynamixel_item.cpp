@@ -163,7 +163,7 @@ static const ModelInfo info_AX = {0.11,
                                   0,
                                   512,
                                   1024,
-                                  -2.61799, 
+                                  -2.61799,
                                   2.61799};
 
 //---------------------------------------------------------
@@ -210,7 +210,7 @@ static const ModelInfo info_RX = {0.11,
                                   0,
                                   512,
                                   1024,
-                                  -2.61799, 
+                                  -2.61799,
                                   2.61799};
 
 //---------------------------------------------------------
@@ -259,7 +259,7 @@ static const ModelInfo info_EX = {0.11,
                                   0,
                                   2048,
                                   4096,
-                                  -2.18969008, 
+                                  -2.18969008,
                                   2.18969008};
 
 //---------------------------------------------------------
@@ -308,7 +308,7 @@ static const ModelInfo info_MX = {0.11,
                                   0,
                                   2048,
                                   4096,
-                                  -3.14159265, 
+                                  -3.14159265,
                                   3.14159265};
 
 //---------------------------------------------------------
@@ -372,7 +372,7 @@ static const ModelInfo info_MX2 = {0.229,
                                   0,
                                   2048,
                                   4096,
-                                  -3.14159265, 
+                                  -3.14159265,
                                   3.14159265};
 
 //---------------------------------------------------------
@@ -424,7 +424,7 @@ static const ModelInfo info_EXTMX = {0.11,
                                   0,
                                   2048,
                                   4096,
-                                  -3.14159265, 
+                                  -3.14159265,
                                   3.14159265};
 
 //---------------------------------------------------------
@@ -490,7 +490,7 @@ static const ModelInfo info_EXTMX2 = {0.229,
                                   0,
                                   2048,
                                   4096,
-                                  -3.14159265, 
+                                  -3.14159265,
                                   3.14159265};
 
 //---------------------------------------------------------
@@ -536,7 +536,7 @@ static const ModelInfo info_XL320 = {0.11,
                                   0,
                                   512,
                                   1024,
-                                  -2.61799, 
+                                  -2.61799,
                                   2.61799};
 
 //---------------------------------------------------------
@@ -604,7 +604,7 @@ static const ModelInfo info_X330 = {0.229,
                                   0,
                                   2048,
                                   4096,
-                                  -3.14159265, 
+                                  -3.14159265,
                                   3.14159265};
 
 //---------------------------------------------------------
@@ -670,7 +670,7 @@ static const ModelInfo info_XL = {0.229,
                                   0,
                                   2048,
                                   4096,
-                                  -3.14159265, 
+                                  -3.14159265,
                                   3.14159265};
 
 //---------------------------------------------------------
@@ -738,7 +738,7 @@ static const ModelInfo info_XM = {0.229,
                                   0,
                                   2048,
                                   4096,
-                                  -3.14159265, 
+                                  -3.14159265,
                                   3.14159265};
 
 //---------------------------------------------------------
@@ -812,7 +812,7 @@ static const ModelInfo info_EXTXM = {0.229,
                                   0,
                                   2048,
                                   4096,
-                                  -3.14159265, 
+                                  -3.14159265,
                                   3.14159265};
 
 //---------------------------------------------------------
@@ -880,7 +880,7 @@ static const ModelInfo info_XH = {0.229,
                                   0,
                                   2048,
                                   4096,
-                                  -3.14159265, 
+                                  -3.14159265,
                                   3.14159265};
 
 //---------------------------------------------------------
@@ -948,7 +948,7 @@ static const ModelInfo info_EXTXH = {0.229,
                                   0,
                                   2048,
                                   4096,
-                                  -3.14159265, 
+                                  -3.14159265,
                                   3.14159265};
 
 //---------------------------------------------------------
@@ -1074,7 +1074,7 @@ static const ModelInfo info_PRO = {0.114,
                                   -2048,
                                   0,
                                   2048,
-                                  -3.14159265, 
+                                  -3.14159265,
                                   3.14159265};
 
 //---------------------------------------------------------
@@ -1140,7 +1140,7 @@ static const ModelInfo info_EXTPRO[] = {
       {0.00199234, -250961, 0, 250961, -3.14159265, 3.14159265}}; // PRO_H54_100_S500_R, PRO_H54_200_S500_R
 
 //---------------------------------------------------------
-// EXT PRO (A Firmware_Version) 
+// EXT PRO (A Firmware_Version)
 //---------------------------------------------------------
 static const ControlItem items_EXTPRO_A[]{
     {s_Model_Number,         0, sizeof(s_Model_Number) - 1,          2},
@@ -1248,7 +1248,7 @@ static const ControlItem items_PRO_PLUS[]{
     {s_Goal_Velocity, 552, sizeof(s_Goal_Velocity) - 1, 4},
     {s_Profile_Acceleration, 556, sizeof(s_Profile_Acceleration) - 1, 4},
     {s_Profile_Velocity, 560, sizeof(s_Profile_Velocity) - 1, 4},
-    {s_Goal_Position, 564, sizeof(s_Goal_Position) - 1, 4},    
+    {s_Goal_Position, 564, sizeof(s_Goal_Position) - 1, 4},
     {s_Realtime_Tick, 568, sizeof(s_Realtime_Tick) - 1, 2},
     {s_Moving, 570, sizeof(s_Moving) - 1, 1},
     {s_Moving_Status, 571, sizeof(s_Moving) - 1, 1},
@@ -1257,7 +1257,7 @@ static const ControlItem items_PRO_PLUS[]{
     {s_Present_Velocity, 576, sizeof(s_Present_Velocity) - 1, 4},
     {s_Present_Position, 580, sizeof(s_Present_Position) - 1, 4},
     {s_Velocity_Trajectory, 584, sizeof(s_Velocity_Trajectory) - 1, 4},
-    {s_Position_Trajectory, 588, sizeof(s_Position_Trajectory) - 1, 4},    
+    {s_Position_Trajectory, 588, sizeof(s_Position_Trajectory) - 1, 4},
     {s_Present_Input_Voltage, 592, sizeof(s_Present_Input_Voltage) - 1, 2},
     {s_Present_Temperature, 594, sizeof(s_Present_Temperature) - 1, 1},
     {s_External_Port_Data_1, 600, sizeof(s_External_Port_Data_1) - 1, 2},
@@ -1332,7 +1332,7 @@ static const ModelInfo info_Gripper = {0.01,
                                        0,
                                        0,
                                        1150,
-                                       0, 
+                                       0,
                                        1.7631835937};
 
 //---------------------------------------------------------
@@ -1384,7 +1384,7 @@ static const ControlItem items_EXTGripper[]{
     {s_Goal_Velocity, 552, sizeof(s_Goal_Velocity) - 1, 4},
     {s_Profile_Acceleration, 556, sizeof(s_Profile_Acceleration) - 1, 4},
     {s_Profile_Velocity, 560, sizeof(s_Profile_Velocity) - 1, 4},
-    {s_Goal_Position, 564, sizeof(s_Goal_Position) - 1, 4},    
+    {s_Goal_Position, 564, sizeof(s_Goal_Position) - 1, 4},
     {s_Realtime_Tick, 568, sizeof(s_Realtime_Tick) - 1, 2},
     {s_Moving, 570, sizeof(s_Moving) - 1, 1},
     {s_Moving_Status, 571, sizeof(s_Moving) - 1, 1},
@@ -1393,7 +1393,7 @@ static const ControlItem items_EXTGripper[]{
     {s_Present_Velocity, 576, sizeof(s_Present_Velocity) - 1, 4},
     {s_Present_Position, 580, sizeof(s_Present_Position) - 1, 4},
     {s_Velocity_Trajectory, 584, sizeof(s_Velocity_Trajectory) - 1, 4},
-    {s_Position_Trajectory, 588, sizeof(s_Position_Trajectory) - 1, 4},    
+    {s_Position_Trajectory, 588, sizeof(s_Position_Trajectory) - 1, 4},
     {s_Present_Input_Voltage, 592, sizeof(s_Present_Input_Voltage) - 1, 2},
     {s_Present_Temperature, 594, sizeof(s_Present_Temperature) - 1, 1},
     {s_External_Port_Data_1, 600, sizeof(s_External_Port_Data_1) - 1, 2},
@@ -1406,7 +1406,7 @@ static const ModelInfo info_EXTGripper = {0.01,
                                           0,
                                           0,
                                           1150,
-                                          0, 
+                                          0,
                                           1.7631835937};
 
 //=========================================================
@@ -1605,7 +1605,7 @@ const ModelInfo *DynamixelItem::getModelInfo(uint16_t model_number)
   else if (num == PRO_L42_10_S300_R)
   {
     info = &info_PRO;
-  } 
+  }
   else if (num == PRO_L54_30_S400_R)
   {
     info = &info_EXTPRO[0];
@@ -1631,7 +1631,7 @@ const ModelInfo *DynamixelItem::getModelInfo(uint16_t model_number)
     info = &info_EXTPRO[5];
   }
   else if (num == PRO_H54_100_S500_R || num == PRO_H54_200_S500_R)
-  { 
+  {
     info = &info_EXTPRO[6];
   }
   else if (num == PRO_M42_10_S260_R_A)
@@ -1647,37 +1647,37 @@ const ModelInfo *DynamixelItem::getModelInfo(uint16_t model_number)
     info = &info_EXTPRO_A[2];
   }
   else if (num == PRO_H54_100_S500_R_A || num == PRO_H54_200_S500_R_A)
-  { 
+  {
     info = &info_EXTPRO_A[3];
   }
   else if (num == PRO_PLUS_M42P_010_S260_R)
-  { 
+  {
     info = &info_PRO_PLUS[0];
   }
   else if (num == PRO_PLUS_M54P_040_S250_R)
-  { 
+  {
     info = &info_PRO_PLUS[1];
   }
   else if (num == PRO_PLUS_M54P_060_S250_R)
-  { 
+  {
     info = &info_PRO_PLUS[2];
   }
   else if (num == PRO_PLUS_H42P_020_S300_R)
-  { 
+  {
     info = &info_PRO_PLUS[3];
   }
   else if (num == PRO_PLUS_H54P_100_S500_R)
-  { 
+  {
     info = &info_PRO_PLUS[4];
   }
   else if (num == PRO_PLUS_H54P_200_S500_R)
-  { 
+  {
     info = &info_PRO_PLUS[5];
   }
   else if (num == RH_P12_RN)
   {
     info = &info_Gripper;
-  } 
+  }
   else if (num == RH_P12_RN_A)
   {
     info = &info_EXTGripper;

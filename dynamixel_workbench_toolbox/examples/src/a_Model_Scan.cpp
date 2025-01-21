@@ -18,7 +18,7 @@
 
 #include <DynamixelWorkbench.h>
 
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
   const char* port_name = "/dev/ttyUSB0";
   int baud_rate = 57600;
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
     return 0;
   }
   else
-    printf("Succeeded to init(%d)\n", baud_rate);  
+    printf("Succeeded to init(%d)\n", baud_rate);
 
   printf("Wait for scan...\n");
   result = dxl_wb.scan(scanned_id, &dxl_cnt, range, &log);
