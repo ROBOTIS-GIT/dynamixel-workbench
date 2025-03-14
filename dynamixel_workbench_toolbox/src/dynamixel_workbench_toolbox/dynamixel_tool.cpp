@@ -21,10 +21,10 @@
 //===================================================================
 // Define Serial ID to Namd table
 //===================================================================
-typedef struct 
+typedef struct
 {
   uint16_t      number;
-  const char*   name; 
+  const char*   name;
 } DynamixelModel;
 
 static const DynamixelModel dynamixel_model_table[] = {
@@ -169,7 +169,7 @@ void DynamixelTool::addDXL(uint8_t id)
 }
 
 bool DynamixelTool::setControlTable(const char *model_name, const char **log)
-{  
+{
   const char* name = model_name;
   uint8_t name_length = strlen(name);
 
@@ -303,12 +303,12 @@ uint8_t DynamixelTool::getTheNumberOfControlItem(void)
 
 const ControlItem *DynamixelTool::getControlItem(const char *item_name, const char **log)
 {
-  const ControlItem* control_item = control_table_;  
+  const ControlItem* control_item = control_table_;
   uint8_t name_length = strlen(item_name);
 
   for (uint8_t num = 0; num < the_number_of_control_item_; num++)
   {
-    if ((name_length == control_item->item_name_length) && 
+    if ((name_length == control_item->item_name_length) &&
         (memcmp(item_name, control_item->item_name, name_length) == 0))
     {
       return control_item;
@@ -330,4 +330,3 @@ const ModelInfo *DynamixelTool::getModelInfo(void)
 {
   return model_info_;
 }
-

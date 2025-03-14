@@ -117,7 +117,7 @@
 #define WORD  2
 #define DWORD 4
 
-typedef struct 
+typedef struct
 {
   const char *item_name;
   uint16_t    address;

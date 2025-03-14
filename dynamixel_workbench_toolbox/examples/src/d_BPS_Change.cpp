@@ -18,7 +18,7 @@
 
 #include <DynamixelWorkbench.h>
 
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
   const char* port_name = "/dev/ttyUSB0";
   int dxl_id = 1;
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
     return 0;
   }
   else
-    printf("Succeeded to init(%d)\n", baud_rate);  
+    printf("Succeeded to init(%d)\n", baud_rate);
 
   uint16_t model_number = 0;
   result = dxl_wb.ping(dxl_id, &model_number, &log);
