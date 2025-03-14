@@ -1,6 +1,4 @@
 # DYNAMIXEL Workbench
-<img src="https://github.com/ROBOTIS-GIT/emanual/blob/master/assets/images/sw/dynamixel/dynamixel_workbench/DYNAMIXEL_WORKBENCH_LOGO.png" width="300">
-
 - Active Branches: noetic, humble, jazzy, main
 - Legacy Branches: *-devel
 
