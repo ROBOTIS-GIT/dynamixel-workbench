@@ -20,7 +20,7 @@
 
 void swap(int32_t *array);
 
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
   const char* port_name = "/dev/ttyUSB0";
   int baud_rate = 57600;
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
     return 0;
   }
   else
-    printf("Succeed to init(%d)\n", baud_rate);  
+    printf("Succeed to init(%d)\n", baud_rate);
 
   for (int cnt = 0; cnt < 2; cnt++)
   {

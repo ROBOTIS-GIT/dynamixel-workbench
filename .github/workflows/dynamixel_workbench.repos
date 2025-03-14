@@ -2,4 +2,4 @@ repositories:
   dynamixel_workbench/dynamixel_workbench_msgs:
     type: git
     url: https://github.com/ROBOTIS-GIT/dynamixel-workbench-msgs.git
-    version: ros2
+    version: main

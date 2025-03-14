@@ -33,16 +33,16 @@
 #define MAX_HANDLER_NUM     5
 #define MAX_BULK_PARAMETER  20
 
-typedef struct 
-{
-  const ControlItem *control_item; 
-  dynamixel::GroupSyncWrite *groupSyncWrite;    
-} SyncWriteHandler;
-
-typedef struct 
+typedef struct
 {
   const ControlItem *control_item;
-  dynamixel::GroupSyncRead  *groupSyncRead;     
+  dynamixel::GroupSyncWrite *groupSyncWrite;
+} SyncWriteHandler;
+
+typedef struct
+{
+  const ControlItem *control_item;
+  dynamixel::GroupSyncRead  *groupSyncRead;
 } SyncReadHandler;
 
 typedef struct
@@ -69,10 +69,10 @@ class DynamixelDriver
   SyncWriteHandler syncWriteHandler_[MAX_HANDLER_NUM];
   SyncReadHandler  syncReadHandler_[MAX_HANDLER_NUM];
 
-  dynamixel::GroupBulkRead  *groupBulkRead_;  
+  dynamixel::GroupBulkRead  *groupBulkRead_;
   dynamixel::GroupBulkWrite *groupBulkWrite_;
   BulkParameter bulk_read_param_[MAX_BULK_PARAMETER];
- 
+
   DynamixelTool tools_[MAX_DXL_SERIES_NUM];
 
   uint8_t tools_cnt_;
@@ -84,12 +84,12 @@ class DynamixelDriver
   DynamixelDriver();
   ~DynamixelDriver();
 
-  bool init(const char* device_name = "/dev/ttyUSB0", 
-            uint32_t baud_rate = 57600, 
+  bool init(const char* device_name = "/dev/ttyUSB0",
+            uint32_t baud_rate = 57600,
             const char **log = NULL);
 
-  bool begin(const char* device_name = "/dev/ttyUSB0", 
-            uint32_t baud_rate = 57600, 
+  bool begin(const char* device_name = "/dev/ttyUSB0",
+            uint32_t baud_rate = 57600,
             const char **log = NULL);
 
   bool setPortHandler(const char *device_name, const char **log = NULL);
@@ -111,17 +111,17 @@ class DynamixelDriver
   uint8_t getTheNumberOfBulkReadParam(void);
 
   bool scan(uint8_t *get_id,
-            uint8_t *get_the_number_of_id, 
+            uint8_t *get_the_number_of_id,
             uint8_t range = 253,
             const char **log = NULL);
 
   bool scan(uint8_t *get_id,
-            uint8_t *get_the_number_of_id, 
+            uint8_t *get_the_number_of_id,
             uint8_t start_number,
             uint8_t end_number,
             const char **log = NULL);
 
-  bool ping(uint8_t id, 
+  bool ping(uint8_t id,
             uint16_t *get_model_number,
             const char **log = NULL);
 

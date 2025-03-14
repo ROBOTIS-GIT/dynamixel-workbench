@@ -20,7 +20,7 @@
 
 void swap(int32_t *array);
 
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
   const char* port_name = "/dev/ttyUSB0";
   int baud_rate = 57600;
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
     return 0;
   }
   else
-    printf("Succeed to init(%d)\n", baud_rate);  
+    printf("Succeed to init(%d)\n", baud_rate);
 
   for (int cnt = 0; cnt < 2; cnt++)
   {
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
   int32_t goal_position[2] = {0, 1023};
 
   const uint8_t handler_index = 0;
-  
+
   while(1)
   {
     result = dxl_wb.syncWrite(handler_index, &goal_position[0], &log);
