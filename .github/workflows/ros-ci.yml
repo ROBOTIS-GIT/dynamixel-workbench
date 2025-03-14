@@ -4,9 +4,9 @@ name: CI
 # Specifies the events that trigger the workflow
 on:
   push:
-    branches: [ main, humble ]
+    branches: [ main, humble, jazzy]
   pull_request:
-    branches: [ main, humble ]
+    branches: [ main, humble, jazzy]
 
 # Defines a set of jobs to be run as part of the workflow
 jobs:
@@ -18,21 +18,21 @@ jobs:
       matrix:
         ros_distribution:
           - humble
-          # - jazzy
-          # - rolling
+          - jazzy
+          - rolling
         include:
           # ROS 2 Humble Hawksbill
           - docker_image: ubuntu:jammy
             ros_distribution: humble
             ros_version: 2
           # ROS 2 Jazzy Jalisco
-          # - docker_image: ubuntu:noble
-          #   ros_distribution: jazzy
-          #   ros_version: 2
+          - docker_image: ubuntu:noble
+            ros_distribution: jazzy
+            ros_version: 2
           # ROS 2 Rolling Ridley
-          # - docker_image: ubuntu:noble
-          #   ros_distribution: rolling
-          #   ros_version: 2
+          - docker_image: ubuntu:noble
+            ros_distribution: rolling
+            ros_version: 2
     container:
       image: ${{ matrix.docker_image }}
     steps:
@@ -54,4 +54,6 @@ jobs:
         with:
           target-ros2-distro: ${{ matrix.ros_distribution }}
           vcs-repo-file-url: "https://raw.githubusercontent.com/ROBOTIS-GIT/dynamixel-workbench/main/.github/workflows/dynamixel_workbench.repos"
-          package-name: dynamixel_workbench
+          package-name: |
+            dynamixel_workbench
+            dynamixel_workbench_toolbox
