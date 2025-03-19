@@ -16,14 +16,18 @@
   </include>
 
   <!--
-    Change initial effort limit from zero to maximum effort defined in URDF
-    to make actuator drivable from the beginning
+    The following node changes initial effort limit from zero to maximum effort defined in URDF
+    to make actuator drivable from the beginning.
+    Be careful about this because that limit will be reset to zero when making servo off
+    and you must manually change it after making servo on to make actuator drivable again
   -->
+  <!--
   <group ns="sample_robot">
     <node pkg="rostopic" type="rostopic" name="set_initial_effort_limit"
           args="pub joint_group_effort_controller/command std_msgs/Float64MultiArray
                 '{layout: {dim: [], data_offset: 0}, data: [0.92]}'"
           output="screen"/>
   </group>
+  -->
 
 </launch>
