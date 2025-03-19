@@ -1154,11 +1154,16 @@ void DynamixelGeneralHw::write(const ros::Time& time, const ros::Duration& perio
   else
   {
     // Servo off
-    for (const std::pair<std::string, uint32_t>& dxl : dynamixel_)
+    if (prev_is_servo_)
     {
-      dxl_wb_->torqueOff((uint8_t)dxl.second);
+      // Write servo off command to dynamixel only when previous state is servo on
+      // to prevent Hz from dropping in servo off
+      for (const std::pair<std::string, uint32_t>& dxl : dynamixel_)
+      {
+        dxl_wb_->torqueOff((uint8_t)dxl.second);
+      }
+      last_write_tm_ = ros::Time::now();
     }
-    last_write_tm_ = ros::Time::now();
 
     // Servo off resets other special states
     is_hold_pos_raw_ = false;
