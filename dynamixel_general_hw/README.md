@@ -313,7 +313,7 @@ Required Arguments:
   robot_description_file: URDF/Xacro of your robot (e.g., '/home/pazeshun/catkin_ws/src/dynamixel-workbench/dynamixel_general_hw/urdf/sample1.urdf'). If 'set_robot_description' is false, you can set a dummy string to this argument because this argument is not used
 Optional Arguments:
   calculate_effort (default "true"): Whether to calculate joint effort from Dynamixel actuator current/load
-  control_rate (default "20"): Hz of the control loop
+  control_rate (default "20"): Target Hz of the control loop. If this is too higher than the actual Hz, reading errors may occur. See the description of write_read_interval below
   joint_states_topic (default "joint_states"): Name of joint_states topic published and subscribed by the nodes started by this launch file. If this is a relative name, its global name becomes (namespace)/(joint_states_topic)
   launch_robot_state_publisher (default "true"): Whether to start robot_state_publisher at launching
   launch_rviz (default "false"): Whether to start RViz
