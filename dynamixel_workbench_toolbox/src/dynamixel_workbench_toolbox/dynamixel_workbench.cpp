@@ -225,6 +225,7 @@ bool DynamixelWorkbench::changeProtocolVersion(uint8_t id, uint8_t version, cons
       !strncmp(model_name, "MX-64-2", strlen("MX-64-2"))   ||
       !strncmp(model_name, "MX-106-2", strlen("MX-106-2")) ||
       !strncmp(model_name, "XM", strlen("XM"))             ||
+      !strncmp(model_name, "XL330", strlen("XL330"))       ||
       !strncmp(model_name, "XL430", strlen("XL430"))       ||
       !strncmp(model_name, "XC430", strlen("XC430"))       ||
       !strncmp(model_name, "XH", strlen("XH")))
@@ -298,6 +299,7 @@ bool DynamixelWorkbench::setNormalDirection(uint8_t id, const char **log)
       !strncmp(model_name, "MX-64-2", strlen("MX-64-2"))   ||
       !strncmp(model_name, "MX-106-2", strlen("MX-106-2")) ||
       !strncmp(model_name, "XM", strlen("XM"))             ||
+      !strncmp(model_name, "XL330", strlen("XL330"))       ||
       !strncmp(model_name, "XL430", strlen("XL430"))       ||
       !strncmp(model_name, "XC430", strlen("XC430"))       ||
       !strncmp(model_name, "XH", strlen("XH")))
@@ -329,6 +331,7 @@ bool DynamixelWorkbench::setReverseDirection(uint8_t id, const char **log)
       !strncmp(model_name, "MX-64-2", strlen("MX-64-2"))   ||
       !strncmp(model_name, "MX-106-2", strlen("MX-106-2")) ||
       !strncmp(model_name, "XM", strlen("XM"))             ||
+      !strncmp(model_name, "XL330", strlen("XL330"))       ||
       !strncmp(model_name, "XL430", strlen("XL430"))       ||
       !strncmp(model_name, "XC430", strlen("XC430"))       ||
       !strncmp(model_name, "XH", strlen("XH")))
@@ -360,6 +363,7 @@ bool DynamixelWorkbench::setVelocityBasedProfile(uint8_t id, const char **log)
       !strncmp(model_name, "MX-64-2", strlen("MX-64-2"))   ||
       !strncmp(model_name, "MX-106-2", strlen("MX-106-2")) ||
       !strncmp(model_name, "XM", strlen("XM"))             ||
+      !strncmp(model_name, "XL330", strlen("XL330"))       ||
       !strncmp(model_name, "XL430", strlen("XL430"))       ||
       !strncmp(model_name, "XC430", strlen("XC430"))       ||
       !strncmp(model_name, "XH", strlen("XH")))
@@ -391,6 +395,7 @@ bool DynamixelWorkbench::setTimeBasedProfile(uint8_t id, const char **log)
       !strncmp(model_name, "MX-64-2", strlen("MX-64-2"))   ||
       !strncmp(model_name, "MX-106-2", strlen("MX-106-2")) ||
       !strncmp(model_name, "XM", strlen("XM"))             ||
+      !strncmp(model_name, "XL330", strlen("XL330"))       ||
       !strncmp(model_name, "XL430", strlen("XL430"))       ||
       !strncmp(model_name, "XC430", strlen("XC430"))       ||
       !strncmp(model_name, "XH", strlen("XH")))
@@ -421,6 +426,7 @@ bool DynamixelWorkbench::setSecondaryID(uint8_t id, uint8_t secondary_id, const 
       !strncmp(model_name, "MX-64-2", strlen("MX-64-2"))   ||
       !strncmp(model_name, "MX-106-2", strlen("MX-106-2")) ||
       !strncmp(model_name, "XM", strlen("XM"))             ||
+      !strncmp(model_name, "XL330", strlen("XL330"))       ||
       !strncmp(model_name, "XL430", strlen("XL430"))       ||
       !strncmp(model_name, "XC430", strlen("XC430"))       ||
       !strncmp(model_name, "XH", strlen("XH"))             ||
@@ -693,7 +699,8 @@ bool DynamixelWorkbench::setOperatingMode(uint8_t id, uint8_t index, const char 
     }
     else if (index == CURRENT_CONTROL_MODE)
     {
-      if (!strncmp(model_name, "XM", strlen("XM"))             ||
+      if (!strncmp(model_name, "XL330", strlen("XL330"))       ||
+          !strncmp(model_name, "XM", strlen("XM"))             ||
           !strncmp(model_name, "XH", strlen("XH"))             ||
           !strncmp(model_name, "MX-64-2", strlen("MX-64-2"))   ||
           !strncmp(model_name, "MX-106-2", strlen("MX-106-2")) ||
@@ -722,6 +729,7 @@ bool DynamixelWorkbench::setOperatingMode(uint8_t id, uint8_t index, const char 
     {
       if (!strncmp(model_name, "MX-64-2", strlen("MX-64-2"))   ||
           !strncmp(model_name, "MX-106-2", strlen("MX-106-2")) ||
+          !strncmp(model_name, "XL330", strlen("XL330"))       ||
           !strncmp(model_name, "XM", strlen("XM"))             ||
           !strncmp(model_name, "XH", strlen("XH"))             ||
           !strncmp(model_name, "RH", strlen("RH")))
@@ -736,6 +744,7 @@ bool DynamixelWorkbench::setOperatingMode(uint8_t id, uint8_t index, const char 
           !strncmp(model_name, "MX-106-2", strlen("MX-106-2")) ||
           !strncmp(model_name, "XM", strlen("XM"))             ||
           !strncmp(model_name, "XH", strlen("XH"))             ||
+          !strncmp(model_name, "XL330", strlen("XL330"))       ||
           !strncmp(model_name, "XL430", strlen("XL430"))       ||
           !strncmp(model_name, "XC430", strlen("XC430"))       ||
           !strncmp(model_name, "PRO", strlen("PRO")))
@@ -913,6 +922,7 @@ bool DynamixelWorkbench::currentBasedPositionMode(uint8_t id, int32_t current, c
 
   if (!strncmp(model_name, "MX-64-2", strlen("MX-64-2"))   ||
       !strncmp(model_name, "MX-106-2", strlen("MX-106-2")) ||
+      !strncmp(model_name, "XL330", strlen("XL330"))       ||
       !strncmp(model_name, "XM", strlen("XM"))             ||
       !strncmp(model_name, "XH", strlen("XH"))             ||
       !strncmp(model_name, "RH", strlen("RH")))
