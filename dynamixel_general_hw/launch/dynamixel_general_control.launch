@@ -30,7 +30,7 @@
   <arg name="joint_states_topic" default="joint_states"
        doc="Name of joint_states topic published and subscribed by the nodes started by this launch file. If this is a relative name, its global name becomes (namespace)/(joint_states_topic)" />
   <arg name="control_rate" default="20"
-       doc="Target Hz of the control loop. If this is too higher than the actual Hz, reading errors may occur. See the description of write_read_interval below" />
+       doc="Target Hz of the control loop. The actual Hz will be the same as or lower than this. If the actual Hz is too low for you, try increasing baud rate and/or decreasing latency_timer. Cf. https://github.com/ROBOTIS-GIT/DynamixelSDK/blob/3ae73bf5179fbad2bd366f39a952ce549c10c58e/c%2B%2B/src/dynamixel_sdk/port_handler_linux.cpp#L33-L56. In addition, if the actual Hz is too lower than control_rate, reading errors may occur. See the description of write_read_interval below" />
   <arg name="calculate_effort" default="true"
        doc="Whether to calculate joint effort from Dynamixel actuator current/load" />
   <arg name="publish_temperature" default="true"
