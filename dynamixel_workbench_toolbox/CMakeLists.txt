@@ -49,7 +49,7 @@ add_library(${LIB_NAME} SHARED
   src/${PROJECT_NAME}/dynamixel_tool.cpp
   src/${PROJECT_NAME}/dynamixel_workbench.cpp
 )
-ament_target_dependencies(${LIB_NAME} ${dependencies_lib})
+target_link_libraries(${LIB_NAME} PUBLIC ${dependencies_lib})
 
 ################################################################################
 # Install
