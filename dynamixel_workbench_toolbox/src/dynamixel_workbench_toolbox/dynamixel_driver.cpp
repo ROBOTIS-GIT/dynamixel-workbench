@@ -19,8 +19,9 @@
 #include <memory>
 #include "../../include/dynamixel_workbench_toolbox/dynamixel_driver.h"
 
-DynamixelDriver::DynamixelDriver() : tools_cnt_(0),
-                                    sync_write_handler_cnt_(0),
+DynamixelDriver::DynamixelDriver() : portHandler_(NULL),
+                                    tools_cnt_(0), 
+                                    sync_write_handler_cnt_(0), 
                                     sync_read_handler_cnt_(0),
                                     bulk_read_parameter_cnt_(0)
 {
@@ -37,7 +38,7 @@ DynamixelDriver::~DynamixelDriver()
     }
   }
 
-  if (portHandler_ != nullptr)
+  if (portHandler_ != NULL)
   {
     portHandler_->closePort();
   }
