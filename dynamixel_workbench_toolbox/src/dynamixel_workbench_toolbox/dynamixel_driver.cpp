@@ -37,7 +37,10 @@ DynamixelDriver::~DynamixelDriver()
     }
   }
 
-  portHandler_->closePort();
+  if (portHandler_ != nullptr)
+  {
+    portHandler_->closePort();
+  }
 }
 
 void DynamixelDriver::initTools(void)
