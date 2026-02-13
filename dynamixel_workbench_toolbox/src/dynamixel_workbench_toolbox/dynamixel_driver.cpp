@@ -1134,7 +1134,7 @@ bool DynamixelDriver::syncRead(uint8_t index, uint8_t *id, uint8_t id_num, const
     sdk_error.dxl_addparam_result = syncReadHandler_[index].groupSyncRead->addParam(id[i]);
     if (sdk_error.dxl_addparam_result != true)
     {
-      if (log != NULL) *log = "groupSyncWrite addparam failed";
+      if (log != NULL) *log = "[DynamixelDriver] groupSyncRead addparam failed";
       return false;
     }
   }
