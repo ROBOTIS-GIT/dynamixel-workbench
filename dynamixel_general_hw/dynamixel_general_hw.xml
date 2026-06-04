@@ -1,0 +1,10 @@
+<library path="dynamixel_general_hw">
+  <class
+    name="dynamixel_general_hw/DynamixelGeneralHw"
+    type="dynamixel_general_hw::DynamixelGeneralHw"
+    base_class_type="hardware_interface::SystemInterface">
+    <description>
+      ros2_control hardware interface backed by Dynamixel Workbench.
+    </description>
+  </class>
+</library>

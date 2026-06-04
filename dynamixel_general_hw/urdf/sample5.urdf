@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<robot name="sample_robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:arg name="port_name" default="/dev/ttyUSB0"/>
+  <xacro:arg name="baud_rate" default="57600"/>
+  <xacro:arg name="protocol_1_0" default="false"/>
+  <xacro:arg name="dynamixel_id" default="1"/>
+
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="0.2 0.2 0.2"/>
+      </geometry>
+      <material name="red">
+        <color rgba="1 0 0 1"/>
+      </material>
+    </visual>
+  </link>
+
+  <link name="sample_link">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0.3"/>
+      <geometry>
+        <box size="0.2 0.2 0.6"/>
+      </geometry>
+      <material name="green">
+        <color rgba="0 1 0 1"/>
+      </material>
+    </visual>
+  </link>
+
+  <!--
+    Joint limits are example values for XC330-T288-T with sample_trans (it is written later).
+    effort: (Stall Torque [Nm]) * (mechanicalReduction in sample_trans) = 0.92 * 1.0
+    velocity: (No Load Speed [rad/s]) / (mechanicalReduction in sample_trans) = (65 [rev/min] * 2 * pi / 60) / 1.0
+  -->
+  <joint name="sample_joint" type="continuous">
+    <origin rpy="0 0 0" xyz="0 0 0.1"/>
+    <parent link="base_link"/>
+    <child link="sample_link"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="0.92" velocity="6.8"/>
+  </joint>
+
+  <!--
+    Specify one or more hardwareInterface.
+    hardware_interface/EffortJointInterface is specified because the ros_control controller used in this sample requires it.
+    But you can specify other interfaces in parallel to prepare for loading other controllers
+  -->
+  <transmission name="sample_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="sample_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <offset>0.0</offset>
+    </joint>
+    <actuator name="sample_motor">
+      <mechanicalReduction>1.0</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <ros2_control name="DynamixelGeneralHw" type="system">
+    <hardware>
+      <plugin>dynamixel_general_hw/DynamixelGeneralHw</plugin>
+      <param name="port_name">$(arg port_name)</param>
+      <param name="baud_rate">$(arg baud_rate)</param>
+      <param name="calculate_effort">true</param>
+    </hardware>
+    <joint name="sample_joint">
+      <param name="id">$(arg dynamixel_id)</param>
+      <param name="Return_Delay_Time">0</param>
+      <param name="Operating_Mode">0</param>
+      <param name="torque_constant">1.15</param>
+      <command_interface name="effort"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+      <state_interface name="current"/>
+      <state_interface name="temperature"/>
+      <state_interface name="voltage"/>
+    </joint>
+  </ros2_control>
+
+</robot>
